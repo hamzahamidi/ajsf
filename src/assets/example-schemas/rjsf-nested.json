@@ -1,0 +1,53 @@
+{
+  "schema": {
+    "title": "A list of tasks",
+    "type": "object",
+    "required": [ "title" ],
+    "properties": {
+      "title": {
+        "title": "Task list title",
+        "type": "string"
+      },
+      "tasks": {
+        "title": "Tasks",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [ "title" ],
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "A sample title"
+            },
+            "details": {
+              "title": "Task details",
+              "type": "string",
+              "description": "Enter the task details"
+            },
+            "done": {
+              "title": "Done?",
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "uiSchema": {
+    "tasks": { "items": { "details": { "ui:widget": "textarea" } } }
+  },
+  "formData": {
+    "title": "My current tasks",
+    "tasks": [ {
+      "title": "My first task",
+      "details": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "done": true
+    }, {
+      "title": "My second task",
+      "details": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur",
+      "done": false
+    } ]
+  }
+}

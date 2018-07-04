@@ -1,0 +1,18 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "title": "Item",
+          "default": "New Item"
+        }
+      }
+    }
+  },
+  "data": {
+    "items": [ "Item 1", "Item 2", "Item 3", "Item 4" ]
+  }
+}

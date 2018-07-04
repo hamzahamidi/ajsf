@@ -1,0 +1,21 @@
+{
+  "schema": {
+    "language": {
+      "type": "array",
+      "title": "Best language",
+      "items": {
+        "type": "string",
+        "enum": [ "JavaScript", "Python", "PHP", "Java", "C++", "other" ]
+      }
+    }
+  },
+  "form": [ {
+    "key": "language",
+    "type": "checkboxbuttons",
+    "activeClass": "btn-success"
+  }, {
+    "title": "Submit",
+    "type": "submit"
+  } ],
+  "value": {"language": "Python"}
+}

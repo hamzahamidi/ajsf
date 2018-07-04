@@ -1,0 +1,47 @@
+{
+  "schema": {
+    "friends": {
+      "type": "array",
+      "default": [ "foo", "bar" ],
+      "readOnly": true,
+      "items": {
+        "type": "string",
+        "title": "Name",
+        "readOnly": true
+      }
+    },
+    "fiends": {
+      "type": "array",
+      "default": [
+        { "name": "bob", "age": 24 },
+        { "name": "alice", "age": 42 }
+      ],
+      "readOnly": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "named"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age",
+            "default": 29
+          },
+          "address": {
+            "title": "Address",
+            "type": "object",
+            "properties": {
+              "street": { "type": "string" },
+              "zip": { "type": "string" },
+              "city": { "type": "string" }
+            },
+            "default": { "zip": "N/A" }
+          }
+        },
+        "default": { "name": "ah", "age": 55 }
+      }
+    }
+  }
+}

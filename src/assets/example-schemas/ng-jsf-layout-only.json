@@ -1,0 +1,25 @@
+{
+  "layout": [
+    { "type": "section", "title": "Name", "required": true,
+      "items": [
+        "first_name",
+        "last_name"
+      ]
+    },
+    { "key": "age", "type": "integer" },
+    { "key": "is_company", "title": "Is this a company?", "type": "checkbox" },
+    { "key": "address.street_1", "title": "Address" },
+    { "key": "address.street_2", "notitle": true },
+    "address.city",
+    "address.state",
+    "address.zip_code",
+    { "key": "phone_numbers", "type": "array",
+      "items": [
+        "phone_numbers[].number",
+        "phone_numbers[].type"
+      ]
+    },
+    { "key": "notes", "type": "textarea" },
+    { "type": "submit" }
+  ]
+}

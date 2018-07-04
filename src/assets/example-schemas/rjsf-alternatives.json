@@ -1,0 +1,45 @@
+{
+  "schema": {
+    "definitions": {
+      "Color": {
+        "title": "Color",
+        "type": "string",
+        "anyOf": [
+          { "type": "string", "enum": [ "#ff0000" ], "title": "Red" },
+          { "type": "string", "enum": [ "#00ff00" ], "title": "Green" },
+          { "type": "string", "enum": [ "#0000ff" ], "title": "Blue" }
+        ]
+      }
+    },
+    "title": "Image editor",
+    "type": "object",
+    "properties": {
+      "currentColor": { "$ref": "#/definitions/Color", "title": "Brush color" },
+      "colorMask": {
+        "title": "Color mask",
+        "type": "array",
+        "items": { "$ref": "#/definitions/Color" },
+        "uniqueItems": true
+      },
+      "colorPalette": {
+        "title": "Color palette",
+        "type": "array",
+        "items": { "$ref": "#/definitions/Color" }
+      },
+      "blendMode": {
+        "title": "Blend mode",
+        "type": "string",
+        "enum": [ "screen", "multiply", "overlay" ],
+        "enumNames": [ "Screen", "Multiply", "Overlay" ]
+      }
+    },
+    "required": [ "currentColor", "colorMask", "blendMode" ]
+  },
+  "uiSchema": {},
+  "formData": {
+    "currentColor": "#00ff00",
+    "colorMask": [ "#0000ff" ],
+    "colorPalette": [ "#ff0000" ],
+    "blendMode": "screen"
+  }
+}

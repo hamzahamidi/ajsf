@@ -1,0 +1,71 @@
+// * { border: 1px solid red !important; }
+@import '~@angular/material/theming';
+@include mat-core();
+$demo-app-primary: mat-palette($mat-blue);
+$demo-app-accent:  mat-palette($mat-amber, A200, A100, A400);
+$demo-app-warn:    mat-palette($mat-red);
+$demo-app-theme:   mat-light-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
+@include angular-material-theme($demo-app-theme);
+
+$font-family: 'Roboto', 'Noto', 'Helvetica Neue', sans-serif;
+$row-height: 56px;
+
+mat-toolbar {
+  &.mat-medium {
+    min-height: $row-height;
+    mat-toolbar-row { height: $row-height; }
+  }
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(250, 250, 250) !important;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  font-family: $font-family;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.demo-page-header {
+  background-color: mat-color($demo-app-primary, lighter);
+  margin-bottom: 12px;
+  .header-content {
+    font-family: $font-family;
+    line-height: 1.4em;
+    padding: 12px;
+    .menu-label {
+      margin-right: 12px;
+      font-weight: bold;
+    }
+  }
+}
+
+.ace_active-line { background: none !important; }
+
+[ace-editor], .data-good, .data-bad {
+  border-radius: 3px;
+  padding: 6px;
+  border: 1px solid #ccc !important;
+}
+
+[ace-editor] { background-color: rgb(253, 253, 253) !important; }
+
+.avoidwrap { display:inline-block; }
+
+.data-good { background-color: #dfd; }
+
+.data-bad { background-color: #fcc; }
+
+.default-cursor:hover { cursor: default; }
+
+.check-row { margin-top: 8px; }
+
+.cdk-overlay-container .cdk-overlay-pane .mat-menu-panel { max-width: 560px; }
+
+.debug { border: 1px solid red !important; }
+
+.mat-input-container.mat-form-field { width: 100%; }

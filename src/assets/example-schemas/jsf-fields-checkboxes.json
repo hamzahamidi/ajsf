@@ -1,0 +1,75 @@
+{
+  "schema": {
+    "properties": {
+      "menu": {
+        "type": "array",
+        "title": "Options",
+        "items": {
+          "type": "string",
+          "title": "Option",
+          "enum": [ "starter", "maincourse", "cheese", "dessert", "OTHER" ]
+        },
+        "minItems": 1
+      },
+      "menuOther": { "type": "string" },
+      "menu2": {
+        "type": "array",
+        "title": "Options Inline",
+        "items": {
+          "type": "string",
+          "title": "Option",
+          "enum": [ "starter", "maincourse", "CUSTOME_OTHER_VALUE", "cheese", "dessert" ]
+        }
+      },
+      "menu2Other": { "type": "string" },
+      "menu3": {
+        "type": "array",
+        "title": "Options",
+        "description": "Other field's value as an element of result array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      }
+    }
+  },
+  "nonDefaultFormItems": [ "menuOther", "menu2Other" ],
+  "customFormItems": {
+    "menu": {
+      "type": "checkboxes",
+      "titleMap": {
+        "starter": "Starter would be great",
+        "maincourse": "No way I'll skip the main course",
+        "cheese": "Cheddar rules!",
+        "dessert": "Thumbs up for a dessert"
+      },
+      "otherField": { "key": "menuOther", "inline": true }
+    },
+    "menu2": {
+      "type": "checkboxes",
+      "title": "Options inline style",
+      "inline": true,
+      "titleMap": {
+        "starter": "Starter would be great",
+        "maincourse": "No way I'll skip the main course",
+        "cheese": "Cheddar rules!",
+        "dessert": "Thumbs up for a dessert"
+      },
+      "otherField": {
+        "key": "menu2Other",
+        "title": "Custom other field title",
+        "otherValue": "CUSTOME_OTHER_VALUE"
+      }
+    },
+    "menu3": {
+      "type": "checkboxes",
+      "options": {
+        "starter": "Starter would be great",
+        "maincourse": "No way I'll skip the main course",
+        "cheese": "Cheddar rules!",
+        "dessert": "Thumbs up for a dessert"
+      },
+      "otherField": { "key": "menu3[99]", "type": "text", "asArrayValue": true }
+    }
+  }
+}

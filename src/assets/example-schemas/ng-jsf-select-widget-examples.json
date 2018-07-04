@@ -1,0 +1,139 @@
+{
+  "schema": {
+    "title": "Select your favorite captain",
+    "type": "object",
+    "properties": {
+      "select1": {
+        "title": "String + enum or titleMap defaults to select",
+        "type": "string",
+        "enum": [ "a", "b", "c" ]
+      },
+      "select2": {
+        "title": "String + titleMap defaults to select",
+        "type": "string",
+        "enum": [ "a", "b", "c" ]
+      },
+      "select3": {
+        "title": "String + enum + titleMap array",
+        "type": "string"
+      },
+      "select4": {
+        "title": "",
+        "type": "string"
+      },
+      "select5": {
+        "title": "",
+        "type": "string"
+      },
+      "select6": {
+        "title": "",
+        "type": "string"
+      },
+      "array1": {
+        "title": "Array + enum or titleMap defaults to checkboxes",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [ "a", "b", "c" ]
+        }
+      },
+      "array2": {
+        "title": "Array + enum + maxItems = 1",
+        "type": "array",
+        "default": [ "b", "c" ],
+        "items": {
+          "type": "string",
+          "enum": [ "a", "b", "c" ]
+        }
+      },
+      "radios1": {
+        "title": "widget = inline-radios",
+        "type": "string",
+        "enum": [ "a", "b", "c" ]
+      },
+      "radios2": {
+        "title": "widget = radios",
+        "type": "string",
+        "enum": [ "a", "b", "c" ]
+      },
+      "radiobuttons1": {
+        "title": "widget = radiobuttons",
+        "type": "boolean",
+        "default": false
+      },
+      "radiobuttons2": {
+        "title": "widget = radiobuttons, vertical = true",
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "layout": [
+    "select1",
+    { "key": "select2",
+      "titleMap": {
+        "William Shatner": "James T. Kirk",
+        "Patrick Stewart": "Jean-Luc Picard",
+        "John Barrowman": "Jack Harkness",
+        "Nathan Fillion": "Malcolm Reynolds"
+      }
+    },
+    { "key": "select3",
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    },
+    "select4",
+    "select5",
+    "select6",
+    "array1",
+    { "key": "array2",
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    },
+    { "key": "radios1",
+      "widget": "radios",
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    },
+    { "key": "radios2",
+      "widget": "inline-radios",
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    },
+    { "key": "radiobuttons1",
+      "widget": "radiobuttons",
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    },
+    { "key": "radiobuttons2",
+      "widget": "radiobuttons",
+      "vertical": true,
+      "titleMap": [
+        { "name": "James T. Kirk",    "value": "William Shatner" },
+        { "name": "Jean-Luc Picard",  "value": "Patrick Stewart" },
+        { "name": "Jack Harkness",    "value": "John Barrowman"  },
+        { "name": "Malcolm Reynolds", "value": "Nathan Fillion"  }
+      ]
+    }
+  ]
+}

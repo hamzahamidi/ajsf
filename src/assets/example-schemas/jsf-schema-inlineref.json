@@ -1,0 +1,29 @@
+{
+  "schema": {
+    "properties": {
+      "animal": { "$ref": "#/definitions/animation" }
+    },
+    "definitions": {
+      "animation": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "title": "Duration",
+            "type": "integer"
+          },
+          "stepper": {
+            "title": "Stepper",
+            "type": "string"
+          },
+          "then": {
+            "title": "Then",
+            "type": "array",
+            "maxItems": 1,
+            "items": { "$ref": "#/definitions/animation" },
+            "default": []
+          }
+        }
+      }
+    }
+  }
+}

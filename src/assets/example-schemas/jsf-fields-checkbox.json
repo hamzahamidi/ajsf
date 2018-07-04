@@ -1,0 +1,37 @@
+{
+  "schema": {
+    "properties": {
+      "flag": {
+        "type": "boolean",
+        "title": "Adult"
+      },
+      "adultOnlyInfo": {
+        "type": "object",
+        "properties": {
+          "field1": {
+            "title": "Field 1",
+            "type": "string"
+          },
+          "field2": {
+            "title": "Field 2",
+            "type": "integer"
+          }
+        },
+        "required": [ "field1", "field2" ]
+      },
+      "commonInfo": {
+        "title": "Common Field",
+        "type": "string"
+      }
+    },
+    "dependencies": {
+      "flag": [ "adultOnlyInfo" ]
+    }
+  },
+  "customFormItems": {
+    "flag": {
+      "inlinetitle": "Check this box if you are over 18",
+      "toggleNext": 1
+    }
+  }
+}
