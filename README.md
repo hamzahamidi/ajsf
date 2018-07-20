@@ -15,7 +15,7 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 
 ## Check out the live demo and play with the examples
 
-[Check out some examples here.](https://angular2-json-schema-form.firebaseapp.com/)
+[Check out some examples here.](https://hamidihamza.com/Angular6-json-schema-form)
 
 This example playground features over 70 different JSON Schemas for you to try (including all examples used by each of the three libraries listed above), and the ability to quickly view any example formatted with Material Design, Bootstrap 3, Bootstrap 4, or without any formatting.
 
