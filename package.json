@@ -1,16 +1,45 @@
 {
   "name": "angular6-json-schema-form-app",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "authors": [{
+      "name": "David Schnell-Davis",
+      "email": "dschnelldavis@gmail.com"
+    },
+    {
+      "name": "Hamza Hamidi",
+      "email": "hamidihamzacg@gmail.com"
+    }
+  ],
+  "description": "Angular JSON Schema Form builder",
+  "keywords": [
+    "Angular",
+    "ng",
+    "Angular6",
+    "Angular 6",
+    "ng6",
+    "JSON Schema",
+    "form",
+    "forms",
+    "form builder"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamzahamidi/angular6-json-schema-form"
+  },
+  "bugs": {
+    "url": "https://github.com/hamzahamidi/angular6-json-schema-form/issues"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod --aot=false --build-optimizer=false",
     "buildlib": "ng build json-schema-form --prod",
+    "postbuildlib": "cp  README.md LICENSE  dist/json-schema-form/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^6.0.3",
     "@angular/cdk": "^6.3.2",
