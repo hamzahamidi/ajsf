@@ -2,11 +2,11 @@
 # Angular v6 for [Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form)
 
 [![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/angular6-json-schema-form/releases/latest)
-[![npm downloads](https://img.shields.io/npm/dm/Angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/angular6-json-schema-form)
+[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/angular6-json-schema-form)
 
 Note: This project is a continuation to [Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) & is and is not affiliated with any organization. The setup is therfore still the same as [Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form).
 
-A [JSON Schema](http://json-schema.org) Form builder for Angular 4 and 5, similar to, and mostly API compatible with,
+A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with,
 
   * [JSON Schema Form](https://github.com/json-schema-form)'s [Angular Schema Form](http://schemaform.io) for [AngularJS](https://angularjs.org) ([examples](http://schemaform.io/examples/bootstrap-example.html))
   * [Mozilla](https://blog.mozilla.org/services/)'s [React JSON Schema Form](https://github.com/mozilla-services/react-jsonschema-form) for [React](https://facebook.github.io/react/) ([examples](https://mozilla-services.github.io/react-jsonschema-form/)), and
@@ -34,14 +34,14 @@ npm start
 
 This should start a server with the example playground, which you can view in your browser at `http://localhost:4200`
 
-All the source code is in the `/src` folder. Inside that folder, you will find the following sub-folders:
+The source code is composed as the following:
 
-* `lib/src` - Angular JSON Schema Form main library
-* `lib/src/framework-library` - framework library
-* `lib/src/widget-library` - widget library
-* `lib/src/shared` - various utilities and helper functions
-* `demo` - the demonstration playground example application
-* `demo/assets/example-schemas` - JSON Schema examples used in the playground
+* `projects/json-schema-form` - Angular JSON Schema Form main library
+* `projects/json-schema-form/src/lib/framework-library` - framework library
+* `projects/json-schema-form/src/lib/widget-library` - widget library
+* `projects/json-schema-form/src/lib/shared` - various utilities and helper functions
+* `src` - the demonstration playground example application
+* `src/assets/example-schemas` - JSON Schema examples used in the playground
 
 If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
 
@@ -428,7 +428,7 @@ widgetLibrary.registerWidget('input', YourInputWidgetComponent);
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-To see many examples of widgets, explore the source code, or call `getAllWidgets()` from the `WidgetLibraryService` to see all widgets currently available in the library. All default widget components are in the `/src/lib/src/widget-library` folder, and all custom Material Design widget components are in the `/src/lib/src/framework-library/material-design-framework` folder. (The Bootstrap 3 and Bootstrap 4 frameworks just reformat the default widgets, and so do not include any custom widgets of their own.)
+To see many examples of widgets, explore the source code, or call `getAllWidgets()` from the `WidgetLibraryService` to see all widgets currently available in the library. All default widget components are in the `projects/json-schema-form/src/lib/widget-library` folder, and all custom Material Design widget components are in the `projects/json-schema-form/src/lib/framework-library/material-design-framework` folder. (The Bootstrap 3 and Bootstrap 4 frameworks just reformat the default widgets, and so do not include any custom widgets of their own.)
 
 ### Changing or adding frameworks
 
