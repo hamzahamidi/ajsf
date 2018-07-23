@@ -1,16 +1,8 @@
 {
   "name": "angular6-json-schema-form",
   "version": "1.0.1",
-  "authors": [{
-      "name": "David Schnell-Davis",
-      "email": "dschnelldavis@gmail.com"
-    },
-    {
-      "name": "Hamza Hamidi",
-      "email": "hamidihamzacg@gmail.com"
-    }
-  ],
   "description": "Angular JSON Schema Form builder",
+  "author":"https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "keywords": [
     "Angular",
     "ng",
@@ -32,7 +24,11 @@
   },
   "private": false,
   "peerDependencies": {
+    "@angular/common": "^6.0.0",
+    "@angular/core": "^6.0.0",
+    "@angular/forms": "^6.0.0",
     "ajv": "^6.0.1",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "rxjs": "^6.0.0"
   }
 }
