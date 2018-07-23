@@ -10,7 +10,6 @@ import { JsonSchemaFormComponent } from './json-schema-form.component';
 
 import { JsonSchemaFormService } from './json-schema-form.service';
 
-import { NoFrameworkComponent } from './framework-library/no-framework/no-framework.component';
 import { Framework } from './framework-library/framework';
 import { NoFramework } from './framework-library/no-framework/no.framework';
 import { NoFrameworkModule } from './framework-library/no-framework/no-framework.module';
@@ -20,19 +19,15 @@ import { NoFrameworkModule } from './framework-library/no-framework/no-framework
     CommonModule, FormsModule, ReactiveFormsModule,
     WidgetLibraryModule, NoFrameworkModule
   ],
-  declarations: [ JsonSchemaFormComponent ],
-  exports: [ JsonSchemaFormComponent, WidgetLibraryModule ]
+  declarations: [JsonSchemaFormComponent],
+  exports: [JsonSchemaFormComponent, WidgetLibraryModule]
 })
 export class JsonSchemaFormModule {
-  static forRoot(...frameworks): ModuleWithProviders {
-    const loadFrameworks = frameworks.length ?
-      frameworks.map(framework => framework.forRoot().providers[0]) :
-      [{ provide: Framework, useClass: NoFramework, multi: true }];
+  static forRoot(framework): ModuleWithProviders {
     return {
       ngModule: JsonSchemaFormModule,
       providers: [
-        JsonSchemaFormService, FrameworkLibraryService, WidgetLibraryService,
-        ...loadFrameworks
+        JsonSchemaFormService, FrameworkLibraryService, WidgetLibraryService, framework.forRoot().providers[0]
       ]
     };
   }
