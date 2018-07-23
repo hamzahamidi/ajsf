@@ -31,7 +31,7 @@ import { DemoRootComponent } from './demo-root.component';
 import { routes } from './demo.routes';
 
 @NgModule({
-  declarations: [ AceEditorDirective, DemoComponent, DemoRootComponent ],
+  declarations: [AceEditorDirective, DemoComponent, DemoRootComponent],
   imports: [
     BrowserModule, BrowserAnimationsModule, FlexLayoutModule, FormsModule,
     HttpClientModule, MatButtonModule, MatCardModule, MatCheckboxModule,
@@ -41,14 +41,12 @@ import { routes } from './demo.routes';
     NoFrameworkModule, MaterialDesignFrameworkModule,
     Bootstrap3FrameworkModule, Bootstrap4FrameworkModule,
 
-    JsonSchemaFormModule.forRoot(
-      NoFrameworkModule,
-      MaterialDesignFrameworkModule,
-      Bootstrap3FrameworkModule,
-      Bootstrap4FrameworkModule
-    )
+    JsonSchemaFormModule.forRoot(NoFrameworkModule),
+    JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
+    JsonSchemaFormModule.forRoot(Bootstrap3FrameworkModule),
+    JsonSchemaFormModule.forRoot(Bootstrap4FrameworkModule)
   ],
-  bootstrap: [ DemoRootComponent ]
+  bootstrap: [DemoRootComponent]
 })
 
 // Here, by loading 4 frameworks in JsonSchemaFormModule.forRoot(), the first,
