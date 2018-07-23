@@ -1,0 +1,30 @@
+{
+  "schema": {
+    "language": {
+      "type": "string",
+      "title": "Best language",
+      "enum": [ "JavaScript", "Python", "PHP", "Java", "C++", "other" ]
+    },
+    "favourite": {
+      "type": "boolean",
+      "title": "Is it your favourite?"
+    }
+  },
+  "form": [ {
+    "key": "language",
+    "type": "radiobuttons",
+    "activeClass": "btn-success"
+  }, {
+    "key": "favourite",
+    "type": "radiobuttons",
+    "activeClass": "btn-danger",
+    "titleMap": {
+      "true": "Yes",
+      "false": "No"
+    }
+  }, {
+    "title": "Submit",
+    "type": "submit"
+  } ],
+  "value": { "language": "Python" }
+}
