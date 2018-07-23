@@ -125,7 +125,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   @Input()
   get value(): any {
     return this.objectWrap ? this.jsf.data['1'] : this.jsf.data;
-  };
+  }
   set value(value: any) {
     this.setFormValues(value, false);
   }
@@ -247,7 +247,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
   setFormValues(formValues: any, resetFirst = true) {
     if (formValues) {
-      let newFormValues = this.objectWrap ? formValues['1'] : formValues;
+      const newFormValues = this.objectWrap ? formValues['1'] : formValues;
       if (!this.jsf.formGroup) {
         this.jsf.formValues = formValues;
         this.activateForm();
@@ -379,7 +379,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     this.frameworkLibrary.setFramework(framework);
     this.jsf.framework = this.frameworkLibrary.getFramework();
     if (isObject(this.jsf.formOptions.widgets)) {
-      for (let widget of Object.keys(this.jsf.formOptions.widgets)) {
+      for (const widget of Object.keys(this.jsf.formOptions.widgets)) {
         this.widgetLibrary.registerWidget(widget, this.jsf.formOptions.widgets[widget]);
       }
     }
@@ -564,7 +564,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
         }, 'top-down');
       }
       return layout;
-    }
+    };
 
     // Check for layout inputs and, if found, initialize form layout
     if (isArray(this.layout)) {

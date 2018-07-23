@@ -24,7 +24,7 @@ export class AceEditorDirective {
   @Output('textChanged') textChanged = new EventEmitter();
 
   constructor(elementRef: ElementRef) {
-    let el = elementRef.nativeElement;
+    const el = elementRef.nativeElement;
     ace.config.set('basePath', '/node_modules/brace');
     this.editor = ace['edit'](el);
     this.init();
@@ -44,7 +44,7 @@ export class AceEditorDirective {
 
   initEvents() {
     this.editor.on('change', () => {
-      let newVal = this.editor.getValue();
+      const newVal = this.editor.getValue();
       if (newVal === this.oldText) { return; }
       if (typeof this.oldText !== 'undefined') {
         this.textChanged.emit(newVal);
