@@ -11,6 +11,7 @@ before_script:
   - yarn install --frozen-lockfile
 
 script:
+  - yarn buildlib
   - yarn build
 
 deploy:
