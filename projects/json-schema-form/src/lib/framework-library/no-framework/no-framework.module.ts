@@ -1,7 +1,6 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
 import { Framework } from '../framework';
 // No framework - plain HTML controls (styles from form layout only)

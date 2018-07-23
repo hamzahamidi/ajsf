@@ -24,7 +24,6 @@ export const ANGULAR_MATERIAL_MODULES = [
  * MatToolbarModule,
  */
 
-import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
 import { Framework } from '../framework';
 import { MATERIAL_FRAMEWORK_COMPONENTS } from './index';

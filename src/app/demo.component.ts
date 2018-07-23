@@ -43,7 +43,7 @@ export class DemoComponent implements OnInit {
   selectedExampleName = 'Flexbox layout';
   selectedFramework = 'material-design';
   selectedLanguage = 'en';
-  visible: { [item: string]: boolean } = {
+  visible = {
     options: true,
     schema: true,
     form: true,
@@ -136,7 +136,7 @@ export class DemoComponent implements OnInit {
 
   get prettyValidationErrors() {
     if (!this.formValidationErrors) { return null; }
-    let errorArray = [];
+    const errorArray = [];
     for (const error of this.formValidationErrors) {
       const message = error.message;
       const dataPathArray = JsonPointer.parse(error.dataPath);

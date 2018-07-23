@@ -25,11 +25,11 @@ import { enValidationMessages } from './locale/en-validation-messages';
 import { frValidationMessages } from './locale/fr-validation-messages';
 
 export interface TitleMapItem {
-  name?: string, value?: any, checked?: boolean, group?: string, items?: TitleMapItem[]
-};
+  name?: string; value?: any; checked?: boolean; group?: string; items?: TitleMapItem[];
+}
 export interface ErrorMessages {
-  [control_name: string]: { message: string|Function|Object, code: string }[]
-};
+  [control_name: string]: { message: string|Function|Object, code: string }[];
+}
 
 
 @Injectable()
@@ -310,7 +310,7 @@ export class JsonSchemaFormService {
     if (typeof expression !== 'string') { return ''; }
     const index = typeof key === 'number' ? (key + 1) + '' : (key || '');
     expression = expression.trim();
-    if ((expression[0] === "'" || expression[0] === '"') &&
+    if ((expression[0] === '\'' || expression[0] === '"') &&
       expression[0] === expression[expression.length - 1] &&
       expression.slice(1, expression.length - 1).indexOf(expression[0]) === -1
     ) {
@@ -318,7 +318,7 @@ export class JsonSchemaFormService {
     }
     if (expression === 'idx' || expression === '$index') { return index; }
     if (expression === 'value' && !hasOwn(values, 'value')) { return value; }
-    if (['"', "'", ' ', '||', '&&', '+'].every(delim => expression.indexOf(delim) === -1)) {
+    if (['"', '\'', ' ', '||', '&&', '+'].every(delim => expression.indexOf(delim) === -1)) {
       const pointer = JsonPointer.parseObjectPath(expression);
       return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1)) ?
           JsonPointer.get(value, pointer.slice(1)) :
@@ -396,7 +396,7 @@ export class JsonSchemaFormService {
     let result = true;
     if (hasValue((layoutNode.options || {}).condition)) {
       if (typeof layoutNode.options.condition === 'string') {
-        let pointer = layoutNode.options.condition
+        let pointer = layoutNode.options.condition;
         if (hasValue(arrayIndex)) {
           pointer = pointer.replace('[arrayIndex]', `[${arrayIndex}]`);
         }
@@ -415,7 +415,7 @@ export class JsonSchemaFormService {
           result = dynFn(this.data, dataIndex);
         } catch (e) {
           result = true;
-          console.error("condition functionBody errored out on evaluation: " + layoutNode.options.condition.functionBody);
+          console.error('condition functionBody errored out on evaluation: ' + layoutNode.options.condition.functionBody);
         }
       }
     }
@@ -443,7 +443,7 @@ export class JsonSchemaFormService {
           this.formatErrors(ctx.formControl.errors, ctx.options.validationMessages)
       );
       ctx.formControl.valueChanges.subscribe(value => {
-        if (!_.isEqual(ctx.controlValue, value)) { ctx.controlValue = value }
+        if (!_.isEqual(ctx.controlValue, value)) { ctx.controlValue = value; }
       });
     } else {
       ctx.controlName = ctx.layoutNode.name;

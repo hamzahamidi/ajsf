@@ -151,11 +151,11 @@ export class WidgetLibraryService {
     this.activeWidgets = Object.assign(
       { }, this.widgetLibrary, this.frameworkWidgets, this.registeredWidgets
     );
-    for (let widgetName of Object.keys(this.activeWidgets)) {
+    for (const widgetName of Object.keys(this.activeWidgets)) {
       let widget: any = this.activeWidgets[widgetName];
       // Resolve aliases
       if (typeof widget === 'string') {
-        let usedAliases: string[] = [];
+        const usedAliases: string[] = [];
         while (typeof widget === 'string' && !usedAliases.includes(widget)) {
           usedAliases.push(widget);
           widget = this.activeWidgets[widget];

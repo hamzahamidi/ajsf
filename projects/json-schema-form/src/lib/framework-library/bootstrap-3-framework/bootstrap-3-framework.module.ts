@@ -1,7 +1,6 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
 import { Framework } from '../framework';
 import { Bootstrap3FrameworkComponent } from './bootstrap-3-framework.component';
