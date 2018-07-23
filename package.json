@@ -31,7 +31,7 @@
     "ng": "ng",
     "start": "ng serve",
     "start-prod": "ng serve --prod",
-    "build": "ng build --prod",
+    "build": "ng build --prod --base-href ./",
     "buildlib": "ng build json-schema-form --prod",
     "postbuildlib": "cp  README.md LICENSE  dist/json-schema-form/",
     "test": "ng test",
