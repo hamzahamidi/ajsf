@@ -7,19 +7,17 @@ import { Framework } from '../framework';
 import { NoFrameworkComponent } from './no-framework.component';
 import { NoFramework } from './no.framework';
 
+import { WidgetLibraryService } from '../../widget-library/widget-library.service';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
+import { FrameworkLibraryService } from '../framework-library.service';
+
 @NgModule({
-  imports:         [ CommonModule, WidgetLibraryModule ],
-  declarations:    [ NoFrameworkComponent ],
-  exports:         [ NoFrameworkComponent ],
-  entryComponents: [ NoFrameworkComponent ]
+  imports: [CommonModule, WidgetLibraryModule],
+  declarations: [NoFrameworkComponent],
+  exports: [NoFrameworkComponent],
+  providers: [JsonSchemaFormService, FrameworkLibraryService, WidgetLibraryService,
+    { provide: Framework, useClass: NoFramework, multi: true }
+  ],
+  entryComponents: [NoFrameworkComponent]
 })
-export class NoFrameworkModule {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: NoFrameworkModule,
-      providers: [
-        { provide: Framework, useClass: NoFramework, multi: true }
-      ]
-    };
-  }
-}
+export class NoFrameworkModule { }
