@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { Examples } from './example-schemas.model';
-import { JsonPointer } from '../../projects/json-schema-form/src/lib/shared';
+import { JsonPointer } from 'angular6-json-schema-form';
 
 @Component({
   selector: 'demo',

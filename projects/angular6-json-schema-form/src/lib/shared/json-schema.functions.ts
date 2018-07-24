@@ -90,7 +90,7 @@ export function buildSchemaFromLayout(layout) {
 export function buildSchemaFromData(
   data, requireAllFields = false, isRoot = true
 ) {
-  let newSchema: any = {};
+  const newSchema: any = {};
   const getFieldType = (value: any): string => {
     const fieldType = getType(value, 'strict');
     return { integer: 'number', null: 'string' }[fieldType] || fieldType;
@@ -102,7 +102,7 @@ export function buildSchemaFromData(
   if (newSchema.type === 'object') {
     newSchema.properties = {};
     if (requireAllFields) { newSchema.required = []; }
-    for (let key of Object.keys(data)) {
+    for (const key of Object.keys(data)) {
       newSchema.properties[key] = buildSubSchema(data[key]);
       if (requireAllFields) { newSchema.required.push(key); }
     }
@@ -179,15 +179,15 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       }
     } else if (subSchema.type === 'object') {
       if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
-        subSchemaFound = true
+        subSchemaFound = true;
         subSchema = subSchema.properties[key];
         schemaPointer.push('properties', key);
       } else if (isObject(subSchema.additionalProperties)) {
-        subSchemaFound = true
+        subSchemaFound = true;
         subSchema = subSchema.additionalProperties;
         schemaPointer.push('additionalProperties');
       } else if (subSchema.additionalProperties !== false) {
-        subSchemaFound = true
+        subSchemaFound = true;
         subSchema = { };
         schemaPointer.push('additionalProperties');
       }
@@ -259,7 +259,7 @@ export function removeRecursiveReferences(
 export function getInputType(schema, layoutNode: any = null) {
   // x-schema-form = Angular Schema Form compatibility
   // widget & component = React Jsonschema Form compatibility
-  let controlType = JsonPointer.getFirst([
+  const controlType = JsonPointer.getFirst([
     [schema, '/x-schema-form/type'],
     [schema, '/x-schema-form/widget/component'],
     [schema, '/x-schema-form/widget'],
@@ -288,7 +288,7 @@ export function getInputType(schema, layoutNode: any = null) {
       if (hasOwn(schema, '$ref')) { return '$ref'; }
     }
     if (schemaType === 'array') {
-      let itemsObject = JsonPointer.getFirst([
+      const itemsObject = JsonPointer.getFirst([
         [schema, '/items'],
         [schema, '/additionalItems']
       ]) || {};
@@ -395,7 +395,7 @@ export function isInputRequired(schema, schemaPointer) {
     }
   }
   return false;
-};
+}
 
 /**
  * 'updateInputOptions' function
@@ -409,7 +409,7 @@ export function updateInputOptions(layoutNode, schema, jsf) {
   if (!isObject(layoutNode) || !isObject(layoutNode.options)) { return; }
 
   // Set all option values in layoutNode.options
-  let newOptions: any = { };
+  const newOptions: any = { };
   const fixUiKeys = key => key.slice(0, 3).toLowerCase() === 'ui:' ? key.slice(3) : key;
   mergeFilteredObject(newOptions, jsf.formOptions.defautWidgetOptions, [], fixUiKeys);
   [ [ JsonPointer.get(schema, '/ui:widget/options'), [] ],
@@ -493,7 +493,7 @@ export function getTitleMapFromOneOf(
 
       // Split name on first colon to create grouped map (name -> group: name)
       const newTitleMap = titleMap.map(title => {
-        let [group, name] = title.name.split(/: (.+)/);
+        const [group, name] = title.name.split(/: (.+)/);
         return group && name ? { ...title, group, name } : title;
       });
 
@@ -516,7 +516,7 @@ export function getTitleMapFromOneOf(
  */
 export function getControlValidators(schema) {
   if (!isObject(schema)) { return null; }
-  let validators: any = { };
+  const validators: any = { };
   if (hasOwn(schema, 'type')) {
     switch (schema.type) {
       case 'string':
@@ -526,10 +526,10 @@ export function getControlValidators(schema) {
       break;
       case 'number': case 'integer':
         forEach(['Minimum', 'Maximum'], (ucLimit) => {
-          let eLimit = 'exclusive' + ucLimit;
-          let limit = ucLimit.toLowerCase();
+          const eLimit = 'exclusive' + ucLimit;
+          const limit = ucLimit.toLowerCase();
           if (hasOwn(schema, limit)) {
-            let exclusive = hasOwn(schema, eLimit) && schema[eLimit] === true;
+            const exclusive = hasOwn(schema, eLimit) && schema[eLimit] === true;
             validators[limit] = [schema[limit], exclusive];
           }
         });
@@ -564,7 +564,7 @@ export function getControlValidators(schema) {
  * // { Map<string, string> } schemaRecursiveRefMap
  * // { Map<string, string> } dataRecursiveRefMap
  * // { Map<string, number> } arrayMap
- * // 
+ * //
  */
 export function resolveSchemaReferences(
   schema, schemaRefLibrary, schemaRecursiveRefMap, dataRecursiveRefMap, arrayMap
@@ -681,7 +681,7 @@ export function resolveSchemaReferences(
  * //  { object } schemaRefLibrary
  * //  { Map<string, string> } schemaRecursiveRefMap
  * //  { string[] = [] } usedPointers
- * // 
+ * //
  */
 export function getSubSchema(
   schema, pointer, schemaRefLibrary = null,
@@ -771,7 +771,7 @@ export function combineAllOf(schema) {
  */
 export function fixRequiredArrayProperties(schema) {
   if (schema.type === 'array' && isArray(schema.required)) {
-    let itemsObject = hasOwn(schema.items, 'properties') ? 'items' :
+    const itemsObject = hasOwn(schema.items, 'properties') ? 'items' :
       hasOwn(schema.additionalItems, 'properties') ? 'additionalItems' : null;
     if (itemsObject && !hasOwn(schema[itemsObject], 'required') && (
       hasOwn(schema[itemsObject], 'additionalProperties') ||

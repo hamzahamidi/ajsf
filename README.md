@@ -1,4 +1,3 @@
-
 # Angular v6 for [Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form)
 
 [![Build Status](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form.svg?branch=master)](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form)
@@ -24,13 +23,13 @@ This example playground features over 70 different JSON Schemas for you to try (
 
 ### To install from GitHub
 
-To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/angular6-json-schema-form), clone `https://github.com/hamzahamidi/angular6-json-schema-form.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/NPM](https://nodejs.org/en/download/) installed, enter the following in your terminal:
+To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/angular6-json-schema-form), clone `https://github.com/hamzahamidi/angular6-json-schema-form.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
 
 ```shell
 git clone https://github.com/hamzahamidi/angular6-json-schema-form.git angular6-json-schema-form
 cd angular6-json-schema-form
-npm install
-npm start
+yarn install
+yarn start
 ```
 
 This should start a server with the example playground, which you can view in your browser at `http://localhost:4200`
@@ -46,43 +45,39 @@ The source code is composed as the following:
 
 If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
 
-### To install from NPM and use in your own project
+### To install from NPM/YARN and use in your own project
 
 If, after playing with the examples, you decide this library is functional enough to use in your own project, you can [install it from NPM](https://www.npmjs.com/package/angular6-json-schema-form) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
 npm install angular6-json-schema-form
 ```
+With YARN, run the following:
+```shell
+yarn add angular6-json-schema-form
+```
 
-Then import JsonSchemaFormModule in your main application module, like this:
+Then import `MaterialDesignFrameworkModule` in your main application module if you want to use `material-angular` UI, like this:
 
 ```javascript
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {
-  JsonSchemaFormModule, MaterialDesignFrameworkModule
-} from 'angular6-json-schema-form';
+import { MaterialDesignFrameworkModule } from 'angular6-json-schema-form';
 
 import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [ AppComponent ],
   imports: [
-    BrowserModule, MaterialDesignFrameworkModule,
-    JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule)
+    MaterialDesignFrameworkModule
   ],
   providers: [],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
 ```
-
-Note that you have to import both the main JsonSchemaFormModule and a separate framework module (in this example, MaterialDesignFrameworkModule).
-
-The framework module is listed in your imports section twice, once by itself (to load the framework's components) and again in the JsonSchemaFormModule.forRoot() function (to load the framework's service and tell Angular JSON Schema Form to use it).
-
-Four framework modules are currently included:
+Four framework modules are currently included, the import is the same as above :
 
 * MaterialDesignFrameworkModule — Material Design
 * Bootstrap3FrameworkModule — Bootstrap 3
@@ -90,20 +85,6 @@ Four framework modules are currently included:
 * NoFrameworkModule — plain HTML (for testing)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
-
-#### Seed Application Examples
-
-For complete examples of how to install and configure Angular JSON Schema Form to work with each included display framework, check out the following seed applications:
-
-* [Angular JSON Schema Form Material Design Seed App](https://github.com/dschnelldavis/ng-jsf-material-design-seed)
-* [Angular JSON Schema Form Bootstrap 3 Seed App](https://github.com/dschnelldavis/ng-jsf-bootstrap3-seed)
-* [Angular JSON Schema Form Bootstrap 4 Seed App](https://github.com/dschnelldavis/ng-jsf-bootstrap4-seed)
-
-#### Additional notes for Angular CLI
-
-Make sure you are running a recent version of Angular CLI.
-
-Very old versions of Angular CLI (e.g. 1.0.1) may fail with the error `Critical dependency: the request of a dependency is an expression` while trying to compile ajv (Another JSON Schema Validator). But this error has been fixed in newer versions. So if you receive that error, upgrade your Angular CLI.
 
 ## Using Angular JSON Schema Form
 
@@ -216,7 +197,7 @@ If you use this syntax, make sure to include the nested quotes (`"'` and `'"`) a
 You may also combine all your inputs into one compound object and include it as a `form` input, like so:
 
 ```javascript
-let yourCompoundInputObject = {
+const yourCompoundInputObject = {
   schema:    { ... },  // REQUIRED
   layout:    [ ... ],  // optional
   data:      { ... },  // optional
@@ -309,7 +290,7 @@ You can easily add your own custom input validation error messages, either for i
 To set messages for individual form controls, add them to that control's node in the form layout, like this:
 
 ```javascript
-let yourFormLayout = [
+const yourFormLayout = [
   { key: 'name',
     title: 'Enter your name',
     validationMessages: {
@@ -323,7 +304,7 @@ let yourFormLayout = [
 To set messages for the entire form, add them to the form options, inside the defautWidgetOptions validationMessages object, like this:
 
 ```javascript
-let yourFormOptions = {
+const yourFormOptions = {
   defautWidgetOptions: {
     validationMessages: {
       // Put your error messages for the entire form here
@@ -405,7 +386,7 @@ Example:
 import { YourInputWidgetComponent } from './your-input-widget.component';
 import { YourCustomWidgetComponent } from './your-custom-widget.component';
 ...
-let yourNewWidgets = {
+const yourNewWidgets = {
   input: YourInputWidgetComponent,          // Replace existing 'input' widget
   custom-control: YourCustomWidgetComponent // Add new 'custom-control' widget
 }
@@ -439,7 +420,7 @@ To change the active framework, either use the `framework` input of the `<json-s
 import { YourFrameworkComponent } from './your-framework.component';
 import { YourWidgetComponent } from './your-widget.component';
 ...
-let yourCustomFramework = {
+const yourCustomFramework = {
   framework: YourFrameworkComponent,                                // required
   widgets:     { 'your-widget-name': YourWidgetComponent,   ... },  // optional
   stylesheets: [ '//url-to-framework-external-style-sheet', ... ],  // optional

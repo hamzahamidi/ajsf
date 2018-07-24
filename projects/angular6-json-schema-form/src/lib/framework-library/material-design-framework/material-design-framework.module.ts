@@ -28,23 +28,21 @@ import { WidgetLibraryModule } from '../../widget-library/widget-library.module'
 import { Framework } from '../framework';
 import { MATERIAL_FRAMEWORK_COMPONENTS } from './index';
 import { MaterialDesignFramework } from './material-design.framework';
+import { WidgetLibraryService } from '../../widget-library/widget-library.service';
+import { JsonSchemaFormModule } from '../../json-schema-form.module';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
+import { FrameworkLibraryService } from '../framework-library.service';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, FlexLayoutModule,
-    ...ANGULAR_MATERIAL_MODULES, WidgetLibraryModule
+    ...ANGULAR_MATERIAL_MODULES, WidgetLibraryModule, JsonSchemaFormModule
   ],
-  declarations:    [ ...MATERIAL_FRAMEWORK_COMPONENTS ],
-  exports:         [ ...MATERIAL_FRAMEWORK_COMPONENTS ],
-  entryComponents: [ ...MATERIAL_FRAMEWORK_COMPONENTS ]
+  declarations: [...MATERIAL_FRAMEWORK_COMPONENTS],
+  exports: [JsonSchemaFormModule, ...MATERIAL_FRAMEWORK_COMPONENTS],
+  providers: [JsonSchemaFormService, FrameworkLibraryService, WidgetLibraryService,
+    { provide: Framework, useClass: MaterialDesignFramework, multi: true }
+  ],
+  entryComponents: [...MATERIAL_FRAMEWORK_COMPONENTS]
 })
-export class MaterialDesignFrameworkModule {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MaterialDesignFrameworkModule,
-      providers: [
-        { provide: Framework, useClass: MaterialDesignFramework, multi: true }
-      ]
-    };
-  }
-}
+export class MaterialDesignFrameworkModule { }

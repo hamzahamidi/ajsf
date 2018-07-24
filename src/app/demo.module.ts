@@ -10,10 +10,7 @@ import {
 } from '@angular/material';
 import { RouterModule } from '@angular/router';
 
-import {
-  JsonSchemaFormModule, NoFrameworkModule, MaterialDesignFrameworkModule,
-  Bootstrap3FrameworkModule, Bootstrap4FrameworkModule
-} from 'projects/json-schema-form/src/public_api';
+
 
 // To include JsonSchemaFormModule after downloading from NPM, use this instead:
 //
@@ -29,6 +26,10 @@ import { DemoComponent } from './demo.component';
 import { DemoRootComponent } from './demo-root.component';
 
 import { routes } from './demo.routes';
+import {
+  MaterialDesignFrameworkModule, Bootstrap4FrameworkModule,
+  Bootstrap3FrameworkModule, NoFrameworkModule
+} from 'angular6-json-schema-form';
 
 @NgModule({
   declarations: [AceEditorDirective, DemoComponent, DemoRootComponent],
@@ -37,14 +38,10 @@ import { routes } from './demo.routes';
     HttpClientModule, MatButtonModule, MatCardModule, MatCheckboxModule,
     MatIconModule, MatMenuModule, MatSelectModule, MatToolbarModule,
     RouterModule.forRoot(routes),
-
-    NoFrameworkModule, MaterialDesignFrameworkModule,
-    Bootstrap3FrameworkModule, Bootstrap4FrameworkModule,
-
-    JsonSchemaFormModule.forRoot(NoFrameworkModule),
-    JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
-    JsonSchemaFormModule.forRoot(Bootstrap3FrameworkModule),
-    JsonSchemaFormModule.forRoot(Bootstrap4FrameworkModule)
+    MaterialDesignFrameworkModule,
+    Bootstrap4FrameworkModule,
+    Bootstrap3FrameworkModule,
+    NoFrameworkModule
   ],
   bootstrap: [DemoRootComponent]
 })

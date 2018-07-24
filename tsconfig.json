@@ -4,24 +4,35 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "noEmitHelpers": false,
+    "pretty": true,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitUseStrict": false,
+    "noFallthroughCasesInSwitch": false,
+    "allowSyntheticDefaultImports": true,
+    "suppressExcessPropertyErrors": true,
+    "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
-      "es2017",
+      "es2016",
       "dom"
     ],
     "paths": {
-      "json-schema-form": [
-        "dist/json-schema-form"
+      "angular6-json-schema-form": [
+        "dist/angular6-json-schema-form"
       ],
-      "json-schema-form/*": [
-        "dist/json-schema-form/*"
+      "angular6-json-schema-form/*": [
+        "dist/angular6-json-schema-form/*"
       ]
     }
   }

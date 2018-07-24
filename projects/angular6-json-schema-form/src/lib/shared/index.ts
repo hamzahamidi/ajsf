@@ -40,5 +40,3 @@ export {
 } from './layout.functions';
 
 export { dateToString, stringToDate, findDate } from './date.functions';
-
-export { OrderableDirective } from './orderable.directive';
