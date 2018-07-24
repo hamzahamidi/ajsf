@@ -11,7 +11,7 @@ import {
 import { RouterModule } from '@angular/router';
 
 import {
-  JsonSchemaFormModule, NoFrameworkModule, MaterialDesignFrameworkModule,
+  NoFrameworkModule, MaterialDesignFrameworkModule,
   Bootstrap3FrameworkModule, Bootstrap4FrameworkModule
 } from 'projects/json-schema-form/src/public_api';
 
@@ -37,14 +37,10 @@ import { routes } from './demo.routes';
     HttpClientModule, MatButtonModule, MatCardModule, MatCheckboxModule,
     MatIconModule, MatMenuModule, MatSelectModule, MatToolbarModule,
     RouterModule.forRoot(routes),
-
-    NoFrameworkModule, MaterialDesignFrameworkModule,
-    Bootstrap3FrameworkModule, Bootstrap4FrameworkModule,
-
-    JsonSchemaFormModule.forRoot(NoFrameworkModule),
-    JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
-    JsonSchemaFormModule.forRoot(Bootstrap3FrameworkModule),
-    JsonSchemaFormModule.forRoot(Bootstrap4FrameworkModule)
+    MaterialDesignFrameworkModule,
+    Bootstrap4FrameworkModule,
+    Bootstrap3FrameworkModule,
+    NoFrameworkModule
   ],
   bootstrap: [DemoRootComponent]
 })
