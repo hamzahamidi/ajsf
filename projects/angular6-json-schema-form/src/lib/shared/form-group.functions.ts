@@ -68,7 +68,7 @@ export function buildFormGroupTemplate(
   }
   // TODO: If nodeValue still not set, check layout for default value
   const schemaType: string | string[] = JsonPointer.get(schema, '/type');
-  let controlType =
+  const controlType =
     (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) &&
       schemaType === 'object' ? 'FormGroup' :
     (hasOwn(schema, 'items') || hasOwn(schema, 'additionalItems')) &&
@@ -93,13 +93,13 @@ export function buildFormGroupTemplate(
     }
   }
   let controls: any;
-  let validators = getControlValidators(schema);
+  const validators = getControlValidators(schema);
   switch (controlType) {
 
     case 'FormGroup':
       controls = {};
       if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties')) {
-        let propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
+        const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
         if (propertyKeys.includes('*') && !hasOwn(schema.properties, '*')) {
           const unnamedKeys = Object.keys(schema.properties)
             .filter(key => !propertyKeys.includes(key));
@@ -263,7 +263,7 @@ export function buildFormGroupTemplate(
  * // {AbstractControl}
 */
 export function buildFormGroup(template: any): AbstractControl {
-  let validatorFns: ValidatorFn[] = [];
+  const validatorFns: ValidatorFn[] = [];
   let validatorFn: ValidatorFn = null;
   if (hasOwn(template, 'validators')) {
     forEach(template.validators, (parameters, validator) => {
@@ -281,9 +281,9 @@ export function buildFormGroup(template: any): AbstractControl {
   if (hasOwn(template, 'controlType')) {
     switch (template.controlType) {
       case 'FormGroup':
-        let groupControls: { [key: string]: AbstractControl } = {};
+        const groupControls: { [key: string]: AbstractControl } = {};
         forEach(template.controls, (controls, key) => {
-          let newControl: AbstractControl = buildFormGroup(controls);
+          const newControl: AbstractControl = buildFormGroup(controls);
           if (newControl) { groupControls[key] = newControl; }
         });
         return new FormGroup(groupControls, validatorFn);
@@ -306,7 +306,7 @@ export function buildFormGroup(template: any): AbstractControl {
  */
 export function mergeValues(...valuesToMerge) {
   let mergedValues: any = null;
-  for (let currentValue of valuesToMerge) {
+  for (const currentValue of valuesToMerge) {
     if (!isEmpty(currentValue)) {
       if (typeof currentValue === 'object' &&
         (isEmpty(mergedValues) || typeof mergedValues !== 'object')
@@ -321,19 +321,19 @@ export function mergeValues(...valuesToMerge) {
       } else if (isObject(mergedValues) && isObject(currentValue)) {
         Object.assign(mergedValues, currentValue);
       } else if (isObject(mergedValues) && isArray(currentValue)) {
-        let newValues = [];
-        for (let value of currentValue) {
+        const newValues = [];
+        for (const value of currentValue) {
           newValues.push(mergeValues(mergedValues, value));
         }
         mergedValues = newValues;
       } else if (isArray(mergedValues) && isObject(currentValue)) {
-        let newValues = [];
-        for (let value of mergedValues) {
+        const newValues = [];
+        for (const value of mergedValues) {
           newValues.push(mergeValues(value, currentValue));
         }
         mergedValues = newValues;
       } else if (isArray(mergedValues) && isArray(currentValue)) {
-        let newValues = [];
+        const newValues = [];
         for (let i = 0; i < Math.max(mergedValues.length, currentValue.length); i++) {
           if (i < mergedValues.length && i < currentValue.length) {
             newValues.push(mergeValues(mergedValues[i], currentValue[i]));
@@ -387,8 +387,8 @@ export function formatFormData(
   recursiveRefMap: Map<string, string>, arrayMap: Map<string, number>,
   returnEmptyFields = false, fixErrors = false
 ): any {
-  if (formData === null || typeof formData !== 'object') { return formData }
-  let formattedData = isArray(formData) ? [] : {};
+  if (formData === null || typeof formData !== 'object') { return formData; }
+  const formattedData = isArray(formData) ? [] : {};
   JsonPointer.forEachDeep(formData, (value, dataPointer) => {
 
     // If returnEmptyFields === true,
@@ -398,7 +398,7 @@ export function formatFormData(
     } else if (returnEmptyFields && isObject(value) && !isDate(value)) {
       JsonPointer.set(formattedData, dataPointer, {});
     } else {
-      let genericPointer =
+      const genericPointer =
         JsonPointer.has(dataMap, [dataPointer, 'schemaType']) ? dataPointer :
           removeRecursiveReferences(dataPointer, recursiveRefMap, arrayMap);
       if (JsonPointer.has(dataMap, [genericPointer, 'schemaType'])) {
@@ -505,7 +505,7 @@ export function getControl(
   // or formGroup.get() failed to return the control,
   // search the formGroup object for dataPointer's control
   let subGroup = formGroup;
-  for (let key of dataPointerArray) {
+  for (const key of dataPointerArray) {
     if (hasOwn(subGroup, 'controls')) { subGroup = subGroup.controls; }
     if (isArray(subGroup) && (key === '-')) {
       subGroup = subGroup[subGroup.length - 1];

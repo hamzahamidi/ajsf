@@ -32,8 +32,8 @@
     "start": "ng serve",
     "start-prod": "ng serve --prod",
     "build": "ng build --prod --base-href ./",
-    "buildlib": "ng build json-schema-form --prod",
-    "postbuildlib": "cp  README.md LICENSE  dist/json-schema-form/",
+    "buildlib": "ng build angular6-json-schema-form --prod",
+    "postbuildlib": "cp  README.md LICENSE  dist/angular6-json-schema-form/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

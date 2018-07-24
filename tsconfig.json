@@ -28,11 +28,11 @@
       "dom"
     ],
     "paths": {
-      "json-schema-form": [
-        "dist/json-schema-form"
+      "angular6-json-schema-form": [
+        "dist/angular6-json-schema-form"
       ],
-      "json-schema-form/*": [
-        "dist/json-schema-form/*"
+      "angular6-json-schema-form/*": [
+        "dist/angular6-json-schema-form/*"
       ]
     }
   }

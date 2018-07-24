@@ -41,6 +41,7 @@ export { InputComponent } from './input.component';
 export { MessageComponent } from './message.component';
 export { NoneComponent } from './none.component';
 export { NumberComponent } from './number.component';
+export { OrderableDirective } from './orderable.directive';
 export { RadiosComponent } from './radios.component';
 export { RootComponent } from './root.component';
 export { SectionComponent } from './section.component';

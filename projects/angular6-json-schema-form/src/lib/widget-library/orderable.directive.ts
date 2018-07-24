@@ -1,7 +1,6 @@
-import { Directive, ElementRef, HostListener, Input, NgZone, OnInit } from '@angular/core';
-
+import { Directive, ElementRef, Input, NgZone, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
-import { JsonPointer } from '../shared/jsonpointer.functions';
+
 
 /**
  * OrderableDirective

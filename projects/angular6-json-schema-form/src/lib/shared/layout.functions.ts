@@ -38,8 +38,7 @@ import { buildFormGroupTemplate, getControl } from './form-group.functions';
 export function buildLayout(jsf, widgetLibrary) {
   let hasSubmitButton = !JsonPointer.get(jsf, '/formOptions/addSubmit');
   const formLayout = mapLayout(jsf.layout, (layoutItem, index, layoutPointer) => {
-    let currentIndex = index;
-    let newNode: any = {
+    const newNode: any = {
       _id: _.uniqueId(),
       options: {},
     };
