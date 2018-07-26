@@ -1,4 +1,4 @@
-# Angular v6 for [Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form)
+# Angular6-json-schema-form
 
 [![Build Status](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form.svg?branch=master)](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form)
 [![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/angular6-json-schema-form/releases/latest)
@@ -8,10 +8,9 @@ Note: This project is a continuation to [Angular2-json-schema-form](https://gith
 
 A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with,
 
-  * [JSON Schema Form](https://github.com/json-schema-form)'s [Angular Schema Form](http://schemaform.io) for [AngularJS](https://angularjs.org) ([examples](http://schemaform.io/examples/bootstrap-example.html))
-  * [Mozilla](https://blog.mozilla.org/services/)'s [React JSON Schema Form](https://github.com/mozilla-services/react-jsonschema-form) for [React](https://facebook.github.io/react/) ([examples](https://mozilla-services.github.io/react-jsonschema-form/)), and
-  * [Joshfire](http://www.joshfire.com)'s [JSON Form](http://github.com/joshfire/jsonform/wiki) for [jQuery](https://jquery.com) ([examples](http://ulion.github.io/jsonform/playground/))
-
+* [JSON Schema Form](https://github.com/json-schema-form)'s [Angular Schema Form](http://schemaform.io) for [AngularJS](https://angularjs.org) ([examples](http://schemaform.io/examples/bootstrap-example.html))
+* [Mozilla](https://blog.mozilla.org/services/)'s [React JSON Schema Form](https://github.com/mozilla-services/react-jsonschema-form) for [React](https://facebook.github.io/react/) ([examples](https://mozilla-services.github.io/react-jsonschema-form/)), and
+* [Joshfire](http://www.joshfire.com)'s [JSON Form](http://github.com/joshfire/jsonform/wiki) for [jQuery](https://jquery.com) ([examples](http://ulion.github.io/jsonform/playground/))
 
 ## Check out the live demo and play with the examples
 
@@ -52,7 +51,9 @@ If, after playing with the examples, you decide this library is functional enoug
 ```shell
 npm install angular6-json-schema-form
 ```
+
 With YARN, run the following:
+
 ```shell
 yarn add angular6-json-schema-form
 ```
@@ -77,6 +78,7 @@ import { AppComponent } from './app.component';
 })
 export class AppModule { }
 ```
+
 Four framework modules are currently included, the import is the same as above :
 
 * MaterialDesignFrameworkModule — Material Design
@@ -96,11 +98,19 @@ For basic use, after loading JsonSchemaFormModule as described above, to display
 <json-schema-form
   loadExternalAssets="true"
   [schema]="yourJsonSchema"
+  framework="no-framework"
   (onSubmit)="yourOnSubmitFn($event)">
 </json-schema-form>
 ```
 
 Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to process the submitted JSON form data. If you don't already have your own schemas, you can find a bunch of samples to test with in the `src/demo/assets/example-schemas` folder, as described above.
+
+`framework` is for the template you want to use, the default value is `no-framwork`. The possible values are:
+
+* `material-design` for  Material Design.
+* `bootstrap-3` for Bootstrap 3.
+* `bootstrap-4` for 'Bootstrap 4.
+* `no-framework` for (plain HTML).
 
 Setting `loadExternalAssets="true"` will automatically load any additional assets needed by the display framework. It is useful when you are trying out this library, but production sites should instead load all required assets separately. For full details see 'Changing or adding frameworks', below.
 
@@ -141,12 +151,12 @@ Also, notice that the 'ngModel' input supports Angular's 2-way data binding, jus
 
 For more control over your form, you may provide these additional inputs:
 
-  * `layout` array with a custom form layout (see Angular Schema Form's [form definitions](https://github.com/json-schema-form/angular-schema-form/blob/master/docs/index.md#form-definitions) for information about how to construct a form layout)
-  * `data` object to populate the form with default or previously submitted values
-  * `options` object to set any global options for the form
-  * `widgets` object to add custom widgets
-  * `language` string to set the error message language (currently supports 'en' and 'fr')
-  * `framework` string or object to set which framework to use
+* `layout` array with a custom form layout (see Angular Schema Form's [form definitions](https://github.com/json-schema-form/angular-schema-form/blob/master/docs/index.md#form-definitions) for information about how to construct a form layout)
+* `data` object to populate the form with default or previously submitted values
+* `options` object to set any global options for the form
+* `widgets` object to add custom widgets
+* `language` string to set the error message language (currently supports 'en' and 'fr')
+* `framework` string or object to set which framework to use
 
 For `framework`, you can pass in your own custom framework object, or, if you've loaded multiple frameworks, you can specify the name of the framework you want to use. To switch between the included frameworks, use 'material-design', 'bootstrap-3', 'bootstrap-4', and 'no-framework'.
 
@@ -224,6 +234,7 @@ Combining inputs is useful if you have many unique forms and store each form's d
 If you have previously used another JSON form creation library—Angular Schema Form (for AngularJS), React JSON Schema Form, or JSON Form (for jQuery)—in order to make the transition easier, Angular JSON Schema Form will recognize the input names and custom input objects used by those libraries. It should automatically work with JSON Schemas in [version 6](http://json-schema.org/draft-06/schema), [version 4](http://json-schema.org/draft-04/schema), [version 3](http://json-schema.org/draft-03/schema), or the [truncated version 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut). So the following will all work:
 
 Angular Schema Form (AngularJS) compatibility:
+
 ```html
 <json-schema-form
   [schema]="yourJsonSchema"
@@ -233,6 +244,7 @@ Angular Schema Form (AngularJS) compatibility:
 ```
 
 React JSON Schema Form compatibility:
+
 ```html
 <json-schema-form
   [schema]="yourJsonSchema"
@@ -242,6 +254,7 @@ React JSON Schema Form compatibility:
 ```
 
 JSON Form (jQuery) compatibility:
+
 ```html
 <json-schema-form
   [form]="{
@@ -317,11 +330,12 @@ const yourFormOptions = {
 
 The validationMessages object—in either a layout node or the form options—contains the names of each error message you want to set as keys, and the corresponding messages as values. Messages may be in any of the following formats:
 
- * String: A plain text message, which is always the same.
- * String template: A text message that includes Angular template-style {{variables}}, which will be be replaced with values from the returned error object.
- * Function: A JavaScript function which accepts the error object as input, and returns a string error message.
+* String: A plain text message, which is always the same.
+* String template: A text message that includes Angular template-style {{variables}}, which will be be replaced with values from the returned error object.
+* Function: A JavaScript function which accepts the error object as input, and returns a string error message.
 
 Here are examples of all three error message types:
+
 ```javascript
 validationMessages: {
 
@@ -345,6 +359,7 @@ validationMessages: {
   }
 }
 ```
+
 (Note: These examples are from the default set of built-in error messages, which includes messages for all JSON Schema errors except type, const, enum, and dependencies.)
 
 #### Available input validation errors and object values
@@ -391,14 +406,18 @@ const yourNewWidgets = {
   custom-control: YourCustomWidgetComponent // Add new 'custom-control' widget
 }
 ```
+
 ...and...
+
 ```html
 <json-schema-form
   [schema]="yourJsonSchema"
   [widgets]="yourNewWidgets">
 </json-schema-form>
 ```
+
 ...or...
+
 ```javascript
 import { WidgetLibraryService } from 'angular6-json-schema-form';
 ...
@@ -427,14 +446,18 @@ const yourCustomFramework = {
   scripts:     [ '//url-to-framework-external-script',      ... ]   // optional
 }
 ```
+
 ...and...
+
 ```html
 <json-schema-form
   [schema]="yourJsonSchema"
   [framework]="yourCustomFramework">
 </json-schema-form>
 ```
+
 ...or...
+
 ```javascript
 import { FrameworkLibraryService } from 'angular6-json-schema-form';
 ...
@@ -451,14 +474,14 @@ Most Web layout framework libraries (including both Bootstrap and Material Desig
 
 Alternately, during development, you may find it helpful to let Angular JSON Schema Form load these resources for you (as wed did in the 'Basic use' example, above), which you can do in several ways:
 
-  * Call `setFramework` with a second parameter of `true` (e.g. `setFramework('material-design', true)`), or
-  * Add `loadExternalAssets: true` to your `options` object, or
-  * Add `loadExternalAssets="true"` to your `<json-schema-form>` tag, as shown above
+* Call `setFramework` with a second parameter of `true` (e.g. `setFramework('material-design', true)`), or
+* Add `loadExternalAssets: true` to your `options` object, or
+* Add `loadExternalAssets="true"` to your `<json-schema-form>` tag, as shown above
 
 Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScritps()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
 
 However, if you are creating a production site you should load these assets separately, and make sure to remove all references to `loadExternalAssets` to prevent the assets from being loaded twice.
 
-# License
+## License
 
 [MIT](/LICENSE)
