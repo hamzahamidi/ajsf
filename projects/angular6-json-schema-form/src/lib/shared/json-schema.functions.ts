@@ -1,15 +1,17 @@
-import * as _ from 'lodash';
-
+import _ from 'lodash';
+import { forEach, hasOwn, mergeFilteredObject } from './utility.functions';
 import {
-  getType, hasValue, inArray, isArray, isEmpty, isFunction, isNumber, isObject,
+  getType,
+  hasValue,
+  inArray,
+  isArray,
+  isNumber,
+  isObject,
   isString
-} from './validator.functions';
-import {
-  forEach, hasOwn, mergeFilteredObject, uniqueItems, commonItems
-} from './utility.functions';
+  } from './validator.functions';
+import { JsonPointer } from './jsonpointer.functions';
 import { mergeSchemas } from './merge-schemas.function';
-import { JsonPointer, Pointer } from './jsonpointer.functions';
-import { JsonValidators } from './json.validators';
+
 
 /**
  * JSON Schema function library:

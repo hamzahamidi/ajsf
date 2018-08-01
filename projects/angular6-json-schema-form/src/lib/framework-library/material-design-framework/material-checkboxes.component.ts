@@ -1,13 +1,13 @@
+import { AbstractControl } from '@angular/forms';
+import { buildTitleMap } from '../../shared';
 import { Component, Input, OnInit } from '@angular/core';
-import { FormArray, AbstractControl } from '@angular/forms';
-
 import { JsonSchemaFormService, TitleMapItem } from '../../json-schema-form.service';
-import { buildFormGroup, buildTitleMap, hasOwn, JsonPointer } from '../../shared';
 
 // TODO: Change this to use a Selection List instead?
 // https://material.angular.io/components/list/overview
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'material-checkboxes-widget',
   template: `
     <div>
@@ -79,7 +79,7 @@ export class MaterialCheckboxesComponent implements OnInit {
     );
     if (this.boundControl) {
       const formArray = this.jsf.getFormControl(this);
-      for (let checkboxItem of this.checkboxList) {
+      for (const checkboxItem of this.checkboxList) {
         checkboxItem.checked = formArray.value.includes(checkboxItem.value);
       }
     }

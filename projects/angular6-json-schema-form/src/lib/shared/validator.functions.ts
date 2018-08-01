@@ -1,5 +1,5 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
-import { Observable, from } from 'rxjs';
+import { AbstractControl } from '@angular/forms';
+import { from, Observable } from 'rxjs';
 
 /**
  * Validator utility function library:

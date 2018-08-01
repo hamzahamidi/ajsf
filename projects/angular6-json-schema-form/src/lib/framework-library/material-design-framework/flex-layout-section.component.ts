@@ -1,10 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-
-import { toTitleCase } from '../../shared';
+import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'flex-layout-section-widget',
   template: `
     <div *ngIf="containerType === 'div'"

@@ -1,11 +1,10 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
-
-import * as _ from 'lodash';
-
+import _ from 'lodash';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
-import { hasOwn, isArray, isDefined, toTitleCase } from '../../shared';
+import { isDefined } from '../../shared';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'material-design-framework',
   template: `
     <div

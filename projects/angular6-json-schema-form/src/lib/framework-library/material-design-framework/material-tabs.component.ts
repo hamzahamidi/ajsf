@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-
 import { JsonSchemaFormService } from '../../json-schema-form.service';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'material-tabs-widget',
   template: `
     <nav mat-tab-nav-bar
@@ -52,7 +52,7 @@ export class MaterialTabsComponent implements OnInit {
         dataIndex: this.dataIndex.concat(index)
       });
       this.updateControl();
-    };
+    }
     this.selectedItem = index;
   }
 

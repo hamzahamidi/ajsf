@@ -1,9 +1,7 @@
-import { Injectable } from '@angular/core';
-
 import { Framework } from '../framework';
-
-// No framework - plain HTML controls (styles from form layout only)
+import { Injectable } from '@angular/core';
 import { NoFrameworkComponent } from './no-framework.component';
+// No framework - plain HTML controls (styles from form layout only)
 
 @Injectable()
 export class NoFramework extends Framework {

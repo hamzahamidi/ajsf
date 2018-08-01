@@ -7,4 +7,4 @@ export class Framework {
   widgets?: { [key: string]: any } = {};
   stylesheets?: string[] = [];
   scripts?: string[] = [];
-};
+}

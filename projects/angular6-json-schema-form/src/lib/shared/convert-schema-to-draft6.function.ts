@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 /**
  * 'convertSchemaToDraft6' function
@@ -16,14 +16,14 @@ import * as _ from 'lodash';
  * //  { OptionObject = {} } options - options: parent schema changed?, schema draft number?
  * // { object } - JSON schema (draft 6)
  */
-export interface OptionObject { changed?: boolean, draft?: number };
+export interface OptionObject { changed?: boolean; draft?: number; }
 export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   let draft: number = options.draft || null;
   let changed: boolean = options.changed || false;
 
   if (typeof schema !== 'object') { return schema; }
   if (typeof schema.map === 'function') {
-    return [ ...schema.map(subSchema => convertSchemaToDraft6(subSchema, { changed, draft })) ];
+    return [...schema.map(subSchema => convertSchemaToDraft6(subSchema, { changed, draft }))];
   }
   let newSchema = { ...schema };
   const simpleTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
@@ -46,7 +46,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   if (typeof newSchema.extends === 'object') {
     newSchema.allOf = typeof newSchema.extends.map === 'function' ?
       newSchema.extends.map(subSchema => convertSchemaToDraft6(subSchema, { changed, draft })) :
-      [ convertSchemaToDraft6(newSchema.extends, { changed, draft }) ];
+      [convertSchemaToDraft6(newSchema.extends, { changed, draft })];
     delete newSchema.extends;
     changed = true;
   }
@@ -73,7 +73,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
     newSchema.dependencies = { ...newSchema.dependencies };
     Object.keys(newSchema.dependencies)
       .filter(key => typeof newSchema.dependencies[key] === 'string')
-      .forEach(key => newSchema.dependencies[key] = [ newSchema.dependencies[key] ]);
+      .forEach(key => newSchema.dependencies[key] = [newSchema.dependencies[key]]);
     changed = true;
   }
 
@@ -172,7 +172,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
         .filter(key => properties[key].requires)
         .forEach(key => dependencies[key] =
           typeof properties[key].requires === 'string' ?
-            [ properties[key].requires ] : properties[key].requires
+            [properties[key].requires] : properties[key].requires
         );
       newSchema.dependencies = dependencies;
       changed = true;
@@ -228,7 +228,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
     if (typeof newSchema.description === 'string' && newSchema.description.length) {
       newSchema.description += '\n' + addToDescription;
     } else {
-      newSchema.description = addToDescription
+      newSchema.description = addToDescription;
     }
     delete newSchema.$schema;
   }
@@ -243,7 +243,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
       // Convert string 'any' type to array of all standard types
       if (newSchema.type === 'any') {
         newSchema.type = simpleTypes;
-      // Delete non-standard string type
+        // Delete non-standard string type
       } else {
         delete newSchema.type;
       }
@@ -254,27 +254,27 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
           newSchema.type = newSchema.type.some(type => type === 'any') ?
             newSchema.type = simpleTypes :
             newSchema.type.filter(type => simpleTypes.includes(type));
-        // If type is an array with objects, convert the current schema to an 'anyOf' array
+          // If type is an array with objects, convert the current schema to an 'anyOf' array
         } else if (newSchema.type.length > 1) {
-          const arrayKeys = [ 'additionalItems', 'items', 'maxItems', 'minItems', 'uniqueItems', 'contains'];
-          const numberKeys = [ 'multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum'];
-          const objectKeys = [ 'maxProperties', 'minProperties', 'required', 'additionalProperties',
+          const arrayKeys = ['additionalItems', 'items', 'maxItems', 'minItems', 'uniqueItems', 'contains'];
+          const numberKeys = ['multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum'];
+          const objectKeys = ['maxProperties', 'minProperties', 'required', 'additionalProperties',
             'properties', 'patternProperties', 'dependencies', 'propertyNames'];
-          const stringKeys = [ 'maxLength', 'minLength', 'pattern', 'format'];
+          const stringKeys = ['maxLength', 'minLength', 'pattern', 'format'];
           const filterKeys = {
-            'array':   [ ...numberKeys, ...objectKeys, ...stringKeys ],
-            'integer': [  ...arrayKeys, ...objectKeys, ...stringKeys ],
-            'number':  [  ...arrayKeys, ...objectKeys, ...stringKeys ],
-            'object':  [  ...arrayKeys, ...numberKeys, ...stringKeys ],
-            'string':  [  ...arrayKeys, ...numberKeys, ...objectKeys ],
-            'all':     [  ...arrayKeys, ...numberKeys, ...objectKeys, ...stringKeys ],
+            'array': [...numberKeys, ...objectKeys, ...stringKeys],
+            'integer': [...arrayKeys, ...objectKeys, ...stringKeys],
+            'number': [...arrayKeys, ...objectKeys, ...stringKeys],
+            'object': [...arrayKeys, ...numberKeys, ...stringKeys],
+            'string': [...arrayKeys, ...numberKeys, ...objectKeys],
+            'all': [...arrayKeys, ...numberKeys, ...objectKeys, ...stringKeys],
           };
           const anyOf = [];
           for (const type of newSchema.type) {
             const newType = typeof type === 'string' ? { type } : { ...type };
             Object.keys(newSchema)
               .filter(key => !newType.hasOwnProperty(key) &&
-                ![ ...(filterKeys[newType.type] || filterKeys.all), 'type', 'default' ]
+                ![...(filterKeys[newType.type] || filterKeys.all), 'type', 'default']
                   .includes(key)
               )
               .forEach(key => newType[key] = newSchema[key]);
@@ -282,7 +282,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
           }
           newSchema = newSchema.hasOwnProperty('default') ?
             { anyOf, default: newSchema.default } : { anyOf };
-        // If type is an object, merge it with the current schema
+          // If type is an object, merge it with the current schema
         } else {
           const typeSchema = newSchema.type;
           delete newSchema.type;
@@ -299,7 +299,7 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
     .filter(key => typeof newSchema[key] === 'object')
     .forEach(key => {
       if (
-        [ 'definitions', 'dependencies', 'properties', 'patternProperties' ]
+        ['definitions', 'dependencies', 'properties', 'patternProperties']
           .includes(key) && typeof newSchema[key].map !== 'function'
       ) {
         const newKey = {};
@@ -308,8 +308,8 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
         );
         newSchema[key] = newKey;
       } else if (
-        [ 'items', 'additionalItems', 'additionalProperties',
-          'allOf', 'anyOf', 'oneOf', 'not' ].includes(key)
+        ['items', 'additionalItems', 'additionalProperties',
+          'allOf', 'anyOf', 'oneOf', 'not'].includes(key)
       ) {
         newSchema[key] = convertSchemaToDraft6(newSchema[key], { changed, draft });
       } else {

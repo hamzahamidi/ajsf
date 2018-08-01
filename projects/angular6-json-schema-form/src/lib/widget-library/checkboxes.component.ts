@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormArray, AbstractControl } from '@angular/forms';
-
-import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service';
+import { AbstractControl } from '@angular/forms';
 import { buildTitleMap } from '../shared';
+import { Component, Input, OnInit } from '@angular/core';
+import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service';
+
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'checkboxes-widget',
   template: `
     <label *ngIf="options?.title"
@@ -91,7 +92,7 @@ export class CheckboxesComponent implements OnInit {
   }
 
   updateValue(event) {
-    for (let checkboxItem of this.checkboxList) {
+    for (const checkboxItem of this.checkboxList) {
       if (event.target.value === checkboxItem.value) {
         checkboxItem.checked = event.target.checked;
       }

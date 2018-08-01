@@ -1,10 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-
 import { JsonSchemaFormService } from '../../json-schema-form.service';
-import { hasOwn } from './../../shared/utility.functions';
-
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'material-checkbox-widget',
   template: `
     <mat-checkbox *ngIf="boundControl && !showSlideToggle"

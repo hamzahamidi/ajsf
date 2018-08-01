@@ -1,9 +1,7 @@
-import { Inject, Injectable } from '@angular/core';
-
-import { WidgetLibraryService } from '../widget-library/widget-library.service';
-import { hasOwn } from '../shared/utility.functions';
-
 import { Framework } from './framework';
+import { hasOwn } from '../shared/utility.functions';
+import { Inject, Injectable } from '@angular/core';
+import { WidgetLibraryService } from '../widget-library/widget-library.service';
 
 // Possible future frameworks:
 // - Foundation 6:

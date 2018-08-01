@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-
 import { JsonSchemaFormService } from '../../json-schema-form.service';
-import { dateToString, hasOwn, stringToDate } from '../../shared';
+import { dateToString, stringToDate } from '../../shared';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'material-datepicker-widget',
   template: `
     <mat-form-field [style.width]="'100%'">

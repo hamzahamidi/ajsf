@@ -1,17 +1,20 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
-
-import * as _ from 'lodash';
-
-import { JsonSchemaFormService } from '../../json-schema-form.service';
+import _ from 'lodash';
+import { addClasses, inArray } from '../../shared';
 import {
-  addClasses, hasOwn, inArray, isArray, JsonPointer, toTitleCase
-} from '../../shared';
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit
+  } from '@angular/core';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
 
 /**
  * Bootstrap 4 framework for Angular JSON Schema Form.
  *
  */
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'bootstrap-4-framework',
   template: `
     <div
@@ -258,7 +261,7 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
         this.formControl.statusChanges.subscribe(status => this.updateHelpBlock(status));
 
         if (this.options.debug) {
-          let vars: any[] = [];
+          const vars: any[] = [];
           this.debugOutput = _.map(vars, thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
         }
       }

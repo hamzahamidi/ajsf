@@ -8,6 +8,7 @@ import { Examples } from './example-schemas.model';
 import { JsonPointer } from 'angular6-json-schema-form';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'demo',
   templateUrl: 'demo.component.html',
   animations: [

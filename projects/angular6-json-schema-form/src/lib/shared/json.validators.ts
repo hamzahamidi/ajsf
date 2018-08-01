@@ -1,17 +1,32 @@
+import _ from 'lodash';
+import {
+  _executeAsyncValidators,
+  _executeValidators,
+  _mergeErrors,
+  _mergeObjects,
+  AsyncIValidatorFn,
+  getType,
+  hasValue,
+  isArray,
+  isBoolean,
+  isDefined,
+  isEmpty,
+  isNumber,
+  isString,
+  isType,
+  IValidatorFn,
+  SchemaPrimitiveType,
+  toJavaScriptType,
+  toObservable,
+  xor
+  } from './validator.functions';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Observable, forkJoin } from 'rxjs';
+import { forEachCopy } from './utility.functions';
+import { forkJoin } from 'rxjs';
+import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.constants';
 import { map } from 'rxjs/operators';
 
-import * as _ from 'lodash';
 
-import {
-  _executeValidators, _executeAsyncValidators, _mergeObjects, _mergeErrors,
-  isEmpty, isDefined, hasValue, isString, isNumber, isBoolean, isArray,
-  getType, isType, toJavaScriptType, toObservable, xor, SchemaPrimitiveType,
-  PlainObject, IValidatorFn, AsyncIValidatorFn
-} from './validator.functions';
-import { forEachCopy } from './utility.functions';
-import { jsonSchemaFormatTests, JsonSchemaFormatNames } from './format-regex.constants';
 
 /**
  * 'JsonValidators' class

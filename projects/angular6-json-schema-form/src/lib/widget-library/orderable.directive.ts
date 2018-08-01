@@ -1,4 +1,10 @@
-import { Directive, ElementRef, Input, NgZone, OnInit } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  Input,
+  NgZone,
+  OnInit
+  } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -24,6 +30,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
  * - drop: remove 'drag-target-...' classes from element, move dropped array item
  */
 @Directive({
+  // tslint:disable-next-line:directive-selector
   selector: '[orderable]',
 })
 export class OrderableDirective implements OnInit {

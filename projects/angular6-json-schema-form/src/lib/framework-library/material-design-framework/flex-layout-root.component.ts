@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
 import { JsonSchemaFormService } from '../../json-schema-form.service';
-import { hasValue, JsonPointer } from '../../shared';
+
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'flex-layout-root-widget',
   template: `
     <div *ngFor="let layoutNode of layout; let i = index"
