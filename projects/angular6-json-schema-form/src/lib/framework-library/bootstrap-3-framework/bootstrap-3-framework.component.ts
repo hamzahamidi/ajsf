@@ -1,15 +1,22 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
-
-import * as _ from 'lodash';
-
-import { JsonSchemaFormService } from '../../json-schema-form.service';
+import _ from 'lodash';
 import { addClasses, inArray } from '../../shared';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit
+  } from '@angular/core';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
+
+
 
 /**
  * Bootstrap 3 framework for Angular JSON Schema Form.
  *
  */
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'bootstrap-3-framework',
   template: `
     <div

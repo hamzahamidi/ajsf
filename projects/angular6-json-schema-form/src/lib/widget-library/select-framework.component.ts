@@ -6,6 +6,7 @@ import {
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'select-framework-widget',
   template: `<div #widgetContainer></div>`,
 })
@@ -37,7 +38,7 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
       );
     }
     if (this.newComponent) {
-      for (let input of ['layoutNode', 'layoutIndex', 'dataIndex']) {
+      for (const input of ['layoutNode', 'layoutIndex', 'dataIndex']) {
         this.newComponent.instance[input] = this[input];
       }
     }

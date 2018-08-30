@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'no-framework',
   template: `
     <select-widget-widget

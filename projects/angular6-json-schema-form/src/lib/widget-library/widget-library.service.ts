@@ -1,18 +1,15 @@
-import { Injectable } from '@angular/core';
-
-import { hasOwn } from '../shared/utility.functions';
-
 import { AddReferenceComponent } from './add-reference.component';
-import { OneOfComponent } from './one-of.component';
 import { ButtonComponent } from './button.component';
 import { CheckboxComponent } from './checkbox.component';
 import { CheckboxesComponent } from './checkboxes.component';
 import { FileComponent } from './file.component';
-import { HiddenComponent } from './hidden.component';
+import { hasOwn } from '../shared/utility.functions';
+import { Injectable } from '@angular/core';
 import { InputComponent } from './input.component';
 import { MessageComponent } from './message.component';
 import { NoneComponent } from './none.component';
 import { NumberComponent } from './number.component';
+import { OneOfComponent } from './one-of.component';
 import { RadiosComponent } from './radios.component';
 import { RootComponent } from './root.component';
 import { SectionComponent } from './section.component';
@@ -20,7 +17,6 @@ import { SelectComponent } from './select.component';
 import { SelectFrameworkComponent } from './select-framework.component';
 import { SelectWidgetComponent } from './select-widget.component';
 import { SubmitComponent } from './submit.component';
-import { TabComponent } from './tab.component';
 import { TabsComponent } from './tabs.component';
 import { TemplateComponent } from './template.component';
 import { TextareaComponent } from './textarea.component';

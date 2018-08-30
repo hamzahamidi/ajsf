@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 import {
   isArray, isEmpty, isNumber, isObject, isString

@@ -1,7 +1,15 @@
 import {
-  hasValue, inArray, isArray, isDefined, isObject, isEmpty, isMap, isSet,
-  isString, PlainObject
-} from './validator.functions';
+  hasValue,
+  inArray,
+  isArray,
+  isDefined,
+  isEmpty,
+  isMap,
+  isObject,
+  isSet,
+  isString,
+  PlainObject
+  } from './validator.functions';
 
 /**
  * Utility function library:

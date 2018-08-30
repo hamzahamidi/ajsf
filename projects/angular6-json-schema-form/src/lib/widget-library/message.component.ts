@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
+
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'message-widget',
   template: `
     <span *ngIf="message"

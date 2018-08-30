@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
-
+import { Bootstrap4FrameworkComponent } from './bootstrap-4-framework.component';
 import { Framework } from '../framework';
+import { Injectable } from '@angular/core';
 
 // Bootstrap 4 Framework
 // https://github.com/ng-bootstrap/ng-bootstrap
-import { Bootstrap4FrameworkComponent } from './bootstrap-4-framework.component';
-
 
 @Injectable()
 export class Bootstrap4Framework extends Framework {

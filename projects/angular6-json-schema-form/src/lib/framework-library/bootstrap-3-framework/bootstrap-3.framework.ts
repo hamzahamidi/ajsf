@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-
 import { Framework } from '../framework';
+import { Bootstrap3FrameworkComponent } from './bootstrap-3-framework.component';
+
 
 // Bootstrap 3 Framework
 // https://github.com/valor-software/ng2-bootstrap
-import { Bootstrap3FrameworkComponent } from './bootstrap-3-framework.component';
 
 @Injectable()
 export class Bootstrap3Framework extends Framework {

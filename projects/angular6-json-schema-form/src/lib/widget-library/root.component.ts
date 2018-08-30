@@ -1,9 +1,9 @@
-import { Component, Input, Host } from '@angular/core';
-
+import { Component, Input } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
-import { hasValue, JsonPointer } from '../shared';
+
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'root-widget',
   template: `
     <div *ngFor="let layoutItem of layout; let i = index"

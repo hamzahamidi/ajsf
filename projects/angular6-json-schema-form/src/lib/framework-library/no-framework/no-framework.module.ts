@@ -1,15 +1,14 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
 import { Framework } from '../framework';
-// No framework - plain HTML controls (styles from form layout only)
-import { NoFrameworkComponent } from './no-framework.component';
-import { NoFramework } from './no.framework';
-
-import { WidgetLibraryService } from '../../widget-library/widget-library.service';
-import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { FrameworkLibraryService } from '../framework-library.service';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { NoFramework } from './no.framework';
+import { NoFrameworkComponent } from './no-framework.component';
+import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
+import { WidgetLibraryService } from '../../widget-library/widget-library.service';
+
+// No framework - plain HTML controls (styles from form layout only)
 
 @NgModule({
   imports: [CommonModule, WidgetLibraryModule],
