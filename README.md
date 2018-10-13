@@ -28,6 +28,7 @@ To install [the library and the example playground from GitHub](https://github.c
 git clone https://github.com/hamzahamidi/angular6-json-schema-form.git angular6-json-schema-form
 cd angular6-json-schema-form
 yarn install
+yanr buildlib
 yarn start
 ```
 
