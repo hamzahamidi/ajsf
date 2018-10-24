@@ -32,6 +32,11 @@ export class FrameworkLibraryService {
   }
 
   public setLoadExternalAssets(loadExternalAssets = true): void {
+    // Sometimes loadExternalAssets is coming across as a string so check for that.
+    if (typeof loadExternalAssets === 'string') {
+      const stringLoadExternalAssets = loadExternalAssets as string;
+      loadExternalAssets = stringLoadExternalAssets.toLowerCase() === 'false' ? false : true;
+    }
     this.loadExternalAssets = !!loadExternalAssets;
   }
 
