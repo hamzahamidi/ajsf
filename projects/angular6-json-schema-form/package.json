@@ -24,12 +24,12 @@
     },
     "private": false,
     "peerDependencies": {
-        "@angular/common": "^6.0.0",
-        "@angular/core": "^6.0.0",
-        "@angular/forms": "^6.0.0",
-        "@angular/platform-browser": "^6.0.0",
-        "@angular/flex-layout": "^6.0.0-beta.16",
-        "rxjs": "^6.0.0",
+        "@angular/common": ">=6.0.0",
+        "@angular/core": ">=6.0.0",
+        "@angular/forms": ">=6.0.0",
+        "@angular/platform-browser": ">=6.0.0",
+        "@angular/flex-layout": ">=6.0.0-beta.16",
+        "rxjs": ">=6.0.0",
         "ajv": "^6.0.1",
         "lodash": "^4.17.4"
     }
