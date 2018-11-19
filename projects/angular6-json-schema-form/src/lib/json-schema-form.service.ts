@@ -17,6 +17,8 @@ import {
   toTitleCase
   } from './shared/utility.functions';
 import { frValidationMessages } from './locale/fr-validation-messages';
+import { enBaseMessages } from './locale/en-base-messages';
+import { frBaseMessages } from './locale/fr-base-messages';
 import {
   hasValue,
   isArray,
@@ -121,7 +123,8 @@ export class JsonSchemaFormService {
       disabled: false, // Set control as disabled? (not editable, and excluded from output)
       readonly: false, // Set control as read only? (not editable, but included in output)
       returnEmptyFields: true, // return values for fields that contain no data?
-      validationMessages: {} // set by setLanguage()
+      validationMessages: {}, // set by setLanguage()
+      baseMessages: {} // set by setLanguage()
     },
   };
 
@@ -131,10 +134,16 @@ export class JsonSchemaFormService {
 
   setLanguage(language: string = 'en-US') {
     this.language = language;
+
     const validationMessages = language.slice(0, 2) === 'fr' ?
       frValidationMessages : enValidationMessages;
     this.defaultFormOptions.defautWidgetOptions.validationMessages =
       _.cloneDeep(validationMessages);
+
+    const baseMessages = language.slice(0, 2) === 'fr' ?
+    frBaseMessages : enBaseMessages;
+    this.defaultFormOptions.defautWidgetOptions.baseMessages = _.cloneDeep(baseMessages);
+
   }
 
   getData() { return this.data; }

@@ -387,19 +387,20 @@ export function buildLayout(jsf, widgetLibrary) {
           newNode.options.minItems < newNode.options.maxItems &&
           (newNode.items[newNode.items.length - 1] || {}).type !== '$ref'
         ) {
-          let buttonText = 'Add';
+          // let buttonText = 'Add';
+          let buttonText = jsf.defaultFormOptions.defautWidgetOptions.baseMessages.add;
           if (newNode.options.title) {
-            if (/^add\b/i.test(newNode.options.title)) {
-              buttonText = newNode.options.title;
-            } else {
+            // if (/^add\b/i.test(newNode.options.title)) {
+            //  buttonText = newNode.options.title;
+            // } else {
               buttonText += ' ' + newNode.options.title;
-            }
+            // }
           } else if (newNode.name && !/^\d+$/.test(newNode.name)) {
-            if (/^add\b/i.test(newNode.name)) {
+            // if (/^add\b/i.test(newNode.name)) {
               buttonText += ' ' + fixTitle(newNode.name);
-            } else {
-              buttonText = fixTitle(newNode.name);
-            }
+            // } else {
+            //  buttonText = fixTitle(newNode.name);
+            // }
 
             // If newNode doesn't have a title, look for title of parent array item
           } else {
@@ -734,11 +735,16 @@ export function buildLayoutFromSchema(
       ) {
         let buttonText =
           ((jsf.layoutRefLibrary[itemRefPointer] || {}).options || {}).title;
-        const prefix = buttonText ? 'Add ' : 'Add to ';
+        // const prefix = buttonText ? 'Add ' : 'Add to ';
+        const prefix = jsf.defaultFormOptions.defautWidgetOptions.baseMessages.add;
+
         if (!buttonText) {
           buttonText = schema.title || fixTitle(JsonPointer.toKey(dataPointer));
         }
-        if (!/^add\b/i.test(buttonText)) { buttonText = prefix + buttonText; }
+        // if (!/^add\b/i.test(buttonText)) { buttonText = prefix + buttonText; }
+        // buttonText always add 'add' even if there is title in schema beginning by 'add'
+        buttonText = prefix + buttonText;
+
         newNode.items.push({
           _id: _.uniqueId(),
           arrayItem: true,
@@ -769,18 +775,21 @@ export function buildLayoutFromSchema(
     if (newNode.options.add) {
       buttonText = newNode.options.add;
     } else if (newNode.name && !/^\d+$/.test(newNode.name)) {
-      buttonText =
-        (/^add\b/i.test(newNode.name) ? '' : 'Add ') + fixTitle(newNode.name);
+     // buttonText =
+     //   (/^add\b/i.test(newNode.name) ? '' : 'Add ') + fixTitle(newNode.name);
+        buttonText = jsf.defaultFormOptions.defautWidgetOptions.baseMessages.add
 
       // If newNode doesn't have a title, look for title of parent array item
     } else {
       const parentSchema =
         JsonPointer.get(jsf.schema, schemaPointer, 0, -1);
       if (hasOwn(parentSchema, 'title')) {
-        buttonText = 'Add to ' + parentSchema.title;
+        // buttonText = 'Add to ' + parentSchema.title;
+        buttonText =jsf.defaultFormOptions.defautWidgetOptions.baseMessages.addTo
       } else {
         const pointerArray = JsonPointer.parse(newNode.dataPointer);
-        buttonText = 'Add to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+        // buttonText = 'Add to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+        buttonText =jsf.defaultFormOptions.defautWidgetOptions.baseMessages.addTo + fixTitle(pointerArray[pointerArray.length - 2]);
       }
     }
     Object.assign(newNode, {
@@ -897,7 +906,8 @@ export function getLayoutNode(
     });
     Object.assign(newLayoutNode.options, {
       removable: false,
-      title: 'Add ' + newLayoutNode.$ref,
+      // trad title: 'Add ' + newLayoutNode.$ref,
+      title : jsf.defaultFormOptions.defautWidgetOptions.baseMessages.add + ' ' + newLayoutNode.$ref,
     });
     return newLayoutNode;
 
