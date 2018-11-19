@@ -393,7 +393,7 @@ export function toJavaScriptType(value, types, strictIntegers = true)  {
     if (isString(value)) { return value; }
     // If value is a date, and types includes 'string',
     // convert the date to a string
-    if (isDate(value)) { return value.toISOString().slice(0, 10); }
+    if (isDate(value)) { return getFormatedDate(value) }
     if (isNumber(value)) { return value.toString(); }
   }
   // If value is a date, and types includes 'integer' or 'number',
@@ -588,4 +588,13 @@ export function inArray(item, array, allIn = false) {
  */
 export function xor(value1, value2) {
   return (!!value1 && !value2) || (!value1 && !!value2);
+}
+
+export function getFormatedDate( d : Date ){
+  let month = String(d.getMonth() + 1);
+  let day = String(d.getDate());
+  const year = String(d.getFullYear());
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  return day+'/'+month+'/'+year;
 }
