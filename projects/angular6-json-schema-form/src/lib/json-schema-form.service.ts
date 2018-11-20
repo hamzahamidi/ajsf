@@ -449,7 +449,7 @@ export class JsonSchemaFormService {
           this.formatErrors(ctx.formControl.errors, ctx.options.validationMessages)
       );
       ctx.formControl.valueChanges.subscribe(value => {
-        if (!_.isEqual(ctx.controlValue, value)) { ctx.controlValue = value; }
+        if (!!value) { ctx.controlValue = value; }
       });
     } else {
       ctx.controlName = ctx.layoutNode.name;

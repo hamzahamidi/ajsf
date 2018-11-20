@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { dateToString, stringToDate } from '../../shared';
@@ -10,7 +10,7 @@ import { dateToString, stringToDate } from '../../shared';
     <mat-form-field [style.width]="'100%'">
       <span matPrefix *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-      <input matInput *ngIf="boundControl"
+        <input matInput *ngIf="boundControl"
         [formControl]="formControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
@@ -21,9 +21,12 @@ import { dateToString, stringToDate } from '../../shared';
         [min]="options?.minimum"
         [name]="controlName"
         [placeholder]="options?.title"
+        [readonly]="options?.readonly"
         [required]="options?.required"
         [style.width]="'100%'"
-        (blur)="options.showErrors = true">
+        (blur)="options.showErrors = true"
+        (dateChange)="updateValue($event)"
+        (dateInput)="updateValue($event)">
       <input matInput *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
@@ -38,17 +41,17 @@ import { dateToString, stringToDate } from '../../shared';
         [required]="options?.required"
         [style.width]="'100%'"
         [value]="dateValue"
+        [readonly]="options?.readonly"
         (blur)="options.showErrors = true"
-        (change)="updateValue($event)"
-        (input)="updateValue($event)">
+        (dateChange)="updateValue($event)"
+        (dateInput)="updateValue($event)">
       <span matSuffix *ngIf="options?.suffix || options?.fieldAddonRight"
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
       <mat-hint *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
         align="end" [innerHTML]="options?.description"></mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     </mat-form-field>
-    <mat-datepicker #picker
-      (selectedChanged)="updateValue($event)"></mat-datepicker>
+    <mat-datepicker #picker ></mat-datepicker>
     <mat-error *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></mat-error>`,
   styles: [`
@@ -57,7 +60,7 @@ import { dateToString, stringToDate } from '../../shared';
       .mat-form-field-infix { width: initial; }
   `],
 })
-export class MaterialDatepickerComponent implements OnInit, OnChanges {
+export class MaterialDatepickerComponent implements OnInit {
   formControl: AbstractControl;
   controlName: string;
   controlValue: any;
@@ -83,16 +86,18 @@ export class MaterialDatepickerComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges() {
-    this.setControlDate(this.controlValue);
-  }
-
   setControlDate(dateString: string) {
     this.dateValue = stringToDate(dateString);
+    this.setDate(this.dateValue);
   }
-
+  
   updateValue(event) {
     this.options.showErrors = true;
-    this.jsf.updateValue(this, dateToString(event, this.options));
+    if (event.value) this.setDate(dateToString(event.value));
   }
+
+  setDate(date){
+    this.formControl.setValue(date, this.options);
+  }
+
 }
