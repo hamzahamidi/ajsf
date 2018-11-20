@@ -1,6 +1,6 @@
 {
   "name": "angular6-json-schema-form-app",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "description": "Angular JSON Schema Form builder Demo",
   "engines": {
@@ -29,9 +29,11 @@
   "homepage": "https://github.com/hamzahamidi/Angular6-json-schema-form#readme",
   "scripts": {
     "ng": "ng",
+    "prestart": "npm run buildlibdev",
     "start": "ng serve",
     "start-prod": "ng serve --prod",
     "build": "ng build --prod --base-href ./",
+    "buildlibdev": "ng build angular6-json-schema-form",
     "buildlib": "ng build angular6-json-schema-form --prod",
     "postbuildlib": "cp  README.md LICENSE  dist/angular6-json-schema-form/",
     "prestats": "ng build --prod --stats-json",
