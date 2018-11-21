@@ -412,7 +412,7 @@ export class JsonSchemaFormService {
           result = !!JsonPointer.get({ model: this.data }, pointer);
         }
       } else if (typeof layoutNode.options.condition === 'function') {
-        result = layoutNode.options.condition(this.data);
+        result = layoutNode.options.condition(this.data, dataIndex);
       } else if (typeof layoutNode.options.condition.functionBody === 'string') {
         try {
           const dynFn = new Function(
