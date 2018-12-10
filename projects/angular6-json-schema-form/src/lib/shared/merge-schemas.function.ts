@@ -298,7 +298,7 @@ export function mergeSchemas(...schemas) {
           case '$schema': case '$id': case 'id':
             // Don't combine these keys
           break;
-          case 'title': case 'description':
+          case 'title': case 'description': case '$comment':
             // Return the last value, overwriting any previous one
             // These properties are not used for validation, so conflicts don't matter
             combinedSchema[key] = schemaValue;
