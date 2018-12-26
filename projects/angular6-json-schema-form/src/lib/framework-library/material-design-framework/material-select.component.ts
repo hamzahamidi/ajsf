@@ -8,6 +8,8 @@ import { JsonSchemaFormService } from '../../json-schema-form.service';
   selector: 'material-select-widget',
   template: `
     <mat-form-field
+      [appearance]="options?.appearance || 'standard'"
+      [hideRequiredMarker]="options?.hideRequiredMarker"
       [class]="options?.htmlClass || ''"
       [floatLabel]="options?.floatLabel || (options?.notitle ? 'never' : 'auto')"
       [style.width]="'100%'">
