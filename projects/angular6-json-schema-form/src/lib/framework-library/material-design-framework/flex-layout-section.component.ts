@@ -66,7 +66,7 @@ import { JsonSchemaFormService } from '../../json-schema-form.service';
     </fieldset>
 
     <mat-card *ngIf="containerType === 'card'"
-      [class]="options?.htmlClass || ''"
+      [ngClass]="options?.htmlClass || ''"
       [class.expandable]="options?.expandable && !expanded"
       [class.expanded]="options?.expandable && expanded">
       <mat-card-header *ngIf="sectionTitle">
