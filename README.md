@@ -1,6 +1,7 @@
 # Angular6-json-schema-form
 
 [![Build Status](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form.svg?branch=master)](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form)
+[![Maintainability](https://api.codeclimate.com/v1/badges/dfbee5b888425221bca6/maintainability)](https://codeclimate.com/github/hamzahamidi/Angular6-json-schema-form/maintainability)
 [![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/angular6-json-schema-form/releases/latest)
 [![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/angular6-json-schema-form)
 
