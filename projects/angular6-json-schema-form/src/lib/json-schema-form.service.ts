@@ -10,13 +10,14 @@ import {
 import { buildLayout, getLayoutNode } from './shared/layout.functions';
 import { buildSchemaFromData, buildSchemaFromLayout, removeRecursiveReferences } from './shared/json-schema.functions';
 import { enValidationMessages } from './locale/en-validation-messages';
+import { frValidationMessages } from './locale/fr-validation-messages';
+import { zhValidationMessages } from './locale/zh-validation-messages';
 import {
   fixTitle,
   forEach,
   hasOwn,
   toTitleCase
   } from './shared/utility.functions';
-import { frValidationMessages } from './locale/fr-validation-messages';
 import {
   hasValue,
   isArray,
@@ -131,8 +132,15 @@ export class JsonSchemaFormService {
 
   setLanguage(language: string = 'en-US') {
     this.language = language;
-    const validationMessages = language.slice(0, 2) === 'fr' ?
-      frValidationMessages : enValidationMessages;
+    const languageValidationMessages = {
+        fr: frValidationMessages,
+        en: enValidationMessages,
+        zh: zhValidationMessages
+    };
+    const languageCode = language.slice(0, 2);
+
+    const validationMessages = languageValidationMessages[languageCode];
+
     this.defaultFormOptions.defautWidgetOptions.validationMessages =
       _.cloneDeep(validationMessages);
   }

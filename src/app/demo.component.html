@@ -89,7 +89,7 @@
       <mat-form-field>
         <mat-select
           [(ngModel)]="selectedLanguage"
-          (change)="loadSelectedLanguage()"
+          (selectionChange)="loadSelectedLanguage()"
           name="language"
           placeholder="Language">
           <mat-option
