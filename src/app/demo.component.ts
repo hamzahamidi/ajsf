@@ -26,10 +26,11 @@ import { JsonPointer } from 'angular6-json-schema-form';
 })
 export class DemoComponent implements OnInit {
   examples: any = Examples;
-  languageList: any = ['en', 'fr'];
+  languageList: any = ['en', 'fr', 'zh'];
   languages: any = {
     'en': 'English',
     'fr': 'French',
+    'zh': 'Chinese',
   };
   frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'no-framework'];
   frameworks: any = {
@@ -189,11 +190,7 @@ export class DemoComponent implements OnInit {
   }
 
   loadSelectedLanguage() {
-    window.location.href =
-      '/?set=' + this.selectedSet +
-      '&example=' + this.selectedExample +
-      '&framework=' + this.selectedFramework +
-      '&language=' + this.selectedLanguage;
+    window.location.href = `${window.location.pathname}?set=${this.selectedSet}&example=${this.selectedExample}&framework=${this.selectedFramework}&language=${this.selectedLanguage}`;
   }
 
   // Display the form entered by the user
