@@ -8,7 +8,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
   // tslint:disable-next-line:component-selector
   selector: 'material-datepicker-widget',
   template: `
-    <mat-form-field [style.width]="'100%'">
+    <mat-form-field [style.width]="'100%'" [appearance]="options?.appearance || 'standard'">
       <span matPrefix *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
         <input matInput *ngIf="boundControl"

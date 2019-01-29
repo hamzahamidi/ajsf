@@ -7,6 +7,7 @@ import { JsonSchemaFormService } from '../../json-schema-form.service';
   selector: 'material-number-widget',
   template: `
     <mat-form-field
+      [appearance]="options?.appearance || 'standard'"
       [class]="options?.htmlClass || ''"
       [floatLabel]="options?.floatLabel || (options?.notitle ? 'never' : 'auto')"
       [style.width]="'100%'">
