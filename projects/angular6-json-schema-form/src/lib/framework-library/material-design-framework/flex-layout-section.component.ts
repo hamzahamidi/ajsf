@@ -166,6 +166,7 @@ export class FlexLayoutSectionComponent implements OnInit {
   ngOnInit() {
     this.jsf.initializeControl(this);
     this.options = this.layoutNode.options || {};
+    this.options.fxLayoutGap = this.options.fxLayoutGap !== null ? this.options.fxLayoutGap : "0px";
     this.expanded = typeof this.options.expanded === 'boolean' ?
       this.options.expanded : !this.options.expandable;
     switch (this.layoutNode.type) {
