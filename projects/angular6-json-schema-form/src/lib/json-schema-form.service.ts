@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Ajv from 'ajv';
+import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import {
   buildFormGroup,
@@ -128,6 +129,7 @@ export class JsonSchemaFormService {
 
   constructor() {
     this.setLanguage(this.language);
+    this.ajv.addMetaSchema(jsonDraft6);
   }
 
   setLanguage(language: string = 'en-US') {
