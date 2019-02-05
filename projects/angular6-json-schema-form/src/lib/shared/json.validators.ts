@@ -200,7 +200,7 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
       const currentValue: any = control.value;
-      const isEqual = (enumValue, inputValue) =>
+      const isEqualVal = (enumValue, inputValue) =>
         enumValue === inputValue ||
         (isNumber(enumValue) && +inputValue === +enumValue) ||
         (isBoolean(enumValue, 'strict') &&
@@ -209,9 +209,9 @@ export class JsonValidators {
         isEqual(enumValue, inputValue);
       const isValid = isArray(currentValue) ?
         currentValue.every(inputValue => allowedValues.some(enumValue =>
-          isEqual(enumValue, inputValue)
+          isEqualVal(enumValue, inputValue)
         )) :
-        allowedValues.some(enumValue => isEqual(enumValue, currentValue));
+        allowedValues.some(enumValue => isEqualVal(enumValue, currentValue));
       return xor(isValid, invert) ?
         null : { 'enum': { allowedValues, currentValue } };
     };
@@ -235,13 +235,13 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
       const currentValue: any = control.value;
-      const isEqual = (constValue, inputValue) =>
+      const isEqualVal = (constValue, inputValue) =>
         constValue === inputValue ||
         isNumber(constValue) && +inputValue === +constValue ||
         isBoolean(constValue, 'strict') &&
           toJavaScriptType(inputValue, 'boolean') === constValue ||
         constValue === null && !hasValue(inputValue);
-      const isValid = isEqual(requiredValue, currentValue);
+      const isValid = isEqualVal(requiredValue, currentValue);
       return xor(isValid, invert) ?
         null : { 'const': { requiredValue, currentValue } };
     };
