@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isEqual from 'lodash-es/isEqual';
 
 import {
   isArray, isEmpty, isNumber, isObject, isString
@@ -32,7 +32,7 @@ export function mergeSchemas(...schemas) {
     for (const key of Object.keys(schema)) {
       const combinedValue = combinedSchema[key];
       const schemaValue = schema[key];
-      if (!hasOwn(combinedSchema, key) || _.isEqual(combinedValue, schemaValue)) {
+      if (!hasOwn(combinedSchema, key) || isEqual(combinedValue, schemaValue)) {
         combinedSchema[key] = schemaValue;
       } else {
         switch (key) {
@@ -63,7 +63,7 @@ export function mergeSchemas(...schemas) {
             // Keep only items that appear in both arrays
             if (isArray(combinedValue) && isArray(schemaValue)) {
               combinedSchema[key] = combinedValue.filter(item1 =>
-                schemaValue.findIndex(item2 => _.isEqual(item1, item2)) > -1
+                schemaValue.findIndex(item2 => isEqual(item1, item2)) > -1
               );
               if (!combinedSchema[key].length) { return { allOf: [ ...schemas ] }; }
             } else {
@@ -76,7 +76,7 @@ export function mergeSchemas(...schemas) {
               const combinedObject = { ...combinedValue };
               for (const subKey of Object.keys(schemaValue)) {
                 if (!hasOwn(combinedObject, subKey) ||
-                  _.isEqual(combinedObject[subKey], schemaValue[subKey])
+                  isEqual(combinedObject[subKey], schemaValue[subKey])
                 ) {
                   combinedObject[subKey] = schemaValue[subKey];
                 // Don't combine matching keys with different values
@@ -97,7 +97,7 @@ export function mergeSchemas(...schemas) {
               const combinedObject = { ...combinedValue };
               for (const subKey of Object.keys(schemaValue)) {
                 if (!hasOwn(combinedObject, subKey) ||
-                  _.isEqual(combinedObject[subKey], schemaValue[subKey])
+                  isEqual(combinedObject[subKey], schemaValue[subKey])
                 ) {
                   combinedObject[subKey] = schemaValue[subKey];
                 // If both keys are arrays, include all items from both arrays,
@@ -136,7 +136,7 @@ export function mergeSchemas(...schemas) {
             // If arrays, keep only items that appear in both arrays
             if (isArray(combinedValue) && isArray(schemaValue)) {
               combinedSchema.items = combinedValue.filter(item1 =>
-                schemaValue.findIndex(item2 => _.isEqual(item1, item2)) > -1
+                schemaValue.findIndex(item2 => isEqual(item1, item2)) > -1
               );
               if (!combinedSchema.items.length) { return { allOf: [ ...schemas ] }; }
             // If both keys are objects, merge them
@@ -205,7 +205,7 @@ export function mergeSchemas(...schemas) {
               const combinedObject = { ...combinedValue };
               for (const subKey of Object.keys(schemaValue)) {
                 if (!hasOwn(combinedObject, subKey) ||
-                  _.isEqual(combinedObject[subKey], schemaValue[subKey])
+                  isEqual(combinedObject[subKey], schemaValue[subKey])
                 ) {
                   combinedObject[subKey] = schemaValue[subKey];
                 // If both keys are objects, merge them
@@ -246,7 +246,7 @@ export function mergeSchemas(...schemas) {
                   });
               }
               for (const subKey of Object.keys(schemaValue)) {
-                if (_.isEqual(combinedObject[subKey], schemaValue[subKey]) || (
+                if (isEqual(combinedObject[subKey], schemaValue[subKey]) || (
                   !hasOwn(combinedObject, subKey) &&
                   !hasOwn(combinedObject, 'additionalProperties')
                 )) {
