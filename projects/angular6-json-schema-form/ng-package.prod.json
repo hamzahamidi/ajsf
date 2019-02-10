@@ -9,7 +9,8 @@
       "lodash-es/filter": "lodash-es",
       "lodash-es/map": "lodash-es",
       "lodash-es/uniqueId": "lodash-es",
-      "ajv": "ajv"
+      "ajv": "ajv",
+      "ajv/lib/refs/json-schema-draft-06.json": "jsonDraft6"
     }
   }
 }
