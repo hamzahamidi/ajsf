@@ -29,6 +29,7 @@ import {
 import { Injectable } from '@angular/core';
 import { JsonPointer } from './shared/jsonpointer.functions';
 import { Subject } from 'rxjs';
+import { SchemaValidatorFactory } from './schema-validator-factory';
 
 
 
@@ -47,8 +48,6 @@ export class JsonSchemaFormService {
   AngularSchemaFormCompatibility = false;
   tpldata: any = {};
 
-  ajvOptions: any = { allErrors: true, jsonPointers: true, unknownFormats: 'ignore' };
-  ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
 
   formValues: any = {}; // Internal form data (may not have correct types)
@@ -127,9 +126,8 @@ export class JsonSchemaFormService {
     },
   };
 
-  constructor() {
+  constructor(private validatorFactory: SchemaValidatorFactory) {
     this.setLanguage(this.language);
-    this.ajv.addMetaSchema(jsonDraft6);
   }
 
   setLanguage(language: string = 'en-US') {
@@ -290,8 +288,8 @@ export class JsonSchemaFormService {
         this.schema['ui:order'] = this.schema.properties['ui:order'];
         delete this.schema.properties['ui:order'];
       }
-      this.ajv.removeSchema(this.schema);
-      this.validateFormData = this.ajv.compile(this.schema);
+      this.validatorFactory.registerSchema(this.schema);
+      this.validateFormData = this.validatorFactory.compile(this.schema);
     }
   }
 
