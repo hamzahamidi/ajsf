@@ -79,20 +79,24 @@ export class MaterialDatepickerComponent implements OnInit {
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};
-    this.jsf.initializeControl(this, !this.options.readonly);
-    if (this.controlValue) { this.setDate(dateToString(new Date(this.controlValue))); }
+    this.jsf.initializeControl(this, !this.options.readonly);    
+    if (this.controlValue) { this.setDate(this.controlValue); }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
     }
   }
 
   updateValue(event: MatDatepickerInputEvent<Date> ) {
-    this.options.showErrors = true;
+    this.options.showErrors = true;    
     if (event.value) { this.setDate(dateToString(event.value)); }
   }
 
   setDate(date: string) {
-    this.formControl.setValue(date, this.options);
+    let hoursToNeutralize = "T00:00:00";
+    let dateString = date.slice(0,10);
+    //Neutralize the hour difference
+    let dateStringHourNeutralized = dateString+""+hoursToNeutralize;
+    this.jsf.updateValue(this,dateStringHourNeutralized);    
   }
 
 }
