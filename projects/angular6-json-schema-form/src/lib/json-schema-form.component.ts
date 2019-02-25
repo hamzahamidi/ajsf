@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import cloneDeep from 'lodash-es/cloneDeep';
+import isEqual from 'lodash-es/isEqual';
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -231,7 +233,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       ) {
         // If only 'form' input changed, get names of changed keys
         changedInput = Object.keys(this.previousInputs.form || {})
-          .filter(key => !_.isEqual(this.previousInputs.form[key], this.form[key]))
+          .filter(key => !isEqual(this.previousInputs.form[key], this.form[key]))
           .map(key => `form.${key}`);
         resetFirst = false;
       }
@@ -424,17 +426,17 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
     if (isObject(this.schema)) {
       this.jsf.AngularSchemaFormCompatibility = true;
-      this.jsf.schema = _.cloneDeep(this.schema);
+      this.jsf.schema = cloneDeep(this.schema);
     } else if (hasOwn(this.form, 'schema') && isObject(this.form.schema)) {
-      this.jsf.schema = _.cloneDeep(this.form.schema);
+      this.jsf.schema = cloneDeep(this.form.schema);
     } else if (isObject(this.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      this.jsf.schema = _.cloneDeep(this.JSONSchema);
+      this.jsf.schema = cloneDeep(this.JSONSchema);
     } else if (hasOwn(this.form, 'JSONSchema') && isObject(this.form.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      this.jsf.schema = _.cloneDeep(this.form.JSONSchema);
+      this.jsf.schema = cloneDeep(this.form.JSONSchema);
     } else if (hasOwn(this.form, 'properties') && isObject(this.form.properties)) {
-      this.jsf.schema = _.cloneDeep(this.form);
+      this.jsf.schema = cloneDeep(this.form);
     } else if (isObject(this.form)) {
       // TODO: Handle other types of form input
     }
@@ -514,29 +516,29 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    */
   private initializeData() {
     if (hasValue(this.data)) {
-      this.jsf.formValues = _.cloneDeep(this.data);
+      this.jsf.formValues = cloneDeep(this.data);
       this.formValuesInput = 'data';
     } else if (hasValue(this.model)) {
       this.jsf.AngularSchemaFormCompatibility = true;
-      this.jsf.formValues = _.cloneDeep(this.model);
+      this.jsf.formValues = cloneDeep(this.model);
       this.formValuesInput = 'model';
     } else if (hasValue(this.ngModel)) {
       this.jsf.AngularSchemaFormCompatibility = true;
-      this.jsf.formValues = _.cloneDeep(this.ngModel);
+      this.jsf.formValues = cloneDeep(this.ngModel);
       this.formValuesInput = 'ngModel';
     } else if (isObject(this.form) && hasValue(this.form.value)) {
       this.jsf.JsonFormCompatibility = true;
-      this.jsf.formValues = _.cloneDeep(this.form.value);
+      this.jsf.formValues = cloneDeep(this.form.value);
       this.formValuesInput = 'form.value';
     } else if (isObject(this.form) && hasValue(this.form.data)) {
-      this.jsf.formValues = _.cloneDeep(this.form.data);
+      this.jsf.formValues = cloneDeep(this.form.data);
       this.formValuesInput = 'form.data';
     } else if (hasValue(this.formData)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.formValuesInput = 'formData';
     } else if (hasOwn(this.form, 'formData') && hasValue(this.form.formData)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      this.jsf.formValues = _.cloneDeep(this.form.formData);
+      this.jsf.formValues = cloneDeep(this.form.formData);
       this.formValuesInput = 'form.formData';
     } else {
       this.formValuesInput = null;
@@ -582,15 +584,15 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
     // Check for layout inputs and, if found, initialize form layout
     if (isArray(this.layout)) {
-      this.jsf.layout = _.cloneDeep(this.layout);
+      this.jsf.layout = cloneDeep(this.layout);
     } else if (isArray(this.form)) {
       this.jsf.AngularSchemaFormCompatibility = true;
-      this.jsf.layout = _.cloneDeep(this.form);
+      this.jsf.layout = cloneDeep(this.form);
     } else if (this.form && isArray(this.form.form)) {
       this.jsf.JsonFormCompatibility = true;
-      this.jsf.layout = fixJsonFormOptions(_.cloneDeep(this.form.form));
+      this.jsf.layout = fixJsonFormOptions(cloneDeep(this.form.form));
     } else if (this.form && isArray(this.form.layout)) {
-      this.jsf.layout = _.cloneDeep(this.form.layout);
+      this.jsf.layout = cloneDeep(this.form.layout);
     } else {
       this.jsf.layout = ['*'];
     }
@@ -599,16 +601,16 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     let alternateLayout: any = null;
     if (isObject(this.UISchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      alternateLayout = _.cloneDeep(this.UISchema);
+      alternateLayout = cloneDeep(this.UISchema);
     } else if (hasOwn(this.form, 'UISchema')) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      alternateLayout = _.cloneDeep(this.form.UISchema);
+      alternateLayout = cloneDeep(this.form.UISchema);
     } else if (hasOwn(this.form, 'uiSchema')) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      alternateLayout = _.cloneDeep(this.form.uiSchema);
+      alternateLayout = cloneDeep(this.form.uiSchema);
     } else if (hasOwn(this.form, 'customFormItems')) {
       this.jsf.JsonFormCompatibility = true;
-      alternateLayout = fixJsonFormOptions(_.cloneDeep(this.form.customFormItems));
+      alternateLayout = fixJsonFormOptions(cloneDeep(this.form.customFormItems));
     }
 
     // if alternate layout found, copy alternate layout options into schema

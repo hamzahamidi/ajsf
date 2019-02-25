@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import cloneDeep from 'lodash-es/cloneDeep';
+import filter from 'lodash-es/filter';
+import map from 'lodash-es/map';
 import {
   AbstractControl,
   FormArray,
@@ -180,7 +182,7 @@ export function buildFormGroupTemplate(
                   templatePointer + '/controls/' + i
                 ) :
                 itemRecursive ?
-                  null : _.cloneDeep(jsf.templateRefLibrary[itemRefPointer])
+                  null : cloneDeep(jsf.templateRefLibrary[itemRefPointer])
             );
           }
         }
@@ -230,7 +232,7 @@ export function buildFormGroupTemplate(
                   templatePointer + '/controls/-'
                 ) :
                 itemRecursive ?
-                  null : _.cloneDeep(jsf.templateRefLibrary[itemRefPointer])
+                  null : cloneDeep(jsf.templateRefLibrary[itemRefPointer])
             );
           }
         }
@@ -299,7 +301,7 @@ export function buildFormGroup(template: any): AbstractControl {
         });
         return new FormGroup(groupControls, validatorFn);
       case 'FormArray':
-        return new FormArray(_.filter(_.map(template.controls,
+        return new FormArray(filter(map(template.controls,
           controls => buildFormGroup(controls)
         )), validatorFn);
       case 'FormControl':
