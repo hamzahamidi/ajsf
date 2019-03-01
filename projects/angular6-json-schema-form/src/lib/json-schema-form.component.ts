@@ -1,35 +1,33 @@
-import cloneDeep from 'lodash-es/cloneDeep';
-import isEqual from 'lodash-es/isEqual';
-
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  forwardRef,
   Input,
   OnChanges,
   OnInit,
-  Output
-  } from '@angular/core';
+  Output,
+  forwardRef
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { forEach, hasOwn } from './shared/utility.functions';
-import { FrameworkLibraryService } from './framework-library/framework-library.service';
 import {
   hasValue,
   inArray,
   isArray,
   isEmpty,
   isObject
-  } from './shared/validator.functions';
+} from './shared/validator.functions';
+
+import { FrameworkLibraryService } from './framework-library/framework-library.service';
 import { JsonPointer } from './shared/jsonpointer.functions';
 import { JsonSchemaFormService } from './json-schema-form.service';
-import { resolveSchemaReferences } from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
-
-
+import cloneDeep from 'lodash-es/cloneDeep';
+import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
+import isEqual from 'lodash-es/isEqual';
+import { resolveSchemaReferences } from './shared/json-schema.functions';
 
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

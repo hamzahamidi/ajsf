@@ -1,10 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Framework } from '../framework';
-import { FrameworkLibraryService } from '../framework-library.service';
-import { JsonSchemaFormModule } from '../../json-schema-form.module';
-import { JsonSchemaFormService } from '../../json-schema-form.service';
 import {
   MatAutocompleteModule,
   MatButtonModule,
@@ -20,17 +13,25 @@ import {
   MatNativeDateModule,
   MatRadioModule,
   MatSelectModule,
-  MatSliderModule,
   MatSlideToggleModule,
+  MatSliderModule,
   MatStepperModule,
   MatTabsModule,
   MatTooltipModule
-  } from '@angular/material';
+} from '@angular/material';
+
+import { CommonModule } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { Framework } from '../framework';
+import { FrameworkLibraryService } from '../framework-library.service';
+import { JsonSchemaFormModule } from '../../json-schema-form.module';
+import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { MATERIAL_FRAMEWORK_COMPONENTS } from './index';
 import { MaterialDesignFramework } from './material-design.framework';
 import { NgModule } from '@angular/core';
 import { WidgetLibraryModule } from '../../widget-library/widget-library.module';
 import { WidgetLibraryService } from '../../widget-library/widget-library.service';
+
 /**
  * unused @angular/material modules:
  * MatDialogModule, MatGridListModule, MatListModule, MatMenuModule,
@@ -48,8 +49,8 @@ export const ANGULAR_MATERIAL_MODULES = [
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, FlexLayoutModule,
-    ...ANGULAR_MATERIAL_MODULES, WidgetLibraryModule, JsonSchemaFormModule
+    JsonSchemaFormModule, CommonModule, WidgetLibraryModule, FlexLayoutModule,
+    ...ANGULAR_MATERIAL_MODULES
   ],
   declarations: [...MATERIAL_FRAMEWORK_COMPONENTS],
   exports: [JsonSchemaFormModule, ...MATERIAL_FRAMEWORK_COMPONENTS],
