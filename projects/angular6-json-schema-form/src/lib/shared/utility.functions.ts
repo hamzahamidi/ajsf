@@ -1,15 +1,4 @@
-import {
-  hasValue,
-  inArray,
-  isArray,
-  isDefined,
-  isEmpty,
-  isMap,
-  isObject,
-  isSet,
-  isString,
-  PlainObject
-  } from './validator.functions';
+import {hasValue, inArray, isArray, isDefined, isEmpty, isMap, isObject, isSet, isString, PlainObject} from './validator.functions';
 
 /**
  * Utility function library:
@@ -174,6 +163,70 @@ export function hasOwn(object: any, property: string): boolean {
     property = property + '';
   }
   return object.hasOwnProperty(property);
+}
+
+/**
+ * Types of possible expressions which the app is able to evaluate.
+ */
+export enum ExpressionType {
+  EQUALS,
+  NOT_EQUALS,
+  NOT_AN_EXPRESSION
+}
+
+/**
+ * Detects the type of expression from the given candidate. `==` for equals,
+ * `!=` for not equals. If none of these are contained in the candidate, the candidate
+ * is not considered to be an expression at all and thus `NOT_AN_EXPRESSION` is returned.
+ * // {expressionCandidate} expressionCandidate - potential expression
+ */
+export function getExpressionType(expressionCandidate: string): ExpressionType {
+  if (expressionCandidate.indexOf('==') !== -1) {
+    return ExpressionType.EQUALS;
+  }
+
+  if (expressionCandidate.toString().indexOf('!=') !== -1) {
+    return ExpressionType.NOT_EQUALS;
+  }
+
+  return ExpressionType.NOT_AN_EXPRESSION;
+}
+
+export function isEqual(expressionType) {
+  return expressionType as ExpressionType === ExpressionType.EQUALS;
+}
+
+export function isNotEqual(expressionType) {
+  return expressionType as ExpressionType === ExpressionType.NOT_EQUALS;
+}
+
+export function isNotExpression(expressionType) {
+  return expressionType as ExpressionType === ExpressionType.NOT_AN_EXPRESSION;
+}
+
+/**
+ * Splits the expression key by the expressionType on a pair of values
+ * before and after the equals or nor equals sign.
+ * // {expressionType} enum of an expression type
+ * // {key} the given key from a for loop iver all conditions
+ */
+export function getKeyAndValueByExpressionType(expressionType: ExpressionType, key: string) {
+  if (isEqual(expressionType)) {
+    return key.split('==', 2);
+  }
+
+  if (isNotEqual(expressionType)) {
+    return key.split('!=', 2);
+  }
+
+  return null;
+}
+
+export function cleanValueOfQuotes(keyAndValue): String {
+  if (keyAndValue.charAt(0) === '\'' && keyAndValue.charAt(keyAndValue.length - 1) === '\'') {
+    return keyAndValue.replace('\'', '').replace('\'', '');
+  }
+  return keyAndValue;
 }
 
 /**

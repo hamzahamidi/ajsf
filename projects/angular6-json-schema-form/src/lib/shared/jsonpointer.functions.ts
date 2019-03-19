@@ -1,15 +1,16 @@
-import { copy, hasOwn } from './utility.functions';
-import { Injectable } from '@angular/core';
 import {
-  isArray,
-  isDefined,
-  isEmpty,
-  isMap,
-  isNumber,
-  isObject,
-  isString
-  } from './validator.functions';
-
+  cleanValueOfQuotes,
+  copy,
+  ExpressionType,
+  getExpressionType,
+  getKeyAndValueByExpressionType,
+  hasOwn,
+  isEqual,
+  isNotEqual,
+  isNotExpression
+} from './utility.functions';
+import {Injectable} from '@angular/core';
+import {isArray, isDefined, isEmpty, isMap, isNumber, isObject, isString} from './validator.functions';
 
 /**
  * 'JsonPointer' class
@@ -66,12 +67,13 @@ export class JsonPointer {
         ) {
           subObject = subObject[key];
         } else {
-          if (errors) {
-            console.error(`get error: "${key}" key not found in object.`);
-            console.error(pointer);
-            console.error(object);
+          const evaluatedExpression = JsonPointer.evaluateExpression(subObject, key);
+          if (evaluatedExpression.passed) {
+            subObject = evaluatedExpression.key ? subObject[evaluatedExpression.key] : subObject;
+          } else {
+            this.logErrors(errors, key, pointer, object);
+            return getBoolean ? false : undefined;
           }
-          return getBoolean ? false : undefined;
         }
       }
       return getBoolean ? true : subObject;
@@ -84,6 +86,121 @@ export class JsonPointer {
       console.error(object);
     }
     return getBoolean ? false : undefined;
+  }
+
+  private static logErrors(errors, key, pointer, object) {
+    if (errors) {
+      console.error(`get error: "${key}" key not found in object.`);
+      console.error(pointer);
+      console.error(object);
+    }
+  }
+
+  /**
+   * Evaluates conditional expression in form of `model.<property>==<value>` or
+   * `model.<property>!=<value>` where the first one means that the value must match to be
+   * shown in a form, while the former shows the property only when the property value is not
+   * set, or does not equal the given value.
+   *
+   * // { subObject } subObject -  an object containing the data values of properties
+   * // { key } key - the key from the for loop in a form of `<property>==<value>`
+   *
+   * Returns the object with two properties. The property passed informs whether
+   * the expression evaluated successfully and the property key returns either the same
+   * key if it is not contained inside the subObject or the key of the property if it is contained.
+   */
+  static evaluateExpression(subObject: Object, key: any) {
+    const defaultResult = {passed: false, key: key};
+    const keysAndExpression = this.parseKeysAndExpression(key, subObject);
+    if (!keysAndExpression) {
+      return defaultResult;
+    }
+
+    const ownCheckResult = this.doOwnCheckResult(subObject, keysAndExpression);
+    if (ownCheckResult) {
+      return ownCheckResult;
+    }
+
+    const cleanedValue = cleanValueOfQuotes(keysAndExpression.keyAndValue[1]);
+
+    const evaluatedResult = this.performExpressionOnValue(keysAndExpression, cleanedValue, subObject);
+    if (evaluatedResult) {
+      return evaluatedResult;
+    }
+
+    return defaultResult;
+  }
+
+  /**
+   * Performs the actual evaluation on the given expression with given values and keys.
+   * // { cleanedValue } cleanedValue - the given valued cleaned of quotes if it had any
+   * // { subObject } subObject - the object with properties values
+   * // { keysAndExpression } keysAndExpression - an object holding the expressions with
+   */
+  private static performExpressionOnValue(keysAndExpression: any, cleanedValue: String, subObject: Object) {
+    const propertyByKey = subObject[keysAndExpression.keyAndValue[0]];
+    if (this.doComparisonByExpressionType(keysAndExpression.expressionType, propertyByKey, cleanedValue)) {
+      return {passed: true, key: keysAndExpression.keyAndValue[0]};
+    }
+
+    return null;
+  }
+
+  private static doComparisonByExpressionType(expressionType: ExpressionType, propertyByKey, cleanedValue: String): Boolean {
+    if (isEqual(expressionType)) {
+      return propertyByKey === cleanedValue;
+    }
+    if (isNotEqual(expressionType)) {
+      return propertyByKey !== cleanedValue;
+    }
+    return false;
+  }
+
+  /**
+   * Does the checks when the parsed key is actually no a property inside subObject.
+   * That would mean that the equal comparison makes no sense and thus the negative result
+   * is returned, and the not equal comparison is not necessary because it doesn't equal
+   * obviously. Returns null when the given key is a real property inside the subObject.
+   * // { subObject } subObject - the object with properties values
+   * // { keysAndExpression } keysAndExpression - an object holding the expressions with
+   * the associated keys.
+   */
+  private static doOwnCheckResult(subObject: Object, keysAndExpression) {
+    let ownCheckResult = null;
+    if (!hasOwn(subObject, keysAndExpression.keyAndValue[0])) {
+      if (isEqual(keysAndExpression.expressionType)) {
+        ownCheckResult = {passed: false, key: null};
+      }
+      if (isNotEqual(keysAndExpression.expressionType)) {
+        ownCheckResult = {passed: true, key: null};
+      }
+    }
+    return ownCheckResult;
+  }
+
+  /**
+   * Does the basic checks and tries to parse an expression and a pair
+   * of key and value.
+   * // { key } key - the original for loop created value containing key and value in one string
+   * // { subObject } subObject - the object with properties values
+   */
+  private static parseKeysAndExpression(key: string, subObject) {
+    if (this.keyOrSubObjEmpty(key, subObject)) {
+      return null;
+    }
+    const expressionType = getExpressionType(key.toString());
+    if (isNotExpression(expressionType)) {
+      return null;
+    }
+    const keyAndValue = getKeyAndValueByExpressionType(expressionType, key);
+    if (!keyAndValue || !keyAndValue[0] || !keyAndValue[1]) {
+      return null;
+    }
+    return {expressionType: expressionType, keyAndValue: keyAndValue};
+  }
+
+  private static keyOrSubObjEmpty(key: any, subObject: Object) {
+    return !key || !subObject;
   }
 
   /**
