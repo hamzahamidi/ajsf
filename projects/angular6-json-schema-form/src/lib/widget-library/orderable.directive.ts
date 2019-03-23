@@ -61,6 +61,7 @@ export class OrderableDirective implements OnInit {
 
         this.element.addEventListener('dragstart', (event) => {
           event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.setData('text', '');
           // Hack to bypass stupid HTML drag-and-drop dataTransfer protection
           // so drag source info will be available on dragenter
           const sourceArrayIndex = this.dataIndex[this.dataIndex.length - 1];
