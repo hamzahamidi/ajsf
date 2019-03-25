@@ -1,18 +1,20 @@
 import { AbstractControl } from '@angular/forms';
 import { buildTitleMap, isArray } from '../../shared';
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_LABEL_GLOBAL_OPTIONS} from '@angular/material';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'material-select-widget',
   template: `
     <mat-form-field
-      [appearance]="options?.appearance || 'standard'"
-      [hideRequiredMarker]="options?.hideRequiredMarker"
+      [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
       [class]="options?.htmlClass || ''"
-      [floatLabel]="options?.floatLabel || (options?.notitle ? 'never' : 'auto')"
+      [floatLabel]="options?.floatLabel || matLabelGlobalOptions?.float || (options?.notitle ? 'never' : 'auto')"
+      [hideRequiredMarker]="options?.hideRequired ? 'true' : 'false'"
       [style.width]="'100%'">
+      <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
       <span matPrefix *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
       <mat-select *ngIf="boundControl"
@@ -94,6 +96,8 @@ export class MaterialSelectComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
+    @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
+    @Inject(MAT_LABEL_GLOBAL_OPTIONS) @Optional() public matLabelGlobalOptions,
     private jsf: JsonSchemaFormService
   ) { }
 

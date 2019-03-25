@@ -1,15 +1,18 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_LABEL_GLOBAL_OPTIONS} from '@angular/material';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'material-textarea-widget',
   template: `
-    <mat-form-field
+    <mat-form-field [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
       [class]="options?.htmlClass || ''"
-      [floatLabel]="options?.floatLabel || (options?.notitle ? 'never' : 'auto')"
+      [floatLabel]="options?.floatLabel || matLabelGlobalOptions?.float || (options?.notitle ? 'never' : 'auto')"
+      [hideRequiredMarker]="options?.hideRequired ? 'true' : 'false'"
       [style.width]="'100%'">
+      <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
       <span matPrefix *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
       <textarea matInput *ngIf="boundControl"
@@ -67,6 +70,8 @@ export class MaterialTextareaComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
+    @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
+    @Inject(MAT_LABEL_GLOBAL_OPTIONS) @Optional() public matLabelGlobalOptions,
     private jsf: JsonSchemaFormService
   ) { }
 
