@@ -81,7 +81,7 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
     <div *ngFor="let script of scripts">
       <script type="text/javascript" [src]="script"></script>
     </div>
-    <form class="json-schema-form" (ngSubmit)="submitForm()">
+    <form [autocomplete]="jsf?.formOptions?.autocomplete ? 'on' : 'off'" class="json-schema-form" (ngSubmit)="submitForm()">
       <root-widget [layout]="jsf?.layout"></root-widget>
     </form>
     <div *ngIf="debug || jsf?.formOptions?.debug">

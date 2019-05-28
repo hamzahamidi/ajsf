@@ -83,6 +83,7 @@ export class JsonSchemaFormService {
 
   // Default global form options
   defaultFormOptions: any = {
+    autocomplete: true, // Allow the web browser to remember previous form submission values as defaults
     addSubmit: 'auto', // Add a submit button if layout does not have one?
     // for addSubmit: true = always, false = never,
     // 'auto' = only if layout is undefined (form is built from schema alone)
