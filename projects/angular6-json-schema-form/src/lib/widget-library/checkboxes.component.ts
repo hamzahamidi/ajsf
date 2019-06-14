@@ -47,7 +47,7 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
             [checked]="checkboxItem.checked"
             [class]="options?.fieldHtmlClass || ''"
             [disabled]="controlDisabled"
-            [id]="options?.name + '/' + checkboxItem.value"
+            [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
             [name]="checkboxItem?.name"
             [readonly]="options?.readonly ? 'readonly' : null"
             [value]="checkboxItem.value"
