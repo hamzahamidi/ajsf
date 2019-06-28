@@ -1,0 +1,11 @@
+{
+    "$schema": "../../../../../../node_modules/ng-packagr/package.schema.json",
+    "name": "@ng-schema-form/bootstrap4",
+    "version": "0.0.0",
+    "ngPackage": {
+      "lib": {
+        "entryFile": "bootstrap-4-framework.module.ts"
+      },
+      "dest": "@ng-schema-form/bootstrap4"
+    }
+  }

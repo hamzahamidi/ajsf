@@ -1,0 +1,11 @@
+{
+    "$schema": "../../../../../../node_modules/ng-packagr/package.schema.json",
+    "name": "@ng-schema-form/no-framework",
+    "version": "0.0.0",
+    "ngPackage": {
+      "lib": {
+        "entryFile": "no-framework.module.ts"
+      },
+      "dest": "@ng-schema-form/no-framework"
+    }
+  }

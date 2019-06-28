@@ -1,7 +1,7 @@
 import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
-import { dateToString, stringToDate } from '../../shared';
+import { dateToString } from '../../shared';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material';
 

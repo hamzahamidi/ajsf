@@ -1,0 +1,11 @@
+{
+    "$schema": "../../../../../../node_modules/ng-packagr/package.schema.json",
+    "name": "@ng-schema-form/material",
+    "version": "0.0.0",
+    "ngPackage": {
+      "lib": {
+        "entryFile": "index.ts"
+      },
+      "dest": "@ng-schema-form/material"
+    }
+  }

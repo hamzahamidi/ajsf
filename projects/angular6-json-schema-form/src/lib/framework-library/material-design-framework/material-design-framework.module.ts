@@ -25,7 +25,7 @@ import {
   MatStepperModule,
   MatTabsModule,
   MatTooltipModule
-  } from '@angular/material';
+} from '@angular/material';
 import { MATERIAL_FRAMEWORK_COMPONENTS } from './index';
 import { MaterialDesignFramework } from './material-design.framework';
 import { NgModule } from '@angular/core';
@@ -48,8 +48,8 @@ export const ANGULAR_MATERIAL_MODULES = [
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, FlexLayoutModule,
-    ...ANGULAR_MATERIAL_MODULES, WidgetLibraryModule, JsonSchemaFormModule
+    JsonSchemaFormModule, CommonModule, FormsModule, ReactiveFormsModule, WidgetLibraryModule, FlexLayoutModule,
+    ...ANGULAR_MATERIAL_MODULES
   ],
   declarations: [...MATERIAL_FRAMEWORK_COMPONENTS],
   exports: [JsonSchemaFormModule, ...MATERIAL_FRAMEWORK_COMPONENTS],
