@@ -4,8 +4,7 @@ import { JsonSchemaFormComponent } from './json-schema-form.component';
 import { NgModule } from '@angular/core';
 import { NoFrameworkModule } from './framework-library/no-framework/no-framework.module';
 import { WidgetLibraryModule } from './widget-library/widget-library.module';
-
-
+import { fixAngularFlex } from './angular-flex-monkey-patch';
 
 
 @NgModule({
@@ -16,4 +15,8 @@ import { WidgetLibraryModule } from './widget-library/widget-library.module';
   declarations: [JsonSchemaFormComponent],
   exports: [JsonSchemaFormComponent, WidgetLibraryModule]
 })
-export class JsonSchemaFormModule {}
+export class JsonSchemaFormModule {
+  constructor() {
+    fixAngularFlex();
+  }
+}

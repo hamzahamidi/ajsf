@@ -15,7 +15,9 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
-  @ViewChild('widgetContainer', { read: ViewContainerRef })
+  @ViewChild('widgetContainer', {
+      read: ViewContainerRef,
+      static: true })
     widgetContainer: ViewContainerRef;
 
   constructor(
@@ -32,7 +34,7 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
   }
 
   updateComponent() {
-    if (!this.newComponent && this.jsf.framework) {
+    if (this.widgetContainer && !this.newComponent && this.jsf.framework) {
       this.newComponent = this.widgetContainer.createComponent(
         this.componentFactory.resolveComponentFactory(this.jsf.framework)
       );

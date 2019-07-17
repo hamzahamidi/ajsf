@@ -3,7 +3,8 @@ import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '../../json-schema-form.service';
 import { dateToString, stringToDate } from '../../shared';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material';
+import { MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material/core';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
   // tslint:disable-next-line:component-selector
