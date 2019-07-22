@@ -21,7 +21,7 @@ export class TemplateComponent implements OnInit, OnChanges {
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
-  @ViewChild('widgetContainer', { read: ViewContainerRef })
+  @ViewChild('widgetContainer', { read: ViewContainerRef , static: true})
     widgetContainer: ViewContainerRef;
 
   constructor(
@@ -38,7 +38,7 @@ export class TemplateComponent implements OnInit, OnChanges {
   }
 
   updateComponent() {
-    if (!this.newComponent && this.layoutNode.options.template) {
+    if (this.widgetContainer && !this.newComponent && this.layoutNode.options.template) {
       this.newComponent = this.widgetContainer.createComponent(
         this.componentFactory.resolveComponentFactory(this.layoutNode.options.template)
       );
