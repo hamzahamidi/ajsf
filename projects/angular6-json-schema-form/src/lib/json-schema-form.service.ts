@@ -39,6 +39,7 @@ export interface ErrorMessages {
   [control_name: string]: { message: string | Function | Object, code: string }[];
 }
 
+type FormArrOrGrp = FormArray | FormGroup;
 
 @Injectable()
 export class JsonSchemaFormService {
@@ -677,16 +678,25 @@ export class JsonSchemaFormService {
     ) { return false; }
 
     // Remove the Angular form control from the parent formArray or formGroup
-    if (ctx.layoutNode.arrayItem) { // Remove array item from formArray
-      (<FormArray>this.getFormControlGroup(ctx))
+    const formArrOrGrp: FormArrOrGrp = this.getFormControlGroup(ctx);
+
+    if (ctx.layoutNode.arrayItem && this.determineIfIsFormArr(formArrOrGrp)) { // Remove array item from formArray
+      (<FormArray>formArrOrGrp)
         .removeAt(ctx.dataIndex[ctx.dataIndex.length - 1]);
     } else { // Remove $ref item from formGroup
-      (<FormGroup>this.getFormControlGroup(ctx))
+      (<FormGroup>formArrOrGrp)
         .removeControl(this.getFormControlName(ctx));
     }
 
     // Remove layoutNode from layout
     JsonPointer.remove(this.layout, this.getLayoutPointer(ctx));
     return true;
+  }
+
+  determineIfIsFormArr(toBeDetermined: FormArrOrGrp): toBeDetermined is FormArray {
+    if ((toBeDetermined as FormArray).removeAt) {
+      return true;
+    }
+    return false;
   }
 }
