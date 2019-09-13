@@ -1,6 +1,6 @@
 {
     "name": "angular6-json-schema-form",
-    "version": "7.3.0",
+    "version": "8.0.0",
     "description": "Angular JSON Schema Form builder",
     "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
     "keywords": [
@@ -12,6 +12,9 @@
         "Angular7",
         "Angular 7",
         "ng7",
+        "Angular8",
+        "Angular 8",
+        "ng8",
         "JSON Schema",
         "form",
         "forms",
