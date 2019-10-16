@@ -32,6 +32,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [readonly]="options?.readonly"
         [required]="options?.required"
         [style.width]="'100%'"
+        [value]="currentDate"
         (blur)="options.showErrors = true"
         (dateChange)="updateValue($event)"
         (dateInput)="updateValue($event)">
@@ -49,6 +50,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [required]="options?.required"
         [style.width]="'100%'"
         [readonly]="options?.readonly"
+        [value]="currentDate"
         (blur)="options.showErrors = true"
         (dateChange)="updateValue($event)"
         (dateInput)="updateValue($event)">
@@ -76,10 +78,13 @@ export class MaterialDatepickerComponent implements OnInit {
   boundControl = false;
   options: any;
   autoCompleteList: string[] = [];
+  currentDate;
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
+  
+  
   constructor(
     @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
     @Inject(MAT_LABEL_GLOBAL_OPTIONS) @Optional() public matLabelGlobalOptions,
@@ -89,7 +94,8 @@ export class MaterialDatepickerComponent implements OnInit {
   ngOnInit() {
     this.options = this.layoutNode.options || {};
     this.jsf.initializeControl(this, !this.options.readonly);
-    if (this.controlValue) { this.setDate(dateToString(new Date(this.controlValue))); }
+    this.currentDate = stringToDate(this.controlValue);
+    if (this.controlValue) { this.setDate(dateToString(new Date(this.currentDate))); }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
     }
