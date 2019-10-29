@@ -590,7 +590,7 @@ export function buildLayoutForNestedArray(layout, jsf, widgetLibrary) {
     // layoutPointer: "/0/items/1/items/2/items/3"
 
     const layoutPointerItems = layoutPointer.match(/(items\/[0-9]+)+/g);
-    if (layoutPointerItems && layoutPointerItems.length > 2) {
+    if (layoutPointerItems && layoutPointerItems.length > 1) {
       const parentLayoutPointer = layoutPointerItems[layoutPointerItems.length - 2];
       const parentItemIndex: number = parentLayoutPointer.substring(parentLayoutPointer.lastIndexOf('/'));
       const parentDataPointer = layoutItem.dataPointer.replace(/\/-/g, parentItemIndex);
