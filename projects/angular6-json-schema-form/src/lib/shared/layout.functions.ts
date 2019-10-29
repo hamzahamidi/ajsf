@@ -50,6 +50,7 @@ import { TitleMapItem } from '../json-schema-form.service';
  * //
  */
 export function buildLayout(jsf, widgetLibrary) {
+  jsf.hasNestedArrayLayoutItem = false;
   let hasSubmitButton = !JsonPointer.get(jsf, '/formOptions/addSubmit');
   const formLayout = mapLayout(jsf.layout, (layoutItem, index, layoutPointer) => {
     const newNode: any = {
@@ -166,8 +167,76 @@ export function buildLayout(jsf, widgetLibrary) {
       if (newNode.dataPointer === '*') {
         return buildLayoutFromSchema(jsf, widgetLibrary, jsf.formValues);
       }
-      const nodeValue =
-        JsonPointer.get(jsf.formValues, newNode.dataPointer.replace(/\/-/g, '/1'));
+
+      // currently, the layout builder visits each layout node (as per the
+      // layout definition) and builds layout items as per respective data
+      // When the layout has item of type array available either at root level
+      // or as an object property - the array items are rendered as per
+      // thhe respective data count.
+      // But if the layout item of type array is under another array-type
+      // layout item then layout items are not created according to number of
+      // items required at specific index-level
+      // for example, dataPointer -> /itemX/itemY/-/itemZ
+      // Here, if the itemY and itemZ are of type 'array' and as per the input data,
+      // itemY[0] = { itemZ: [ itemZ_1, itemZ_2, itemZ_3 ]}
+      // itemY[1] = { itemZ: [ itemZ_X ]}
+
+      // the dataPointer.replace(/\/-/g, '/1') call creates data pointer as
+      //   /itemX/itemY/1/itemZ
+      // and the data lookup
+      //   JsonPointer.get(jsf.formValues,
+      //      dataPointer.replace(/\/-/g, '/1'));
+      // will return only single data item as per itemY[1]/itemZ entries
+      // and as per that only 1 layout item for itemZ gets created for each itemY
+      // Actual:
+      //   itemY[0]/itemZ -> 1-layout-item
+      //   itemY[1]/itemZ -> 1-layout-item
+      // Expected:
+      //   itemY[0]/itemZ -> *2*-layout-items
+      //   itemY[1]/itemZ -> 1-layout-item
+
+      // the layout builder does NOT support nested array types
+      // i.e. array within array at any levels, for example,
+      // "/itemA/-/itemX/itemY/-/itemZ"
+      //
+      // this change is to handle nested (1-level only) array scenario as per above example
+      // if nested array item found as per the dataPointer then (instead of creating the layout
+      // items) find the itemwise required layout item and attach that information with the node
+      // options using the itemCountsMap property
+      let nodeValue: any;
+      let nestedArrayItems;
+      if (newNode.type === 'array'
+        && (nestedArrayItems = newNode.dataPointer.match(/\/-\//g))
+        && nestedArrayItems && (nestedArrayItems.length === 1)) {
+
+        jsf.hasNestedArrayLayoutItem = true;
+        const parentNodeValues = JsonPointer.get(jsf.formValues,
+                                  newNode.dataPointer.substring(0, newNode.dataPointer.indexOf('/-/')));
+        if (parentNodeValues) {
+          if (!newNode.options.itemCountsMap) {
+            newNode.options.itemCountsMap = {};
+          }
+          // as per above example,
+          // newNode.options.itemCountsMap entries would be like
+          // "/itemX/itemY/0/itemZ" : 2
+          // "/itemX/itemY/1/itemZ" : 1
+
+          // once, the buildLayout completed and if layout has any nested array then
+          // buildLayoutForNestedArray would be called and itemCountsMap would be used
+          // to find (and create) number of itemwise layout entries required for itemZ
+
+          for (let i = 0; i < parentNodeValues.length; i++) {
+            const childItemCountKey = newNode.dataPointer.replace(/\/-/g, '/' + i);
+            nodeValue = JsonPointer.get(jsf.formValues, childItemCountKey);
+            if (isArray(nodeValue)) {
+              newNode.options.itemCountsMap[childItemCountKey] = nodeValue.length;
+            }
+          }
+        }
+      } else {
+        nodeValue = JsonPointer.get(jsf.formValues,
+                      newNode.dataPointer.replace(/\/-/g, '/1'));
+      }
 
       // TODO: Create function getFormValues(jsf, dataPointer, forRefLibrary)
       // check formOptions.setSchemaDefaults and formOptions.setLayoutDefaults
@@ -288,6 +357,7 @@ export function buildLayout(jsf, widgetLibrary) {
         const itemRefPointer = removeRecursiveReferences(
           newNode.dataPointer + '/-', jsf.dataRecursiveRefMap, jsf.arrayMap
         );
+        newNode.itemRefPointer = itemRefPointer;
         if (!jsf.dataMap.has(itemRefPointer)) {
           jsf.dataMap.set(itemRefPointer, new Map());
         }
@@ -371,18 +441,21 @@ export function buildLayout(jsf, widgetLibrary) {
           }, 'top-down');
         }
 
+        // if the node is not a nested array item then
         // Add any additional default items
-        if (!newNode.recursiveReference || newNode.options.required) {
-          const arrayLength = Math.min(Math.max(
-            newNode.options.tupleItems + newNode.options.listItems,
-            isArray(nodeValue) ? nodeValue.length : 0
-          ), newNode.options.maxItems);
-          for (let i = newNode.items.length; i < arrayLength; i++) {
-            newNode.items.push(getLayoutNode({
-              $ref: itemRefPointer,
-              dataPointer: newNode.dataPointer,
-              recursiveReference: newNode.recursiveReference,
-            }, jsf, widgetLibrary));
+        if (!newNode.options.itemCountsMap) {
+          if (!newNode.recursiveReference || newNode.options.required) {
+            const arrayLength = Math.min(Math.max(
+              newNode.options.tupleItems + newNode.options.listItems,
+              isArray(nodeValue) ? nodeValue.length : 0
+            ), newNode.options.maxItems);
+            for (let i = newNode.items.length; i < arrayLength; i++) {
+              newNode.items.push(getLayoutNode({
+                $ref: itemRefPointer,
+                dataPointer: newNode.dataPointer,
+                recursiveReference: newNode.recursiveReference,
+              }, jsf, widgetLibrary));
+            }
           }
         }
 
@@ -482,6 +555,65 @@ export function buildLayout(jsf, widgetLibrary) {
       widget: widgetLibrary.getWidget('submit'),
     });
   }
+  return formLayout;
+}
+
+/**
+ * Layout function library:
+ *
+ * buildLayout:            Builds nested array layout items (as per data items) from the input layout
+ *
+ * mapLayout:
+ *
+ * getLayoutNode:
+ *
+ */
+
+/**
+ * 'buildLayoutForNestedArray' function
+ *
+ * //   jsf
+ * //   widgetLibrary
+ * //
+ */
+export function buildLayoutForNestedArray(layout, jsf, widgetLibrary) {
+
+  const formLayout = mapLayout(layout, (layoutItem, index, layoutPointer) => {
+
+    if (layoutItem.dataType !== 'array'
+        || !isArray(layoutItem.items)
+        || !layoutItem.options.itemCountsMap) {
+      return layoutItem;
+    }
+    // find the parent index from the layoutPointer
+    // - derive based on pattern '/items/index/{parentIndex}/items/index'
+    // layoutPointer: "/0/items/1/items/2/items/3"
+
+    const layoutPointerItems = layoutPointer.match(/(items\/[0-9]+)+/g);
+    if (layoutPointerItems && layoutPointerItems.length > 2) {
+      const parentLayoutPointer = layoutPointerItems[layoutPointerItems.length - 2];
+      const parentItemIndex: number = parentLayoutPointer.substring(parentLayoutPointer.lastIndexOf('/'));
+      const parentDataPointer = layoutItem.dataPointer.replace(/\/-/g, parentItemIndex);
+
+      const expectedChildItemCount = layoutItem.options.itemCountsMap[parentDataPointer] || 0;
+      let actualChildItemCount = layoutItem.items.length;
+      if ((layoutItem.options.addable || layoutItem.options.removable)
+          && (actualChildItemCount > 0)) {
+        actualChildItemCount -= 1;
+      }
+      if (actualChildItemCount < expectedChildItemCount) {
+        for (let i = actualChildItemCount; i < expectedChildItemCount; i++) {
+          layoutItem.items.unshift(getLayoutNode({
+                $ref: layoutItem.itemRefPointer,
+                dataPointer: layoutItem.dataPointer,
+                recursiveReference: layoutItem.recursiveReference,
+            }, jsf, widgetLibrary));
+        }
+      }
+    }
+
+    return layoutItem;
+  });
   return formLayout;
 }
 

@@ -1,0 +1,108 @@
+{
+    "schema": {
+        "definitions": {
+            "tiers_obj": {
+                "type": "object",
+                "title": "Tier",
+                "properties": {
+                    "min_amount": {
+                        "type": "integer"
+                    },
+                    "max_amount": {
+                        "type": "integer"
+                    },
+                    "fees": {
+                        "title": "Fees",
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "title": "Ongoing Fees"
+                        }
+                    }
+                }
+            }
+        },
+        "type": "object",
+        "properties": {
+            "plan": {
+                "type": "object",
+                "title": "Plan",
+                "required": [
+                    "tiers"
+                ],
+                "properties": {
+                    "tiers": {
+                        "title": "Tiers",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/tiers_obj",
+                            "extendRefs": true
+                        }
+                    }
+                }
+            }
+        },
+        "required": [
+            "plan"
+        ]
+    },
+    "layout": [
+        {
+            "key": "plan",
+            "type": "fieldset",
+            "title": "Choose a Plan",
+            "items": [
+                {
+                    "key": "plan.tiers",
+                    "type": "array",
+                    "listItems": 1,
+                    "items": [
+                        {
+                            "type": "div",
+                            "displayFlex": true,
+                            "flex-flow": "row wrap",
+                            "items": [
+                                {
+                                    "key": "plan.tiers[].min_amount"
+                                },
+                                {
+                                    "key": "plan.tiers[].max_amount"
+                                },
+                                {
+                                    "key": "plan.tiers[].fees",
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "key": "plan.tiers[].fees[]"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "data": {
+        "plan": {
+            "tiers": [
+                {
+                    "min_amount": 10,
+                    "max_amount": 100,
+                    "fees": [
+                        11,
+                        12
+                    ]
+                },
+                {
+                    "min_amount": 20,
+                    "max_amount": 2000,
+                    "fees": [
+                        21
+                    ]
+                }
+            ]
+        }
+    }
+}

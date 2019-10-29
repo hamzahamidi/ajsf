@@ -8,7 +8,7 @@ import {
   formatFormData,
   getControl
   } from './shared/form-group.functions';
-import { buildLayout, getLayoutNode } from './shared/layout.functions';
+import { buildLayout, getLayoutNode, buildLayoutForNestedArray } from './shared/layout.functions';
 import { buildSchemaFromData, buildSchemaFromLayout, removeRecursiveReferences } from './shared/json-schema.functions';
 import { enValidationMessages } from './locale/en-validation-messages';
 import { frValidationMessages } from './locale/fr-validation-messages';
@@ -79,6 +79,7 @@ export class JsonSchemaFormService {
   layoutRefLibrary: any = { '': null }; // Library of layout nodes for adding to form
   templateRefLibrary: any = {}; // Library of formGroup templates for adding to form
   hasRootReference = false; // Does the form include a recursive reference to itself?
+  hasNestedArrayLayoutItem = false; // does the layout being processed (via buildLayout) has any nested array item?
 
   language = 'en-US'; // Does the form include a recursive reference to itself?
 
@@ -257,6 +258,9 @@ export class JsonSchemaFormService {
 
   buildLayout(widgetLibrary: any) {
     this.layout = buildLayout(this, widgetLibrary);
+    if (this.hasNestedArrayLayoutItem) {
+      this.layout = buildLayoutForNestedArray(this.layout, this, widgetLibrary);
+    }
   }
 
   setOptions(newOptions: any) {

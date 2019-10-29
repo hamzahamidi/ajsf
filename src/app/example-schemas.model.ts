@@ -23,6 +23,7 @@ export const Examples: any = {
       { name: 'Flexbox layout',                  file: 'ng-jsf-flex-layout', },
       // { name: 'Simple Array',                    file: 'ng-jsf-simple-array', },
       { name: 'Nested Arrays',                   file: 'ng-jsf-nested-arrays', },
+      { name: 'Array within Array',                   file: 'ng-jsf-array-within-array', },
       { name: 'Deep Recursive References',       file: 'ng-jsf-deep-ref', },
       { name: 'Select Control Lists',            file: 'ng-jsf-select-list-examples', },
       // { name: 'Select Control Widgets',          file: 'ng-jsf-select-widget-examples', },
