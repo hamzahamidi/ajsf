@@ -1,36 +1,33 @@
+import { Injectable } from '@angular/core';
+import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
+import { Subject } from 'rxjs';
 import cloneDeep from 'lodash-es/cloneDeep';
 import Ajv from 'ajv';
 import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
-import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import {
   buildFormGroup,
   buildFormGroupTemplate,
   formatFormData,
-  getControl
-  } from './shared/form-group.functions';
-import { buildLayout, getLayoutNode } from './shared/layout.functions';
-import { buildSchemaFromData, buildSchemaFromLayout, removeRecursiveReferences } from './shared/json-schema.functions';
-import { enValidationMessages } from './locale/en-validation-messages';
-import { frValidationMessages } from './locale/fr-validation-messages';
-import { zhValidationMessages } from './locale/zh-validation-messages';
-import {
+  getControl,
   fixTitle,
   forEach,
   hasOwn,
-  toTitleCase
-  } from './shared/utility.functions';
-import {
+  toTitleCase,
+  buildLayout,
+  getLayoutNode,
+  buildSchemaFromData,
+  buildSchemaFromLayout,
+  removeRecursiveReferences,
   hasValue,
   isArray,
   isDefined,
   isEmpty,
-  isObject
-  } from './shared/validator.functions';
-import { Injectable } from '@angular/core';
-import { JsonPointer } from './shared/jsonpointer.functions';
-import { Subject } from 'rxjs';
-
-
+  isObject,
+  JsonPointer
+} from './shared';
+import { enValidationMessages } from './locale/en-validation-messages';
+import { frValidationMessages } from './locale/fr-validation-messages';
+import { zhValidationMessages } from './locale/zh-validation-messages';
 
 export interface TitleMapItem {
   name?: string; value?: any; checked?: boolean; group?: string; items?: TitleMapItem[];
