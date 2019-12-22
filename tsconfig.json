@@ -43,6 +43,12 @@
       ],
       "ajsf-bootstrap4-framework/*": [
         "dist/ajsf-bootstrap4-framework/*"
+      ],
+      "ajsf-bootstrap3-framework": [
+        "dist/ajsf-bootstrap3-framework"
+      ],
+      "ajsf-bootstrap3-framework/*": [
+        "dist/ajsf-bootstrap3-framework/*"
       ]
     }
   }
