@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { JsonSchemaFormComponent } from './json-schema-form.component';
 import { NgModule } from '@angular/core';
-import { NoFrameworkModule } from './framework-library/no-framework/no-framework.module';
+import { JsonSchemaFormComponent } from './json-schema-form.component';
+import { NoFrameworkModule } from './framework-library/public_api';
 import { WidgetLibraryModule } from './widget-library/widget-library.module';
-import { fixAngularFlex } from './angular-flex-monkey-patch';
-
 
 @NgModule({
   imports: [
@@ -16,7 +14,4 @@ import { fixAngularFlex } from './angular-flex-monkey-patch';
   exports: [JsonSchemaFormComponent, WidgetLibraryModule]
 })
 export class JsonSchemaFormModule {
-  constructor() {
-    fixAngularFlex();
-  }
 }
