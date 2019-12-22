@@ -21,6 +21,12 @@
       ],
       "ajsf-bootstrap3-framework/*": [
         "projects/ajsf-bootstrap3-framework/src/lib/*"
+      ],
+      "ajsf-material-framework": [
+        "projects/ajsf-material-framework/src/public_api.ts"
+      ],
+      "ajsf-material-framework/*": [
+        "projects/ajsf-material-framework/src/lib/*"
       ]
     }
   },

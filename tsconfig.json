@@ -49,6 +49,12 @@
       ],
       "ajsf-bootstrap3-framework/*": [
         "dist/ajsf-bootstrap3-framework/*"
+      ],
+      "ajsf-material-framework": [
+        "dist/ajsf-material-framework"
+      ],
+      "ajsf-material-framework/*": [
+        "dist/ajsf-material-framework/*"
       ]
     }
   }

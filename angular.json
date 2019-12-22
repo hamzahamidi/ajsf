@@ -231,6 +231,41 @@
           }
         }
       }
+    },
+    "ajsf-material-framework": {
+      "projectType": "library",
+      "root": "projects/ajsf-material-framework",
+      "sourceRoot": "projects/ajsf-material-framework/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ajsf-material-framework/tsconfig.lib.json",
+            "project": "projects/ajsf-material-framework/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ajsf-material-framework/src/test.ts",
+            "tsConfig": "projects/ajsf-material-framework/tsconfig.spec.json",
+            "karmaConfig": "projects/ajsf-material-framework/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ajsf-material-framework/tsconfig.lib.json",
+              "projects/ajsf-material-framework/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "angular6-json-schema-form-app",
