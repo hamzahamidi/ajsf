@@ -161,6 +161,41 @@
           }
         }
       }
+    },
+    "ajsf-bootstrap4-framework": {
+      "projectType": "library",
+      "root": "projects/ajsf-bootstrap4-framework",
+      "sourceRoot": "projects/ajsf-bootstrap4-framework/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ajsf-bootstrap4-framework/tsconfig.lib.json",
+            "project": "projects/ajsf-bootstrap4-framework/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ajsf-bootstrap4-framework/src/test.ts",
+            "tsConfig": "projects/ajsf-bootstrap4-framework/tsconfig.spec.json",
+            "karmaConfig": "projects/ajsf-bootstrap4-framework/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ajsf-bootstrap4-framework/tsconfig.lib.json",
+              "projects/ajsf-bootstrap4-framework/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "angular6-json-schema-form-app",
