@@ -18,6 +18,7 @@ import { DemoRootComponent } from './demo-root.component';
 import { routes } from './demo.routes';
 import { NoFrameworkModule } from 'angular6-json-schema-form';
 import { Bootstrap4FrameworkModule } from 'ajsf-bootstrap4-framework';
+import { Bootstrap3FrameworkModule } from 'ajsf-bootstrap3-framework';
 
 // To include JsonSchemaFormModule after downloading from NPM, use this instead:
 //
@@ -36,6 +37,7 @@ import { Bootstrap4FrameworkModule } from 'ajsf-bootstrap4-framework';
     MatIconModule, MatMenuModule, MatSelectModule, MatToolbarModule,
     RouterModule.forRoot(routes),
     Bootstrap4FrameworkModule,
+    Bootstrap3FrameworkModule,
     NoFrameworkModule
   ],
   bootstrap: [DemoRootComponent]
