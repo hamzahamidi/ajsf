@@ -1,0 +1,12 @@
+{
+  "name": "ajsf-material-framework",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "@angular/material": "^7.3.2",
+    "@angular/cdk": "^7.3.3",
+    "@angular/flex-layout": "^7.0.0-beta.23",
+    "angular6-json-schema-form": "^8.0.0"
+  }
+}
