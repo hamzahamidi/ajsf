@@ -1,0 +1,9 @@
+{
+  "name": "@ajsf/bootstrap4",
+  "version": "0.1.0",
+  "peerDependencies": {
+    "@angular/common": ">=6.1.10",
+    "@angular/core": ">=6.1.10",
+    "@ajsf/core": "^0.1.0"
+  }
+}

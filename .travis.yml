@@ -5,14 +5,32 @@ node_js:
 branches:
   only:
     - master
-    - develop
 
 before_script:
   - yarn install --frozen-lockfile
 
-script:
-  - yarn buildlib
-  - yarn build
+jobs:
+  include:
+    - stage: Build @ajsf/core
+      name: @ajsf/core
+      script:
+        - yarn build:core
+    - stage: Build @ajsf/bootstrap3
+      name: @ajsf/bootstrap3
+      script:
+        - yarn build:bs3
+    - stage: Build @ajsf/bootstrap4
+      name: @ajsf/bootstrap4
+      script:
+        - yarn build:bs4
+    - stage: Build @ajsf/material
+      name: @ajsf/material
+      script:
+        - yarn build:material
+    - stage: Build demo application
+      name: online Demo
+      script:
+        - yarn build:demo-only
 
 deploy:
   provider: pages
@@ -21,5 +39,5 @@ deploy:
   keep-history: true
   on:
     branch: master
-  local_dir: dist/angular6-json-schema-form-app
+  local_dir: dist/demo
   

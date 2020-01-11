@@ -1,9 +1,0 @@
-{
-  "name": "ajsf-bootstrap3-framework",
-  "version": "1.0.0",
-  "peerDependencies": {
-    "@angular/common": ">=6.1.10",
-    "@angular/core": ">=6.1.10",
-    "angular6-json-schema-form": "^8.0.0"
-  }
-}

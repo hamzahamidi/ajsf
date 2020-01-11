@@ -32,29 +32,29 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "angular6-json-schema-form": [
-        "dist/angular6-json-schema-form"
+      "@ajsf/core": [
+        "dist/@ajsf/core"
       ],
-      "angular6-json-schema-form/*": [
-        "dist/angular6-json-schema-form/*"
+      "@ajsf/core/*": [
+        "dist/@ajsf/core/*"
       ],
-      "ajsf-bootstrap4-framework": [
-        "dist/ajsf-bootstrap4-framework"
+      "@ajsf/bootstrap3": [
+        "dist/@ajsf/bootstrap3"
       ],
-      "ajsf-bootstrap4-framework/*": [
-        "dist/ajsf-bootstrap4-framework/*"
+      "@ajsf/bootstrap3/*": [
+        "dist/@ajsf/bootstrap3/*"
       ],
-      "ajsf-bootstrap3-framework": [
-        "dist/ajsf-bootstrap3-framework"
+      "@ajsf/bootstrap4": [
+        "dist/@ajsf/bootstrap4"
       ],
-      "ajsf-bootstrap3-framework/*": [
-        "dist/ajsf-bootstrap3-framework/*"
+      "@ajsf/bootstrap4/*": [
+        "dist/@ajsf/bootstrap4/*"
       ],
-      "ajsf-material-framework": [
-        "dist/ajsf-material-framework"
+      "@ajsf/material": [
+        "dist/@ajsf/material"
       ],
-      "ajsf-material-framework/*": [
-        "dist/ajsf-material-framework/*"
+      "@ajsf/material/*": [
+        "dist/@ajsf/material/*"
       ]
     }
   }
