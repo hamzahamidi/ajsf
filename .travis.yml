@@ -12,32 +12,34 @@ before_script:
 jobs:
   include:
     - stage: Build @ajsf/core
-      name: @ajsf/core
+      name: ajsf/core
       script:
         - yarn build:core
     - stage: Build @ajsf/bootstrap3
-      name: @ajsf/bootstrap3
+      name: ajsf/bootstrap3
       script:
+        - yarn build:core
         - yarn build:bs3
     - stage: Build @ajsf/bootstrap4
-      name: @ajsf/bootstrap4
+      name: ajsf/bootstrap4
       script:
+        - yarn build:core
         - yarn build:bs4
     - stage: Build @ajsf/material
-      name: @ajsf/material
+      name: ajsf/material
       script:
+        - yarn build:core
         - yarn build:material
-    - stage: Build demo application
+    - stage: Build demo application & Deploy
       name: online Demo
       script:
-        - yarn build:demo-only
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  keep-history: true
-  on:
-    branch: master
-  local_dir: dist/demo
+        - yarn build:demo
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+        keep-history: true
+        on:
+          branch: master
+        local_dir: dist/demo
   
