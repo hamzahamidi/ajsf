@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "downlevelIteration": true,
     "importHelpers": true,
     "module": "esnext",
@@ -31,12 +30,31 @@
       "es2016",
       "dom"
     ],
+    "baseUrl": "./",
     "paths": {
-      "angular6-json-schema-form": [
-        "dist/angular6-json-schema-form"
+      "@ajsf/core": [
+        "dist/@ajsf/core"
       ],
-      "angular6-json-schema-form/*": [
-        "dist/angular6-json-schema-form/*"
+      "@ajsf/core/*": [
+        "dist/@ajsf/core/*"
+      ],
+      "@ajsf/bootstrap3": [
+        "dist/@ajsf/bootstrap3"
+      ],
+      "@ajsf/bootstrap3/*": [
+        "dist/@ajsf/bootstrap3/*"
+      ],
+      "@ajsf/bootstrap4": [
+        "dist/@ajsf/bootstrap4"
+      ],
+      "@ajsf/bootstrap4/*": [
+        "dist/@ajsf/bootstrap4/*"
+      ],
+      "@ajsf/material": [
+        "dist/@ajsf/material"
+      ],
+      "@ajsf/material/*": [
+        "dist/@ajsf/material/*"
       ]
     }
   }
