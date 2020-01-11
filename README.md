@@ -1,9 +1,11 @@
-# Angular6-json-schema-form
+# AJSF (Angular JSON Schema Form)
 
-[![Build Status](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form.svg?branch=master)](https://travis-ci.org/hamzahamidi/Angular6-json-schema-form)
-[![Maintainability](https://api.codeclimate.com/v1/badges/dfbee5b888425221bca6/maintainability)](https://codeclimate.com/github/hamzahamidi/Angular6-json-schema-form/maintainability)
-[![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/angular6-json-schema-form/releases/latest)
-[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/angular6-json-schema-form)
+**N.B:** For Angular 6 JSON Schema Form old versions please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/v8).
+
+[![Build Status](https://travis-ci.org/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.org/hamzahamidi/ajsf)
+[![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
+[![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/ajsf/releases/latest)
+[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/ajsf)
 
 Note: This project is a continuation to [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) & is and is not affiliated with any organization.
 
@@ -23,13 +25,12 @@ This example playground features over 70 different JSON Schemas for you to try (
 
 ### To install from GitHub
 
-To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/angular6-json-schema-form), clone `https://github.com/hamzahamidi/angular6-json-schema-form.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
+To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/ajsf), clone `https://github.com/hamzahamidi/ajsf.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
 
 ```shell
-git clone https://github.com/hamzahamidi/angular6-json-schema-form.git angular6-json-schema-form
-cd angular6-json-schema-form
+git clone https://github.com/hamzahamidi/ajsf.git ajsf
+cd ajsf
 yarn install
-yarn buildlib
 yarn start
 ```
 
@@ -37,27 +38,30 @@ This should start a server with the example playground, which you can view in yo
 
 The source code is composed as the following:
 
-* `projects/json-schema-form` - Angular JSON Schema Form main library
-* `projects/json-schema-form/src/lib/framework-library` - framework library
-* `projects/json-schema-form/src/lib/widget-library` - widget library
-* `projects/json-schema-form/src/lib/shared` - various utilities and helper functions
-* `src` - the demonstration playground example application
-* `src/assets/example-schemas` - JSON Schema examples used in the playground
+* `projects/ajsf-core` - Angular JSON Schema Form main library
+* `projects/ajsf-bootstrap3` - Framework for Bootstrap 3
+* `projects/ajsf-bootstrap4` - Framework for Bootstrap 4
+* `projects/ajsf-material` - Framework for Angular Material
+* `projects/ajsf-core/src/lib/framework-library` - framework library
+* `projects/ajsf-core/src/lib/widget-library` - widget library
+* `projects/ajsf-core/src/lib/shared` - various utilities and helper functions
+* `demo` - the demonstration playground example application
+* `demo/assets/example-schemas` - JSON Schema examples used in the playground
 
 If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
 
 ### To install from NPM/YARN and use in your own project
 
-If, after playing with the examples, you decide this library is functional enough to use in your own project, you can [install it from NPM](https://www.npmjs.com/package/angular6-json-schema-form) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
+If, after playing with the examples, you decide this library is functional enough to use in your own project, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/angular6-json-schema-form) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
-npm install angular6-json-schema-form
+npm install @asjf/material
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add angular6-json-schema-form
+yarn add @asjf/material
 ```
 
 Then import `MaterialDesignFrameworkModule` in your main application module if you want to use `material-angular` UI, like this:
@@ -66,7 +70,7 @@ Then import `MaterialDesignFrameworkModule` in your main application module if y
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { MaterialDesignFrameworkModule } from 'angular6-json-schema-form';
+import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
 import { AppComponent } from './app.component';
 
@@ -90,6 +94,13 @@ Four framework modules are currently included, the import is the same as above :
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
 
+### Packages
+
+* [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
+* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
+* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
+* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
+
 ## Using Angular JSON Schema Form
 
 ### Basic use
@@ -105,7 +116,7 @@ For basic use, after loading JsonSchemaFormModule as described above, to display
 </json-schema-form>
 ```
 
-Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to process the submitted JSON form data. If you don't already have your own schemas, you can find a bunch of samples to test with in the `src/demo/assets/example-schemas` folder, as described above.
+Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to process the submitted JSON form data. If you don't already have your own schemas, you can find a bunch of samples to test with in the `demo/assets/example-schemas` folder, as described above.
 
 `framework` is for the template you want to use, the default value is `no-framwork`. The possible values are:
 
@@ -421,7 +432,7 @@ const yourNewWidgets = {
 ...or...
 
 ```javascript
-import { WidgetLibraryService } from 'angular6-json-schema-form';
+import { WidgetLibraryService } from '@ajsf/core';
 ...
 constructor(private widgetLibrary: WidgetLibraryService) { }
 ...
@@ -461,7 +472,7 @@ const yourCustomFramework = {
 ...or...
 
 ```javascript
-import { FrameworkLibraryService } from 'angular6-json-schema-form';
+import { FrameworkLibraryService } from '@ajsf/core';
 ...
 constructor(private frameworkLibrary: FrameworkLibraryService) { }
 ...
