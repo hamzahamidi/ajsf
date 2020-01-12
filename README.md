@@ -94,10 +94,10 @@ export class AppModule { }
 
 Four framework modules are currently included, the import is the same as above :
 
-* MaterialDesignFrameworkModule — Material Design
-* Bootstrap3FrameworkModule — Bootstrap 3
-* Bootstrap4FrameworkModule — Bootstrap 4
-* NoFrameworkModule — plain HTML (for testing)
+* MaterialDesignFrameworkModule from @ajsf/material — Material Design
+* Bootstrap3FrameworkModule from @ajsf/bootstrap3 — Bootstrap 3
+* Bootstrap4FrameworkModule from @ajsf/bootstrap4 — Bootstrap 4
+* JsonSchemaFormModule from @ajsf/core — plain HTML (for testing)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
 
