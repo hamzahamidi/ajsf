@@ -1,6 +1,6 @@
 Sources:
 
-* ng-jsf-...json files are new examples created for angular6-json-schema-form
+* ng-jsf-...json files are new examples created for angular json schema form
 
 * json-schema-draft...json files are JSON Meta-Schemas,
   [available here](http://json-schema.org/specification-links.html)

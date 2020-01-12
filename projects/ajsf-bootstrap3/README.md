@@ -1,15 +1,15 @@
-# @asjf/bootstrap3
+# @ajsf/bootstrap3
 
 ## Getting started
 
 ```shell
-npm install @asjf/bootstrap3
+npm install @ajsf/bootstrap3
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add @asjf/bootstrap3
+yarn add @ajsf/bootstrap3
 ```
 
 Then import `Bootstrap3FrameworkModule` in your main application module if you want to use `bootstrap3` UI, like this:

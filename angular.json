@@ -133,11 +133,6 @@
           "options": {
             "tsConfig": "projects/ajsf-core/tsconfig.lib.json",
             "project": "projects/ajsf-core/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "project": "projects/ajsf-core/ng-package.prod.json"
-            }
           }
         },
         "test": {
