@@ -4,13 +4,17 @@
   "lib": {
     "entryFile": "src/public_api.ts",
     "umdModuleIds": {
-      "lodash-es/isEqual": "lodash-es",
-      "lodash-es/cloneDeep": "lodash-es",
-      "lodash-es/filter": "lodash-es",
-      "lodash-es/map": "lodash-es",
-      "lodash-es/uniqueId": "lodash-es",
+      "lodash/isEqual": "lodash-es",
+      "lodash/cloneDeep": "lodash-es",
+      "lodash/filter": "lodash-es",
+      "lodash/map": "lodash-es",
+      "lodash/uniqueId": "lodash-es",
       "ajv": "ajv",
       "ajv/lib/refs/json-schema-draft-06.json": "jsonDraft6"
     }
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "lodash-es",
+    "ajv"
+  ]
 }

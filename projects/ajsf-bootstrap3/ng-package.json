@@ -2,6 +2,15 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/@ajsf/bootstrap3",
   "lib": {
-    "entryFile": "src/public_api.ts"
-  }
+    "entryFile": "src/public_api.ts",
+    "umdModuleIds": {
+      "lodash/cloneDeep": "lodash-es",
+      "lodash/map": "lodash-es",
+      "@ajsf/core": "@ajsf/core"
+    }
+  },
+  "whitelistedNonPeerDependencies": [
+    "lodash-es",
+    "@ajsf/core"
+  ]
 }
