@@ -22,7 +22,14 @@
     "JSON Schema",
     "form",
     "forms",
-    "form builder"
+    "form builder",
+    "material",
+    "angular material",
+    "bootstrap",
+    "bootstrap 3",
+    "bootstrap 4",
+    "ajsf",
+    "angular json schema form"
   ],
   "license": "MIT",
   "repository": {
@@ -43,7 +50,7 @@
     "build:bs3": "ng build @ajsf/bootstrap3",
     "postbuild:bs3": "cp projects/ajsf-bootstrap3/README.md LICENSE dist/@ajsf/bootstrap3/",
     "build:bs4": "ng build @ajsf/bootstrap4",
-    "postbuild:bs4": "cp projects/ajsf-bootstrap4/README.md LICENSE dist/@ajsf/bootstrap4",
+    "postbuild:bs4": "cp projects/ajsf-bootstrap4/README.md LICENSE dist/@ajsf/bootstrap4/",
     "build:material": "ng build @ajsf/material",
     "postbuild:material": "cp projects/ajsf-material/README.md LICENSE dist/@ajsf/material",
     "build:libs": "yarn build:core && yarn build:bs4 && yarn build:bs3 && yarn build:material",

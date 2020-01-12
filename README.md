@@ -4,20 +4,27 @@
 
 [![Build Status](https://travis-ci.org/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.org/hamzahamidi/ajsf)
 [![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
-[![GitHub release](https://img.shields.io/github/release/hamzahamidi/angular6-json-schema-form.svg)](https://github.com/hamzahamidi/ajsf/releases/latest)
-[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/angular6-json-schema-form.svg?style=social)](https://github.com/hamzahamidi/ajsf)
+[![GitHub release](https://img.shields.io/github/release/hamzahamidi/ajsf.svg)](https://github.com/hamzahamidi/ajsf/releases/latest)
+[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social)](https://github.com/hamzahamidi/ajsf/blob/master/LICENSE)
 
 Note: This project is a continuation to [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) & is and is not affiliated with any organization.
 
-A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with,
+A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with:
 
 * [JSON Schema Form](https://github.com/json-schema-form)'s [Angular Schema Form](http://schemaform.io) for [AngularJS](https://angularjs.org) ([examples](http://schemaform.io/examples/bootstrap-example.html))
 * [Mozilla](https://blog.mozilla.org/services/)'s [React JSON Schema Form](https://github.com/mozilla-services/react-jsonschema-form) for [React](https://facebook.github.io/react/) ([examples](https://mozilla-services.github.io/react-jsonschema-form/)), and
 * [Joshfire](http://www.joshfire.com)'s [JSON Form](http://github.com/joshfire/jsonform/wiki) for [jQuery](https://jquery.com) ([examples](http://ulion.github.io/jsonform/playground/))
 
+## Packages
+
+* [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
+* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
+* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
+* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
+
 ## Check out the live demo and play with the examples
 
-[Check out some examples here.](https://hamidihamza.com/Angular6-json-schema-form)
+[Check out some examples here.](https://hamidihamza.com/ajsf)
 
 This example playground features over 70 different JSON Schemas for you to try (including all examples used by each of the three libraries listed above), and the ability to quickly view any example formatted with Material Design, Bootstrap 3, Bootstrap 4, or without any formatting.
 
@@ -52,7 +59,7 @@ If you want detailed documentation describing the individual functions used in t
 
 ### To install from NPM/YARN and use in your own project
 
-If, after playing with the examples, you decide this library is functional enough to use in your own project, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/angular6-json-schema-form) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
+If, after playing with the examples, you decide this library is functional enough to use in your own project, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/@ajsf/material) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
 npm install @asjf/material
@@ -93,13 +100,6 @@ Four framework modules are currently included, the import is the same as above :
 * NoFrameworkModule — plain HTML (for testing)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
-
-### Packages
-
-* [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
-* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
-* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
-* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
 
 ## Using Angular JSON Schema Form
 
