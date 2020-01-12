@@ -14,7 +14,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "manual_typings"
     ],
     "lib": [
       "es2018",
@@ -23,6 +24,9 @@
     "paths": {
       "@angular/*": [
         "./node_modules/@angular/*"
+      ],
+      "lodash/*": [
+        "node_modules/@types/lodash-es/*"
       ],
       "@ajsf/core": [
         "dist/@ajsf/core"
