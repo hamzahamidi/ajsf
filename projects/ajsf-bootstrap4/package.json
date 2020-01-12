@@ -1,41 +1,47 @@
 {
   "name": "@ajsf/bootstrap4",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Angular JSON Schema Form builder using Bootstrap 4 UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
-      "Angular",
-      "ng",
-      "Angular6",
-      "Angular 6",
-      "ng6",
-      "Angular7",
-      "Angular 7",
-      "ng7",
-      "Angular8",
-      "Angular 8",
-      "ng8",
-      "JSON Schema",
-      "form",
-      "forms",
-      "form builder",
-      "Bootstrap",
-      "Bootstrap 4",
-      "ajsf",
-      "angular json schema form"
+    "Angular",
+    "ng",
+    "Angular6",
+    "Angular 6",
+    "ng6",
+    "Angular7",
+    "Angular 7",
+    "ng7",
+    "Angular8",
+    "Angular 8",
+    "ng8",
+    "JSON Schema",
+    "form",
+    "forms",
+    "form builder",
+    "Bootstrap",
+    "Bootstrap 4",
+    "ajsf",
+    "angular json schema form"
   ],
   "license": "MIT",
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/hamzahamidi/ajsf"
+    "type": "git",
+    "url": "git+https://github.com/hamzahamidi/ajsf"
   },
   "bugs": {
-      "url": "https://github.com/hamzahamidi/ajsf/issues"
+    "url": "https://github.com/hamzahamidi/ajsf/issues"
   },
   "private": false,
+  "dependencies": {
+    "lodash-es": "^4.17.15",
+    "@ajsf/core": "^0.1.2"
+  },
   "peerDependencies": {
-    "@angular/common": ">=6.1.10",
-    "@angular/core": ">=6.1.10",
-    "@ajsf/core": "^0.1.0"
+    "@angular/common": ">=6.0.0",
+    "@angular/core": ">=6.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.3"
   }
 }
