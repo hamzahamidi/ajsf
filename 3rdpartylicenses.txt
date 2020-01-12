@@ -1,4 +1,5 @@
 @ajsf/bootstrap3
+MIT
 MIT License
 
 Copyright (c) 2018 Hamza Hamidi
@@ -23,6 +24,7 @@ SOFTWARE.
 
 
 @ajsf/bootstrap4
+MIT
 MIT License
 
 Copyright (c) 2018 Hamza Hamidi
@@ -72,6 +74,7 @@ SOFTWARE.
 
 
 @ajsf/material
+MIT
 MIT License
 
 Copyright (c) 2018 Hamza Hamidi
