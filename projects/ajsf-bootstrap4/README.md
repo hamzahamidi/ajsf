@@ -1,15 +1,15 @@
-# @asjf/bootstrap4
+# @ajsf/bootstrap4
 
 ## Getting started
 
 ```shell
-npm install @asjf/bootstrap4
+npm install @ajsf/bootstrap4
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add @asjf/bootstrap4
+yarn add @ajsf/bootstrap4
 ```
 
 Then import `Bootstrap4FrameworkModule` in your main application module if you want to use `bootstrap4` UI, like this:
