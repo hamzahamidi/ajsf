@@ -62,13 +62,13 @@ If you want detailed documentation describing the individual functions used in t
 If, after playing with the examples, you decide this library is functional enough to use in your own project, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/@ajsf/material) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
-npm install @asjf/material
+npm install @ajsf/material
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add @asjf/material
+yarn add @ajsf/material
 ```
 
 Then import `MaterialDesignFrameworkModule` in your main application module if you want to use `material-angular` UI, like this:
