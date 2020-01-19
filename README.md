@@ -1,6 +1,6 @@
 # AJSF (Angular JSON Schema Form)
 
-**N.B:** For Angular 6 JSON Schema Form old versions please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/v8).
+**N.B:** For Angular 6 JSON Schema Form old versions please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
 
 [![Build Status](https://travis-ci.com/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.com/hamzahamidi/ajsf)
 [![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
