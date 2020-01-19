@@ -1,11 +1,10 @@
 language: node_js
 node_js:
-    - "10.9.0"
+    - "12.14.1"
 
 branches:
   only:
-    - master
-    - develop
+    - angular6-json-schema-form
 
 before_script:
   - yarn install --frozen-lockfile
@@ -13,13 +12,4 @@ before_script:
 script:
   - yarn buildlib
   - yarn build
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  keep-history: true
-  on:
-    branch: master
-  local_dir: dist/angular6-json-schema-form-app
   
