@@ -2,7 +2,7 @@
 
 **N.B:** For Angular 6 JSON Schema Form old versions please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/v8).
 
-[![Build Status](https://travis-ci.org/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.org/hamzahamidi/ajsf)
+[![Build Status](https://travis-ci.com/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.com/hamzahamidi/ajsf)
 [![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
 [![GitHub release](https://img.shields.io/github/release/hamzahamidi/ajsf.svg)](https://github.com/hamzahamidi/ajsf/releases/latest)
 [![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social)](https://github.com/hamzahamidi/ajsf/blob/master/LICENSE)
