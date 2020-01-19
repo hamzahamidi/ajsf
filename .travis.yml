@@ -1,10 +1,11 @@
 language: node_js
 node_js:
-    - "10.9.0"
+    - "12.14.1"
 
 branches:
   only:
     - master
+    - v8
 
 before_script:
   - yarn install --frozen-lockfile
