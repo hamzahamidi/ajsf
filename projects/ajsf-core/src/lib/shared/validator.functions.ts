@@ -232,28 +232,23 @@ export function isFunction(item: any): boolean {
 }
 
 export function isObject(item: any): boolean {
-  return item !== null && typeof item === 'object' &&
-    Object.prototype.toString.call(item) === '[object Object]';
+  return item !== null && typeof item === 'object';
 }
 
 export function isArray(item: any): boolean {
-  return Array.isArray(item) ||
-    Object.prototype.toString.call(item) === '[object Array]';
+  return Array.isArray(item);
 }
 
 export function isDate(item: any): boolean {
-  return typeof item === 'object' &&
-    Object.prototype.toString.call(item) === '[object Date]';
+  return !!item && Object.prototype.toString.call(item) === '[object Date]';
 }
 
 export function isMap(item: any): boolean {
-  return typeof item === 'object' &&
-    Object.prototype.toString.call(item) === '[object Map]';
+  return !!item && Object.prototype.toString.call(item) === '[object Map]';
 }
 
 export function isSet(item: any): boolean {
-  return typeof item === 'object' &&
-    Object.prototype.toString.call(item) === '[object Set]';
+  return !!item && Object.prototype.toString.call(item) === '[object Set]';
 }
 
 export function isSymbol(item: any): boolean {

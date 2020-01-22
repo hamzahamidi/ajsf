@@ -1,6 +1,6 @@
 # AJSF (Angular JSON Schema Form)
 
-**N.B:** For Angular 6 JSON Schema Form old versions please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
+**N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
 
 [![Build Status](https://travis-ci.com/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.com/hamzahamidi/ajsf)
 [![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
@@ -30,36 +30,9 @@ This example playground features over 70 different JSON Schemas for you to try (
 
 ## Installation
 
-### To install from GitHub
-
-To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/ajsf), clone `https://github.com/hamzahamidi/ajsf.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
-
-```shell
-git clone https://github.com/hamzahamidi/ajsf.git ajsf
-cd ajsf
-yarn install
-yarn start
-```
-
-This should start a server with the example playground, which you can view in your browser at `http://localhost:4200`
-
-The source code is composed as the following:
-
-* `projects/ajsf-core` - Angular JSON Schema Form main library
-* `projects/ajsf-bootstrap3` - Framework for Bootstrap 3
-* `projects/ajsf-bootstrap4` - Framework for Bootstrap 4
-* `projects/ajsf-material` - Framework for Angular Material
-* `projects/ajsf-core/src/lib/framework-library` - framework library
-* `projects/ajsf-core/src/lib/widget-library` - widget library
-* `projects/ajsf-core/src/lib/shared` - various utilities and helper functions
-* `demo` - the demonstration playground example application
-* `demo/assets/example-schemas` - JSON Schema examples used in the playground
-
-If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
-
 ### To install from NPM/YARN and use in your own project
 
-If, after playing with the examples, you decide this library is functional enough to use in your own project, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/@ajsf/material) using either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
+If you want to try out the libraries, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/@ajsf/material) which uses `material-angular` UI. You can use either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
 npm install @ajsf/material
@@ -71,7 +44,7 @@ With YARN, run the following:
 yarn add @ajsf/material
 ```
 
-Then import `MaterialDesignFrameworkModule` in your main application module if you want to use `material-angular` UI, like this:
+Then import `MaterialDesignFrameworkModule` in your main application module like this:
 
 ```javascript
 import { BrowserModule } from '@angular/platform-browser';
@@ -100,6 +73,33 @@ Four framework modules are currently included, the import is the same as above :
 * JsonSchemaFormModule from @ajsf/core — plain HTML (for testing)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
+
+### To install from GitHub
+
+To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/ajsf), clone `https://github.com/hamzahamidi/ajsf.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
+
+```shell
+git clone https://github.com/hamzahamidi/ajsf.git ajsf
+cd ajsf
+yarn install
+yarn start
+```
+
+This should start a server with the example playground, which you can view in your browser at `http://localhost:4200`
+
+The source code is composed as the following:
+
+* `projects/ajsf-core` - Angular JSON Schema Form main library
+* `projects/ajsf-bootstrap3` - Framework for Bootstrap 3
+* `projects/ajsf-bootstrap4` - Framework for Bootstrap 4
+* `projects/ajsf-material` - Framework for Angular Material
+* `projects/ajsf-core/src/lib/framework-library` - framework library
+* `projects/ajsf-core/src/lib/widget-library` - widget library
+* `projects/ajsf-core/src/lib/shared` - various utilities and helper functions
+* `demo` - the demonstration playground example application
+* `demo/assets/example-schemas` - JSON Schema examples used in the playground
+
+If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
 
 ## Using Angular JSON Schema Form
 

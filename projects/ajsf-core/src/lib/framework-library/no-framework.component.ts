@@ -1,13 +1,8 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'no-framework',
-  template: `
-    <select-widget-widget
-      [dataIndex]="dataIndex"
-      [layoutIndex]="layoutIndex"
-      [layoutNode]="layoutNode"></select-widget-widget>`,
+  templateUrl: './no-framework.component.html',
 })
 export class NoFrameworkComponent {
   @Input() layoutNode: any;
