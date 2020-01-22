@@ -16,19 +16,10 @@ import { AceEditorDirective } from './ace-editor.directive';
 import { DemoComponent } from './demo.component';
 import { DemoRootComponent } from './demo-root.component';
 import { routes } from './demo.routes';
-import { NoFrameworkModule } from '@ajsf/core';
+import { JsonSchemaFormModule } from '@ajsf/core';
 import { Bootstrap4FrameworkModule } from '@ajsf/bootstrap4';
 import { Bootstrap3FrameworkModule } from '@ajsf/bootstrap3';
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
-
-// To include JsonSchemaFormModule after downloading from NPM, use this instead:
-//
-//   import { JsonSchemaFormModule, NoFrameworkModule } from '@ajsf/core';
-//
-// but replace "NoFrameworkModule" with the framework you want to use,
-// then import both JsonSchemaFormModule and the framework module, like this:
-//
-//   imports: [ ... NoFrameworkModule, JsonSchemaFormModule.forRoot(NoFrameworkModule) ... ]
 
 @NgModule({
   declarations: [AceEditorDirective, DemoComponent, DemoRootComponent],
@@ -40,7 +31,7 @@ import { MaterialDesignFrameworkModule } from '@ajsf/material';
     Bootstrap4FrameworkModule,
     Bootstrap3FrameworkModule,
     MaterialDesignFrameworkModule,
-    NoFrameworkModule
+    JsonSchemaFormModule
   ],
   bootstrap: [DemoRootComponent]
 })
