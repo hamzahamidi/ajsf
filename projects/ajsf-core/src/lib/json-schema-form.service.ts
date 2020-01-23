@@ -28,14 +28,21 @@ import {
 import { enValidationMessages } from './locale/en-validation-messages';
 import { frValidationMessages } from './locale/fr-validation-messages';
 import { zhValidationMessages } from './locale/zh-validation-messages';
+import { itValidationMessages } from './locale/it-validation-messages';
 
 export interface TitleMapItem {
-  name?: string; value?: any; checked?: boolean; group?: string; items?: TitleMapItem[];
+  name?: string;
+  value?: any;
+  checked?: boolean;
+  group?: string;
+  items?: TitleMapItem[];
 }
 export interface ErrorMessages {
-  [control_name: string]: { message: string | Function | Object, code: string }[];
+  [control_name: string]: {
+    message: string | Function | Object;
+    code: string;
+  }[];
 }
-
 
 @Injectable()
 export class JsonSchemaFormService {
@@ -44,7 +51,11 @@ export class JsonSchemaFormService {
   AngularSchemaFormCompatibility = false;
   tpldata: any = {};
 
-  ajvOptions: any = { allErrors: true, jsonPointers: true, unknownFormats: 'ignore' };
+  ajvOptions: any = {
+    allErrors: true,
+    jsonPointers: true,
+    unknownFormats: 'ignore'
+  };
   ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
 
@@ -106,7 +117,8 @@ export class JsonSchemaFormService {
     // false = only validate fields after they are touched by user
     // 'auto' = validate fields with values immediately, empty fields after they are touched
     widgets: {}, // Any custom widgets to load
-    defautWidgetOptions: { // Default options for form control widgets
+    defautWidgetOptions: {
+      // Default options for form control widgets
       listItems: 1, // Number of list items to initially add to arrays with no default value
       addable: true, // Allow adding items to an array or $ref point?
       orderable: true, // Allow reordering items within an array?
@@ -122,7 +134,7 @@ export class JsonSchemaFormService {
       readonly: false, // Set control as read only? (not editable, but included in output)
       returnEmptyFields: true, // return values for fields that contain no data?
       validationMessages: {} // set by setLanguage()
-    },
+    }
   };
 
   constructor() {
@@ -133,23 +145,31 @@ export class JsonSchemaFormService {
   setLanguage(language: string = 'en-US') {
     this.language = language;
     const languageValidationMessages = {
-        fr: frValidationMessages,
-        en: enValidationMessages,
-        zh: zhValidationMessages
+      fr: frValidationMessages,
+      en: enValidationMessages,
+      zh: zhValidationMessages,
+      it: itValidationMessages
     };
     const languageCode = language.slice(0, 2);
 
     const validationMessages = languageValidationMessages[languageCode];
 
-    this.defaultFormOptions.defautWidgetOptions.validationMessages =
-      cloneDeep(validationMessages);
+    this.defaultFormOptions.defautWidgetOptions.validationMessages = cloneDeep(
+      validationMessages
+    );
   }
 
-  getData() { return this.data; }
+  getData() {
+    return this.data;
+  }
 
-  getSchema() { return this.schema; }
+  getSchema() {
+    return this.schema;
+  }
 
-  getLayout() { return this.layout; }
+  getLayout() {
+    return this.layout;
+  }
 
   resetAllValues() {
     this.JsonFormCompatibility = false;
@@ -209,18 +229,22 @@ export class JsonSchemaFormService {
   }
 
   validateData(newValue: any, updateSubscriptions = true): void {
-
     // Format raw form data to correct data types
     this.data = formatFormData(
-      newValue, this.dataMap, this.dataRecursiveRefMap,
-      this.arrayMap, this.formOptions.returnEmptyFields
+      newValue,
+      this.dataMap,
+      this.dataRecursiveRefMap,
+      this.arrayMap,
+      this.formOptions.returnEmptyFields
     );
     this.isValid = this.validateFormData(this.data);
     this.validData = this.isValid ? this.data : null;
     const compileErrors = errors => {
       const compiledErrors = {};
       (errors || []).forEach(error => {
-        if (!compiledErrors[error.dataPath]) { compiledErrors[error.dataPath] = []; }
+        if (!compiledErrors[error.dataPath]) {
+          compiledErrors[error.dataPath] = [];
+        }
         compiledErrors[error.dataPath].push(error.message);
       });
       return compiledErrors;
@@ -235,7 +259,11 @@ export class JsonSchemaFormService {
   }
 
   buildFormGroupTemplate(formValues: any = null, setValues = true) {
-    this.formGroupTemplate = buildFormGroupTemplate(this, formValues, setValues);
+    this.formGroupTemplate = buildFormGroupTemplate(
+      this,
+      formValues,
+      setValues
+    );
   }
 
   buildFormGroup() {
@@ -245,9 +273,12 @@ export class JsonSchemaFormService {
       this.validateData(this.formGroup.value);
 
       // Set up observables to emit data and validation info when form data changes
-      if (this.formValueSubscription) { this.formValueSubscription.unsubscribe(); }
-      this.formValueSubscription = this.formGroup.valueChanges
-        .subscribe(formValue => this.validateData(formValue));
+      if (this.formValueSubscription) {
+        this.formValueSubscription.unsubscribe();
+      }
+      this.formValueSubscription = this.formGroup.valueChanges.subscribe(
+        formValue => this.validateData(formValue)
+      );
     }
   }
 
@@ -260,11 +291,17 @@ export class JsonSchemaFormService {
       const addOptions = cloneDeep(newOptions);
       // Backward compatibility for 'defaultOptions' (renamed 'defautWidgetOptions')
       if (isObject(addOptions.defaultOptions)) {
-        Object.assign(this.formOptions.defautWidgetOptions, addOptions.defaultOptions);
+        Object.assign(
+          this.formOptions.defautWidgetOptions,
+          addOptions.defaultOptions
+        );
         delete addOptions.defaultOptions;
       }
       if (isObject(addOptions.defautWidgetOptions)) {
-        Object.assign(this.formOptions.defautWidgetOptions, addOptions.defautWidgetOptions);
+        Object.assign(
+          this.formOptions.defautWidgetOptions,
+          addOptions.defautWidgetOptions
+        );
         delete addOptions.defautWidgetOptions;
       }
       Object.assign(this.formOptions, addOptions);
@@ -274,7 +311,9 @@ export class JsonSchemaFormService {
       ['ErrorState', 'SuccessState']
         .filter(suffix => hasOwn(globalDefaults, 'disable' + suffix))
         .forEach(suffix => {
-          globalDefaults['enable' + suffix] = !globalDefaults['disable' + suffix];
+          globalDefaults['enable' + suffix] = !globalDefaults[
+            'disable' + suffix
+          ];
           delete globalDefaults['disable' + suffix];
         });
     }
@@ -282,7 +321,6 @@ export class JsonSchemaFormService {
 
   compileAjvSchema() {
     if (!this.validateFormData) {
-
       // if 'ui:order' exists in properties, move it to root before compiling with ajv
       if (Array.isArray(this.schema.properties['ui:order'])) {
         this.schema['ui:order'] = this.schema.properties['ui:order'];
@@ -294,53 +332,77 @@ export class JsonSchemaFormService {
   }
 
   buildSchemaFromData(data?: any, requireAllFields = false): any {
-    if (data) { return buildSchemaFromData(data, requireAllFields); }
+    if (data) {
+      return buildSchemaFromData(data, requireAllFields);
+    }
     this.schema = buildSchemaFromData(this.formValues, requireAllFields);
   }
 
   buildSchemaFromLayout(layout?: any): any {
-    if (layout) { return buildSchemaFromLayout(layout); }
+    if (layout) {
+      return buildSchemaFromLayout(layout);
+    }
     this.schema = buildSchemaFromLayout(this.layout);
   }
-
 
   setTpldata(newTpldata: any = {}): void {
     this.tpldata = newTpldata;
   }
 
   parseText(
-    text = '', value: any = {}, values: any = {}, key: number | string = null
+    text = '',
+    value: any = {},
+    values: any = {},
+    key: number | string = null
   ): string {
-    if (!text || !/{{.+?}}/.test(text)) { return text; }
+    if (!text || !/{{.+?}}/.test(text)) {
+      return text;
+    }
     return text.replace(/{{(.+?)}}/g, (...a) =>
       this.parseExpression(a[1], value, values, key, this.tpldata)
     );
   }
 
   parseExpression(
-    expression = '', value: any = {}, values: any = {},
-    key: number | string = null, tpldata: any = null
+    expression = '',
+    value: any = {},
+    values: any = {},
+    key: number | string = null,
+    tpldata: any = null
   ) {
-    if (typeof expression !== 'string') { return ''; }
-    const index = typeof key === 'number' ? (key + 1) + '' : (key || '');
+    if (typeof expression !== 'string') {
+      return '';
+    }
+    const index = typeof key === 'number' ? key + 1 + '' : key || '';
     expression = expression.trim();
-    if ((expression[0] === '\'' || expression[0] === '"') &&
+    if (
+      (expression[0] === "'" || expression[0] === '"') &&
       expression[0] === expression[expression.length - 1] &&
       expression.slice(1, expression.length - 1).indexOf(expression[0]) === -1
     ) {
       return expression.slice(1, expression.length - 1);
     }
-    if (expression === 'idx' || expression === '$index') { return index; }
-    if (expression === 'value' && !hasOwn(values, 'value')) { return value; }
-    if (['"', '\'', ' ', '||', '&&', '+'].every(delim => expression.indexOf(delim) === -1)) {
+    if (expression === 'idx' || expression === '$index') {
+      return index;
+    }
+    if (expression === 'value' && !hasOwn(values, 'value')) {
+      return value;
+    }
+    if (
+      ['"', "'", ' ', '||', '&&', '+'].every(
+        delim => expression.indexOf(delim) === -1
+      )
+    ) {
       const pointer = JsonPointer.parseObjectPath(expression);
-      return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1)) ?
-        JsonPointer.get(value, pointer.slice(1)) :
-        pointer[0] === 'values' && JsonPointer.has(values, pointer.slice(1)) ?
-          JsonPointer.get(values, pointer.slice(1)) :
-          pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1)) ?
-            JsonPointer.get(tpldata, pointer.slice(1)) :
-            JsonPointer.has(values, pointer) ? JsonPointer.get(values, pointer) : '';
+      return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1))
+        ? JsonPointer.get(value, pointer.slice(1))
+        : pointer[0] === 'values' && JsonPointer.has(values, pointer.slice(1))
+        ? JsonPointer.get(values, pointer.slice(1))
+        : pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1))
+        ? JsonPointer.get(tpldata, pointer.slice(1))
+        : JsonPointer.has(values, pointer)
+        ? JsonPointer.get(values, pointer)
+        : '';
     }
     if (expression.indexOf('[idx]') > -1) {
       expression = expression.replace(/\[idx\]/g, <string>index);
@@ -351,17 +413,27 @@ export class JsonSchemaFormService {
     // TODO: Improve expression evaluation by parsing quoted strings first
     // let expressionArray = expression.match(/([^"']+|"[^"]+"|'[^']+')/g);
     if (expression.indexOf('||') > -1) {
-      return expression.split('||').reduce((all, term) =>
-        all || this.parseExpression(term, value, values, key, tpldata), ''
-      );
+      return expression
+        .split('||')
+        .reduce(
+          (all, term) =>
+            all || this.parseExpression(term, value, values, key, tpldata),
+          ''
+        );
     }
     if (expression.indexOf('&&') > -1) {
-      return expression.split('&&').reduce((all, term) =>
-        all && this.parseExpression(term, value, values, key, tpldata), ' '
-      ).trim();
+      return expression
+        .split('&&')
+        .reduce(
+          (all, term) =>
+            all && this.parseExpression(term, value, values, key, tpldata),
+          ' '
+        )
+        .trim();
     }
     if (expression.indexOf('+') > -1) {
-      return expression.split('+')
+      return expression
+        .split('+')
         .map(term => this.parseExpression(term, value, values, key, tpldata))
         .join('');
     }
@@ -369,40 +441,48 @@ export class JsonSchemaFormService {
   }
 
   setArrayItemTitle(
-    parentCtx: any = {}, childNode: any = null, index: number = null
+    parentCtx: any = {},
+    childNode: any = null,
+    index: number = null
   ): string {
     const parentNode = parentCtx.layoutNode;
     const parentValues: any = this.getFormControlValue(parentCtx);
     const isArrayItem =
       (parentNode.type || '').slice(-5) === 'array' && isArray(parentValues);
     const text = JsonPointer.getFirst(
-      isArrayItem && childNode.type !== '$ref' ? [
-        [childNode, '/options/legend'],
-        [childNode, '/options/title'],
-        [parentNode, '/options/title'],
-        [parentNode, '/options/legend'],
-      ] : [
-          [childNode, '/options/title'],
-          [childNode, '/options/legend'],
-          [parentNode, '/options/title'],
-          [parentNode, '/options/legend']
-        ]
+      isArrayItem && childNode.type !== '$ref'
+        ? [
+            [childNode, '/options/legend'],
+            [childNode, '/options/title'],
+            [parentNode, '/options/title'],
+            [parentNode, '/options/legend']
+          ]
+        : [
+            [childNode, '/options/title'],
+            [childNode, '/options/legend'],
+            [parentNode, '/options/title'],
+            [parentNode, '/options/legend']
+          ]
     );
-    if (!text) { return text; }
-    const childValue = isArray(parentValues) && index < parentValues.length ?
-      parentValues[index] : parentValues;
+    if (!text) {
+      return text;
+    }
+    const childValue =
+      isArray(parentValues) && index < parentValues.length
+        ? parentValues[index]
+        : parentValues;
     return this.parseText(text, childValue, parentValues, index);
   }
 
   setItemTitle(ctx: any) {
-    return !ctx.options.title && /^(\d+|-)$/.test(ctx.layoutNode.name) ?
-      null :
-      this.parseText(
-        ctx.options.title || toTitleCase(ctx.layoutNode.name),
-        this.getFormControlValue(this),
-        (this.getFormControlGroup(this) || <any>{}).value,
-        ctx.dataIndex[ctx.dataIndex.length - 1]
-      );
+    return !ctx.options.title && /^(\d+|-)$/.test(ctx.layoutNode.name)
+      ? null
+      : this.parseText(
+          ctx.options.title || toTitleCase(ctx.layoutNode.name),
+          this.getFormControlValue(this),
+          (this.getFormControlGroup(this) || <any>{}).value,
+          ctx.dataIndex[ctx.dataIndex.length - 1]
+        );
   }
 
   evaluateCondition(layoutNode: any, dataIndex: number[]): boolean {
@@ -421,15 +501,22 @@ export class JsonSchemaFormService {
         }
       } else if (typeof layoutNode.options.condition === 'function') {
         result = layoutNode.options.condition(this.data);
-      } else if (typeof layoutNode.options.condition.functionBody === 'string') {
+      } else if (
+        typeof layoutNode.options.condition.functionBody === 'string'
+      ) {
         try {
           const dynFn = new Function(
-            'model', 'arrayIndices', layoutNode.options.condition.functionBody
+            'model',
+            'arrayIndices',
+            layoutNode.options.condition.functionBody
           );
           result = dynFn(this.data, dataIndex);
         } catch (e) {
           result = true;
-          console.error('condition functionBody errored out on evaluation: ' + layoutNode.options.condition.functionBody);
+          console.error(
+            'condition functionBody errored out on evaluation: ' +
+              layoutNode.options.condition.functionBody
+          );
         }
       }
     }
@@ -437,10 +524,13 @@ export class JsonSchemaFormService {
   }
 
   initializeControl(ctx: any, bind = true): boolean {
-    if (!isObject(ctx)) { return false; }
+    if (!isObject(ctx)) {
+      return false;
+    }
     if (isEmpty(ctx.options)) {
-      ctx.options = !isEmpty((ctx.layoutNode || {}).options) ?
-        ctx.layoutNode.options : cloneDeep(this.formOptions);
+      ctx.options = !isEmpty((ctx.layoutNode || {}).options)
+        ? ctx.layoutNode.options
+        : cloneDeep(this.formOptions);
     }
     ctx.formControl = this.getFormControl(ctx);
     ctx.boundControl = bind && !!ctx.formControl;
@@ -448,68 +538,106 @@ export class JsonSchemaFormService {
       ctx.controlName = this.getFormControlName(ctx);
       ctx.controlValue = ctx.formControl.value;
       ctx.controlDisabled = ctx.formControl.disabled;
-      ctx.options.errorMessage = ctx.formControl.status === 'VALID' ? null :
-        this.formatErrors(ctx.formControl.errors, ctx.options.validationMessages);
-      ctx.options.showErrors = this.formOptions.validateOnRender === true ||
-        (this.formOptions.validateOnRender === 'auto' && hasValue(ctx.controlValue));
-      ctx.formControl.statusChanges.subscribe(status =>
-        ctx.options.errorMessage = status === 'VALID' ? null :
-          this.formatErrors(ctx.formControl.errors, ctx.options.validationMessages)
+      ctx.options.errorMessage =
+        ctx.formControl.status === 'VALID'
+          ? null
+          : this.formatErrors(
+              ctx.formControl.errors,
+              ctx.options.validationMessages
+            );
+      ctx.options.showErrors =
+        this.formOptions.validateOnRender === true ||
+        (this.formOptions.validateOnRender === 'auto' &&
+          hasValue(ctx.controlValue));
+      ctx.formControl.statusChanges.subscribe(
+        status =>
+          (ctx.options.errorMessage =
+            status === 'VALID'
+              ? null
+              : this.formatErrors(
+                  ctx.formControl.errors,
+                  ctx.options.validationMessages
+                ))
       );
       ctx.formControl.valueChanges.subscribe(value => {
-        if (!!value) { ctx.controlValue = value; }
+        if (!!value) {
+          ctx.controlValue = value;
+        }
       });
     } else {
       ctx.controlName = ctx.layoutNode.name;
       ctx.controlValue = ctx.layoutNode.value || null;
       const dataPointer = this.getDataPointer(ctx);
       if (bind && dataPointer) {
-        console.error(`warning: control "${dataPointer}" is not bound to the Angular FormGroup.`);
+        console.error(
+          `warning: control "${dataPointer}" is not bound to the Angular FormGroup.`
+        );
       }
     }
     return ctx.boundControl;
   }
 
   formatErrors(errors: any, validationMessages: any = {}): string {
-    if (isEmpty(errors)) { return null; }
-    if (!isObject(validationMessages)) { validationMessages = {}; }
-    const addSpaces = string => string[0].toUpperCase() + (string.slice(1) || '')
-      .replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
-    const formatError = (error) => typeof error === 'object' ?
-      Object.keys(error).map(key =>
-        error[key] === true ? addSpaces(key) :
-          error[key] === false ? 'Not ' + addSpaces(key) :
-            addSpaces(key) + ': ' + formatError(error[key])
-      ).join(', ') :
-      addSpaces(error.toString());
+    if (isEmpty(errors)) {
+      return null;
+    }
+    if (!isObject(validationMessages)) {
+      validationMessages = {};
+    }
+    const addSpaces = string =>
+      string[0].toUpperCase() +
+      (string.slice(1) || '')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/_/g, ' ');
+    const formatError = error =>
+      typeof error === 'object'
+        ? Object.keys(error)
+            .map(key =>
+              error[key] === true
+                ? addSpaces(key)
+                : error[key] === false
+                ? 'Not ' + addSpaces(key)
+                : addSpaces(key) + ': ' + formatError(error[key])
+            )
+            .join(', ')
+        : addSpaces(error.toString());
     const messages = [];
-    return Object.keys(errors)
-      // Hide 'required' error, unless it is the only one
-      .filter(errorKey => errorKey !== 'required' || Object.keys(errors).length === 1)
-      .map(errorKey =>
-        // If validationMessages is a string, return it
-        typeof validationMessages === 'string' ? validationMessages :
-          // If custom error message is a function, return function result
-          typeof validationMessages[errorKey] === 'function' ?
-            validationMessages[errorKey](errors[errorKey]) :
-            // If custom error message is a string, replace placeholders and return
-            typeof validationMessages[errorKey] === 'string' ?
-              // Does error message have any {{property}} placeholders?
-              !/{{.+?}}/.test(validationMessages[errorKey]) ?
-                validationMessages[errorKey] :
-                // Replace {{property}} placeholders with values
-                Object.keys(errors[errorKey])
-                  .reduce((errorMessage, errorProperty) => errorMessage.replace(
-                    new RegExp('{{' + errorProperty + '}}', 'g'),
-                    errors[errorKey][errorProperty]
-                  ), validationMessages[errorKey]) :
-              // If no custom error message, return formatted error data instead
+    return (
+      Object.keys(errors)
+        // Hide 'required' error, unless it is the only one
+        .filter(
+          errorKey =>
+            errorKey !== 'required' || Object.keys(errors).length === 1
+        )
+        .map(errorKey =>
+          // If validationMessages is a string, return it
+          typeof validationMessages === 'string'
+            ? validationMessages
+            : // If custom error message is a function, return function result
+            typeof validationMessages[errorKey] === 'function'
+            ? validationMessages[errorKey](errors[errorKey])
+            : // If custom error message is a string, replace placeholders and return
+            typeof validationMessages[errorKey] === 'string'
+            ? // Does error message have any {{property}} placeholders?
+              !/{{.+?}}/.test(validationMessages[errorKey])
+              ? validationMessages[errorKey]
+              : // Replace {{property}} placeholders with values
+                Object.keys(errors[errorKey]).reduce(
+                  (errorMessage, errorProperty) =>
+                    errorMessage.replace(
+                      new RegExp('{{' + errorProperty + '}}', 'g'),
+                      errors[errorKey][errorProperty]
+                    ),
+                  validationMessages[errorKey]
+                )
+            : // If no custom error message, return formatted error data instead
               addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey])
-      ).join('<br>');
+        )
+        .join('<br>')
+    );
   }
 
   updateValue(ctx: any, value: any): void {
-
     // Set value of current control
     ctx.controlValue = value;
     if (ctx.boundControl) {
@@ -522,7 +650,10 @@ export class JsonSchemaFormService {
     if (isArray(ctx.options.copyValueTo)) {
       for (const item of ctx.options.copyValueTo) {
         const targetControl = getControl(this.formGroup, item);
-        if (isObject(targetControl) && typeof targetControl.setValue === 'function') {
+        if (
+          isObject(targetControl) &&
+          typeof targetControl.setValue === 'function'
+        ) {
           targetControl.setValue(value);
           targetControl.markAsDirty();
         }
@@ -534,15 +665,21 @@ export class JsonSchemaFormService {
     const formArray = <FormArray>this.getFormControl(ctx);
 
     // Remove all existing items
-    while (formArray.value.length) { formArray.removeAt(0); }
+    while (formArray.value.length) {
+      formArray.removeAt(0);
+    }
 
     // Re-add an item for each checked box
     const refPointer = removeRecursiveReferences(
-      ctx.layoutNode.dataPointer + '/-', this.dataRecursiveRefMap, this.arrayMap
+      ctx.layoutNode.dataPointer + '/-',
+      this.dataRecursiveRefMap,
+      this.arrayMap
     );
     for (const checkboxItem of checkboxList) {
       if (checkboxItem.checked) {
-        const newFormControl = buildFormGroup(this.templateRefLibrary[refPointer]);
+        const newFormControl = buildFormGroup(
+          this.templateRefLibrary[refPointer]
+        );
         newFormControl.setValue(checkboxItem.value);
         formArray.push(newFormControl);
       }
@@ -552,30 +689,42 @@ export class JsonSchemaFormService {
 
   getFormControl(ctx: any): AbstractControl {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) ||
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
       ctx.layoutNode.type === '$ref'
-    ) { return null; }
+    ) {
+      return null;
+    }
     return getControl(this.formGroup, this.getDataPointer(ctx));
   }
 
   getFormControlValue(ctx: any): AbstractControl {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) ||
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
       ctx.layoutNode.type === '$ref'
-    ) { return null; }
+    ) {
+      return null;
+    }
     const control = getControl(this.formGroup, this.getDataPointer(ctx));
     return control ? control.value : null;
   }
 
   getFormControlGroup(ctx: any): FormArray | FormGroup {
-    if (!ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer)) { return null; }
+    if (!ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer)) {
+      return null;
+    }
     return getControl(this.formGroup, this.getDataPointer(ctx), true);
   }
 
   getFormControlName(ctx: any): string {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) || !hasValue(ctx.dataIndex)
-    ) { return null; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
+      !hasValue(ctx.dataIndex)
+    ) {
+      return null;
+    }
     return JsonPointer.toKey(this.getDataPointer(ctx));
   }
 
@@ -589,22 +738,34 @@ export class JsonSchemaFormService {
 
   getDataPointer(ctx: any): string {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) || !hasValue(ctx.dataIndex)
-    ) { return null; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
+      !hasValue(ctx.dataIndex)
+    ) {
+      return null;
+    }
     return JsonPointer.toIndexedPointer(
-      ctx.layoutNode.dataPointer, ctx.dataIndex, this.arrayMap
+      ctx.layoutNode.dataPointer,
+      ctx.dataIndex,
+      this.arrayMap
     );
   }
 
   getLayoutPointer(ctx: any): string {
-    if (!hasValue(ctx.layoutIndex)) { return null; }
+    if (!hasValue(ctx.layoutIndex)) {
+      return null;
+    }
     return '/' + ctx.layoutIndex.join('/items/');
   }
 
   isControlBound(ctx: any): boolean {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) || !hasValue(ctx.dataIndex)
-    ) { return false; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
+      !hasValue(ctx.dataIndex)
+    ) {
+      return false;
+    }
     const controlGroup = this.getFormControlGroup(ctx);
     const name = this.getFormControlName(ctx);
     return controlGroup ? hasOwn(controlGroup.controls, name) : false;
@@ -612,19 +773,29 @@ export class JsonSchemaFormService {
 
   addItem(ctx: any, name?: string): boolean {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.$ref) ||
-      !hasValue(ctx.dataIndex) || !hasValue(ctx.layoutIndex)
-    ) { return false; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.$ref) ||
+      !hasValue(ctx.dataIndex) ||
+      !hasValue(ctx.layoutIndex)
+    ) {
+      return false;
+    }
 
     // Create a new Angular form control from a template in templateRefLibrary
-    const newFormGroup = buildFormGroup(this.templateRefLibrary[ctx.layoutNode.$ref]);
+    const newFormGroup = buildFormGroup(
+      this.templateRefLibrary[ctx.layoutNode.$ref]
+    );
 
     // Add the new form control to the parent formArray or formGroup
-    if (ctx.layoutNode.arrayItem) { // Add new array item to formArray
+    if (ctx.layoutNode.arrayItem) {
+      // Add new array item to formArray
       (<FormArray>this.getFormControlGroup(ctx)).push(newFormGroup);
-    } else { // Add new $ref item to formGroup
-      (<FormGroup>this.getFormControlGroup(ctx))
-        .addControl(name || this.getFormControlName(ctx), newFormGroup);
+    } else {
+      // Add new $ref item to formGroup
+      (<FormGroup>this.getFormControlGroup(ctx)).addControl(
+        name || this.getFormControlName(ctx),
+        newFormGroup
+      );
     }
 
     // Copy a new layoutNode from layoutRefLibrary
@@ -649,10 +820,16 @@ export class JsonSchemaFormService {
 
   moveArrayItem(ctx: any, oldIndex: number, newIndex: number): boolean {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) ||
-      !hasValue(ctx.dataIndex) || !hasValue(ctx.layoutIndex) ||
-      !isDefined(oldIndex) || !isDefined(newIndex) || oldIndex === newIndex
-    ) { return false; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
+      !hasValue(ctx.dataIndex) ||
+      !hasValue(ctx.layoutIndex) ||
+      !isDefined(oldIndex) ||
+      !isDefined(newIndex) ||
+      oldIndex === newIndex
+    ) {
+      return false;
+    }
 
     // Move item in the formArray
     const formArray = <FormArray>this.getFormControlGroup(ctx);
@@ -669,17 +846,25 @@ export class JsonSchemaFormService {
 
   removeItem(ctx: any): boolean {
     if (
-      !ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer) ||
-      !hasValue(ctx.dataIndex) || !hasValue(ctx.layoutIndex)
-    ) { return false; }
+      !ctx.layoutNode ||
+      !isDefined(ctx.layoutNode.dataPointer) ||
+      !hasValue(ctx.dataIndex) ||
+      !hasValue(ctx.layoutIndex)
+    ) {
+      return false;
+    }
 
     // Remove the Angular form control from the parent formArray or formGroup
-    if (ctx.layoutNode.arrayItem) { // Remove array item from formArray
-      (<FormArray>this.getFormControlGroup(ctx))
-        .removeAt(ctx.dataIndex[ctx.dataIndex.length - 1]);
-    } else { // Remove $ref item from formGroup
-      (<FormGroup>this.getFormControlGroup(ctx))
-        .removeControl(this.getFormControlName(ctx));
+    if (ctx.layoutNode.arrayItem) {
+      // Remove array item from formArray
+      (<FormArray>this.getFormControlGroup(ctx)).removeAt(
+        ctx.dataIndex[ctx.dataIndex.length - 1]
+      );
+    } else {
+      // Remove $ref item from formGroup
+      (<FormGroup>this.getFormControlGroup(ctx)).removeControl(
+        this.getFormControlName(ctx)
+      );
     }
 
     // Remove layoutNode from layout
