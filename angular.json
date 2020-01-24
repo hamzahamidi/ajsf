@@ -161,7 +161,7 @@
       "projectType": "library",
       "root": "projects/ajsf-bootstrap4",
       "sourceRoot": "projects/ajsf-bootstrap4/src",
-      "prefix": "lib",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
@@ -196,7 +196,7 @@
       "projectType": "library",
       "root": "projects/ajsf-bootstrap3",
       "sourceRoot": "projects/ajsf-bootstrap3/src",
-      "prefix": "lib",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
@@ -231,7 +231,7 @@
       "projectType": "library",
       "root": "projects/ajsf-material",
       "sourceRoot": "projects/ajsf-material/src",
-      "prefix": "lib",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",

@@ -11,7 +11,9 @@ import { WidgetLibraryService } from '../widget-library/widget-library.service';
 //   https://github.com/edcarroll/ng2-semantic-ui
 //   https://github.com/vladotesanovic/ngSemantic
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class FrameworkLibraryService {
   activeFramework: Framework = null;
   stylesheets: (HTMLStyleElement|HTMLLinkElement)[];

@@ -25,10 +25,13 @@ import {
   isObject,
   JsonPointer
 } from './shared';
-import { enValidationMessages } from './locale/en-validation-messages';
-import { frValidationMessages } from './locale/fr-validation-messages';
-import { zhValidationMessages } from './locale/zh-validation-messages';
-import { itValidationMessages } from './locale/it-validation-messages';
+import {
+  enValidationMessages,
+  frValidationMessages,
+  zhValidationMessages,
+  itValidationMessages,
+} from './locale';
+
 
 export interface TitleMapItem {
   name?: string;
@@ -44,7 +47,9 @@ export interface ErrorMessages {
   }[];
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class JsonSchemaFormService {
   JsonFormCompatibility = false;
   ReactJsonSchemaFormCompatibility = false;

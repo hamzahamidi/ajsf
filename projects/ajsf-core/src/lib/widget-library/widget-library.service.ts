@@ -21,7 +21,9 @@ import { TabsComponent } from './tabs.component';
 import { TemplateComponent } from './template.component';
 import { TextareaComponent } from './textarea.component';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class WidgetLibraryService {
 
   defaultWidget = 'text';
