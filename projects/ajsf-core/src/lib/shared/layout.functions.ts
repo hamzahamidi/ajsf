@@ -343,6 +343,9 @@ export function buildLayout(jsf, widgetLibrary) {
           }
           newNode.items[0].arrayItemType =
             newNode.options.tupleItems ? 'tuple' : 'list';
+          
+          additionalItems = newNode.items[0];
+          newNode.items = [];
         }
 
         if (isArray(newNode.items)) {
