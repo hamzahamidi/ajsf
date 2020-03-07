@@ -39,4 +39,4 @@ export {
   buildLayout, buildLayoutFromSchema, mapLayout, getLayoutNode, buildTitleMap
 } from './layout.functions';
 
-export { dateToString, stringToDate, findDate } from './date.functions';
+export { dateToString } from './date.functions';
