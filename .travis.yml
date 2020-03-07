@@ -29,7 +29,8 @@ jobs:
         - yarn build:core
         - yarn test:core --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
       after_script:
-        - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.frontend.json coverage/lcov.info  
+        - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/ajsf-core/lcov.info  
+        - echo $TRAVIS_TEST_RESULT
         - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  
     - stage: Build @ajsf/bootstrap3
       name: ajsf/bootstrap3
@@ -62,4 +63,3 @@ jobs:
         on:
           branch: master
         local_dir: dist/demo
-  
