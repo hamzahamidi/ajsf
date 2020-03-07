@@ -58,7 +58,10 @@
     "build:demo-only": "ng build demo --prod --base-href ./",
     "prestats": "ng build demo --prod --stats-json",
     "stats": "webpack-bundle-analyzer dist/demo/stats.json",
-    "test": "ng test",
+    "test:core": "ng test @ajsf/core",
+    "test:bs3": "ng test @ajsf/bootstrap3",
+    "test:bs4": "ng test @ajsf/bootstrap4",
+    "test:material": "ng test @ajsf/material",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
