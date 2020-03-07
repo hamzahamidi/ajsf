@@ -91,7 +91,7 @@
       "state": "NV",
       "zip_code": "89123"
     },
-    "birthday": "1999-09-09",
+    "birthday": "1999-09-21",
     "phone_numbers": [
       { "type": "cell", "number": "702-123-4567" },
       { "type": "work", "number": "702-987-6543" }
