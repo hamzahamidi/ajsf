@@ -2,11 +2,22 @@ language: node_js
 node_js:
     - "12.14.1"
 
+addons:
+  chrome: stable
+
+env:
+  global:
+    CC_TEST_REPORTER_ID=$CODE_CLIMATE_TOKEN
+
 branches:
   only:
     - master
     - v8
 
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter  
+  
 before_script:
   - yarn install --frozen-lockfile
 
@@ -16,21 +27,29 @@ jobs:
       name: ajsf/core
       script:
         - yarn build:core
+        - yarn test:core --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        after_script:
+          - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.frontend.json coverage/lcov.info  
+          - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  
     - stage: Build @ajsf/bootstrap3
       name: ajsf/bootstrap3
       script:
         - yarn build:core
         - yarn build:bs3
+        - yarn test:bs3 --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
     - stage: Build @ajsf/bootstrap4
       name: ajsf/bootstrap4
       script:
         - yarn build:core
         - yarn build:bs4
+        - yarn test:bs4 --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+
     - stage: Build @ajsf/material
       name: ajsf/material
       script:
         - yarn build:core
         - yarn build:material
+        - yarn test:material --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
     - stage: Build demo application & Deploy
       name: online Demo
       script:

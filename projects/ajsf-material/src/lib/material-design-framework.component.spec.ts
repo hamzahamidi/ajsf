@@ -4,11 +4,11 @@ import {
   JsonSchemaFormModule,
   WidgetLibraryModule
 } from '@ajsf/core';
-import { Bootstrap4FrameworkComponent } from './bootstrap4-framework.component';
+import { MaterialDesignFrameworkComponent } from './material-design-framework.component';
 
 describe('FwBootstrap4Component', () => {
-  let component: Bootstrap4FrameworkComponent;
-  let fixture: ComponentFixture<Bootstrap4FrameworkComponent>;
+  let component: MaterialDesignFrameworkComponent;
+  let fixture: ComponentFixture<MaterialDesignFrameworkComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -17,13 +17,13 @@ describe('FwBootstrap4Component', () => {
         CommonModule,
         WidgetLibraryModule,
       ],
-      declarations: [Bootstrap4FrameworkComponent]
+      declarations: [MaterialDesignFrameworkComponent]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Bootstrap4FrameworkComponent);
+    fixture = TestBed.createComponent(MaterialDesignFrameworkComponent);
     component = fixture.componentInstance;
     component.layoutNode = { options: {} };
     component.layoutIndex = [];
