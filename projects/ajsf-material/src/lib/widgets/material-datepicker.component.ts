@@ -1,6 +1,6 @@
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
+import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { JsonSchemaFormService, dateToString, stringToDate } from '@ajsf/core';
+import { JsonSchemaFormService, dateToString } from '@ajsf/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -69,7 +69,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 export class MaterialDatepickerComponent implements OnInit {
   formControl: AbstractControl;
   controlName: string;
-  controlValue: any;
+  controlValue: string;
   dateValue: any;
   controlDisabled = false;
   boundControl = false;
@@ -88,19 +88,18 @@ export class MaterialDatepickerComponent implements OnInit {
   ngOnInit() {
     this.options = this.layoutNode.options || {};
     this.jsf.initializeControl(this, !this.options.readonly);
-    if (this.controlValue) { this.setDate(dateToString(new Date(this.controlValue))); }
+    if (this.controlValue) {
+      this.formControl.setValue(dateToString(this.controlValue, this.options));
+    }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
     }
   }
 
-  updateValue(event: MatDatepickerInputEvent<Date> ) {
+  updateValue(event: MatDatepickerInputEvent<Date>) {
     this.options.showErrors = true;
-    if (event.value) { this.setDate(dateToString(event.value)); }
+    if (event.value) {
+      this.formControl.setValue(dateToString(event.value, this.options));
+    }
   }
-
-  setDate(date: string) {
-    this.formControl.setValue(date, this.options);
-  }
-
 }
