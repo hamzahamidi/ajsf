@@ -7,17 +7,13 @@ addons:
 
 env:
   global:
-    CC_TEST_REPORTER_ID=$CODE_CLIMATE_TOKEN
+    CODECOV_TOKEN=$CODECOV_TOKEN
 
 branches:
   only:
     - master
     - v8
 
-before_install:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter  
-  
 before_script:
   - yarn install --frozen-lockfile
 
@@ -28,10 +24,6 @@ jobs:
       script:
         - yarn build:core
         - yarn test:core --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-      after_script:
-        - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/ajsf-core/lcov.info  
-        - echo $TRAVIS_TEST_RESULT
-        - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  
     - stage: Build @ajsf/bootstrap3
       name: ajsf/bootstrap3
       script:
@@ -44,13 +36,23 @@ jobs:
         - yarn build:core
         - yarn build:bs4
         - yarn test:bs4 --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-
     - stage: Build @ajsf/material
       name: ajsf/material
       script:
         - yarn build:core
         - yarn build:material
+        - yarn test:material --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false  
+    - stage: Test coverage
+      name: Test coverage
+      script:
+        - yarn build:core
+        - yarn test:core --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        - yarn test:bs3 --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        - yarn test:bs4 --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
         - yarn test:material --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+      after_script: 
+        - echo $TRAVIS_TEST_RESULT
+        - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then yarn test:coverage; fi        
     - stage: Build demo application & Deploy
       name: online Demo
       script:
