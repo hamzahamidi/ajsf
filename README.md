@@ -99,7 +99,7 @@ The source code is composed as the following:
 * `demo` - the demonstration playground example application
 * `demo/assets/example-schemas` - JSON Schema examples used in the playground
 
-If you want detailed documentation describing the individual functions used in this library, run `npm run docs` to generate TypeDoc documentation, and then look in the generated `/docs/api` folder. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
+If you want detailed documentation describing the individual functions used in this library, check the README in each component. (Angular JSON Schema Form is still a work in progress, so right now this documentation varies from highly detailed to completely missing.)
 
 ## Using Angular JSON Schema Form
 
@@ -494,6 +494,10 @@ Alternately, during development, you may find it helpful to let Angular JSON Sch
 Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScritps()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
 
 However, if you are creating a production site you should load these assets separately, and make sure to remove all references to `loadExternalAssets` to prevent the assets from being loaded twice.
+
+## contributing guide
+
+If you like this project and want to contribute you can check this [documentation](./CONTRIBUTING.md).
 
 ## License
 
