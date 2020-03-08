@@ -62,6 +62,7 @@
     "test:bs3": "ng test @ajsf/bootstrap3",
     "test:bs4": "ng test @ajsf/bootstrap4",
     "test:material": "ng test @ajsf/material",
+    "test:coverage": "./node_modules/.bin/codecov",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -93,6 +94,7 @@
     "@types/jasminewd2": "~2.0.6",
     "@types/lodash": "^4.14.136",
     "@types/node": "~12.6.8",
+    "codecov": "^3.6.5",
     "codelyzer": "^5.0.1",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
