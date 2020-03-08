@@ -1,4 +1,4 @@
-export const ptbrValidationMessages: any = { // Brazilian Portuguese error messages
+export const ptValidationMessages: any = { // Brazilian Portuguese error messages
   required: 'Este campo é obrigatório.',
   minLength: 'É preciso no mínimo {{minimumLength}} caracteres ou mais (tamanho atual: {{currentLength}})',
   maxLength: 'É preciso no máximo  {{maximumLength}} caracteres ou menos (tamanho atual: {{currentLength}})',
