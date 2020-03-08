@@ -26,12 +26,13 @@ import { JsonPointer } from '@ajsf/core';
 })
 export class DemoComponent implements OnInit {
   examples: any = Examples;
-  languageList: any = ['en', 'fr', 'zh', 'it'];
+  languageList: any = ['en', 'fr', 'it', 'pt', 'zh'];
   languages: any = {
     'en': 'English',
     'fr': 'French',
-    'zh': 'Chinese',
     'it': 'Italian',
+    'pt': 'Portuguese',
+    'zh': 'Chinese',
   };
   frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'no-framework'];
   frameworks: any = {
@@ -76,7 +77,7 @@ export class DemoComponent implements OnInit {
     printMargin: false,
     autoScrollEditorIntoView: true,
   };
-  @ViewChild(MatMenuTrigger, {static: true}) menuTrigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, { static: true }) menuTrigger: MatMenuTrigger;
 
   constructor(
     private http: HttpClient,

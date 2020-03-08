@@ -10,8 +10,9 @@ export { FrameworkLibraryService } from './lib/framework-library/framework-libra
 export {
     enValidationMessages,
     frValidationMessages,
-    zhValidationMessages,
     itValidationMessages,
+    ptValidationMessages,
+    zhValidationMessages,
   } from './lib/locale';
 export * from './lib/widget-library';
 export * from './lib/widget-library/widget-library.module';

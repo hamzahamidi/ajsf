@@ -28,8 +28,9 @@ import {
 import {
   enValidationMessages,
   frValidationMessages,
-  zhValidationMessages,
   itValidationMessages,
+  ptValidationMessages,
+  zhValidationMessages,
 } from './locale';
 
 
@@ -152,8 +153,9 @@ export class JsonSchemaFormService {
     const languageValidationMessages = {
       fr: frValidationMessages,
       en: enValidationMessages,
+      it: itValidationMessages,
+      pt: ptValidationMessages,
       zh: zhValidationMessages,
-      it: itValidationMessages
     };
     const languageCode = language.slice(0, 2);
 
@@ -402,12 +404,12 @@ export class JsonSchemaFormService {
       return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1))
         ? JsonPointer.get(value, pointer.slice(1))
         : pointer[0] === 'values' && JsonPointer.has(values, pointer.slice(1))
-        ? JsonPointer.get(values, pointer.slice(1))
-        : pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1))
-        ? JsonPointer.get(tpldata, pointer.slice(1))
-        : JsonPointer.has(values, pointer)
-        ? JsonPointer.get(values, pointer)
-        : '';
+          ? JsonPointer.get(values, pointer.slice(1))
+          : pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1))
+            ? JsonPointer.get(tpldata, pointer.slice(1))
+            : JsonPointer.has(values, pointer)
+              ? JsonPointer.get(values, pointer)
+              : '';
     }
     if (expression.indexOf('[idx]') > -1) {
       expression = expression.replace(/\[idx\]/g, <string>index);
@@ -457,17 +459,17 @@ export class JsonSchemaFormService {
     const text = JsonPointer.getFirst(
       isArrayItem && childNode.type !== '$ref'
         ? [
-            [childNode, '/options/legend'],
-            [childNode, '/options/title'],
-            [parentNode, '/options/title'],
-            [parentNode, '/options/legend']
-          ]
+          [childNode, '/options/legend'],
+          [childNode, '/options/title'],
+          [parentNode, '/options/title'],
+          [parentNode, '/options/legend']
+        ]
         : [
-            [childNode, '/options/title'],
-            [childNode, '/options/legend'],
-            [parentNode, '/options/title'],
-            [parentNode, '/options/legend']
-          ]
+          [childNode, '/options/title'],
+          [childNode, '/options/legend'],
+          [parentNode, '/options/title'],
+          [parentNode, '/options/legend']
+        ]
     );
     if (!text) {
       return text;
@@ -483,11 +485,11 @@ export class JsonSchemaFormService {
     return !ctx.options.title && /^(\d+|-)$/.test(ctx.layoutNode.name)
       ? null
       : this.parseText(
-          ctx.options.title || toTitleCase(ctx.layoutNode.name),
-          this.getFormControlValue(this),
-          (this.getFormControlGroup(this) || <any>{}).value,
-          ctx.dataIndex[ctx.dataIndex.length - 1]
-        );
+        ctx.options.title || toTitleCase(ctx.layoutNode.name),
+        this.getFormControlValue(this),
+        (this.getFormControlGroup(this) || <any>{}).value,
+        ctx.dataIndex[ctx.dataIndex.length - 1]
+      );
   }
 
   evaluateCondition(layoutNode: any, dataIndex: number[]): boolean {
@@ -520,7 +522,7 @@ export class JsonSchemaFormService {
           result = true;
           console.error(
             'condition functionBody errored out on evaluation: ' +
-              layoutNode.options.condition.functionBody
+            layoutNode.options.condition.functionBody
           );
         }
       }
@@ -547,9 +549,9 @@ export class JsonSchemaFormService {
         ctx.formControl.status === 'VALID'
           ? null
           : this.formatErrors(
-              ctx.formControl.errors,
-              ctx.options.validationMessages
-            );
+            ctx.formControl.errors,
+            ctx.options.validationMessages
+          );
       ctx.options.showErrors =
         this.formOptions.validateOnRender === true ||
         (this.formOptions.validateOnRender === 'auto' &&
@@ -560,9 +562,9 @@ export class JsonSchemaFormService {
             status === 'VALID'
               ? null
               : this.formatErrors(
-                  ctx.formControl.errors,
-                  ctx.options.validationMessages
-                ))
+                ctx.formControl.errors,
+                ctx.options.validationMessages
+              ))
       );
       ctx.formControl.valueChanges.subscribe(value => {
         if (!!value) {
@@ -597,14 +599,14 @@ export class JsonSchemaFormService {
     const formatError = error =>
       typeof error === 'object'
         ? Object.keys(error)
-            .map(key =>
-              error[key] === true
-                ? addSpaces(key)
-                : error[key] === false
+          .map(key =>
+            error[key] === true
+              ? addSpaces(key)
+              : error[key] === false
                 ? 'Not ' + addSpaces(key)
                 : addSpaces(key) + ': ' + formatError(error[key])
-            )
-            .join(', ')
+          )
+          .join(', ')
         : addSpaces(error.toString());
     const messages = [];
     return (
@@ -620,23 +622,23 @@ export class JsonSchemaFormService {
             ? validationMessages
             : // If custom error message is a function, return function result
             typeof validationMessages[errorKey] === 'function'
-            ? validationMessages[errorKey](errors[errorKey])
-            : // If custom error message is a string, replace placeholders and return
-            typeof validationMessages[errorKey] === 'string'
-            ? // Does error message have any {{property}} placeholders?
-              !/{{.+?}}/.test(validationMessages[errorKey])
-              ? validationMessages[errorKey]
-              : // Replace {{property}} placeholders with values
-                Object.keys(errors[errorKey]).reduce(
-                  (errorMessage, errorProperty) =>
-                    errorMessage.replace(
-                      new RegExp('{{' + errorProperty + '}}', 'g'),
-                      errors[errorKey][errorProperty]
-                    ),
-                  validationMessages[errorKey]
-                )
-            : // If no custom error message, return formatted error data instead
-              addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey])
+              ? validationMessages[errorKey](errors[errorKey])
+              : // If custom error message is a string, replace placeholders and return
+              typeof validationMessages[errorKey] === 'string'
+                ? // Does error message have any {{property}} placeholders?
+                !/{{.+?}}/.test(validationMessages[errorKey])
+                  ? validationMessages[errorKey]
+                  : // Replace {{property}} placeholders with values
+                  Object.keys(errors[errorKey]).reduce(
+                    (errorMessage, errorProperty) =>
+                      errorMessage.replace(
+                        new RegExp('{{' + errorProperty + '}}', 'g'),
+                        errors[errorKey][errorProperty]
+                      ),
+                    validationMessages[errorKey]
+                  )
+                : // If no custom error message, return formatted error data instead
+                addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey])
         )
         .join('<br>')
     );
