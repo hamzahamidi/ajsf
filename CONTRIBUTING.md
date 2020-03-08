@@ -77,8 +77,64 @@ If you have a better method please send a PR.
 Each commit in the pull request should do only one thing, which is clearly
 described by its commit message. Especially avoid mixing formatting changes and
 functional changes into one commit. When writing commit messages, adhere to
-[widely used
-conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+[Angular Conventional Commit](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines).
+
+#### Commit Message Format
+Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
+format that includes a **type**, a **scope** and a **subject**:
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+The **header** is mandatory and the **scope** of the header is optional.
+
+Any line of the commit message cannot be longer than 100 characters! This allows the message to be easier
+to read on GitHub as well as in various git tools.
+
+The footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
+
+```markdown
+docs(changelog): update changelog to beta.5
+```
+
+```markdown
+fix(release): need to depend on latest rxjs and zone.js
+
+The version in our package.json gets copied to the one we publish, and users need the latest of these.
+```
+
+#### Type
+
+Must be one of the following:
+
+* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+* **ci**: Changes to our CI configuration files and scripts (example scopes: Circle, BrowserStack, SauceLabs)
+* **docs**: Documentation only changes
+* **feat**: A new feature
+* **fix**: A bug fix
+* **perf**: A code change that improves performance
+* **refactor**: A code change that neither fixes a bug nor adds a feature
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* **test**: Adding missing tests or correcting existing tests
+
+#### Scope
+
+The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
+
+The following is the list of supported scopes:
+
+* **ajsf/core**
+* **ajsf/bs3**
+* **ajsf/bs4**
+* **ajsf/material**
+* **locales**
+* **demo**
+* ...
 
 When the commit fixes a bug, put a message in the body of the commit message
 pointing to the number of the issue (e.g. "Fixes #123").
