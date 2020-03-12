@@ -6,7 +6,7 @@ import { MaterialButtonGroupComponent } from './material-button-group.component'
 import { MaterialCheckboxComponent } from './material-checkbox.component';
 import { MaterialCheckboxesComponent } from './material-checkboxes.component';
 import { MaterialChipListComponent } from './material-chip-list.component';
-import { MaterialDatepickerComponent } from './material-datepicker.component';
+import { MaterialDatepickerComponent } from './material-datepicker/material-datepicker.component';
 import { MaterialDesignFrameworkComponent } from '../material-design-framework.component';
 import { MaterialFileComponent } from './material-file.component';
 import { MaterialInputComponent } from './material-input.component';
@@ -41,7 +41,7 @@ export { MaterialButtonGroupComponent } from './material-button-group.component'
 export { MaterialCheckboxComponent } from './material-checkbox.component';
 export { MaterialCheckboxesComponent } from './material-checkboxes.component';
 export { MaterialChipListComponent } from './material-chip-list.component';
-export { MaterialDatepickerComponent } from './material-datepicker.component';
+export { MaterialDatepickerComponent } from './material-datepicker/material-datepicker.component';
 export { MaterialFileComponent } from './material-file.component';
 export { MaterialInputComponent } from './material-input.component';
 export { MaterialNumberComponent } from './material-number.component';

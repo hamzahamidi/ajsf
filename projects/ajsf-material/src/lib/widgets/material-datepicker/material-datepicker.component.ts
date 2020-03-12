@@ -1,9 +1,10 @@
 import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
-import { JsonSchemaFormService, dateToString } from '@ajsf/core';
+import { FormControl } from '@angular/forms';
+import { JsonSchemaFormService } from '@ajsf/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { parseDate } from './date.functions';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -48,6 +49,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [required]="options?.required"
         [style.width]="'100%'"
         [readonly]="options?.readonly"
+        [value]="controlValue"
         (blur)="options.showErrors = true"
         (dateChange)="updateValue($event)"
         (dateInput)="updateValue($event)">
@@ -67,7 +69,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
   `],
 })
 export class MaterialDatepickerComponent implements OnInit {
-  formControl: AbstractControl;
+  formControl: FormControl;
   controlName: string;
   controlValue: string;
   dateValue: any;
@@ -89,7 +91,7 @@ export class MaterialDatepickerComponent implements OnInit {
     this.options = this.layoutNode.options || {};
     this.jsf.initializeControl(this, !this.options.readonly);
     if (this.controlValue) {
-      this.formControl.setValue(dateToString(this.controlValue, this.options));
+      this.formControl.setValue(parseDate(this.controlValue));
     }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
@@ -98,8 +100,5 @@ export class MaterialDatepickerComponent implements OnInit {
 
   updateValue(event: MatDatepickerInputEvent<Date>) {
     this.options.showErrors = true;
-    if (event.value) {
-      this.formControl.setValue(dateToString(event.value, this.options));
-    }
   }
 }

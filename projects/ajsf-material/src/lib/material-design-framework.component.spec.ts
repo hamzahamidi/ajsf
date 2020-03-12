@@ -6,7 +6,7 @@ import {
 } from '@ajsf/core';
 import { MaterialDesignFrameworkComponent } from './material-design-framework.component';
 
-describe('FwBootstrap4Component', () => {
+describe('MaterialDesignFrameworkComponent', () => {
   let component: MaterialDesignFrameworkComponent;
   let fixture: ComponentFixture<MaterialDesignFrameworkComponent>;
 
