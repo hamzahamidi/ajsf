@@ -26,13 +26,14 @@ import { JsonPointer } from '@ajsf/core';
 })
 export class DemoComponent implements OnInit {
   examples: any = Examples;
-  languageList: any = ['en', 'fr', 'it', 'pt', 'zh'];
+  languageList: any = ['en', 'fr', 'it', 'pt', 'zh', 'de'];
   languages: any = {
     'en': 'English',
     'fr': 'French',
     'it': 'Italian',
     'pt': 'Portuguese',
     'zh': 'Chinese',
+    'de': 'German',
   };
   frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'no-framework'];
   frameworks: any = {

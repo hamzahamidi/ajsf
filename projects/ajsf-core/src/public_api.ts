@@ -13,6 +13,7 @@ export {
     itValidationMessages,
     ptValidationMessages,
     zhValidationMessages,
+    deValidationMessages,
   } from './lib/locale';
 export * from './lib/widget-library';
 export * from './lib/widget-library/widget-library.module';
