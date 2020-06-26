@@ -31,6 +31,7 @@ import {
   itValidationMessages,
   ptValidationMessages,
   zhValidationMessages,
+  deValidationMessages,
 } from './locale';
 
 
@@ -156,6 +157,7 @@ export class JsonSchemaFormService {
       it: itValidationMessages,
       pt: ptValidationMessages,
       zh: zhValidationMessages,
+      de: deValidationMessages,
     };
     const languageCode = language.slice(0, 2);
 

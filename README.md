@@ -169,7 +169,7 @@ For more control over your form, you may provide these additional inputs:
 * `data` object to populate the form with default or previously submitted values
 * `options` object to set any global options for the form
 * `widgets` object to add custom widgets
-* `language` string to set the error message language (currently supports 'en' and 'fr')
+* `language` string to set the error message language (currently supports 'en', 'fr', 'it', 'pt', 'zh', 'de')
 * `framework` string or object to set which framework to use
 
 For `framework`, you can pass in your own custom framework object, or, if you've loaded multiple frameworks, you can specify the name of the framework you want to use. To switch between the included frameworks, use 'material-design', 'bootstrap-3', 'bootstrap-4', and 'no-framework'.
