@@ -26,12 +26,13 @@ import {
   JsonPointer
 } from './shared';
 import {
+  deValidationMessages,
   enValidationMessages,
+  esValidationMessages,
   frValidationMessages,
   itValidationMessages,
   ptValidationMessages,
-  zhValidationMessages,
-  deValidationMessages,
+  zhValidationMessages
 } from './locale';
 
 
@@ -152,12 +153,13 @@ export class JsonSchemaFormService {
   setLanguage(language: string = 'en-US') {
     this.language = language;
     const languageValidationMessages = {
-      fr: frValidationMessages,
+      de: deValidationMessages,
       en: enValidationMessages,
+      es: esValidationMessages,
+      fr: frValidationMessages,
       it: itValidationMessages,
       pt: ptValidationMessages,
       zh: zhValidationMessages,
-      de: deValidationMessages,
     };
     const languageCode = language.slice(0, 2);
 
