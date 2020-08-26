@@ -18,11 +18,11 @@ export const esValidationMessages: any = { // Default Spanish error messages
       case 'ipv4':
         return 'Debe ser una dirección de IPv4, ej "127.0.0.1"';
       case 'ipv6':
-        return 'Debe ser una dirección de IPv4, ej "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
+        return 'Debe ser una dirección de IPv6, ej "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
       case 'url':
-        return 'Debe ser una url, ej "http://www.example.com/page.html"';
+        return 'Debe ser una URL, ej "http://www.example.com/page.html"';
       case 'uuid':
-        return 'Debe ser un uuid, ej "12345678-9ABC-DEF0-1234-56789ABCDEF0"';
+        return 'Debe ser un UUID, ej "12345678-9ABC-DEF0-1234-56789ABCDEF0"';
       case 'color':
         return 'Debe ser un color, ej "#FFFFFF" or "rgb(255, 255, 255)"';
       case 'json-pointer':
