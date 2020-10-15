@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/demo",
             "index": "demo/index.html",
             "main": "demo/main.ts",
@@ -29,6 +30,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "demo/environments/environment.ts",
@@ -133,6 +140,11 @@
           "options": {
             "tsConfig": "projects/ajsf-core/tsconfig.lib.json",
             "project": "projects/ajsf-core/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ajsf-core/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -168,6 +180,11 @@
           "options": {
             "tsConfig": "projects/ajsf-bootstrap4/tsconfig.lib.json",
             "project": "projects/ajsf-bootstrap4/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ajsf-bootstrap4/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -203,6 +220,11 @@
           "options": {
             "tsConfig": "projects/ajsf-bootstrap3/tsconfig.lib.json",
             "project": "projects/ajsf-bootstrap3/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ajsf-bootstrap3/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -238,6 +260,11 @@
           "options": {
             "tsConfig": "projects/ajsf-material/tsconfig.lib.json",
             "project": "projects/ajsf-material/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ajsf-material/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -266,7 +293,7 @@
   "defaultProject": "demo",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "scss"
+      "style": "scss"
     }
   }
 }
