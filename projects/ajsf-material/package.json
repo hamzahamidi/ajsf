@@ -38,8 +38,8 @@
     "@ajsf/core": "~0.1.4"
   },
   "peerDependencies": {
-    "@angular/flex-layout": ">=6.0.0-beta.17",
-    "@angular/material": ">=6.0.0",
-    "@angular/cdk": ">=6.0.0"
+    "@angular/flex-layout": ">=9.0.0-beta.28",
+    "@angular/material": ">=9.0.0",
+    "@angular/cdk": ">=9.0.0"
   }
 }

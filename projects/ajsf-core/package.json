@@ -36,11 +36,11 @@
         "ajv": "^6.10.0"
     },
     "peerDependencies": {
-        "@angular/common": ">=6.0.0",
-        "@angular/core": ">=6.0.0",
-        "@angular/forms": ">=6.0.0",
-        "@angular/platform-browser": ">=6.0.0",
-        "rxjs": ">=6.0.0"
+        "@angular/common": ">=9.0.0",
+        "@angular/core": ">=9.0.0",
+        "@angular/forms": ">=9.0.0",
+        "@angular/platform-browser": ">=9.0.0",
+        "rxjs": "^6.0.0"
     },
     "devDependencies": {
         "@types/lodash-es": "^4.17.3"
