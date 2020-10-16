@@ -18,6 +18,9 @@
     "Angular9",
     "Angular 9",
     "ng9",
+    "Angular10",
+    "Angular 10",
+    "ng10",
     "JSON Schema",
     "form",
     "forms",
@@ -38,7 +41,8 @@
   "private": false,
   "dependencies": {
     "lodash-es": "^4.17.15",
-    "@ajsf/core": "~0.2.0-beta.2"
+    "@ajsf/core": "~0.2.0-beta.2",
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/common": ">=9.0.0",
