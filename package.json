@@ -1,6 +1,6 @@
 {
   "name": "demo",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "description": "Angular JSON Schema Form builder Demo",
   "engines": {
