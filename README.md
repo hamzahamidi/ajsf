@@ -2,11 +2,13 @@
 
 **N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
 
-[![Build Status](https://travis-ci.com/hamzahamidi/ajsf.svg?branch=master)](https://travis-ci.com/hamzahamidi/ajsf)
-[![codecov](https://codecov.io/gh/hamzahamidi/ajsf/branch/master/graph/badge.svg)](https://codecov.io/gh/hamzahamidi/ajsf)
-[![Maintainability](https://api.codeclimate.com/v1/badges/daec00f786b6ab6066c2/maintainability)](https://codeclimate.com/github/hamzahamidi/ajsf/maintainability)
-[![GitHub release](https://img.shields.io/github/release/hamzahamidi/ajsf.svg)](https://github.com/hamzahamidi/ajsf/releases/latest)
-[![npm downloads](https://img.shields.io/npm/dm/angular6-json-schema-form.svg?style=plastic)](https://www.npmjs.com/package/angular6-json-schema-form) [![GitHub MIT License](https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social)](https://github.com/hamzahamidi/ajsf/blob/master/LICENSE)
+<p align="center">
+  <a href="https://travis-ci.com/github/hamzahamidi/ajsf"><img src="https://travis-ci.com/hamzahamidi/ajsf.svg?branch=master" alt="Travis CI status"></a>
+  <a href="https://github.com/hamzahamidi/ajsf/releases/latest"><img src="https://img.shields.io/github/release/hamzahamidi/ajsf.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
+  <a href="https://github.com/hamzahamidi/ajsf/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="LICENSE IMT"></a>
+  <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
+</p>
 
 Note: This project is a continuation to [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) & is and is not affiliated with any organization.
 
