@@ -21,6 +21,9 @@
     "Angular10",
     "Angular 10",
     "ng10",
+    "Angular11",
+    "Angular 11",
+    "ng11",
     "JSON Schema",
     "form",
     "forms",
@@ -46,7 +49,7 @@
   },
   "peerDependencies": {
     "@angular/flex-layout": ">=9.0.0-beta.28",
-    "@angular/material": ">=9.0.0",
-    "@angular/cdk": ">=9.0.0"
+    "@angular/material": ">=11.0.0",
+    "@angular/cdk": ">=11.0.0"
   }
 }

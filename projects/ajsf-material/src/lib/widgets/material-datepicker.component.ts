@@ -2,7 +2,6 @@ import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService, dateToString } from '@ajsf/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
@@ -81,7 +80,7 @@ export class MaterialDatepickerComponent implements OnInit {
 
   constructor(
     @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
-    @Inject(MAT_LABEL_GLOBAL_OPTIONS) @Optional() public matLabelGlobalOptions,
+    @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matLabelGlobalOptions,
     private jsf: JsonSchemaFormService
   ) { }
 
