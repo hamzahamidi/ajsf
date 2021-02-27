@@ -1,7 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
-import { MAT_LABEL_GLOBAL_OPTIONS } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
@@ -10,7 +9,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
   template: `
     <mat-form-field [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
       [class]="options?.htmlClass || ''"
-      [floatLabel]="options?.floatLabel || matLabelGlobalOptions?.float || (options?.notitle ? 'never' : 'auto')"
+      [floatLabel]="options?.floatLabel || matFormFieldDefaultOptions?.floatLabel || (options?.notitle ? 'never' : 'auto')"
       [hideRequiredMarker]="options?.hideRequired ? 'true' : 'false'"
       [style.width]="'100%'">
       <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
@@ -80,7 +79,6 @@ export class MaterialInputComponent implements OnInit {
 
   constructor(
     @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
-    @Inject(MAT_LABEL_GLOBAL_OPTIONS) @Optional() public matLabelGlobalOptions,
     private jsf: JsonSchemaFormService
   ) {
   }
