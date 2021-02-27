@@ -1,6 +1,6 @@
 {
   "name": "@ajsf/core",
-  "version": "0.3.0-beta.4",
+  "version": "0.4.0-beta.2",
   "description": "Angular JSON Schema Form builder core",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
@@ -46,10 +46,10 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": ">=9.0.0",
-    "@angular/core": ">=9.0.0",
-    "@angular/forms": ">=9.0.0",
-    "@angular/platform-browser": ">=9.0.0",
+    "@angular/common": ">=11.0.0",
+    "@angular/core": ">=11.0.0",
+    "@angular/forms": ">=11.0.0",
+    "@angular/platform-browser": ">=11.0.0",
     "rxjs": "^6.0.0"
   },
   "devDependencies": {

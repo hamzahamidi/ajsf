@@ -13,7 +13,7 @@
       "ajv/lib/refs/json-schema-draft-06.json": "jsonDraft6"
     }
   },
-  "whitelistedNonPeerDependencies": [
+  "allowedNonPeerDependencies": [
     "lodash-es",
     "ajv"
   ]
