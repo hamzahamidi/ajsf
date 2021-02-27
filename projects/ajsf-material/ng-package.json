@@ -9,7 +9,7 @@
       "@ajsf/core": "@ajsf/core"
     }
   },
-  "whitelistedNonPeerDependencies": [
+  "allowedNonPeerDependencies": [
     "lodash-es",
     "@ajsf/core"
   ]

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import {
   JsonSchemaFormModule,
@@ -10,7 +10,7 @@ describe('FwBootstrap4Component', () => {
   let component: MaterialDesignFrameworkComponent;
   let fixture: ComponentFixture<MaterialDesignFrameworkComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         JsonSchemaFormModule,

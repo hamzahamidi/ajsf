@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import {
   JsonSchemaFormModule,
@@ -10,7 +10,7 @@ describe('Bootstrap3FrameworkComponent', () => {
   let component: Bootstrap3FrameworkComponent;
   let fixture: ComponentFixture<Bootstrap3FrameworkComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         JsonSchemaFormModule,
