@@ -643,32 +643,34 @@ export function resolveSchemaReferences(
   // Make sure all remaining schema $refs are recursive, and build final
   // schemaRefLibrary, schemaRecursiveRefMap, dataRecursiveRefMap, & arrayMap
   JsonPointer.forEachDeep(compiledSchema, (subSchema, subSchemaPointer) => {
-    if (isString(subSchema['$ref'])) {
-      let refPointer = JsonPointer.compile(subSchema['$ref']);
-      if (!JsonPointer.isSubPointer(refPointer, subSchemaPointer, true)) {
-        refPointer = removeRecursiveReferences(subSchemaPointer, recursiveRefMap);
-        JsonPointer.set(compiledSchema, subSchemaPointer, { $ref: `#${refPointer}` });
+    if (isObject(subSchema)) {
+      if (isString(subSchema['$ref'])) {
+        let refPointer = JsonPointer.compile(subSchema['$ref']);
+        if (!JsonPointer.isSubPointer(refPointer, subSchemaPointer, true)) {
+          refPointer = removeRecursiveReferences(subSchemaPointer, recursiveRefMap);
+          JsonPointer.set(compiledSchema, subSchemaPointer, { $ref: `#${refPointer}` });
+        }
+        if (!hasOwn(schemaRefLibrary, 'refPointer')) {
+          schemaRefLibrary[refPointer] = !refPointer.length ? compiledSchema :
+            getSubSchema(compiledSchema, refPointer, schemaRefLibrary, recursiveRefMap);
+        }
+        if (!schemaRecursiveRefMap.has(subSchemaPointer)) {
+          schemaRecursiveRefMap.set(subSchemaPointer, refPointer);
+        }
+        const fromDataRef = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
+        if (!dataRecursiveRefMap.has(fromDataRef)) {
+          const toDataRef = JsonPointer.toDataPointer(refPointer, compiledSchema);
+          dataRecursiveRefMap.set(fromDataRef, toDataRef);
+        }
       }
-      if (!hasOwn(schemaRefLibrary, 'refPointer')) {
-        schemaRefLibrary[refPointer] = !refPointer.length ? compiledSchema :
-          getSubSchema(compiledSchema, refPointer, schemaRefLibrary, recursiveRefMap);
-      }
-      if (!schemaRecursiveRefMap.has(subSchemaPointer)) {
-        schemaRecursiveRefMap.set(subSchemaPointer, refPointer);
-      }
-      const fromDataRef = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
-      if (!dataRecursiveRefMap.has(fromDataRef)) {
-        const toDataRef = JsonPointer.toDataPointer(refPointer, compiledSchema);
-        dataRecursiveRefMap.set(fromDataRef, toDataRef);
-      }
-    }
-    if (subSchema.type === 'array' &&
-      (hasOwn(subSchema, 'items') || hasOwn(subSchema, 'additionalItems'))
-    ) {
-      const dataPointer = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
-      if (!arrayMap.has(dataPointer)) {
-        const tupleItems = isArray(subSchema.items) ? subSchema.items.length : 0;
-        arrayMap.set(dataPointer, tupleItems);
+      if (subSchema.type === 'array' &&
+        (hasOwn(subSchema, 'items') || hasOwn(subSchema, 'additionalItems'))
+      ) {
+        const dataPointer = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
+        if (!arrayMap.has(dataPointer)) {
+          const tupleItems = isArray(subSchema.items) ? subSchema.items.length : 0;
+          arrayMap.set(dataPointer, tupleItems);
+        }
       }
     }
   }, true);
