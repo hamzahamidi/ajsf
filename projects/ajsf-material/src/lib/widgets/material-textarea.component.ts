@@ -28,6 +28,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [placeholder]="options?.notitle ? options?.placeholder : options?.title"
         [readonly]="options?.readonly ? 'readonly' : null"
         [style.width]="'100%'"
+        [rows]="rows"
         (blur)="options.showErrors = true"></textarea>
       <textarea matInput *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
@@ -43,6 +44,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [readonly]="options?.readonly ? 'readonly' : null"
         [style.width]="'100%'"
         [value]="controlValue"
+        [rows]="rows"
         (input)="updateValue($event)"
         (blur)="options.showErrors = true"></textarea>
       <span matSuffix *ngIf="options?.suffix || options?.fieldAddonRight"
@@ -64,6 +66,7 @@ export class MaterialTextareaComponent implements OnInit {
   controlValue: any;
   controlDisabled = false;
   boundControl = false;
+  rows = 5;
   options: any;
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
