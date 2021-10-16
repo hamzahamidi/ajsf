@@ -35,7 +35,7 @@ To send your code change, use GitHub pull requests. The workflow is as follows:
 
   1. Fork the project.
 
-  1. Create a branch based on `master`.
+  1. Create a branch based on `main`.
 
   1. Implement your change, including tests and documentation.
 
@@ -141,7 +141,7 @@ pointing to the number of the issue (e.g. "Fixes #123").
 
 ### Pull requests and branches
 
-All work happens in branches. The master branch is only used as the target for pull
+All work happens in branches. The main branch is only used as the target for pull
 requests.
 
 During code review you often need to update pull requests. Usually you do that
