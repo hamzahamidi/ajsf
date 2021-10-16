@@ -1,29 +1,14 @@
 {
   "name": "@ajsf/bootstrap4",
-  "version": "0.4.0-beta.1",
+  "version": "0.5.0-beta.1",
   "description": "Angular JSON Schema Form builder using Bootstrap 4 UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
     "Angular",
     "ng",
-    "Angular6",
-    "Angular 6",
-    "ng6",
-    "Angular7",
-    "Angular 7",
-    "ng7",
-    "Angular8",
-    "Angular 8",
-    "ng8",
-    "Angular9",
-    "Angular 9",
-    "ng9",
-    "Angular10",
-    "Angular 10",
-    "ng10",
-    "Angular11",
-    "Angular 11",
-    "ng11",
+    "Angular12",
+    "Angular 12",
+    "ng12",
     "JSON Schema",
     "form",
     "forms",
@@ -43,13 +28,13 @@
   },
   "private": false,
   "dependencies": {
-    "lodash-es": "^4.17.15",
-    "@ajsf/core": "~0.4.0-beta.1",
+    "lodash-es": "~4.17.21",
+    "@ajsf/core": "~0.5.0-beta.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": ">=11.0.0",
-    "@angular/core": ">=11.0.0"
+    "@angular/common": ">=12.0.0",
+    "@angular/core": ">=12.0.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.3"
