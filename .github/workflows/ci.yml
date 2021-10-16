@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - name: Build libs and demo
+      run: npm run build:demo
+    - name: Test libs
+      run: |
+        npm run test:core -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        npm run test:bs3 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        npm run test:bs4 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+        npm run test:material -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+    - name: Publish code coverage
+      run: npm run publish:coverage
