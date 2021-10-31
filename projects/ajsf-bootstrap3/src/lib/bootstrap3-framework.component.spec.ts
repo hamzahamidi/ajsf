@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import {
   JsonSchemaFormModule,
+  JsonSchemaFormService,
   WidgetLibraryModule
 } from '@ajsf/core';
 import { Bootstrap3FrameworkComponent } from './bootstrap3-framework.component';
@@ -17,7 +18,8 @@ describe('Bootstrap3FrameworkComponent', () => {
         CommonModule,
         WidgetLibraryModule,
       ],
-      declarations: [Bootstrap3FrameworkComponent]
+      declarations: [Bootstrap3FrameworkComponent],
+      providers: [JsonSchemaFormService]
     })
       .compileComponents();
   }));

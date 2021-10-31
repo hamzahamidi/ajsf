@@ -1,6 +1,6 @@
 {
   "name": "demo",
-  "version": "13.1.1",
+  "version": "13.1.2",
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "description": "Angular JSON Schema Form builder Demo",
   "engines": {
@@ -55,7 +55,7 @@
     "ng": "ng",
     "prestart": "npm run build:libs",
     "start": "ng serve",
-    "start:prod": "ng serve --configuration production",
+    "start:demo-only": "ng serve",
     "build:core": "ng build @ajsf/core --configuration production",
     "postbuild:core": "cp README.md LICENSE  dist/@ajsf/core/",
     "build:bs3": "ng build @ajsf/bootstrap3 --configuration production",

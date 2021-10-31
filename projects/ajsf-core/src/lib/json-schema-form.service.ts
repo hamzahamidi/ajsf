@@ -50,9 +50,7 @@ export interface ErrorMessages {
   }[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class JsonSchemaFormService {
   JsonFormCompatibility = false;
   ReactJsonSchemaFormCompatibility = false;
