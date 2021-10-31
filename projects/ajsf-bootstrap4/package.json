@@ -1,6 +1,6 @@
 {
   "name": "@ajsf/bootstrap4",
-  "version": "0.5.1-beta.2",
+  "version": "0.5.1-beta.3",
   "description": "Angular JSON Schema Form builder using Bootstrap 4 UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
@@ -29,7 +29,7 @@
   "private": false,
   "dependencies": {
     "lodash-es": "~4.17.21",
-    "@ajsf/core": "~0.5.1-beta.2",
+    "@ajsf/core": "~0.5.1-beta.3",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {

@@ -6,13 +6,14 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  forwardRef,
   Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
 import { forEach, hasOwn } from './shared/utility.functions';
 import { FrameworkLibraryService } from './framework-library/framework-library.service';
@@ -28,6 +29,11 @@ import { JsonSchemaFormService } from './json-schema-form.service';
 import { resolveSchemaReferences } from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
 
+export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => JsonSchemaFormComponent),
+  multi: true,
+};
 
 /**
  * @module 'JsonSchemaFormComponent' - Angular JSON Schema Form
@@ -67,7 +73,10 @@ import { WidgetLibraryService } from './widget-library/widget-library.service';
   // tslint:disable-next-line:component-selector
   selector: 'json-schema-form',
   templateUrl: './json-schema-form.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Adding 'JsonSchemaFormService' here, instead of in the module,
+  // creates a separate instance of the service for each component
+  providers:  [ JsonSchemaFormService, JSON_SCHEMA_FORM_VALUE_ACCESSOR ],
 })
 export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges, OnInit {
   debugOutput: any; // Debug information, if requested
