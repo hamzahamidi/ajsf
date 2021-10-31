@@ -38,13 +38,13 @@ This example playground features over 70 different JSON Schemas for you to try (
 If you want to try out the libraries, you can for example [install @ajsf/material package from NPM](https://www.npmjs.com/package/@ajsf/material) which uses `material-angular` UI. You can use either [NPM](https://www.npmjs.com) or [Yarn](https://yarnpkg.com). To install with NPM, run the following from your terminal:
 
 ```shell
-npm install @ajsf/material
+npm install @ajsf/material@latest
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add @ajsf/material
+yarn add @ajsf/material@latest
 ```
 
 Then import `MaterialDesignFrameworkModule` in your main application module like this:

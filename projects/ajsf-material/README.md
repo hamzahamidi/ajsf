@@ -3,13 +3,13 @@
 ## Getting started
 
 ```shell
-npm install @ajsf/material
+npm install @ajsf/material@latest
 ```
 
 With YARN, run the following:
 
 ```shell
-yarn add @ajsf/material
+yarn add @ajsf/material@latest
 ```
 
 Then import `MaterialDesignFrameworkModule` in your main application module if you want to use `material-angular` UI, like this:
