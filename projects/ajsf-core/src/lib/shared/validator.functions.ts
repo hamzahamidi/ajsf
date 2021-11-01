@@ -343,6 +343,21 @@ export function isPrimitive(value) {
 }
 
 /**
+ * 
+ * @param date 
+ * @returns {string}
+ * exmaple:
+ * toDateString('2018-01-01') = '2018-01-01'
+ * toDateString('2018-01-30T00:00:00.000Z') = '2018-01-30'
+ */
+export const toIsoString = (date: Date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+}
+
+/**
  * 'toJavaScriptType' function
  *
  * Converts an input (probably string) value to a JavaScript primitive type -
@@ -388,7 +403,7 @@ export function toJavaScriptType(value, types, strictIntegers = true)  {
     if (isString(value)) { return value; }
     // If value is a date, and types includes 'string',
     // convert the date to a string
-    if (isDate(value)) { return value.toISOString().slice(0, 10); }
+    if (isDate(value)) { return toIsoString(value); }
     if (isNumber(value)) { return value.toString(); }
   }
   // If value is a date, and types includes 'integer' or 'number',
