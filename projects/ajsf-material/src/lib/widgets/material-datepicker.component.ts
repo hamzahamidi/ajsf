@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { JsonSchemaFormService, dateToString } from '@ajsf/core';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { JsonSchemaFormService } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
@@ -16,7 +15,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
       <span matPrefix *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-        <input matInput *ngIf="boundControl"
+      <input matInput *ngIf="boundControl"
         [formControl]="formControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
@@ -31,8 +30,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [required]="options?.required"
         [style.width]="'100%'"
         (blur)="options.showErrors = true"
-        (dateChange)="updateValue($event)"
-        (dateInput)="updateValue($event)">
+        >
       <input matInput *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
@@ -48,8 +46,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         [style.width]="'100%'"
         [readonly]="options?.readonly"
         (blur)="options.showErrors = true"
-        (dateChange)="updateValue($event)"
-        (dateInput)="updateValue($event)">
+        >
       <span matSuffix *ngIf="options?.suffix || options?.fieldAddonRight"
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
       <mat-hint *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
@@ -68,7 +65,6 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 export class MaterialDatepickerComponent implements OnInit {
   formControl: AbstractControl;
   controlName: string;
-  controlValue: string;
   dateValue: any;
   controlDisabled = false;
   boundControl = false;
@@ -86,18 +82,8 @@ export class MaterialDatepickerComponent implements OnInit {
   ngOnInit() {
     this.options = this.layoutNode.options || {};
     this.jsf.initializeControl(this, !this.options.readonly);
-    if (this.controlValue) {
-      this.formControl.setValue(dateToString(this.controlValue, this.options));
-    }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
-    }
-  }
-
-  updateValue(event: MatDatepickerInputEvent<Date>) {
-    this.options.showErrors = true;
-    if (event.value) {
-      this.formControl.setValue(dateToString(event.value, this.options));
     }
   }
 }

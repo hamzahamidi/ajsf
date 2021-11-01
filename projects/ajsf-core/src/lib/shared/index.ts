@@ -38,5 +38,3 @@ export {
 export {
   buildLayout, buildLayoutFromSchema, mapLayout, getLayoutNode, buildTitleMap
 } from './layout.functions';
-
-export { dateToString } from './date.functions';
