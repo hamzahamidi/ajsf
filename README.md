@@ -4,7 +4,6 @@
 
 <p align="center">
   <a href="https://github.com/hamzahamidi/ajsf/actions?query=workflow%3ACI+branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/workflows/CI/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/hamzahamidi/ajsf/releases/latest"><img src="https://img.shields.io/github/release/hamzahamidi/ajsf.svg" alt="tag version"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
   <a href="https://github.com/hamzahamidi/ajsf/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="LICENSE IMT"></a>
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
