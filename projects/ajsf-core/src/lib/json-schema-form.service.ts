@@ -246,7 +246,8 @@ export class JsonSchemaFormService {
       this.arrayMap,
       this.formOptions.returnEmptyFields
     );
-    this.isValid = this.validateFormData(this.data);
+    // Consider formGroup validity status and AJV data validation to set global validity status
+    this.isValid = this.validateFormData(this.data) && this.formGroup?.valid;
     this.validData = this.isValid ? this.data : null;
     const compileErrors = errors => {
       const compiledErrors = {};
