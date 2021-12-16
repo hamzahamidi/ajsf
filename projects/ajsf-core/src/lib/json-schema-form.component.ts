@@ -14,6 +14,8 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
 import { forEach, hasOwn } from './shared/utility.functions';
 import { FrameworkLibraryService } from './framework-library/framework-library.service';
@@ -79,6 +81,9 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
   providers:  [ JsonSchemaFormService, JSON_SCHEMA_FORM_VALUE_ACCESSOR ],
 })
 export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges, OnInit {
+  // TODO: quickfix to avoid subscribing twice to the same emitters
+  private unsubscribeOnActivateForm$ = new Subject<void>();
+
   debugOutput: any; // Debug information, if requested
   formValueSubscription: any = null;
   formInitialized = false;
@@ -667,7 +672,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * and activate the form.
    */
   private activateForm() {
-
+    this.unsubscribeOnActivateForm$.next();
     // If 'schema' not initialized
     if (isEmpty(this.jsf.schema)) {
 
@@ -721,7 +726,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       // }
 
       // Subscribe to form changes to output live data, validation, and errors
-      this.jsf.dataChanges.subscribe(data => {
+      this.jsf.dataChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(data => {
         this.onChanges.emit(this.objectWrap ? data['1'] : data);
         if (this.formValuesInput && this.formValuesInput.indexOf('.') === -1) {
           this[`${this.formValuesInput}Change`].emit(this.objectWrap ? data['1'] : data);
@@ -729,9 +734,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       });
 
       // Trigger change detection on statusChanges to show updated errors
-      this.jsf.formGroup.statusChanges.subscribe(() => this.changeDetector.markForCheck());
-      this.jsf.isValidChanges.subscribe(isValid => this.isValid.emit(isValid));
-      this.jsf.validationErrorChanges.subscribe(err => this.validationErrors.emit(err));
+      this.jsf.formGroup.statusChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(() => this.changeDetector.markForCheck());
+      this.jsf.isValidChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(isValid => this.isValid.emit(isValid));
+      this.jsf.validationErrorChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(err => this.validationErrors.emit(err));
 
       // Output final schema, final layout, and initial data
       this.formSchema.emit(this.jsf.schema);
