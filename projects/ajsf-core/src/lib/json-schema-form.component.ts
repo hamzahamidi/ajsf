@@ -729,7 +729,13 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       });
 
       // Trigger change detection on statusChanges to show updated errors
-      this.jsf.formGroup.statusChanges.subscribe(() => this.changeDetector.markForCheck());
+      this.jsf.formGroup.statusChanges.subscribe(() => {
+        // Set JSF to invalid if form group status changes to invalid
+        if (!this.jsf.formGroup.valid) {
+          this.isValid.emit(false);
+        }
+        this.changeDetector.markForCheck();
+      });
       this.jsf.isValidChanges.subscribe(isValid => this.isValid.emit(isValid));
       this.jsf.validationErrorChanges.subscribe(err => this.validationErrors.emit(err));
 
