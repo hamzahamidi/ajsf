@@ -261,9 +261,9 @@ export class JsonSchemaFormService {
     };
     this.ajvErrors = this.validateFormData.errors;
     this.validationErrors = compileErrors(this.validateFormData.errors);
+    this.isValidChanges.next(this.isValid);
     if (updateSubscriptions) {
       this.dataChanges.next(this.data);
-      this.isValidChanges.next(this.isValid);
       this.validationErrorChanges.next(this.ajvErrors);
     }
   }
