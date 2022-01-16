@@ -1,0 +1,46 @@
+version: 2
+updates:
+  # npm dependencies
+  - package-ecosystem: "npm"
+    # package.json directory
+    directory: "/"
+    # Check for dependencies update every week on Sunday so owners are not spammed during the week
+    schedule:
+      interval: "monthly"
+    # 10 PRs created per week max seems managable?
+    open-pull-requests-limit: 5
+    commit-message:
+      # Prefix all commit messages with "build"
+      prefix: "build"
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-core"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-material"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-bootstrap3"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-bootstrap4"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
