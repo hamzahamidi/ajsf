@@ -62,6 +62,8 @@
     "postbuild:bs3": "cp projects/ajsf-bootstrap3/README.md LICENSE dist/@ajsf/bootstrap3/",
     "build:bs4": "ng build @ajsf/bootstrap4 --configuration production",
     "postbuild:bs4": "cp projects/ajsf-bootstrap4/README.md LICENSE dist/@ajsf/bootstrap4/",
+    "build:bs5": "ng build @ajsf/bootstrap5 --configuration production",
+    "postbuild:bs5": "cp projects/ajsf-bootstrap5/README.md LICENSE dist/@ajsf/bootstrap5/",
     "build:material": "ng build @ajsf/material --configuration production",
     "postbuild:material": "cp projects/ajsf-material/README.md LICENSE dist/@ajsf/material",
     "build:libs": "npm run build:core && npm run build:bs4 && npm run build:bs3 && npm run build:material",

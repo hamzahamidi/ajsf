@@ -22,6 +22,7 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 * [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
 * [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
 * [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
+* [`@ajsf/bootstrap5`](./projects/ajsf-bootstrap5/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap5.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap5)
 * [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
 
 ## Check out the live demo and play with the examples
@@ -72,6 +73,7 @@ Four framework modules are currently included, the import is the same as above :
 * MaterialDesignFrameworkModule from @ajsf/material — Material Design
 * Bootstrap3FrameworkModule from @ajsf/bootstrap3 — Bootstrap 3
 * Bootstrap4FrameworkModule from @ajsf/bootstrap4 — Bootstrap 4
+* Bootstrap5FrameworkModule from @ajsf/bootstrap5 — Bootstrap 5
 * JsonSchemaFormModule from @ajsf/core — plain HTML (for testing)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
@@ -94,6 +96,7 @@ The source code is composed as the following:
 * `projects/ajsf-core` - Angular JSON Schema Form main library
 * `projects/ajsf-bootstrap3` - Framework for Bootstrap 3
 * `projects/ajsf-bootstrap4` - Framework for Bootstrap 4
+* `projects/ajsf-bootstrap5` - Framework for Bootstrap 5
 * `projects/ajsf-material` - Framework for Angular Material
 * `projects/ajsf-core/src/lib/framework-library` - framework library
 * `projects/ajsf-core/src/lib/widget-library` - widget library
@@ -125,6 +128,7 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `material-design` for  Material Design.
 * `bootstrap-3` for Bootstrap 3.
 * `bootstrap-4` for 'Bootstrap 4.
+* `bootstrap-5` for 'Bootstrap 5.
 * `no-framework` for (plain HTML).
 
 Setting `loadExternalAssets="true"` will automatically load any additional assets needed by the display framework. It is useful when you are trying out this library, but production sites should instead load all required assets separately. For full details see 'Changing or adding frameworks', below.

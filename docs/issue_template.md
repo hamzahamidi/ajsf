@@ -4,6 +4,7 @@ which template:
 * [ ] MaterialDesignFrameworkModule — Material Design
 * [ ] Bootstrap3FrameworkModule — Bootstrap 3
 * [ ] Bootstrap4FrameworkModule — Bootstrap 4
+* [ ] Bootstrap5FrameworkModule — Bootstrap 5
 * [ ] NoFrameworkModule — plain HTML
 * [ ] Other (please specify below)
   
