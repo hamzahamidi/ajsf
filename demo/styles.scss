@@ -1,5 +1,5 @@
 // * { border: 1px solid red !important; }
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @include mat.core();
 $demo-app-primary: mat.define-palette(mat.$blue-palette);
 $demo-app-accent:  mat.define-palette(mat.$amber-palette, A200, A100, A400);
