@@ -5,10 +5,9 @@ import { NgModule } from '@angular/core';
 import { OrderableDirective } from './orderable.directive';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  declarations: [...BASIC_WIDGETS, OrderableDirective],
-  exports: [...BASIC_WIDGETS, OrderableDirective],
-  entryComponents: [...BASIC_WIDGETS]
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    declarations: [...BASIC_WIDGETS, OrderableDirective],
+    exports: [...BASIC_WIDGETS, OrderableDirective]
 })
 export class WidgetLibraryModule {
 }
