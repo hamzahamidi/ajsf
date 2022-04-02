@@ -51,31 +51,28 @@ export const ANGULAR_MATERIAL_MODULES = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    FlexLayoutModule,
-    ...ANGULAR_MATERIAL_MODULES,
-    WidgetLibraryModule,
-    JsonSchemaFormModule,
-  ],
-  declarations: [
-    ...MATERIAL_FRAMEWORK_COMPONENTS,
-  ],
-  exports: [
-    JsonSchemaFormModule,
-    ...MATERIAL_FRAMEWORK_COMPONENTS,
-  ],
-  providers: [
-    JsonSchemaFormService,
-    FrameworkLibraryService,
-    WidgetLibraryService,
-    {provide: Framework, useClass: MaterialDesignFramework, multi: true},
-  ],
-  entryComponents: [
-    ...MATERIAL_FRAMEWORK_COMPONENTS,
-  ]
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        FlexLayoutModule,
+        ...ANGULAR_MATERIAL_MODULES,
+        WidgetLibraryModule,
+        JsonSchemaFormModule,
+    ],
+    declarations: [
+        ...MATERIAL_FRAMEWORK_COMPONENTS,
+    ],
+    exports: [
+        JsonSchemaFormModule,
+        ...MATERIAL_FRAMEWORK_COMPONENTS,
+    ],
+    providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        { provide: Framework, useClass: MaterialDesignFramework, multi: true },
+    ]
 })
 export class MaterialDesignFrameworkModule {
   constructor() {

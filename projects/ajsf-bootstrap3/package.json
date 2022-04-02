@@ -6,9 +6,9 @@
   "keywords": [
     "Angular",
     "ng",
-    "Angular12",
-    "Angular 12",
-    "ng12",
+    "Angular13",
+    "Angular 13",
+    "ng13",
     "JSON Schema",
     "form",
     "forms",
@@ -33,8 +33,8 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": ">=12.0.0",
-    "@angular/core": ">=12.0.0"
+    "@angular/common": ">=13.0.0",
+    "@angular/core": ">=13.0.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.3"

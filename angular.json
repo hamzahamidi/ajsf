@@ -91,18 +91,6 @@
               "demo/assets"
             ]
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "demo/tsconfig.app.json",
-              "demo/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -120,15 +108,6 @@
             "production": {
               "devServerTarget": "demo:serve:production"
             }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }
@@ -158,18 +137,6 @@
             "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
             "karmaConfig": "projects/ajsf-core/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ajsf-core/tsconfig.lib.json",
-              "projects/ajsf-core/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -197,18 +164,6 @@
             "main": "projects/ajsf-bootstrap4/src/test.ts",
             "tsConfig": "projects/ajsf-bootstrap4/tsconfig.spec.json",
             "karmaConfig": "projects/ajsf-bootstrap4/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ajsf-bootstrap4/tsconfig.lib.json",
-              "projects/ajsf-bootstrap4/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }
@@ -238,18 +193,6 @@
             "tsConfig": "projects/ajsf-bootstrap3/tsconfig.spec.json",
             "karmaConfig": "projects/ajsf-bootstrap3/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ajsf-bootstrap3/tsconfig.lib.json",
-              "projects/ajsf-bootstrap3/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -277,18 +220,6 @@
             "main": "projects/ajsf-material/src/test.ts",
             "tsConfig": "projects/ajsf-material/tsconfig.spec.json",
             "karmaConfig": "projects/ajsf-material/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ajsf-material/tsconfig.lib.json",
-              "projects/ajsf-material/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }

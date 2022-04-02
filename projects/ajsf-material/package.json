@@ -6,9 +6,9 @@
   "keywords": [
     "Angular",
     "ng",
-    "Angular12",
-    "Angular 12",
-    "ng12",
+    "Angular13",
+    "Angular 13",
+    "ng13",
     "JSON Schema",
     "form",
     "forms",
@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "@angular/flex-layout": ">=12.0.0-beta.35",
-    "@angular/material": ">=12.0.0",
-    "@angular/cdk": ">=12.0.0"
+    "@angular/material": ">=13.0.0",
+    "@angular/cdk": ">=13.0.0"
   }
 }

@@ -2,16 +2,7 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/@ajsf/core",
   "lib": {
-    "entryFile": "src/public_api.ts",
-    "umdModuleIds": {
-      "lodash/isEqual": "lodash-es",
-      "lodash/cloneDeep": "lodash-es",
-      "lodash/filter": "lodash-es",
-      "lodash/map": "lodash-es",
-      "lodash/uniqueId": "lodash-es",
-      "ajv": "ajv",
-      "ajv/lib/refs/json-schema-draft-06.json": "jsonDraft6"
-    }
+    "entryFile": "src/public_api.ts"
   },
   "allowedNonPeerDependencies": [
     "lodash-es",
