@@ -8,12 +8,11 @@ import { WidgetLibraryModule } from '../widget-library/widget-library.module';
 // No framework - plain HTML controls (styles from form layout only)
 
 @NgModule({
-  imports: [CommonModule, WidgetLibraryModule],
-  declarations: [NoFrameworkComponent],
-  exports: [NoFrameworkComponent],
-  providers: [
-    { provide: Framework, useClass: NoFramework, multi: true }
-  ],
-  entryComponents: [NoFrameworkComponent]
+    imports: [CommonModule, WidgetLibraryModule],
+    declarations: [NoFrameworkComponent],
+    exports: [NoFrameworkComponent],
+    providers: [
+        { provide: Framework, useClass: NoFramework, multi: true }
+    ]
 })
 export class NoFrameworkModule { }
