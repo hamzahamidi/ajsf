@@ -17,8 +17,9 @@ import { DemoComponent } from './demo.component';
 import { DemoRootComponent } from './demo-root.component';
 import { routes } from './demo.routes';
 import { JsonSchemaFormModule } from '@ajsf/core';
-import { Bootstrap4FrameworkModule } from '@ajsf/bootstrap4';
 import { Bootstrap3FrameworkModule } from '@ajsf/bootstrap3';
+import { Bootstrap4FrameworkModule } from '@ajsf/bootstrap4';
+import { Bootstrap5FrameworkModule } from '@ajsf/bootstrap5';
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
 @NgModule({
@@ -28,8 +29,9 @@ import { MaterialDesignFrameworkModule } from '@ajsf/material';
     HttpClientModule, MatButtonModule, MatCardModule, MatCheckboxModule,
     MatIconModule, MatMenuModule, MatSelectModule, MatToolbarModule,
     RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
-    Bootstrap4FrameworkModule,
     Bootstrap3FrameworkModule,
+    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
     MaterialDesignFrameworkModule,
     JsonSchemaFormModule
   ],

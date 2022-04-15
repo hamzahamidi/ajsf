@@ -3,7 +3,7 @@ import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
 import Ajv from 'ajv';
-import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
+//import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
 import {
   buildFormGroup,
   buildFormGroupTemplate,
@@ -59,8 +59,11 @@ export class JsonSchemaFormService {
 
   ajvOptions: any = {
     allErrors: true,
+    jsPropertySyntax : true,
+    /*
     jsonPointers: true,
     unknownFormats: 'ignore'
+    */
   };
   ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
@@ -145,7 +148,7 @@ export class JsonSchemaFormService {
 
   constructor() {
     this.setLanguage(this.language);
-    this.ajv.addMetaSchema(jsonDraft6);
+    // this.ajv.addMetaSchema(jsonDraft6);
   }
 
   setLanguage(language: string = 'en-US') {

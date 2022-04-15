@@ -167,6 +167,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
   private loadScripts() {
     const scripts = this.frameworkLibrary.getFrameworkScripts();
+    console.log(scripts);
     scripts.map(script => {
       const scriptTag: HTMLScriptElement = document.createElement('script');
       scriptTag.src = script;

@@ -12,10 +12,11 @@ export class Bootstrap5Framework extends Framework {
   framework = Bootstrap5FrameworkComponent;
 
   stylesheets = [
-    '//stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css'
+    '//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
   ];
 
   scripts = [
+    '//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js'
 /*    '//code.jquery.com/jquery-3.3.1.slim.min.js',
     '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js',
     '//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js',

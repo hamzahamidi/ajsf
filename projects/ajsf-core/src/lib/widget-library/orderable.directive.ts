@@ -76,11 +76,11 @@ export class OrderableDirective implements OnInit {
 
         // Listeners for stationary items being dragged over:
 
-        this.element.addEventListener('dragenter', (event) => {
+        this.element.addEventListener('dragenter', (event): void => {
           // Part 1 of a hack, inspired by Dragster, to simulate mouseover and mouseout
           // behavior while dragging items - http://bensmithett.github.io/dragster/
           if (this.overParentElement) {
-            return this.overChildElement = true;
+            this.overChildElement = true;
           } else {
             this.overParentElement = true;
           }

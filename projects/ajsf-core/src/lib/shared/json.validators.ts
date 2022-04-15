@@ -818,7 +818,7 @@ export class JsonValidators {
     return (control: AbstractControl) => {
       const observables =
         _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return map.call(forkJoin(observables), _mergeErrors);
+      return map.call(forkJoin(observables), _mergeErrors, null);
     };
   }
 
