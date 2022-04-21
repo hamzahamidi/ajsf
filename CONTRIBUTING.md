@@ -33,20 +33,20 @@ of new features.
 
 To send your code change, use GitHub pull requests. The workflow is as follows:
 
-  1. Fork the project.
+1. Fork the project.
 
-  1. Create a branch based on `main`.
+1. Create a branch based on `main`.
 
-  1. Implement your change, including tests and documentation.
+1. Implement your change, including tests and documentation.
 
-  1. Run tests to make sure your change didn't break anything.
+1. Run tests to make sure your change didn't break anything.
 
-  1. Publish the branch and create a pull request.
+1. Publish the branch and create a pull request.
 
-  1. ajsf developers will review your change and possibly point out issues.
-     Adapt the code under their guidance until all issues are resolved.
+1. ajsf developers will review your change and possibly point out issues.
+   Adapt the code under their guidance until all issues are resolved.
 
-  1. Finally, the pull request will get merged or rejected.
+1. Finally, the pull request will get merged or rejected.
 
 See also [GitHub's guide on contributing](https://help.github.com/articles/fork-a-repo).
 
@@ -80,7 +80,8 @@ functional changes into one commit. When writing commit messages, adhere to
 [Angular Conventional Commit](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines).
 
 #### Commit Message Format
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
+
+Each commit message consists of a **header**, a **body** and a **footer**. The header has a special
 format that includes a **type**, a **scope** and a **subject**:
 
 ```
@@ -112,15 +113,15 @@ The version in our package.json gets copied to the one we publish, and users nee
 
 Must be one of the following:
 
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **ci**: Changes to our CI configuration files and scripts (example scopes: Circle, BrowserStack, SauceLabs)
-* **docs**: Documentation only changes
-* **feat**: A new feature
-* **fix**: A bug fix
-* **perf**: A code change that improves performance
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-* **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- **ci**: Changes to our CI configuration files and scripts (example scopes: Circle, BrowserStack, SauceLabs)
+- **docs**: Documentation only changes
+- **feat**: A new feature
+- **fix**: A bug fix
+- **perf**: A code change that improves performance
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **test**: Adding missing tests or correcting existing tests
 
 #### Scope
 
@@ -128,13 +129,14 @@ The scope should be the name of the npm package affected (as perceived by the pe
 
 The following is the list of supported scopes:
 
-* **ajsf/core**
-* **ajsf/bs3**
-* **ajsf/bs4**
-* **ajsf/material**
-* **locales**
-* **demo**
-* ...
+- **ajsf/core**
+- **ajsf/bs3**
+- **ajsf/bs4**
+- **ajsf/bs5**
+- **ajsf/material**
+- **locales**
+- **demo**
+- ...
 
 When the commit fixes a bug, put a message in the body of the commit message
 pointing to the number of the issue (e.g. "Fixes #123").

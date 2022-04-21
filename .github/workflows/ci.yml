@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'
+        description: "Log level"
         required: true
-        default: 'warning'
+        default: "warning"
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   ci:
@@ -21,19 +21,20 @@ jobs:
         node-version: [16.x, lts/*]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup Node ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - name: Build libs and demo
-      run: npm run build:demo
-    - name: Test libs
-      run: |
-        npm run test:core -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-        npm run test:bs3 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-        npm run test:bs4 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-        npm run test:material -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
-    - name: Publish code coverage
-      run: npm run publish:coverage
+      - uses: actions/checkout@v3
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - name: Build libs and demo
+        run: npm run build:demo
+      - name: Test libs
+        run: |
+          npm run test:core -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+          npm run test:bs3 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+          npm run test:bs4 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+          npm run test:bs5 -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+          npm run test:material -- --browsers=ChromeHeadlessNoSandbox --codeCoverage=true --watch=false
+      - name: Publish code coverage
+        run: npm run publish:coverage
