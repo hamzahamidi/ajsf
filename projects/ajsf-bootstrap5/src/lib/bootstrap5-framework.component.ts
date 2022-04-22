@@ -41,8 +41,8 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
   get showRemoveButton(): boolean {
     if (
-      !this.options.removable ||
-      this.options.readonly ||
+      !this.options?.removable ||
+      this.options?.readonly ||
       this.layoutNode.type === "$ref"
     ) {
       return false;
@@ -88,12 +88,12 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
     if (this.layoutNode) {
       console.log(this.options);
 
-      this.options = cloneDeep(this.layoutNode.options);
+      this.options = cloneDeep(this.layoutNode.options) || {};
       this.widgetLayoutNode = {
         ...this.layoutNode,
         options: cloneDeep(this.layoutNode.options),
       };
-      this.widgetOptions = this.widgetLayoutNode.options;
+      this.widgetOptions = this.widgetLayoutNode.options || {};
       this.formControl = this.jsf.getFormControl(this);
       this.options.isInputWidget = inArray(this.layoutNode.type, [
         "button",
