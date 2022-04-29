@@ -126,7 +126,7 @@ export class JsonSchemaFormService {
     // false = only validate fields after they are touched by user
     // 'auto' = validate fields with values immediately, empty fields after they are touched
     widgets: {}, // Any custom widgets to load
-    defautWidgetOptions: {
+    defaultWidgetOptions: {
       // Default options for form control widgets
       listItems: 1, // Number of list items to initially add to arrays with no default value
       addable: true, // Allow adding items to an array or $ref point?
@@ -166,7 +166,7 @@ export class JsonSchemaFormService {
 
     const validationMessages = languageValidationMessages[languageCode];
 
-    this.defaultFormOptions.defautWidgetOptions.validationMessages = cloneDeep(
+    this.defaultFormOptions.defaultWidgetOptions.validationMessages = cloneDeep(
       validationMessages
     );
   }
@@ -301,25 +301,25 @@ export class JsonSchemaFormService {
   setOptions(newOptions: any) {
     if (isObject(newOptions)) {
       const addOptions = cloneDeep(newOptions);
-      // Backward compatibility for 'defaultOptions' (renamed 'defautWidgetOptions')
+      // Backward compatibility for 'defaultOptions' (renamed 'defaultWidgetOptions')
       if (isObject(addOptions.defaultOptions)) {
         Object.assign(
-          this.formOptions.defautWidgetOptions,
+          this.formOptions.defaultWidgetOptions,
           addOptions.defaultOptions
         );
         delete addOptions.defaultOptions;
       }
-      if (isObject(addOptions.defautWidgetOptions)) {
+      if (isObject(addOptions.defaultWidgetOptions)) {
         Object.assign(
-          this.formOptions.defautWidgetOptions,
-          addOptions.defautWidgetOptions
+          this.formOptions.defaultWidgetOptions,
+          addOptions.defaultWidgetOptions
         );
-        delete addOptions.defautWidgetOptions;
+        delete addOptions.defaultWidgetOptions;
       }
       Object.assign(this.formOptions, addOptions);
 
       // convert disableErrorState / disableSuccessState to enable...
-      const globalDefaults = this.formOptions.defautWidgetOptions;
+      const globalDefaults = this.formOptions.defaultWidgetOptions;
       ['ErrorState', 'SuccessState']
         .filter(suffix => hasOwn(globalDefaults, 'disable' + suffix))
         .forEach(suffix => {

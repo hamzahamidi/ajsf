@@ -1,61 +1,89 @@
 <div
   [class]="options?.htmlClass || ''"
-  [class.has-feedback]="options?.feedback && options?.isInputWidget &&
-        (formControl?.dirty || options?.feedbackOnRender)"
-  [class.has-error]="options?.enableErrorState && formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)"
-  [class.has-success]="options?.enableSuccessState && !formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)">
-
-  <button *ngIf="showRemoveButton"
-          class="float-end btn btn-outline-danger btn-sm"
-          type="button"
-          (click)="removeItem()">
+  [class.has-feedback]="
+    options?.feedback &&
+    options?.isInputWidget &&
+    (formControl?.dirty || options?.feedbackOnRender)
+  "
+  [class.has-error]="
+    options?.enableErrorState &&
+    formControl?.errors &&
+    (formControl?.dirty || options?.feedbackOnRender)
+  "
+  [class.has-success]="
+    options?.enableSuccessState &&
+    !formControl?.errors &&
+    (formControl?.dirty || options?.feedbackOnRender)
+  "
+>
+  <button
+    *ngIf="showRemoveButton"
+    class="float-end btn btn-outline-danger btn-sm"
+    type="button"
+    (click)="removeItem()"
+  >
     <span aria-hidden="true">&times;</span>
   </button>
   <div *ngIf="options?.messageLocation === 'top'">
-    <p *ngIf="options?.helpBlock"
-       class="help-block"
-       [innerHTML]="options?.helpBlock"></p>
+    <p
+      *ngIf="options?.helpBlock"
+      class="help-block"
+      [innerHTML]="options?.helpBlock"
+    ></p>
   </div>
 
-  <label *ngIf="options?.title && layoutNode?.type !== 'tab'"
-         [attr.for]="'control' + layoutNode?._id"
-         [class]="options?.labelHtmlClass || ''"
-         [class.sr-only]="options?.notitle"
-         [innerHTML]="options?.title"></label>
+  <label
+    *ngIf="options?.title && layoutNode?.type !== 'tab'"
+    [attr.for]="'control' + layoutNode?._id"
+    [class]="options?.labelHtmlClass || ''"
+    [class.sr-only]="options?.notitle"
+    [innerHTML]="options?.title"
+  ></label>
   <p *ngIf="layoutNode?.type === 'submit' && jsf?.formOptions?.fieldsRequired">
     <strong class="text-danger">*</strong> = required fields
   </p>
-        <div
-        [class.h-100]="true"
-        [class.mt-1]="true"
-        [class.is-invalid]="!!options?.errorMessage"
-        [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
-      >
-        <div class="input-group-prepend" *ngIf="options?.fieldAddonLeft">
-          <span class="input-group-text" [innerHTML]="options?.fieldAddonLeft"></span>
-        </div>
- 
+  <div
+    [class]="options?.fieldContainerHtmlClass"
+    [class.is-invalid]="!!options?.errorMessage"
+    [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
+  >
+    <div class="input-group-prepend" *ngIf="options?.fieldAddonLeft">
+      <span
+        class="input-group-text"
+        [innerHTML]="options?.fieldAddonLeft"
+      ></span>
+    </div>
+
     <select-widget-widget
       [layoutNode]="widgetLayoutNode"
       [dataIndex]="dataIndex"
-      [layoutIndex]="layoutIndex"></select-widget-widget>
+      [layoutIndex]="layoutIndex"
+    ></select-widget-widget>
 
-      <div class="input-group-append" *ngIf="options?.fieldAddonRight">
-        <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
-      </div>
+    <div class="input-group-append" *ngIf="options?.fieldAddonRight">
+      <span
+        class="input-group-text"
+        [innerHTML]="options?.fieldAddonRight"
+      ></span>
     </div>
+  </div>
 
-    <div *ngIf="formControl?.touched && options?.errorMessage"
+  <div
+    *ngIf="formControl?.touched && options?.errorMessage"
     class="invalid-feedback"
-    [innerHTML]="options?.errorMessage"></div>
+    [innerHTML]="options?.errorMessage"
+  ></div>
 
-    <div *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+  <div
+    *ngIf="
+      options?.description && (!options?.showErrors || !options?.errorMessage)
+    "
     class="form-text text-muted"
-    [innerHTML]="options?.description"></div>
+    [innerHTML]="options?.description"
+  ></div>
 </div>
 
-<div *ngIf="debug && debugOutput">debug:
-  <pre>{{debugOutput}}</pre>
+<div *ngIf="debug && debugOutput">
+  debug:
+  <pre>{{ debugOutput }}</pre>
 </div>

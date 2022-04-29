@@ -86,8 +86,6 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
   initializeFramework() {
     if (this.layoutNode) {
-      console.log(this.options);
-
       this.options = cloneDeep(this.layoutNode.options) || {};
       this.widgetLayoutNode = {
         ...this.layoutNode,
@@ -131,21 +129,24 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
       this.options.title = this.setTitle();
 
+      /*
       this.options.htmlClass = addClasses(
         this.options.htmlClass,
         "schema-form-" + this.layoutNode.type
       );
+      */
       this.options.htmlClass =
         this.layoutNode.type === "array"
           ? addClasses(this.options.htmlClass, "list-group")
           : this.layoutNode.arrayItem && this.layoutNode.type !== "$ref"
           ? addClasses(this.options.htmlClass, "list-group-item")
-          : addClasses(this.options.htmlClass, "mb-3");
+          : addClasses(this.options.htmlClass, "");
       this.widgetOptions.htmlClass = "";
       this.options.labelHtmlClass = addClasses(
         this.options.labelHtmlClass,
         "form-label"
       );
+      console.log(this.options);
       this.widgetOptions.activeClass = addClasses(
         this.widgetOptions.activeClass,
         "active"
@@ -187,11 +188,15 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         case "checkboxes-inline":
           this.widgetOptions.htmlClass = addClasses(
             this.widgetOptions.htmlClass,
-            "checkbox"
+            "form-check"
+          );
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass,
+            "form-check-input"
           );
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass,
-            "checkbox-inline"
+            "form-check-label"
           );
           break;
         // Radio controls
@@ -213,11 +218,15 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         case "radios-inline":
           this.widgetOptions.htmlClass = addClasses(
             this.widgetOptions.htmlClass,
-            "radio"
+            "form-check form-check-inline"
+          );
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass,
+            "form-check-input"
           );
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass,
-            "radio-inline"
+            "form-check-label"
           );
           break;
         case "select":
@@ -268,6 +277,10 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         case "selectfieldset":
         case "optionfieldset":
           this.options.messageLocation = "top";
+          this.widgetOptions.labelHtmlClass =
+            "float-none w-auto ms-3 ps-1 pe-1";
+          this.widgetOptions.htmlClass = "border p-3";
+          this.options.fieldContainerHtmlClass = "";
           break;
         case "tabarray":
         case "tabs":
