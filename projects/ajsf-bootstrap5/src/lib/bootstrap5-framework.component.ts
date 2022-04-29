@@ -279,7 +279,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           this.options.messageLocation = "top";
           this.widgetOptions.labelHtmlClass =
             "float-none w-auto ms-3 ps-1 pe-1";
-          this.widgetOptions.htmlClass = "border p-3";
+          this.widgetOptions.htmlClass = "border p-3 mb-3";
           this.options.fieldContainerHtmlClass = "";
           break;
         case "tabarray":
