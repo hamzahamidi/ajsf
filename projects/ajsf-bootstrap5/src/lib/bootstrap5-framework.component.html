@@ -16,20 +16,11 @@
     (formControl?.dirty || options?.feedbackOnRender)
   "
 >
-  <button
-    *ngIf="showRemoveButton"
-    class="float-end btn btn-outline-danger btn-sm"
-    type="button"
-    (click)="removeItem()"
-  >
+  <button *ngIf="showRemoveButton" class="float-end btn btn-outline-danger btn-sm" type="button" (click)="removeItem()">
     <span aria-hidden="true">&times;</span>
   </button>
   <div *ngIf="options?.messageLocation === 'top'">
-    <p
-      *ngIf="options?.helpBlock"
-      class="help-block"
-      [innerHTML]="options?.helpBlock"
-    ></p>
+    <p *ngIf="options?.helpBlock" class="help-block" [innerHTML]="options?.helpBlock"></p>
   </div>
 
   <label
@@ -42,29 +33,25 @@
   <p *ngIf="layoutNode?.type === 'submit' && jsf?.formOptions?.fieldsRequired">
     <strong class="text-danger">*</strong> = required fields
   </p>
-  <div
-    [class]="options?.fieldContainerHtmlClass"
-    [class.is-invalid]="!!options?.errorMessage"
-    [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
-  >
-    <div class="input-group-prepend" *ngIf="options?.fieldAddonLeft">
-      <span
-        class="input-group-text"
-        [innerHTML]="options?.fieldAddonLeft"
-      ></span>
-    </div>
+  <div [class]="options?.fieldContainerHtmlClass">
+    <div
+      [class.is-invalid]="!!options?.errorMessage"
+      [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
+    >
+      <div class="input-group-prepend" *ngIf="options?.fieldAddonLeft">
+        <span class="input-group-text" [innerHTML]="options?.fieldAddonLeft"></span>
+      </div>
 
-    <select-widget-widget
-      [layoutNode]="widgetLayoutNode"
-      [dataIndex]="dataIndex"
-      [layoutIndex]="layoutIndex"
-    ></select-widget-widget>
+      <select-widget-widget
+        [layoutNode]="widgetLayoutNode"
+        [dataIndex]="dataIndex"
+        [layoutIndex]="layoutIndex"
+        class="flex-fill"
+      ></select-widget-widget>
 
-    <div class="input-group-append" *ngIf="options?.fieldAddonRight">
-      <span
-        class="input-group-text"
-        [innerHTML]="options?.fieldAddonRight"
-      ></span>
+      <div class="input-group-append" *ngIf="options?.fieldAddonRight">
+        <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
+      </div>
     </div>
   </div>
 
