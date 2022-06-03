@@ -108,7 +108,6 @@
     "@angular/language-service": "^13.3.1",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.6",
-    "@types/lodash": "^4.14.136",
     "@types/node": "^12.11.1",
     "codecov": "^3.8.3",
     "codelyzer": "^6.0.0",

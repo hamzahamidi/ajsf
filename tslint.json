@@ -16,11 +16,7 @@
     },
     "eofline": true,
     "forin": true,
-    "import-blacklist": [
-      true,
-      "rxjs/Rx",
-      "lodash"
-    ],
+   
     "import-spacing": true,
     "indent": [
       true,

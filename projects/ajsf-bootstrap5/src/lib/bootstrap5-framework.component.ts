@@ -1,13 +1,7 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-} from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from "@angular/core";
 
-import cloneDeep from "lodash/cloneDeep";
-import map from "lodash/map";
+import cloneDeep from "lodash-es/cloneDeep";
+import map from "lodash-es/map";
 import { JsonSchemaFormService, addClasses, inArray } from "@ajsf/core";
 
 /**
@@ -34,17 +28,10 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(
-    public changeDetector: ChangeDetectorRef,
-    public jsf: JsonSchemaFormService
-  ) {}
+  constructor(public changeDetector: ChangeDetectorRef, public jsf: JsonSchemaFormService) {}
 
   get showRemoveButton(): boolean {
-    if (
-      !this.options?.removable ||
-      this.options?.readonly ||
-      this.layoutNode.type === "$ref"
-    ) {
+    if (!this.options?.removable || this.options?.readonly || this.layoutNode.type === "$ref") {
       return false;
     }
     if (this.layoutNode.recursiveReference) {
@@ -54,15 +41,13 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       return false;
     }
     // If array length <= minItems, don't allow removing any items
-    return this.parentArray.items.length - 1 <=
-      this.parentArray.options.minItems
+    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems
       ? false
       : // For removable list items, allow removing any item
       this.layoutNode.arrayItemType === "list"
       ? true
       : // For removable tuple items, only allow removing last item in list
-        this.layoutIndex[this.layoutIndex.length - 1] ===
-        this.parentArray.items.length - 2;
+        this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {
@@ -71,9 +56,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       this.parentArray = this.jsf.getParentNode(this);
       if (this.parentArray) {
         this.isOrderable =
-          this.layoutNode.arrayItemType === "list" &&
-          !this.options.readonly &&
-          this.parentArray.options.orderable;
+          this.layoutNode.arrayItemType === "list" && !this.options.readonly && this.parentArray.options.orderable;
       }
     }
   }
@@ -142,19 +125,11 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           ? addClasses(this.options.htmlClass, "list-group-item")
           : addClasses(this.options.htmlClass, "");
       this.widgetOptions.htmlClass = "";
-      this.options.labelHtmlClass = addClasses(
-        this.options.labelHtmlClass,
-        "form-label"
-      );
+      this.options.labelHtmlClass = addClasses(this.options.labelHtmlClass, "form-label");
       console.log(this.options);
-      this.widgetOptions.activeClass = addClasses(
-        this.widgetOptions.activeClass,
-        "active"
-      );
-      this.options.fieldAddonLeft =
-        this.options.fieldAddonLeft || this.options.prepend;
-      this.options.fieldAddonRight =
-        this.options.fieldAddonRight || this.options.append;
+      this.widgetOptions.activeClass = addClasses(this.widgetOptions.activeClass, "active");
+      this.options.fieldAddonLeft = this.options.fieldAddonLeft || this.options.prepend;
+      this.options.fieldAddonRight = this.options.fieldAddonRight || this.options.append;
 
       // Add asterisk to titles if required
       if (
@@ -171,97 +146,46 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         // Checkbox controls
         case "checkbox":
         case "checkboxes":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "form-check"
-          );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-check-input"
-          );
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            "form-check-label"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
+          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
 
           break;
         case "checkboxes-inline":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "form-check"
-          );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-check-input"
-          );
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            "form-check-label"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
+          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
           break;
         // Radio controls
         case "radio":
         case "radios":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "form-check"
-          );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-check-input"
-          );
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            "form-check-label"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
+          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
           break;
         case "radios-inline":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "form-check form-check-inline"
-          );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-check-input"
-          );
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            "form-check-label"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check form-check-inline");
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
+          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
           break;
         case "select":
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-select"
-          );
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-select");
           break;
         // Button sets - checkboxbuttons and radiobuttons
         case "checkboxbuttons":
         case "radiobuttons":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "btn-group"
-          );
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            "btn"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "btn-group");
+          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "btn");
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass,
             this.options.style || "btn-default"
           );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "sr-only"
-          );
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "sr-only");
           break;
         // Single button controls
         case "button":
         case "submit":
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "btn"
-          );
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "btn");
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass,
             this.options.style || "btn-info"
@@ -277,32 +201,19 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         case "selectfieldset":
         case "optionfieldset":
           this.options.messageLocation = "top";
-          this.widgetOptions.labelHtmlClass =
-            "float-none w-auto ms-3 ps-1 pe-1";
+          this.widgetOptions.labelHtmlClass = "float-none w-auto ms-3 ps-1 pe-1";
           this.widgetOptions.htmlClass = "border p-3 mb-3";
           this.options.fieldContainerHtmlClass = "";
           break;
         case "tabarray":
         case "tabs":
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass,
-            "tab-content"
-          );
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "tab-pane"
-          );
-          this.widgetOptions.labelHtmlClass = addClasses(
-            this.widgetOptions.labelHtmlClass,
-            "nav nav-tabs"
-          );
+          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "tab-content");
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "tab-pane");
+          this.widgetOptions.labelHtmlClass = addClasses(this.widgetOptions.labelHtmlClass, "nav nav-tabs");
           break;
         // 'Add' buttons - references
         case "$ref":
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "btn"
-          );
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "btn");
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass,
             this.options.style || "btn btn-outline-primary float-end mt-1"
@@ -311,23 +222,16 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           break;
         // Default - including regular inputs
         default:
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass,
-            "form-control"
-          );
+          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-control");
       }
 
       if (this.formControl) {
         this.updateHelpBlock(this.formControl.status);
-        this.formControl.statusChanges.subscribe((status) =>
-          this.updateHelpBlock(status)
-        );
+        this.formControl.statusChanges.subscribe((status) => this.updateHelpBlock(status));
 
         if (this.options.debug) {
           const vars: any[] = [];
-          this.debugOutput = map(vars, (thisVar) =>
-            JSON.stringify(thisVar, null, 2)
-          ).join("\n");
+          this.debugOutput = map(vars, (thisVar) => JSON.stringify(thisVar, null, 2)).join("\n");
         }
       }
       this.frameworkInitialized = true;
@@ -336,10 +240,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
   updateHelpBlock(status) {
     if (this.options?.validationMessages) {
-      this.options.errorMessage = this.jsf.formatErrors(
-        this.formControl.errors,
-        this.options.validationMessages
-      );
+      this.options.errorMessage = this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages);
     }
     /*
     this.options.helpBlock = status === 'INVALID' &&
