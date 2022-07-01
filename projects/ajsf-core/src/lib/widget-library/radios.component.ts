@@ -13,77 +13,26 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
       [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"
     ></label>
-
-    <!-- 'horizontal' = radios-inline or radiobuttons -->
-    <div *ngIf="layoutOrientation === 'horizontal'">
-      <div
-        *ngFor="let radioItem of radiosList"
-        [class]="options?.htmlClass || ''"
+    <div *ngFor="let radioItem of radiosList" [class]="options?.htmlClass || ''">
+      <input
+        type="radio"
+        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+        [readonly]="options?.readonly ? 'readonly' : null"
+        [attr.required]="options?.required"
+        [checked]="radioItem?.value === controlValue"
+        [class]="options?.fieldHtmlClass || ''"
+        [disabled]="controlDisabled"
+        [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
+        [name]="controlName"
+        [value]="radioItem?.value"
+        (change)="updateValue($event)"
+      />
+      <label
+        [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
+        [class]="options?.itemLabelHtmlClass || ''"
+        [innerHTML]="radioItem?.name"
       >
-        <input
-          type="radio"
-          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [attr.readonly]="options?.readonly ? 'readonly' : null"
-          [attr.required]="options?.required"
-          [checked]="radioItem?.value === controlValue"
-          [class]="options?.fieldHtmlClass || ''"
-          [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
-          [name]="controlName"
-          [value]="radioItem?.value"
-          (change)="updateValue($event)"
-        />
-        <label
-          [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
-          [class]="
-            (options?.itemLabelHtmlClass || '') +
-            (controlValue + '' === radioItem?.value + ''
-              ? ' ' +
-                (options?.activeClass || '') +
-                ' ' +
-                (options?.style?.selected || '')
-              : ' ' + (options?.style?.unselected || ''))
-          "
-          [innerHTML]="radioItem?.name"
-        >
-        </label>
-      </div>
-    </div>
-
-    <!-- 'vertical' = regular radios -->
-    <div *ngIf="layoutOrientation !== 'horizontal'">
-      <div
-        *ngFor="let radioItem of radiosList"
-        [class]="options?.htmlClass || ''"
-      >
-        <label
-          [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
-          [class]="
-            (options?.itemLabelHtmlClass || '') +
-            (controlValue + '' === radioItem?.value + ''
-              ? ' ' +
-                (options?.activeClass || '') +
-                ' ' +
-                (options?.style?.selected || '')
-              : ' ' + (options?.style?.unselected || ''))
-          "
-        >
-          <input
-            type="radio"
-            [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-            [attr.readonly]="options?.readonly ? 'readonly' : null"
-            [attr.required]="options?.required"
-            [checked]="radioItem?.value === controlValue"
-            [class]="options?.fieldHtmlClass || ''"
-            [disabled]="controlDisabled"
-            [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
-            [name]="controlName"
-            [value]="radioItem?.value"
-            (change)="updateValue($event)"
-          />
-          <span [innerHTML]="radioItem?.name"></span>
-        </label>
-      </div>
+      </label>
     </div>`,
 })
 export class RadiosComponent implements OnInit {
@@ -103,17 +52,10 @@ export class RadiosComponent implements OnInit {
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};
-    if (
-      this.layoutNode.type === "radios-inline" ||
-      this.layoutNode.type === "radiobuttons"
-    ) {
+    if (this.layoutNode.type === "radios-inline" || this.layoutNode.type === "radiobuttons") {
       this.layoutOrientation = "horizontal";
     }
-    this.radiosList = buildTitleMap(
-      this.options.titleMap || this.options.enumNames,
-      this.options.enum,
-      true
-    );
+    this.radiosList = buildTitleMap(this.options.titleMap || this.options.enumNames, this.options.enum, true);
     this.jsf.initializeControl(this);
   }
 

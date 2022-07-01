@@ -126,7 +126,6 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           : addClasses(this.options.htmlClass, "");
       this.widgetOptions.htmlClass = "";
       this.options.labelHtmlClass = addClasses(this.options.labelHtmlClass, "form-label");
-      console.log(this.options);
       this.widgetOptions.activeClass = addClasses(this.widgetOptions.activeClass, "active");
       this.options.fieldAddonLeft = this.options.fieldAddonLeft || this.options.prepend;
       this.options.fieldAddonRight = this.options.fieldAddonRight || this.options.append;
@@ -141,28 +140,21 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       ) {
         this.options.title += ' <strong class="text-danger">*</strong>';
       }
+      console.log(this.layoutNode.type);
+
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {
         // Checkbox controls
         case "checkbox":
         case "checkboxes":
+        case "radio":
+        case "radios":
           this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
           this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
           this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
 
           break;
         case "checkboxes-inline":
-          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
-          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
-          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
-          break;
-        // Radio controls
-        case "radio":
-        case "radios":
-          this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check");
-          this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
-          this.widgetOptions.itemLabelHtmlClass = addClasses(this.widgetOptions.itemLabelHtmlClass, "form-check-label");
-          break;
         case "radios-inline":
           this.widgetOptions.htmlClass = addClasses(this.widgetOptions.htmlClass, "form-check form-check-inline");
           this.widgetOptions.fieldHtmlClass = addClasses(this.widgetOptions.fieldHtmlClass, "form-check-input");
