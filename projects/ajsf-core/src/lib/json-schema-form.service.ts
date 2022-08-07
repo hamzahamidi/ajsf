@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
 import Ajv from 'ajv';
@@ -276,7 +276,7 @@ export class JsonSchemaFormService {
   }
 
   buildFormGroup() {
-    this.formGroup = <FormGroup>buildFormGroup(this.formGroupTemplate);
+    this.formGroup = <UntypedFormGroup>buildFormGroup(this.formGroupTemplate);
     if (this.formGroup) {
       this.compileAjvSchema();
       this.validateData(this.formGroup.value);
@@ -671,7 +671,7 @@ export class JsonSchemaFormService {
   }
 
   updateArrayCheckboxList(ctx: any, checkboxList: TitleMapItem[]): void {
-    const formArray = <FormArray>this.getFormControl(ctx);
+    const formArray = <UntypedFormArray>this.getFormControl(ctx);
 
     // Remove all existing items
     while (formArray.value.length) {
@@ -719,7 +719,7 @@ export class JsonSchemaFormService {
     return control ? control.value : null;
   }
 
-  getFormControlGroup(ctx: any): FormArray | FormGroup {
+  getFormControlGroup(ctx: any): UntypedFormArray | UntypedFormGroup {
     if (!ctx.layoutNode || !isDefined(ctx.layoutNode.dataPointer)) {
       return null;
     }
@@ -798,10 +798,10 @@ export class JsonSchemaFormService {
     // Add the new form control to the parent formArray or formGroup
     if (ctx.layoutNode.arrayItem) {
       // Add new array item to formArray
-      (<FormArray>this.getFormControlGroup(ctx)).push(newFormGroup);
+      (<UntypedFormArray>this.getFormControlGroup(ctx)).push(newFormGroup);
     } else {
       // Add new $ref item to formGroup
-      (<FormGroup>this.getFormControlGroup(ctx)).addControl(
+      (<UntypedFormGroup>this.getFormControlGroup(ctx)).addControl(
         name || this.getFormControlName(ctx),
         newFormGroup
       );
@@ -841,7 +841,7 @@ export class JsonSchemaFormService {
     }
 
     // Move item in the formArray
-    const formArray = <FormArray>this.getFormControlGroup(ctx);
+    const formArray = <UntypedFormArray>this.getFormControlGroup(ctx);
     const arrayItem = formArray.at(oldIndex);
     formArray.removeAt(oldIndex);
     formArray.insert(newIndex, arrayItem);
@@ -866,12 +866,12 @@ export class JsonSchemaFormService {
     // Remove the Angular form control from the parent formArray or formGroup
     if (ctx.layoutNode.arrayItem) {
       // Remove array item from formArray
-      (<FormArray>this.getFormControlGroup(ctx)).removeAt(
+      (<UntypedFormArray>this.getFormControlGroup(ctx)).removeAt(
         ctx.dataIndex[ctx.dataIndex.length - 1]
       );
     } else {
       // Remove $ref item from formGroup
-      (<FormGroup>this.getFormControlGroup(ctx)).removeControl(
+      (<UntypedFormGroup>this.getFormControlGroup(ctx)).removeControl(
         this.getFormControlName(ctx)
       );
     }

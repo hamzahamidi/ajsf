@@ -3,9 +3,9 @@ import filter from 'lodash/filter';
 import map from 'lodash/map';
 import {
   AbstractControl,
-  FormArray,
-  FormControl,
-  FormGroup,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
   ValidatorFn
 } from '@angular/forms';
 import { forEach, hasOwn } from './utility.functions';
@@ -299,13 +299,13 @@ export function buildFormGroup(template: any): AbstractControl {
           const newControl: AbstractControl = buildFormGroup(controls);
           if (newControl) { groupControls[key] = newControl; }
         });
-        return new FormGroup(groupControls, validatorFn);
+        return new UntypedFormGroup(groupControls, validatorFn);
       case 'FormArray':
-        return new FormArray(filter(map(template.controls,
+        return new UntypedFormArray(filter(map(template.controls,
           controls => buildFormGroup(controls)
         )), validatorFn);
       case 'FormControl':
-        return new FormControl(template.value, validatorFns);
+        return new UntypedFormControl(template.value, validatorFns);
     }
   }
   return null;
