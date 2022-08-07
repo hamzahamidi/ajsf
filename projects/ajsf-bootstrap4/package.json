@@ -33,10 +33,10 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": ">=13.0.0",
-    "@angular/core": ">=13.0.0"
+    "@angular/common": ">=14.0.0",
+    "@angular/core": ">=14.0.0"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.3"
+    "@types/lodash-es": "^4.17.6"
   }
 }
