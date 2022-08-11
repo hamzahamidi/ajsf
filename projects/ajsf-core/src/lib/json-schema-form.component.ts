@@ -197,6 +197,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes.data && isEqual(changes.data.previousValue, changes.data.currentValue)) {      
+      return;
+    }
     this.updateForm();
     // Check if there's changes in Framework then load assets if that's the
     if (changes.framework) {
