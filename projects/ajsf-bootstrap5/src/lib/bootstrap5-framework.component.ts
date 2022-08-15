@@ -140,7 +140,6 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       ) {
         this.options.title += ' <strong class="text-danger">*</strong>';
       }
-      console.log(this.layoutNode.type);
 
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {

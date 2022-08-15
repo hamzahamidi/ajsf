@@ -21,7 +21,7 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
         [attr.required]="options?.required"
         [checked]="radioItem?.value === controlValue"
         [class]="options?.fieldHtmlClass || ''"
-        [disabled]="controlDisabled"
+        [disabled]="controlDisabled || options?.readonly"
         [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
         [name]="controlName"
         [value]="radioItem?.value"
