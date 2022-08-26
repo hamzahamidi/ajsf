@@ -1,5 +1,5 @@
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
+import cloneDeep from "lodash-es/cloneDeep";
+import isEqual from "lodash-es/isEqual";
 
 import {
   ChangeDetectionStrategy,
@@ -12,24 +12,18 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-} from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
-import { forEach, hasOwn } from './shared/utility.functions';
-import { FrameworkLibraryService } from './framework-library/framework-library.service';
-import {
-  hasValue,
-  inArray,
-  isArray,
-  isEmpty,
-  isObject
-} from './shared/validator.functions';
-import { JsonPointer } from './shared/jsonpointer.functions';
-import { JsonSchemaFormService } from './json-schema-form.service';
-import { resolveSchemaReferences } from './shared/json-schema.functions';
-import { WidgetLibraryService } from './widget-library/widget-library.service';
+} from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { convertSchemaToDraft6 } from "./shared/convert-schema-to-draft6.function";
+import { forEach, hasOwn } from "./shared/utility.functions";
+import { FrameworkLibraryService } from "./framework-library/framework-library.service";
+import { hasValue, inArray, isArray, isEmpty, isObject } from "./shared/validator.functions";
+import { JsonPointer } from "./shared/jsonpointer.functions";
+import { JsonSchemaFormService } from "./json-schema-form.service";
+import { resolveSchemaReferences } from "./shared/json-schema.functions";
+import { WidgetLibraryService } from "./widget-library/widget-library.service";
 
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -73,32 +67,53 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
  */
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: 'json-schema-form',
-  templateUrl: './json-schema-form.component.html',
+  selector: "json-schema-form",
+  templateUrl: "./json-schema-form.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Adding 'JsonSchemaFormService' here, instead of in the module,
   // creates a separate instance of the service for each component
-  providers:  [ JsonSchemaFormService, JSON_SCHEMA_FORM_VALUE_ACCESSOR ],
+  providers: [JsonSchemaFormService, JSON_SCHEMA_FORM_VALUE_ACCESSOR],
 })
 export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges, OnInit {
   // TODO: quickfix to avoid subscribing twice to the same emitters
   private unsubscribeOnActivateForm$ = new Subject<void>();
 
   debugOutput: any; // Debug information, if requested
-  formValueSubscription: any = null;
+  //  formValueSubscription: any = null;
   formInitialized = false;
   objectWrap = false; // Is non-object input schema wrapped in an object?
 
   formValuesInput: string; // Name of the input providing the form data
-  previousInputs: { // Previous input values, to detect which input triggers onChanges
-    schema: any, layout: any[], data: any, options: any, framework: any | string,
-    widgets: any, form: any, model: any, JSONSchema: any, UISchema: any,
-    formData: any, loadExternalAssets: boolean, debug: boolean,
+  previousInputs: {
+    // Previous input values, to detect which input triggers onChanges
+    schema: any;
+    layout: any[];
+    data: any;
+    options: any;
+    framework: any | string;
+    widgets: any;
+    form: any;
+    model: any;
+    JSONSchema: any;
+    UISchema: any;
+    formData: any;
+    loadExternalAssets: boolean;
+    debug: boolean;
   } = {
-      schema: null, layout: null, data: null, options: null, framework: null,
-      widgets: null, form: null, model: null, JSONSchema: null, UISchema: null,
-      formData: null, loadExternalAssets: null, debug: null,
-    };
+    schema: null,
+    layout: null,
+    data: null,
+    options: null,
+    framework: null,
+    widgets: null,
+    form: null,
+    model: null,
+    JSONSchema: null,
+    UISchema: null,
+    formData: null,
+    loadExternalAssets: null,
+    debug: null,
+  };
 
   // Recommended inputs
   @Input() schema: any; // The JSON Schema
@@ -129,7 +144,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
   @Input()
   get value(): any {
-    return this.objectWrap ? this.jsf.data['1'] : this.jsf.data;
+    return this.objectWrap ? this.jsf.data["1"] : this.jsf.data;
   }
   set value(value: any) {
     this.setFormValues(value, false);
@@ -159,31 +174,32 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     private changeDetector: ChangeDetectorRef,
     private frameworkLibrary: FrameworkLibraryService,
     private widgetLibrary: WidgetLibraryService,
-    public jsf: JsonSchemaFormService,
-  ) { }
+    public jsf: JsonSchemaFormService
+  ) {}
 
   private resetScriptsAndStyleSheets() {
-    document.querySelectorAll('.ajsf').forEach(element => element.remove());
+    document.querySelectorAll(".ajsf").forEach((element) => element.remove());
   }
   private loadScripts() {
     const scripts = this.frameworkLibrary.getFrameworkScripts();
-    scripts.map(script => {
-      const scriptTag: HTMLScriptElement = document.createElement('script');
+    console.log(scripts);
+    scripts.map((script) => {
+      const scriptTag: HTMLScriptElement = document.createElement("script");
       scriptTag.src = script;
-      scriptTag.type = 'text/javascript';
+      scriptTag.type = "text/javascript";
       scriptTag.async = true;
-      scriptTag.setAttribute('class', 'ajsf');
-      document.getElementsByTagName('head')[0].appendChild(scriptTag);
+      scriptTag.setAttribute("class", "ajsf");
+      document.getElementsByTagName("head")[0].appendChild(scriptTag);
     });
   }
   private loadStyleSheets() {
     const stylesheets = this.frameworkLibrary.getFrameworkStylesheets();
-    stylesheets.map(stylesheet => {
-      const linkTag: HTMLLinkElement = document.createElement('link');
-      linkTag.rel = 'stylesheet';
+    stylesheets.map((stylesheet) => {
+      const linkTag: HTMLLinkElement = document.createElement("link");
+      linkTag.rel = "stylesheet";
       linkTag.href = stylesheet;
-      linkTag.setAttribute('class', 'ajsf');
-      document.getElementsByTagName('head')[0].appendChild(linkTag);
+      linkTag.setAttribute("class", "ajsf");
+      document.getElementsByTagName("head")[0].appendChild(linkTag);
     });
   }
   private loadAssets() {
@@ -199,9 +215,11 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   ngOnChanges(changes: SimpleChanges) {
     this.updateForm();
     // Check if there's changes in Framework then load assets if that's the
-    if (changes.framework) {
-      if (!changes.framework.isFirstChange() &&
-        (changes.framework.previousValue !== changes.framework.currentValue)) {
+    if (changes["framework"]) {
+      if (
+        !changes["framework"].isFirstChange() &&
+        changes["framework"].previousValue !== changes["framework"].currentValue
+      ) {
         this.loadAssets();
       }
     }
@@ -209,7 +227,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
   writeValue(value: any) {
     this.setFormValues(value, false);
-    if (!this.formValuesInput) { this.formValuesInput = 'ngModel'; }
+    if (!this.formValuesInput) {
+      this.formValuesInput = "ngModel";
+    }
   }
 
   registerOnChange(fn: Function) {
@@ -228,9 +248,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
 
   updateForm() {
-    if (!this.formInitialized || !this.formValuesInput ||
-      (this.language && this.language !== this.jsf.language)
-    ) {
+    if (!this.formInitialized || !this.formValuesInput || (this.language && this.language !== this.jsf.language)) {
       this.initializeForm();
     } else {
       if (this.language && this.language !== this.jsf.language) {
@@ -238,45 +256,46 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       }
 
       // Get names of changed inputs
-      let changedInput = Object.keys(this.previousInputs)
-        .filter(input => this.previousInputs[input] !== this[input]);
+      let changedInput = Object.keys(this.previousInputs).filter((input) => this.previousInputs[input] !== this[input]);
       let resetFirst = true;
-      if (changedInput.length === 1 && changedInput[0] === 'form' &&
-        this.formValuesInput.startsWith('form.')
-      ) {
+      if (changedInput.length === 1 && changedInput[0] === "form" && this.formValuesInput.startsWith("form.")) {
         // If only 'form' input changed, get names of changed keys
         changedInput = Object.keys(this.previousInputs.form || {})
-          .filter(key => !isEqual(this.previousInputs.form[key], this.form[key]))
-          .map(key => `form.${key}`);
+          .filter((key) => !isEqual(this.previousInputs.form[key], this.form[key]))
+          .map((key) => `form.${key}`);
         resetFirst = false;
       }
 
       // If only input values have changed, update the form values
       if (changedInput.length === 1 && changedInput[0] === this.formValuesInput) {
-        if (this.formValuesInput.indexOf('.') === -1) {
+        if (this.formValuesInput.indexOf(".") === -1) {
           this.setFormValues(this[this.formValuesInput], resetFirst);
         } else {
-          const [input, key] = this.formValuesInput.split('.');
+          const [input, key] = this.formValuesInput.split(".");
           this.setFormValues(this[input][key], resetFirst);
         }
 
         // If anything else has changed, re-render the entire form
       } else if (changedInput.length) {
         this.initializeForm();
-        if (this.onChange) { this.onChange(this.jsf.formValues); }
-        if (this.onTouched) { this.onTouched(this.jsf.formValues); }
+        if (this.onChange) {
+          this.onChange(this.jsf.formValues);
+        }
+        if (this.onTouched) {
+          this.onTouched(this.jsf.formValues);
+        }
       }
 
       // Update previous inputs
       Object.keys(this.previousInputs)
-        .filter(input => this.previousInputs[input] !== this[input])
-        .forEach(input => this.previousInputs[input] = this[input]);
+        .filter((input) => this.previousInputs[input] !== this[input])
+        .forEach((input) => (this.previousInputs[input] = this[input]));
     }
   }
 
   setFormValues(formValues: any, resetFirst = true) {
     if (formValues) {
-      const newFormValues = this.objectWrap ? formValues['1'] : formValues;
+      const newFormValues = this.objectWrap ? formValues["1"] : formValues;
       if (!this.jsf.formGroup) {
         this.jsf.formValues = formValues;
         this.activateForm();
@@ -286,8 +305,12 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       if (this.jsf.formGroup) {
         this.jsf.formGroup.patchValue(newFormValues);
       }
-      if (this.onChange) { this.onChange(newFormValues); }
-      if (this.onTouched) { this.onTouched(newFormValues); }
+      if (this.onChange) {
+        this.onChange(newFormValues);
+      }
+      if (this.onTouched) {
+        this.onTouched(newFormValues);
+      }
     } else {
       this.jsf.formGroup.reset();
     }
@@ -295,7 +318,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
   submitForm() {
     const validData = this.jsf.validData;
-    this.onSubmit.emit(this.objectWrap ? validData['1'] : validData);
+    this.onSubmit.emit(this.objectWrap ? validData["1"] : validData);
   }
 
   /**
@@ -320,18 +343,24 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    */
   initializeForm() {
     if (
-      this.schema || this.layout || this.data || this.form || this.model ||
-      this.JSONSchema || this.UISchema || this.formData || this.ngModel ||
+      this.schema ||
+      this.layout ||
+      this.data ||
+      this.form ||
+      this.model ||
+      this.JSONSchema ||
+      this.UISchema ||
+      this.formData ||
+      this.ngModel ||
       this.jsf.data
     ) {
-
-      this.jsf.resetAllValues();  // Reset all form values to defaults
-      this.initializeOptions();   // Update options
-      this.initializeSchema();    // Update schema, schemaRefLibrary,
+      this.jsf.resetAllValues(); // Reset all form values to defaults
+      this.initializeOptions(); // Update options
+      this.initializeSchema(); // Update schema, schemaRefLibrary,
       // schemaRecursiveRefMap, & dataRecursiveRefMap
-      this.initializeLayout();    // Update layout, layoutRefLibrary,
-      this.initializeData();      // Update formValues
-      this.activateForm();        // Update dataMap, templateRefLibrary,
+      this.initializeLayout(); // Update layout, layoutRefLibrary,
+      this.initializeData(); // Update formValues
+      this.activateForm(); // Update dataMap, templateRefLibrary,
       // formGroupTemplate, formGroup
 
       // Uncomment individual lines to output debugging information to console:
@@ -370,7 +399,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
         // vars.push(this.jsf.arrayMap);
         // vars.push(this.jsf.schemaRecursiveRefMap);
         // vars.push(this.jsf.dataRecursiveRefMap);
-        this.debugOutput = vars.map(v => JSON.stringify(v, null, 2)).join('\n');
+        this.debugOutput = vars.map((v) => JSON.stringify(v, null, 2)).join("\n");
       }
       this.formInitialized = true;
     }
@@ -390,7 +419,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     }
     this.jsf.setOptions({ debug: !!this.debug });
     let loadExternalAssets: boolean = this.loadExternalAssets || false;
-    let framework: any = this.framework || 'default';
+    let framework: any = this.framework || "default";
     if (isObject(this.options)) {
       this.jsf.setOptions(this.options);
       loadExternalAssets = this.options.loadExternalAssets || loadExternalAssets;
@@ -434,55 +463,53 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * 7. If data input - build schema from data
    */
   private initializeSchema() {
-
     // TODO: update to allow non-object schemas
 
     if (isObject(this.schema)) {
       this.jsf.AngularSchemaFormCompatibility = true;
       this.jsf.schema = cloneDeep(this.schema);
-    } else if (hasOwn(this.form, 'schema') && isObject(this.form.schema)) {
+    } else if (hasOwn(this.form, "schema") && isObject(this.form.schema)) {
       this.jsf.schema = cloneDeep(this.form.schema);
     } else if (isObject(this.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.jsf.schema = cloneDeep(this.JSONSchema);
-    } else if (hasOwn(this.form, 'JSONSchema') && isObject(this.form.JSONSchema)) {
+    } else if (hasOwn(this.form, "JSONSchema") && isObject(this.form.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.jsf.schema = cloneDeep(this.form.JSONSchema);
-    } else if (hasOwn(this.form, 'properties') && isObject(this.form.properties)) {
+    } else if (hasOwn(this.form, "properties") && isObject(this.form.properties)) {
       this.jsf.schema = cloneDeep(this.form);
     } else if (isObject(this.form)) {
       // TODO: Handle other types of form input
     }
 
     if (!isEmpty(this.jsf.schema)) {
-
       // If other types also allowed, render schema as an object
-      if (inArray('object', this.jsf.schema.type)) {
-        this.jsf.schema.type = 'object';
+      if (inArray("object", this.jsf.schema.type)) {
+        this.jsf.schema.type = "object";
       }
 
       // Wrap non-object schemas in object.
-      if (hasOwn(this.jsf.schema, 'type') && this.jsf.schema.type !== 'object') {
+      if (hasOwn(this.jsf.schema, "type") && this.jsf.schema.type !== "object") {
         this.jsf.schema = {
-          'type': 'object',
-          'properties': { 1: this.jsf.schema }
+          type: "object",
+          properties: { 1: this.jsf.schema },
         };
         this.objectWrap = true;
-      } else if (!hasOwn(this.jsf.schema, 'type')) {
-
+      } else if (!hasOwn(this.jsf.schema, "type")) {
         // Add type = 'object' if missing
-        if (isObject(this.jsf.schema.properties) ||
+        if (
+          isObject(this.jsf.schema.properties) ||
           isObject(this.jsf.schema.patternProperties) ||
           isObject(this.jsf.schema.additionalProperties)
         ) {
-          this.jsf.schema.type = 'object';
+          this.jsf.schema.type = "object";
 
           // Fix JSON schema shorthand (JSON Form style)
         } else {
           this.jsf.JsonFormCompatibility = true;
           this.jsf.schema = {
-            'type': 'object',
-            'properties': this.jsf.schema
+            type: "object",
+            properties: this.jsf.schema,
           };
         }
       }
@@ -496,10 +523,13 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
       // Create schemaRefLibrary, schemaRecursiveRefMap, dataRecursiveRefMap, & arrayMap
       this.jsf.schema = resolveSchemaReferences(
-        this.jsf.schema, this.jsf.schemaRefLibrary, this.jsf.schemaRecursiveRefMap,
-        this.jsf.dataRecursiveRefMap, this.jsf.arrayMap
+        this.jsf.schema,
+        this.jsf.schemaRefLibrary,
+        this.jsf.schemaRecursiveRefMap,
+        this.jsf.dataRecursiveRefMap,
+        this.jsf.arrayMap
       );
-      if (hasOwn(this.jsf.schemaRefLibrary, '')) {
+      if (hasOwn(this.jsf.schemaRefLibrary, "")) {
         this.jsf.hasRootReference = true;
       }
 
@@ -530,29 +560,29 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   private initializeData() {
     if (hasValue(this.data)) {
       this.jsf.formValues = cloneDeep(this.data);
-      this.formValuesInput = 'data';
+      this.formValuesInput = "data";
     } else if (hasValue(this.model)) {
       this.jsf.AngularSchemaFormCompatibility = true;
       this.jsf.formValues = cloneDeep(this.model);
-      this.formValuesInput = 'model';
+      this.formValuesInput = "model";
     } else if (hasValue(this.ngModel)) {
       this.jsf.AngularSchemaFormCompatibility = true;
       this.jsf.formValues = cloneDeep(this.ngModel);
-      this.formValuesInput = 'ngModel';
+      this.formValuesInput = "ngModel";
     } else if (isObject(this.form) && hasValue(this.form.value)) {
       this.jsf.JsonFormCompatibility = true;
       this.jsf.formValues = cloneDeep(this.form.value);
-      this.formValuesInput = 'form.value';
+      this.formValuesInput = "form.value";
     } else if (isObject(this.form) && hasValue(this.form.data)) {
       this.jsf.formValues = cloneDeep(this.form.data);
-      this.formValuesInput = 'form.data';
+      this.formValuesInput = "form.data";
     } else if (hasValue(this.formData)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
-      this.formValuesInput = 'formData';
-    } else if (hasOwn(this.form, 'formData') && hasValue(this.form.formData)) {
+      this.formValuesInput = "formData";
+    } else if (hasOwn(this.form, "formData") && hasValue(this.form.formData)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.jsf.formValues = cloneDeep(this.form.formData);
-      this.formValuesInput = 'form.formData';
+      this.formValuesInput = "form.formData";
     } else {
       this.formValuesInput = null;
     }
@@ -580,17 +610,20 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * 3. (none) no input - don't import
    */
   private initializeLayout() {
-
     // Rename JSON Form-style 'options' lists to
     // Angular Schema Form-style 'titleMap' lists.
     const fixJsonFormOptions = (layout: any): any => {
       if (isObject(layout) || isArray(layout)) {
-        forEach(layout, (value, key) => {
-          if (hasOwn(value, 'options') && isObject(value.options)) {
-            value.titleMap = value.options;
-            delete value.options;
-          }
-        }, 'top-down');
+        forEach(
+          layout,
+          (value, key) => {
+            if (hasOwn(value, "options") && isObject(value.options)) {
+              value.titleMap = value.options;
+              delete value.options;
+            }
+          },
+          "top-down"
+        );
       }
       return layout;
     };
@@ -607,7 +640,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     } else if (this.form && isArray(this.form.layout)) {
       this.jsf.layout = cloneDeep(this.form.layout);
     } else {
-      this.jsf.layout = ['*'];
+      this.jsf.layout = ["*"];
     }
 
     // Check for alternate layout inputs
@@ -615,13 +648,13 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     if (isObject(this.UISchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       alternateLayout = cloneDeep(this.UISchema);
-    } else if (hasOwn(this.form, 'UISchema')) {
+    } else if (hasOwn(this.form, "UISchema")) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       alternateLayout = cloneDeep(this.form.UISchema);
-    } else if (hasOwn(this.form, 'uiSchema')) {
+    } else if (hasOwn(this.form, "uiSchema")) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       alternateLayout = cloneDeep(this.form.uiSchema);
-    } else if (hasOwn(this.form, 'customFormItems')) {
+    } else if (hasOwn(this.form, "customFormItems")) {
       this.jsf.JsonFormCompatibility = true;
       alternateLayout = fixJsonFormOptions(cloneDeep(this.form.customFormItems));
     }
@@ -630,27 +663,27 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     if (alternateLayout) {
       JsonPointer.forEachDeep(alternateLayout, (value, pointer) => {
         const schemaPointer = pointer
-          .replace(/\//g, '/properties/')
-          .replace(/\/properties\/items\/properties\//g, '/items/properties/')
-          .replace(/\/properties\/titleMap\/properties\//g, '/titleMap/properties/');
+          .replace(/\//g, "/properties/")
+          .replace(/\/properties\/items\/properties\//g, "/items/properties/")
+          .replace(/\/properties\/titleMap\/properties\//g, "/titleMap/properties/");
         if (hasValue(value) && hasValue(pointer)) {
           let key = JsonPointer.toKey(pointer);
           const groupPointer = (JsonPointer.parse(schemaPointer) || []).slice(0, -2);
           let itemPointer: string | string[];
 
           // If 'ui:order' object found, copy into object schema root
-          if (key.toLowerCase() === 'ui:order') {
-            itemPointer = [...groupPointer, 'ui:order'];
+          if (key.toLowerCase() === "ui:order") {
+            itemPointer = [...groupPointer, "ui:order"];
 
             // Copy other alternate layout options to schema 'x-schema-form',
             // (like Angular Schema Form options) and remove any 'ui:' prefixes
           } else {
-            if (key.slice(0, 3).toLowerCase() === 'ui:') { key = key.slice(3); }
-            itemPointer = [...groupPointer, 'x-schema-form', key];
+            if (key.slice(0, 3).toLowerCase() === "ui:") {
+              key = key.slice(3);
+            }
+            itemPointer = [...groupPointer, "x-schema-form", key];
           }
-          if (JsonPointer.has(this.jsf.schema, groupPointer) &&
-            !JsonPointer.has(this.jsf.schema, itemPointer)
-          ) {
+          if (JsonPointer.has(this.jsf.schema, groupPointer) && !JsonPointer.has(this.jsf.schema, itemPointer)) {
             JsonPointer.set(this.jsf.schema, itemPointer, value);
           }
         }
@@ -675,7 +708,6 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     this.unsubscribeOnActivateForm$.next();
     // If 'schema' not initialized
     if (isEmpty(this.jsf.schema)) {
-
       // TODO: If full layout input (with no '*'), build schema from layout
       // if (!this.jsf.layout.includes('*')) {
       //   this.jsf.buildSchemaFromLayout();
@@ -688,7 +720,6 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     }
 
     if (!isEmpty(this.jsf.schema)) {
-
       // If not already initialized, initialize ajv and compile schema
       this.jsf.compileAjvSchema();
 
@@ -705,9 +736,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     }
 
     if (this.jsf.formGroup) {
-
       // Reset initial form values
-      if (!isEmpty(this.jsf.formValues) &&
+      if (
+        !isEmpty(this.jsf.formValues) &&
         this.jsf.formOptions.setSchemaDefaults !== true &&
         this.jsf.formOptions.setLayoutDefaults !== true
       ) {
@@ -726,33 +757,38 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       // }
 
       // Subscribe to form changes to output live data, validation, and errors
-      this.jsf.dataChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(data => {
-        this.onChanges.emit(this.objectWrap ? data['1'] : data);
-        if (this.formValuesInput && this.formValuesInput.indexOf('.') === -1) {
-          this[`${this.formValuesInput}Change`].emit(this.objectWrap ? data['1'] : data);
+      this.jsf.dataChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe((data) => {
+        this.onChanges.emit(this.objectWrap ? data["1"] : data);
+        if (this.formValuesInput && this.formValuesInput.indexOf(".") === -1) {
+          this[`${this.formValuesInput}Change`].emit(this.objectWrap ? data["1"] : data);
         }
       });
 
       // Trigger change detection on statusChanges to show updated errors
-      this.jsf.formGroup.statusChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(() => this.changeDetector.markForCheck());
-      this.jsf.isValidChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(isValid => this.isValid.emit(isValid));
-      this.jsf.validationErrorChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(err => this.validationErrors.emit(err));
+      this.jsf.formGroup.statusChanges
+        .pipe(takeUntil(this.unsubscribeOnActivateForm$))
+        .subscribe(() => this.changeDetector.markForCheck());
+      this.jsf.isValidChanges
+        .pipe(takeUntil(this.unsubscribeOnActivateForm$))
+        .subscribe((isValid) => this.isValid.emit(isValid));
+      this.jsf.validationErrorChanges
+        .pipe(takeUntil(this.unsubscribeOnActivateForm$))
+        .subscribe((err) => this.validationErrors.emit(err));
 
       // Output final schema, final layout, and initial data
       this.formSchema.emit(this.jsf.schema);
       this.formLayout.emit(this.jsf.layout);
-      this.onChanges.emit(this.objectWrap ? this.jsf.data['1'] : this.jsf.data);
+      this.onChanges.emit(this.objectWrap ? this.jsf.data["1"] : this.jsf.data);
 
       // If validateOnRender, output initial validation and any errors
-      const validateOnRender =
-        JsonPointer.get(this.jsf, '/formOptions/validateOnRender');
-      if (validateOnRender) { // validateOnRender === 'auto' || true
+      const validateOnRender = JsonPointer.get(this.jsf, "/formOptions/validateOnRender");
+      if (validateOnRender) {
+        // validateOnRender === 'auto' || true
         const touchAll = (control) => {
           if (validateOnRender === true || hasValue(control.value)) {
             control.markAsTouched();
           }
-          Object.keys(control.controls || {})
-            .forEach(key => touchAll(control.controls[key]));
+          Object.keys(control.controls || {}).forEach((key) => touchAll(control.controls[key]));
         };
         touchAll(this.jsf.formGroup);
         this.isValid.emit(this.jsf.isValid);

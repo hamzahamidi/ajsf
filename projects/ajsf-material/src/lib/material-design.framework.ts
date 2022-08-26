@@ -72,4 +72,5 @@ export class MaterialDesignFramework extends Framework {
     'tagsinput': 'chip-list',
     'wizard': 'stepper',
   };
+  scripts = []
 }

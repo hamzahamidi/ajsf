@@ -610,6 +610,7 @@ export class JsonPointer {
       if (<string>pointer === '' || <string>pointer === '/') { return []; }
       return (<string>pointer).slice(1).split('/').map(this.unescape);
     }
+    return null;
   }
 
   /**
@@ -702,7 +703,7 @@ export class JsonPointer {
         if (!this.isJsonPointer(longPointer)) { invalid += ` 2: ${longPointer}`; }
         console.error(`isSubPointer error: Invalid JSON Pointer ${invalid}`);
       }
-      return;
+      return null;
     }
     shortPointer = this.compile(shortPointer, '', errors);
     longPointer = this.compile(longPointer, '', errors);
@@ -1008,5 +1009,6 @@ export class JsonPointer {
       return parts;
     }
     console.error('parseObjectPath error: Input object path must be a string.');
+    return null;
   }
 }

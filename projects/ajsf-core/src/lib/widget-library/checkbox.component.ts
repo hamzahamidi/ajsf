@@ -1,42 +1,46 @@
-import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
-import { JsonSchemaFormService } from '../json-schema-form.service';
-
+import { AbstractControl } from "@angular/forms";
+import { Component, Input, OnInit } from "@angular/core";
+import { JsonSchemaFormService } from "../json-schema-form.service";
 
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: 'checkbox-widget',
-  template: `
-    <label
-      [attr.for]="'control' + layoutNode?._id"
-      [class]="options?.itemLabelHtmlClass || ''">
-      <input *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [class]="(options?.fieldHtmlClass || '') + (isChecked ?
-          (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
-          (' ' + (options?.style?.unselected || '')))"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        type="checkbox">
-      <input *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [checked]="isChecked ? 'checked' : null"
-        [class]="(options?.fieldHtmlClass || '') + (isChecked ?
-          (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
-          (' ' + (options?.style?.unselected || '')))"
-        [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [value]="controlValue"
-        type="checkbox"
-        (change)="updateValue($event)">
-      <span *ngIf="options?.title"
-        [style.display]="options?.notitle ? 'none' : ''"
-        [innerHTML]="options?.title"></span>
-    </label>`,
+  selector: "checkbox-widget",
+  template: ` <label [attr.for]="'control' + layoutNode?._id" [class]="options?.itemLabelHtmlClass || ''">
+    <input
+      *ngIf="boundControl"
+      [formControl]="formControl"
+      [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+      [class]="
+        (options?.fieldHtmlClass || '') +
+        (isChecked
+          ? ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')
+          : ' ' + (options?.style?.unselected || ''))
+      "
+      [id]="'control' + layoutNode?._id"
+      [name]="controlName"
+      [readonly]="options?.readonly ? 'readonly' : null"
+      type="checkbox"
+    />
+    <input
+      *ngIf="!boundControl"
+      [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+      [checked]="isChecked ? 'checked' : null"
+      [class]="
+        (options?.fieldHtmlClass || '') +
+        (isChecked
+          ? ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')
+          : ' ' + (options?.style?.unselected || ''))
+      "
+      [disabled]="controlDisabled || options?.readonly"
+      [id]="'control' + layoutNode?._id"
+      [name]="controlName"
+      [readonly]="options?.readonly ? 'readonly' : null"
+      [value]="controlValue"
+      type="checkbox"
+      (change)="updateValue($event)"
+    />
+    <span *ngIf="options?.title" [style.display]="options?.notitle ? 'none' : ''" [innerHTML]="options?.title"></span>
+  </label>`,
 })
 export class CheckboxComponent implements OnInit {
   formControl: AbstractControl;
@@ -51,9 +55,7 @@ export class CheckboxComponent implements OnInit {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(
-    private jsf: JsonSchemaFormService
-  ) { }
+  constructor(private jsf: JsonSchemaFormService) {}
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};

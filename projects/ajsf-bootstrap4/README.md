@@ -51,6 +51,7 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `material-design` for  Material Design.
 * `bootstrap-3` for Bootstrap 3.
 * `bootstrap-4` for 'Bootstrap 4.
+* `bootstrap-5` for 'Bootstrap 5.
 * `no-framework` for (plain HTML).
 
 ## Code scaffolding

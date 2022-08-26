@@ -44,3 +44,11 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "build"
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-bootstrap5"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"

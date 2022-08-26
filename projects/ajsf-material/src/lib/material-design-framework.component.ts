@@ -1,12 +1,12 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
-import {isDefined, JsonSchemaFormService} from '@ajsf/core';
-import cloneDeep from 'lodash/cloneDeep';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from "@angular/core";
+import { isDefined, JsonSchemaFormService } from "@ajsf/core";
+import cloneDeep from "lodash-es/cloneDeep";
 
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: 'material-design-framework',
-  templateUrl: './material-design-framework.component.html',
-  styleUrls: ['./material-design-framework.component.scss'],
+  selector: "material-design-framework",
+  templateUrl: "./material-design-framework.component.html",
+  styleUrls: ["./material-design-framework.component.scss"],
 })
 export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
   frameworkInitialized = false;
@@ -22,15 +22,14 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(
-    private changeDetector: ChangeDetectorRef,
-    private jsf: JsonSchemaFormService
-  ) {
-  }
+  constructor(private changeDetector: ChangeDetectorRef, private jsf: JsonSchemaFormService) {}
 
   get showRemoveButton(): boolean {
-    if (!this.layoutNode || !this.widgetOptions.removable ||
-      this.widgetOptions.readonly || this.layoutNode.type === '$ref'
+    if (
+      !this.layoutNode ||
+      !this.widgetOptions.removable ||
+      this.widgetOptions.readonly ||
+      this.layoutNode.type === "$ref"
     ) {
       return false;
     }
@@ -41,10 +40,12 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
       return false;
     }
     // If array length <= minItems, don't allow removing any items
-    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems ? false :
-      // For removable list items, allow removing any item
-      this.layoutNode.arrayItemType === 'list' ? true :
-        // For removable tuple items, only allow removing last item in list
+    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems
+      ? false
+      : // For removable list items, allow removing any item
+      this.layoutNode.arrayItemType === "list"
+      ? true
+      : // For removable tuple items, only allow removing last item in list
         this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
   }
 
@@ -66,7 +67,7 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
       this.options = cloneDeep(this.layoutNode.options || {});
       this.widgetLayoutNode = {
         ...this.layoutNode,
-        options: cloneDeep(this.layoutNode.options || {})
+        options: cloneDeep(this.layoutNode.options || {}),
       };
       this.widgetOptions = this.widgetLayoutNode.options;
       this.formControl = this.jsf.getFormControl(this);
@@ -76,25 +77,38 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
         isDefined(this.widgetOptions.maximum) &&
         this.widgetOptions.multipleOf >= 1
       ) {
-        this.layoutNode.type = 'range';
+        this.layoutNode.type = "range";
       }
 
       if (
-        !['$ref', 'advancedfieldset', 'authfieldset', 'button', 'card',
-          'checkbox', 'expansion-panel', 'help', 'message', 'msg', 'section',
-          'submit', 'tabarray', 'tabs'].includes(this.layoutNode.type) &&
-        /{{.+?}}/.test(this.widgetOptions.title || '')
+        ![
+          "$ref",
+          "advancedfieldset",
+          "authfieldset",
+          "button",
+          "card",
+          "checkbox",
+          "expansion-panel",
+          "help",
+          "message",
+          "msg",
+          "section",
+          "submit",
+          "tabarray",
+          "tabs",
+        ].includes(this.layoutNode.type) &&
+        /{{.+?}}/.test(this.widgetOptions.title || "")
       ) {
         this.dynamicTitle = this.widgetOptions.title;
         this.updateTitle();
       }
 
-      if (this.layoutNode.arrayItem && this.layoutNode.type !== '$ref') {
+      if (this.layoutNode.arrayItem && this.layoutNode.type !== "$ref") {
         this.parentArray = this.jsf.getParentNode(this);
         if (this.parentArray) {
           this.isOrderable =
-            this.parentArray.type.slice(0, 3) !== 'tab' &&
-            this.layoutNode.arrayItemType === 'list' &&
+            this.parentArray.type.slice(0, 3) !== "tab" &&
+            this.layoutNode.arrayItemType === "list" &&
             !this.widgetOptions.readonly &&
             this.parentArray.options.orderable;
         }
