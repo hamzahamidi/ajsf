@@ -3,6 +3,8 @@ import { AbstractControl, UntypedFormArray, UntypedFormGroup } from "@angular/fo
 import { Subject } from "rxjs";
 import cloneDeep from "lodash-es/cloneDeep";
 import Ajv from "ajv";
+import addFormats from "ajv-formats";
+
 //import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
 import {
   buildFormGroup,
@@ -56,15 +58,8 @@ export class JsonSchemaFormService {
   AngularSchemaFormCompatibility = false;
   tpldata: any = {};
 
-  ajvOptions: any = {
-    allErrors: true,
-    jsPropertySyntax: true,
-    /*
-    jsonPointers: true,
-    unknownFormats: 'ignore'
-    */
-  };
-  ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
+  
+  ajv: Ajv; // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
 
   formValues: any = {}; // Internal form data (may not have correct types)
@@ -147,6 +142,16 @@ export class JsonSchemaFormService {
 
   constructor() {
     this.setLanguage(this.language);
+    this.ajv = new Ajv({
+      allErrors: true,
+      jsPropertySyntax: true,
+      /*
+      jsonPointers: true,
+      unknownFormats: 'ignore'
+      */
+    });
+    addFormats(this.ajv)
+
     // this.ajv.addMetaSchema(jsonDraft6);
   }
 
