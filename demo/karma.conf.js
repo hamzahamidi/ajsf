@@ -13,7 +13,7 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
     coverageReporter: {
       dir: require('path').join(__dirname, '../coverage'),
@@ -34,13 +34,13 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome', 'ChromeHeadlessNoSandbox'],
     singleRun: false,
+    browsers: ['Chrome', 'ChromeHeadlessCI'],
     customLaunchers: {
-      ChromeHeadlessNoSandbox: {
+      ChromeHeadlessCI: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
-      }
-    }
+        flags: ['--no-sandbox'],
+      },
+    },
   });
 };
