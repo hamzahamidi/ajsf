@@ -544,6 +544,10 @@ export class JsonSchemaFormService {
     ctx.formControl = this.getFormControl(ctx);
     ctx.boundControl = bind && !!ctx.formControl;
     if (ctx.formControl) {
+      if (ctx.options.enum && ctx.formControl.value === null) {
+        ctx.formControl.value = '';
+      }
+
       ctx.controlName = this.getFormControlName(ctx);
       ctx.controlValue = ctx.formControl.value;
       ctx.controlDisabled = ctx.formControl.disabled;

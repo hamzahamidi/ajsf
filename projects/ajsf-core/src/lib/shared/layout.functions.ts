@@ -1062,7 +1062,7 @@ export function buildTitleMap(
     }
   }
   if (!fieldRequired && !hasEmptyValue) {
-    newTitleMap.unshift({ name: '<em>None</em>', value: null });
+    newTitleMap.unshift({ name: '<em>None</em>', value: '' });
   }
   return newTitleMap;
 }
