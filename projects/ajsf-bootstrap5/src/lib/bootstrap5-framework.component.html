@@ -53,15 +53,14 @@
         <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
       </div>
     </div>
-  </div>
-
-  <div
+    <div
     *ngIf="formControl?.touched && options?.errorMessage"
     class="invalid-feedback"
     [innerHTML]="options?.errorMessage"
   ></div>
 
-  <div
+  </div>
+<div
     *ngIf="
       options?.description && (!options?.showErrors || !options?.errorMessage)
     "
