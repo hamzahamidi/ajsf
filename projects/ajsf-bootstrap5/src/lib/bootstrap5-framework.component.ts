@@ -230,17 +230,22 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   }
 
   updateHelpBlock(status) {
+    this.options.errorMessage = this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages ?? {});
+  }
+
+  /*
+  updateHelpBlock(status) {
     if (this.options?.validationMessages) {
       this.options.errorMessage = this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages);
-    }
-    /*
+    } 
     this.options.helpBlock = status === 'INVALID' &&
     this.optio§ns.enableErrorState && this.formControl.errors &&
     (this.formControl.dirty || this.options.feedbackOnRender) ?
       this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages) :
       this.options.description || this.options.help || null;
-      */
+      
   }
+  */
 
   setTitle(): string {
     switch (this.layoutNode.type) {

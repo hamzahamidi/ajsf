@@ -54,13 +54,12 @@
       </div>
     </div>
     <div
-    *ngIf="formControl?.touched && options?.errorMessage"
-    class="invalid-feedback"
-    [innerHTML]="options?.errorMessage"
-  ></div>
-
+      *ngIf="formControl?.touched && options?.errorMessage"
+      class="invalid-feedback"
+      [innerHTML]="options?.errorMessage"
+    ></div>
   </div>
-<div
+  <div
     *ngIf="
       options?.description && (!options?.showErrors || !options?.errorMessage)
     "

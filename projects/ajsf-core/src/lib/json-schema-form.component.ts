@@ -778,7 +778,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       // Output final schema, final layout, and initial data
       this.formSchema.emit(this.jsf.schema);
       this.formLayout.emit(this.jsf.layout);
-      this.onChanges.emit(this.objectWrap ? this.jsf.data["1"] : this.jsf.data);
+      //this.onChanges.emit(this.objectWrap ? this.jsf.data["1"] : this.jsf.data);
 
       // If validateOnRender, output initial validation and any errors
       const validateOnRender = JsonPointer.get(this.jsf, "/formOptions/validateOnRender");

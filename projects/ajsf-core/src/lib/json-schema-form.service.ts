@@ -58,7 +58,6 @@ export class JsonSchemaFormService {
   AngularSchemaFormCompatibility = false;
   tpldata: any = {};
 
-  
   ajv: Ajv; // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
 
@@ -150,7 +149,7 @@ export class JsonSchemaFormService {
       unknownFormats: 'ignore'
       */
     });
-    addFormats(this.ajv)
+    addFormats(this.ajv);
 
     // this.ajv.addMetaSchema(jsonDraft6);
   }
@@ -280,7 +279,7 @@ export class JsonSchemaFormService {
     this.formGroup = <UntypedFormGroup>buildFormGroup(this.formGroupTemplate);
     if (this.formGroup) {
       this.compileAjvSchema();
-      this.validateData(this.formGroup.value);
+      this.validateData(this.formGroup.value, false);
 
       // Set up observables to emit data and validation info when form data changes
       if (this.formValueSubscription) {
