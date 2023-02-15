@@ -293,6 +293,7 @@ export function buildLayout(jsf, widgetLibrary) {
         }
         jsf.dataMap.get(itemRefPointer).set('inputType', 'section');
 
+        let additionalItems;
         // Fix insufficiently nested array item groups
         if (newNode.items.length > 1) {
           const arrayItemGroup = [];
@@ -312,19 +313,21 @@ export function buildLayout(jsf, widgetLibrary) {
               subItem.removable = newNode.options.removable !== false;
             }
           }
-          if (arrayItemGroup.length) {
-            newNode.items.push({
-              _id: uniqueId(),
-              arrayItem: true,
-              arrayItemType: newNode.options.tupleItems > newNode.items.length ?
+
+          additionalItems = {
+            arrayItem: true,
+            items: arrayItemGroup,
+            layoutPointer: newNode.layoutPointer + '/items/-',
+            options: {
+              arrayItemType: newNode.tupleItems > newNode.items.length ?
                 'tuple' : 'list',
-              items: arrayItemGroup,
-              options: { removable: newNode.options.removable !== false, },
-              dataPointer: newNode.dataPointer + '/-',
-              type: 'section',
-              widget: widgetLibrary.getWidget('section'),
-            });
-          }
+              removable: newNode.options.removable !== false &&
+                (newNode.options.minItems || 0) <= newNode.items.length,
+            },
+            dataPointer: newNode.dataPointer + '/-',
+            type: 'fieldset',
+            widget: widgetLibrary.getWidget('fieldset'),
+          };
         } else {
           // TODO: Fix to hndle multiple items
           newNode.items[0].arrayItem = true;
@@ -340,6 +343,9 @@ export function buildLayout(jsf, widgetLibrary) {
           }
           newNode.items[0].arrayItemType =
             newNode.options.tupleItems ? 'tuple' : 'list';
+          
+          additionalItems = newNode.items[0];
+          newNode.items = [];
         }
 
         if (isArray(newNode.items)) {
@@ -354,7 +360,7 @@ export function buildLayout(jsf, widgetLibrary) {
 
         if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
           jsf.layoutRefLibrary[itemRefPointer] =
-            cloneDeep(newNode.items[newNode.items.length - 1]);
+            cloneDeep(additionalItems || newNode.items[newNode.items.length - 1]);
           if (recursive) {
             jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
           }
