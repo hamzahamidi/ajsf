@@ -293,6 +293,7 @@ export function buildLayout(jsf, widgetLibrary) {
         }
         jsf.dataMap.get(itemRefPointer).set('inputType', 'section');
 
+        let additionalItems;
         // Fix insufficiently nested array item groups
         if (newNode.items.length > 1) {
           const arrayItemGroup = [];
@@ -312,19 +313,21 @@ export function buildLayout(jsf, widgetLibrary) {
               subItem.removable = newNode.options.removable !== false;
             }
           }
-          if (arrayItemGroup.length) {
-            newNode.items.push({
-              _id: uniqueId(),
-              arrayItem: true,
-              arrayItemType: newNode.options.tupleItems > newNode.items.length ?
+
+          additionalItems = {
+            arrayItem: true,
+            items: arrayItemGroup,
+            layoutPointer: newNode.layoutPointer + '/items/-',
+            options: {
+              arrayItemType: newNode.tupleItems > newNode.items.length ?
                 'tuple' : 'list',
-              items: arrayItemGroup,
-              options: { removable: newNode.options.removable !== false, },
-              dataPointer: newNode.dataPointer + '/-',
-              type: 'section',
-              widget: widgetLibrary.getWidget('section'),
-            });
-          }
+              removable: newNode.options.removable !== false &&
+                (newNode.options.minItems || 0) <= newNode.items.length,
+            },
+            dataPointer: newNode.dataPointer + '/-',
+            type: 'fieldset',
+            widget: widgetLibrary.getWidget('fieldset'),
+          };
         } else {
           // TODO: Fix to hndle multiple items
           newNode.items[0].arrayItem = true;
@@ -340,6 +343,9 @@ export function buildLayout(jsf, widgetLibrary) {
           }
           newNode.items[0].arrayItemType =
             newNode.options.tupleItems ? 'tuple' : 'list';
+          
+          additionalItems = newNode.items[0];
+          newNode.items = [];
         }
 
         if (isArray(newNode.items)) {
@@ -354,7 +360,7 @@ export function buildLayout(jsf, widgetLibrary) {
 
         if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
           jsf.layoutRefLibrary[itemRefPointer] =
-            cloneDeep(newNode.items[newNode.items.length - 1]);
+            cloneDeep(additionalItems || newNode.items[newNode.items.length - 1]);
           if (recursive) {
             jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
           }
@@ -370,10 +376,7 @@ export function buildLayout(jsf, widgetLibrary) {
 
         // Add any additional default items
         if (!newNode.recursiveReference || newNode.options.required) {
-          const arrayLength = Math.min(Math.max(
-            newNode.options.tupleItems + newNode.options.listItems,
-            isArray(nodeValue) ? nodeValue.length : 0
-          ), newNode.options.maxItems);
+          const arrayLength = 0;
           for (let i = newNode.items.length; i < arrayLength; i++) {
             newNode.items.push(getLayoutNode({
               $ref: itemRefPointer,
@@ -455,6 +458,7 @@ export function buildLayout(jsf, widgetLibrary) {
     if (newNode.type === 'submit') { hasSubmitButton = true; }
     return newNode;
   });
+  repairLayoutData(jsf, widgetLibrary, formLayout);
   if (jsf.hasRootReference) {
     const fullLayout = cloneDeep(formLayout);
     if (fullLayout[fullLayout.length - 1].type === 'submit') { fullLayout.pop(); }
@@ -480,6 +484,57 @@ export function buildLayout(jsf, widgetLibrary) {
     });
   }
   return formLayout;
+}
+
+function repairLayoutData(jsf, widgetLibrary, layoutItem, dataIndex?) {
+
+  let nodeValue;
+  let newDataIndex = dataIndex ? [...dataIndex] : [];
+  let path;
+  if (layoutItem) {
+    for (let i = 0; i < layoutItem.length; i++) {
+      if (layoutItem[i].items) {
+        if (layoutItem[i].arrayItem) { // If item is arrayItem, add to dataIndex
+          newDataIndex = dataIndex ? [...dataIndex, i] : [i];
+        }
+        if (layoutItem[i].type === 'array') { // If item is array, get data for the array
+          path = layoutItem[i].dataPointer;
+          if (dataIndex) {
+            for (let j = 0; j < dataIndex.length; j++) {
+              path = path.replace('-', dataIndex[j]);
+            }
+          }
+          nodeValue = JsonPointer.get(jsf.formValues, path); // Get value for array
+        }
+        if (layoutItem[i].options.minItems > 0) { // Add Items if there's a minimum
+          for (let k = 0; k < layoutItem[i].options.minItems; k++) {
+            layoutItem[i].items.unshift(getLayoutNode({
+              $ref: layoutItem[i].dataPointer + '/-',
+              dataPointer: layoutItem[i].dataPointer + '/-',
+              recursiveReference: layoutItem[i].recursiveReference,
+            }, jsf, widgetLibrary));
+          }
+        }
+
+        if ((Array.isArray(nodeValue) && nodeValue.length > 0)) { // Add necessary items to array item
+          for (let k = layoutItem[i].options.minItems; k < nodeValue.length; k++) {
+            if (k < layoutItem[i].options.maxItems) {
+              layoutItem[i].items.unshift(getLayoutNode({
+                $ref: layoutItem[i].dataPointer + '/-',
+                dataPointer: layoutItem[i].dataPointer + '/-',
+                recursiveReference: layoutItem[i].recursiveReference,
+              }, jsf, widgetLibrary));
+            }
+          }
+        }
+        if (layoutItem[i]) {
+          // Loop through new children for any new arrays in them
+          layoutItem[i].items = repairLayoutData(jsf, widgetLibrary, layoutItem[i].items, newDataIndex);
+        }
+      }
+    }
+  }
+  return layoutItem;
 }
 
 /**
