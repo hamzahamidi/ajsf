@@ -16,6 +16,7 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
     <textarea
       *ngIf="boundControl"
       textareaAutoresize
+      spellcheck="true"
       [formControl]="formControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [attr.maxlength]="options?.maxLength"

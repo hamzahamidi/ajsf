@@ -538,6 +538,7 @@ export class JsonSchemaFormService {
     }
     const addSpaces = (string) =>
       string[0].toUpperCase() + (string.slice(1) || "").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+
     const formatError = (error) =>
       typeof error === "object"
         ? Object.keys(error)
