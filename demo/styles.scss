@@ -2,71 +2,100 @@
 @use '@angular/material' as mat;
 @include mat.core();
 $demo-app-primary: mat.define-palette(mat.$blue-palette);
-$demo-app-accent:  mat.define-palette(mat.$amber-palette, A200, A100, A400);
-$demo-app-warn:    mat.define-palette(mat.$red-palette);
-$demo-app-theme:   mat.define-light-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
+$demo-app-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$demo-app-warn: mat.define-palette(mat.$red-palette);
+$demo-app-theme: mat.define-light-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
 @include mat.all-component-themes($demo-app-theme);
-
-$font-family: 'Roboto', 'Noto', 'Helvetica Neue', sans-serif;
+$font-family: 'Roboto',
+'Noto',
+'Helvetica Neue',
+sans-serif;
 $row-height: 56px;
-
 mat-toolbar {
-  &.mat-medium {
-    min-height: $row-height;
-    mat-toolbar-row { height: $row-height; }
-  }
+    &.mat-medium {
+        min-height: $row-height;
+        mat-toolbar-row {
+            height: $row-height;
+        }
+    }
 }
 
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(250, 250, 250) !important;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  font-family: $font-family;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: rgb(250, 250, 250) !important;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    font-family: $font-family;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .demo-page-header {
-  background-color: mat.get-color-from-palette($demo-app-primary, lighter);
-  margin-bottom: 12px;
-  .header-content {
-    font-family: $font-family;
-    line-height: 1.4em;
-    padding: 12px;
-    .menu-label {
-      margin-right: 12px;
-      font-weight: bold;
+    background-color: mat.get-color-from-palette($demo-app-primary, lighter);
+    margin-bottom: 12px;
+    .header-content {
+        font-family: $font-family;
+        line-height: 1.4em;
+        padding: 12px;
+        .menu-label {
+            margin-right: 12px;
+            font-weight: bold;
+        }
     }
-  }
 }
 
-.ace_active-line { background: none !important; }
-
-[ace-editor], .data-good, .data-bad {
-  border-radius: 3px;
-  padding: 6px;
-  border: 1px solid #ccc !important;
+.ace_active-line {
+    background: none !important;
 }
 
-[ace-editor] { background-color: rgb(253, 253, 253) !important; }
+[ace-editor],
+.data-good,
+.data-bad {
+    border-radius: 3px;
+    padding: 6px;
+    border: 1px solid #ccc !important;
+}
 
-.avoidwrap { display:inline-block; }
+[ace-editor] {
+    background-color: rgb(253, 253, 253) !important;
+}
 
-.data-good { background-color: #dfd; }
+.avoidwrap {
+    display: inline-block;
+}
 
-.data-bad { background-color: #fcc; }
+.data-good {
+    background-color: #dfd;
+}
 
-.default-cursor:hover { cursor: default; }
+.data-bad {
+    background-color: #fcc;
+}
 
-.check-row { margin-top: 8px; }
+.default-cursor:hover {
+    cursor: default;
+}
 
-.cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel { max-width: 560px; }
+.check-row {
+    margin-top: 8px;
+}
 
-.debug { border: 1px solid red !important; }
+.cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel {
+    max-width: 560px;
+}
+
+.debug {
+    border: 1px solid red !important;
+}
+
 
 /* TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*/
-.mat-input-container.mat-mdc-form-field { width: 100%; }
+
+.mat-input-container.mat-mdc-form-field {
+    width: 100%;
+}
+
+@import '../projects/ajsf-material/assets/styles.scss'
