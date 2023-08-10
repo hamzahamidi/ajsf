@@ -1,6 +1,6 @@
-import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -27,9 +27,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [style.justify-content]="getFlexAttribute('justify-content')"
         [style.align-items]="getFlexAttribute('align-items')"
         [style.align-content]="getFlexAttribute('align-content')"
-        [fxLayout]="getFlexAttribute('layout')"
-        [fxLayoutGap]="options?.fxLayoutGap"
-        [fxLayoutAlign]="options?.fxLayoutAlign"
+        [attr.fxLayout]="getFlexAttribute('layout')"
+        [attr.fxLayoutGap]="options?.fxLayoutGap"
+        [attr.fxLayoutAlign]="options?.fxLayoutAlign"
         [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
@@ -57,10 +57,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [style.justify-content]="getFlexAttribute('justify-content')"
         [style.align-items]="getFlexAttribute('align-items')"
         [style.align-content]="getFlexAttribute('align-content')"
-        [fxLayout]="getFlexAttribute('layout')"
-        [fxLayoutGap]="options?.fxLayoutGap"
-        [fxLayoutAlign]="options?.fxLayoutAlign"
-        [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
+        [attr.fxLayout]="getFlexAttribute('layout')"
+        [attr.fxLayoutGap]="options?.fxLayoutGap"
+        [attr.fxLayoutAlign]="options?.fxLayoutAlign"
+        [attr.attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
     </fieldset>
@@ -90,9 +90,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
             [style.justify-content]="getFlexAttribute('justify-content')"
             [style.align-items]="getFlexAttribute('align-items')"
             [style.align-content]="getFlexAttribute('align-content')"
-            [fxLayout]="getFlexAttribute('layout')"
-            [fxLayoutGap]="options?.fxLayoutGap"
-            [fxLayoutAlign]="options?.fxLayoutAlign"
+            [attr.fxLayout]="getFlexAttribute('layout')"
+            [attr.fxLayoutGap]="options?.fxLayoutGap"
+            [attr.fxLayoutAlign]="options?.fxLayoutAlign"
             [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
           </fieldset>
       </mat-card-content>
@@ -127,9 +127,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [style.justify-content]="getFlexAttribute('justify-content')"
           [style.align-items]="getFlexAttribute('align-items')"
           [style.align-content]="getFlexAttribute('align-content')"
-          [fxLayout]="getFlexAttribute('layout')"
-          [fxLayoutGap]="options?.fxLayoutGap"
-          [fxLayoutAlign]="options?.fxLayoutAlign"
+          [attr.fxLayout]="getFlexAttribute('layout')"
+          [attr.fxLayoutGap]="options?.fxLayoutGap"
+          [attr.fxLayoutAlign]="options?.fxLayoutAlign"
           [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
       </fieldset>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
