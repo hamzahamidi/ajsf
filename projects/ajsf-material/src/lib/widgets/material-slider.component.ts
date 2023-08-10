@@ -14,7 +14,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [min]="options?.minimum"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
-      (blur)="options.showErrors = true"></mat-slider>
+      (blur)="options.showErrors = true"><input matSliderThumb /></mat-slider>
     <mat-slider thumbLabel *ngIf="!boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [disabled]="controlDisabled || options?.readonly"
@@ -23,9 +23,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [min]="options?.minimum"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
-      [value]="controlValue"
-      (blur)="options.showErrors = true"
-      (change)="updateValue($event)"></mat-slider>
+      (blur)="options.showErrors = true" #ngSlider><input matSliderThumb [value]="controlValue" (change)="updateValue({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value})" #ngSliderThumb="matSliderThumb" /></mat-slider>
     <mat-error *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></mat-error>`,
     styles: [` mat-error { font-size: 75%; } `],

@@ -65,7 +65,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [innerHTML]="options?.errorMessage"></mat-error>
     </fieldset>
 
-    <mat-card *ngIf="containerType === 'card'"
+    <mat-card appearance="outlined" *ngIf="containerType === 'card'"
       [ngClass]="options?.htmlClass || ''"
       [class.expandable]="options?.expandable && !expanded"
       [class.expanded]="options?.expandable && expanded">
