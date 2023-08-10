@@ -1,6 +1,6 @@
-import { AbstractControl } from '@angular/forms';
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
+import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
@@ -8,7 +8,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
   selector: 'material-select-widget',
   template: `
     <mat-form-field
-      [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
+      [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'fill'"
       [class]="options?.htmlClass || ''"
       [floatLabel]="options?.floatLabel || matFormFieldDefaultOptions?.floatLabel || (options?.notitle ? 'never' : 'auto')"
       [hideRequiredMarker]="options?.hideRequired ? 'true' : 'false'"

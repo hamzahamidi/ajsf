@@ -1,13 +1,13 @@
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
-import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '@ajsf/core';
+import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'material-number-widget',
   template: `
-    <mat-form-field [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
+    <mat-form-field [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'fill'"
     [class]="options?.htmlClass || ''"
     [floatLabel]="options?.floatLabel || matFormFieldDefaultOptions?.floatLabel || (options?.notitle ? 'never' : 'auto')"
     [hideRequiredMarker]="options?.hideRequired ? 'true' : 'false'"
