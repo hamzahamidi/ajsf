@@ -1,6 +1,6 @@
 {
     "name": "demo",
-    "version": "15.0.0",
+    "version": "15.7.0",
     "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
     "description": "Angular JSON Schema Form builder Demo",
     "engines": {
@@ -36,7 +36,10 @@
         "ng13",
         "Angular14",
         "Angular 14",
+        "Angular15",
+        "Angular 15",
         "ng14",
+        "ng15",
         "JSON Schema",
         "form",
         "forms",
