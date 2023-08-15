@@ -1,21 +1,23 @@
-import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'material-slider-widget',
   template: `
-    <mat-slider thumbLabel *ngIf="boundControl"
-      [formControl]="formControl"
+    <mat-slider discrete *ngIf="boundControl"
+      
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [id]="'control' + layoutNode?._id"
       [max]="options?.maximum"
       [min]="options?.minimum"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
-      (blur)="options.showErrors = true"></mat-slider>
-    <mat-slider thumbLabel *ngIf="!boundControl"
+      (blur)="options.showErrors = true">
+        <input matSliderThumb [formControl]="formControl" />
+      </mat-slider>
+    <mat-slider discrete *ngIf="!boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [disabled]="controlDisabled || options?.readonly"
       [id]="'control' + layoutNode?._id"
@@ -23,9 +25,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [min]="options?.minimum"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
-      [value]="controlValue"
-      (blur)="options.showErrors = true"
-      (change)="updateValue($event)"></mat-slider>
+      (blur)="options.showErrors = true" #ngSlider>
+        <input matSliderThumb [value]="controlValue" 
+        (change)="updateValue({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value})"
+        #ngSliderThumb="matSliderThumb" />
+    </mat-slider>
     <mat-error *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></mat-error>`,
     styles: [` mat-error { font-size: 75%; } `],

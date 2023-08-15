@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 
 @Component({
@@ -13,10 +13,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [style.flex-basis]="getFlexAttribute(layoutNode, 'flex-basis')"
       [style.align-self]="(layoutNode?.options || {})['align-self']"
       [style.order]="layoutNode?.options?.order"
-      [fxFlex]="layoutNode?.options?.fxFlex"
-      [fxFlexOrder]="layoutNode?.options?.fxFlexOrder"
-      [fxFlexOffset]="layoutNode?.options?.fxFlexOffset"
-      [fxFlexAlign]="layoutNode?.options?.fxFlexAlign">
+      [attr.fxFlex]="layoutNode?.options?.fxFlex"
+      [attr.fxFlexOrder]="layoutNode?.options?.fxFlexOrder"
+      [attr.fxFlexOffset]="layoutNode?.options?.fxFlexOffset"
+      [attr.fxFlexAlign]="layoutNode?.options?.fxFlexAlign">
       <select-framework-widget *ngIf="showWidget(layoutNode)"
         [dataIndex]="layoutNode?.arrayItem ? (dataIndex || []).concat(i) : (dataIndex || [])"
         [layoutIndex]="(layoutIndex || []).concat(i)"
