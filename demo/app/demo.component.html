@@ -69,7 +69,7 @@
 <div fxLayout="row" fxLayoutAlign="space-around start"
   fxLayout.lt-sm="column" fxLayoutAlign.lt-sm="flex-start center">
 
-  <mat-card fxFlex="0 0 calc(50% - 12px)">
+  <mat-card appearance="outlined" fxFlex="0 0 calc(50% - 12px)">
     <h4 class="default-cursor" (click)="toggleVisible('options')">
       {{visible.options ? '▼' : '▶'}} Selected Framework and Options
     </h4>
@@ -140,7 +140,7 @@
     </div>
   </mat-card>
 
-  <mat-card fxFlex="0 0 calc(50% - 12px)">
+  <mat-card appearance="outlined" fxFlex="0 0 calc(50% - 12px)">
     <h4 class="default-cursor" (click)="toggleVisible('form')">
       {{visible.form ? '▼' : '▶'}} Generated Form
     </h4>

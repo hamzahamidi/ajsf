@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'material-tabs-widget',
   template: `
-    <nav mat-tab-nav-bar
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel"
       [attr.aria-label]="options?.label || options?.title || ''"
       [style.width]="'100%'">
         <a mat-tab-link *ngFor="let item of layoutNode?.items; let i = index"
@@ -15,14 +15,17 @@ import { JsonSchemaFormService } from '@ajsf/core';
             [innerHTML]="setTabTitle(item, i)"></span>
         </a>
     </nav>
-    <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
-      [class]="options?.htmlClass || ''">
-      <select-framework-widget *ngIf="selectedItem === i"
-        [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
-        [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-        [layoutIndex]="(layoutIndex || []).concat(i)"
-        [layoutNode]="layoutItem"></select-framework-widget>
-    </div>`,
+    <mat-tab-nav-panel #tabPanel>
+      <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
+        [class]="options?.htmlClass || ''">
+        <select-framework-widget *ngIf="selectedItem === i"
+          [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
+          [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+          [layoutIndex]="(layoutIndex || []).concat(i)"
+          [layoutNode]="layoutItem"></select-framework-widget>
+      </div>
+    </mat-tab-nav-panel>
+`,
   styles: [` a { cursor: pointer; } `],
 })
 export class MaterialTabsComponent implements OnInit {

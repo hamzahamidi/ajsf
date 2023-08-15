@@ -16,9 +16,12 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
-import { forEach, hasOwn } from './shared/utility.functions';
 import { FrameworkLibraryService } from './framework-library/framework-library.service';
+import { JsonSchemaFormService } from './json-schema-form.service';
+import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
+import { resolveSchemaReferences } from './shared/json-schema.functions';
+import { JsonPointer } from './shared/jsonpointer.functions';
+import { forEach, hasOwn } from './shared/utility.functions';
 import {
   hasValue,
   inArray,
@@ -26,9 +29,6 @@ import {
   isEmpty,
   isObject
 } from './shared/validator.functions';
-import { JsonPointer } from './shared/jsonpointer.functions';
-import { JsonSchemaFormService } from './json-schema-form.service';
-import { resolveSchemaReferences } from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
 
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
@@ -220,6 +220,8 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     this.onTouched = fn;
   }
 
+  //see note
+  //https://angular.io/guide/update-to-version-15#v15-bc-06
   setDisabledState(isDisabled: boolean) {
     if (this.jsf.formOptions.formDisabled !== !!isDisabled) {
       this.jsf.formOptions.formDisabled = !!isDisabled;
