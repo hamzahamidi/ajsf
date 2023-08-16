@@ -1,11 +1,13 @@
 # AJSF (Angular JSON Schema Form)
+This fork was created for anyone needing to use angular 15+ in there project until 
+[hamzahamidi/ajsf](https://github.com/hamzahamidi/ajsf) is updated for angular 15+.
 
-**N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
+**N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/zahmo/ajsf/tree/angular6-json-schema-form).
 
 <p align="center">
-  <a href="https://github.com/hamzahamidi/ajsf/actions?query=workflow%3ACI+branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/workflows/CI/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/zahmo/ajsf/actions?query=workflow%3ACI+branch%3Amain"><img src="https://github.com/zahmo/ajsf/workflows/CI/badge.svg" alt="CI Status"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
-  <a href="https://github.com/hamzahamidi/ajsf/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="LICENSE IMT"></a>
+  <a href="https://github.com/zahmo/ajsf/blob/master/LICENSE"><img src="https://img.shields.io/github/license/zahmo/ajsf.svg?style=social" alt="LICENSE IMT"></a>
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
 </p>
 
@@ -26,7 +28,7 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 
 ## Check out the live demo and play with the examples
 
-[Check out some examples here.](https://hamidihamza.com/ajsf)
+[Check out some examples here.](https://zahmo.github.io/ajsf/)
 
 This example playground features over 70 different JSON Schemas for you to try (including all examples used by each of the three libraries listed above), and the ability to quickly view any example formatted with Material Design, Bootstrap 3, Bootstrap 4, or without any formatting.
 
@@ -78,10 +80,10 @@ It is also possible to load multiple frameworks and switch between them at runti
 
 ### To install from GitHub
 
-To install [the library and the example playground from GitHub](https://github.com/hamzahamidi/ajsf), clone `https://github.com/hamzahamidi/ajsf.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
+To install [the library and the example playground from GitHub](https://github.com/zahmo/ajsf), clone `https://github.com/zahmo/ajsf.git` with your favorite git program. Or, assuming you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Node/YARN](https://nodejs.org/en/download/) installed, enter the following in your terminal:
 
 ```shell
-git clone https://github.com/hamzahamidi/ajsf.git ajsf
+git clone https://github.com/zahmo/ajsf.git ajsf
 cd ajsf
 yarn install
 yarn start
