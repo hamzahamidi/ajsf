@@ -19,7 +19,7 @@ jobs:
     - name: version core
       uses: nyaa8/package-version@v1
       with:
-       path: 'zahmo/ajsf/projects/ajsf-core/package.json'  
+       path: './dist/@ajsf/core/package.json'  
     
     - name: dist core
       uses: s0/git-publish-subdir-action@develop
