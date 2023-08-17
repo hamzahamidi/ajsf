@@ -37,7 +37,7 @@ jobs:
       env:
         REPO: self
         BRANCH: dist_bootstrap4
-        FOLDER: ./dist/@ajsf/bootstrap3
+        FOLDER: ./dist/@ajsf/bootstrap4
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: dist material
