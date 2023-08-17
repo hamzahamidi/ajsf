@@ -15,11 +15,39 @@ jobs:
       uses: actions/setup-node@v3
     - run: npm ci
     - run: npm run build:libs
-
-    - name: dist
+    
+    - name: dist core
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
-        BRANCH: dist
-        FOLDER: ./dist
+        BRANCH: dist_core
+        FOLDER: ./dist/@ajsf/core
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+    - name: dist bootstrap3
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_bootstrap3
+        FOLDER: ./dist/@ajsf/bootstrap3
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   
+    - name: dist_bootstrap4
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_bootstrap4
+        FOLDER: ./dist/@ajsf/bootstrap3
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: dist material
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_material
+        FOLDER: ./dist/@ajsf/material
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   
+
+        
+        
