@@ -1,0 +1,25 @@
+name: createDist
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: setup Node
+      uses: actions/setup-node@v3
+    - run: npm ci
+    - run: npm run build:libs
+
+    - name: dist
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist
+        FOLDER: ./dist
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
