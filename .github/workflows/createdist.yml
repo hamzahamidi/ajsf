@@ -1,6 +1,10 @@
 #workflow creates a dist branch for each library, based on its package version
+#should create the following 2 dist branches per lib project
+#for example the material library project with package version x.x.x will create branches: 
+#dist_material
+#dist_material_vx.x.x
 
-name: createDist
+name: CreateDist
 
 on:
   push:
@@ -23,7 +27,7 @@ jobs:
       with:
        path: './dist/@ajsf/core/package.json'  
     
-    - name: dist core
+    - name: dist core versioned
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
@@ -31,32 +35,56 @@ jobs:
         FOLDER: ./dist/@ajsf/core
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: dist core
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_core
+        FOLDER: ./dist/@ajsf/core
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
+
     - name: version bootstrap3
       uses: nyaa8/package-version@v1
       with:
        path: './dist/@ajsf/bootstrap3/package.json'    
   
-    - name: dist bootstrap3
+    - name: dist bootstrap3 versioned
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: dist_bootstrap3_v${{ env.PACKAGE_VERSION }}
         FOLDER: ./dist/@ajsf/bootstrap3
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   
+        
+    - name: dist bootstrap3
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_bootstrap3_v
+        FOLDER: ./dist/@ajsf/bootstrap3
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
 
     - name: version bootstrap4
       uses: nyaa8/package-version@v1
       with:
        path: './dist/@ajsf/bootstrap4/package.json'          
+
    
-    - name: dist_bootstrap4
+    - name: dist_bootstrap4 versioned
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: dist_bootstrap4_v${{ env.PACKAGE_VERSION }}
         FOLDER: ./dist/@ajsf/bootstrap4
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: dist_bootstrap4
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_bootstrap4_v$
+        FOLDER: ./dist/@ajsf/bootstrap4
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
         
 
     - name: version material
@@ -64,11 +92,19 @@ jobs:
       with:
        path: './dist/@ajsf/material/package.json'  
 
-    - name: dist material
+    - name: dist material versioned
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: dist_material_v${{ env.PACKAGE_VERSION }}
+        FOLDER: ./dist/@ajsf/material
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: dist material
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: dist_material
         FOLDER: ./dist/@ajsf/material
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
    
