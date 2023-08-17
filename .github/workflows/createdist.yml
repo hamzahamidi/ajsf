@@ -1,3 +1,5 @@
+#workflow creates a dist branch for each library, based on its package version
+
 name: createDist
 
 on:
