@@ -35,7 +35,7 @@ jobs:
     - name: version bootstrap4
       uses: nyaa8/package-version@v1
       with:
-       path: 'ajsf/projects/material/package.json'         
+       path: 'ajsf/projects/ajsf-material/package.json'         
    
     - name: dist_bootstrap4
       uses: s0/git-publish-subdir-action@develop
@@ -48,7 +48,7 @@ jobs:
     - name: version material
       uses: nyaa8/package-version@v1
       with:
-       path: 'ajsf/projects/material/package.json' 
+       path: 'ajsf/projects/ajsf-material/package.json' 
 
     - name: dist material
       uses: s0/git-publish-subdir-action@develop
