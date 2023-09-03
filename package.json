@@ -55,12 +55,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/hamzahamidi/angular6-json-schema-form"
+        "url": "git+https://github.com/zahmo/zajsf"
     },
     "bugs": {
-        "url": "https://github.com/hamzahamidi/angular6-json-schema-form/issues"
+        "url": "https://github.com/zahmo/zajsf"
     },
-    "homepage": "https://github.com/hamzahamidi/Angular6-json-schema-form#readme",
+    "homepage": "https://github.com/zahmo/zajsf#readme",
     "scripts": {
         "ng": "ng",
         "prestart": "npm run build:libs",
