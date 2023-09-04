@@ -28,29 +28,29 @@
       "lodash/*": [
         "node_modules/@types/lodash-es/*"
       ],
-      "@ajsf/core": [
-        "dist/@ajsf/core"
+      "@zajsf/core": [
+        "dist/@zajsf/core"
       ],
-      "@ajsf/core/*": [
-        "dist/@ajsf/core/*"
+      "@zajsf/core/*": [
+        "dist/@zajsf/core/*"
       ],
-      "@ajsf/bootstrap3": [
-        "dist/@ajsf/bootstrap3"
+      "@zajsf/bootstrap3": [
+        "dist/@zajsf/bootstrap3"
       ],
-      "@ajsf/bootstrap3/*": [
-        "dist/@ajsf/bootstrap3/*"
+      "@zajsf/bootstrap3/*": [
+        "dist/@zajsf/bootstrap3/*"
       ],
-      "@ajsf/bootstrap4": [
-        "dist/@ajsf/bootstrap4"
+      "@zajsf/bootstrap4": [
+        "dist/@zajsf/bootstrap4"
       ],
-      "@ajsf/bootstrap4/*": [
-        "dist/@ajsf/bootstrap4/*"
+      "@zajsf/bootstrap4/*": [
+        "dist/@zajsf/bootstrap4/*"
       ],
-      "@ajsf/material": [
-        "dist/@ajsf/material"
+      "@zajsf/material": [
+        "dist/@zajsf/material"
       ],
-      "@ajsf/material/*": [
-        "dist/@ajsf/material/*"
+      "@zajsf/material/*": [
+        "dist/@zajsf/material/*"
       ]
     },
     "useDefineForClassFields": false

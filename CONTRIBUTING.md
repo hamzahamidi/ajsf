@@ -1,15 +1,15 @@
-# Contributing to ajsf
+# Contributing to zajsf
 
-ajsf is an open project and welcomes contributions. These guidelines are provided to help you understand how the project works and to make contributing smooth and fun for everybody involved.
+zajsf is an open project and welcomes contributions. These guidelines are provided to help you understand how the project works and to make contributing smooth and fun for everybody involved.
 
 There are two main forms of contribution: reporting issues and performing code changes.
 
 ## Reporting Issues
 
-If you find a problem with ajsf, report it using [GitHub issues](https://github.com/hamzahamidi/ajsf/issues/new).
+If you find a problem with zajsf, report it using [GitHub issues](https://github.com/zahmo/zajsf/issues/new).
 
 Before reporting a new issue, please take a moment to check whether it has already been reported
-[here](https://github.com/hamzahamidi/ajsf/issues). If this is the case, please:
+[here](https://github.com/zahmo/zajsf/issues). If this is the case, please:
 
 - Read all the comments to confirm that it's the same issue you're having.
 - Refrain from adding "same thing here" or "+1" comments. Just hit the
@@ -43,7 +43,7 @@ To send your code change, use GitHub pull requests. The workflow is as follows:
 
   1. Publish the branch and create a pull request.
 
-  1. ajsf developers will review your change and possibly point out issues.
+  1. zajsf developers will review your change and possibly point out issues.
      Adapt the code under their guidance until all issues are resolved.
 
   1. Finally, the pull request will get merged or rejected.
@@ -58,15 +58,15 @@ requests.
 Let's first generate all the bundles we need to start the demo:
 
 ```bash
-$ cd ajsf
+$ cd zajsf
 $ yarn install or npm install
 $ yarn start
 ```
 
 You can stop the demo application.
 The tricky part now is to run concurrently both the demo application & the library in watch mode.
-So, first choose which library you want to change then run `$ ng build @ajsf/core --watch` for example
-to build in watch mode the `@ajsf/core`.
+So, first choose which library you want to change then run `$ ng build @zajsf/core --watch` for example
+to build in watch mode the `@zajsf/core`.
 Now let's start the demo application in watch mode too. So, open a new terminal and run `$ ng serve` and there you go.
 This method is tricky but it works perfectly in all environments (I tried other methods like npm-run-all
 or concurrently packages but angular-cli build doesn't restart after a failed build).
@@ -128,10 +128,10 @@ The scope should be the name of the npm package affected (as perceived by the pe
 
 The following is the list of supported scopes:
 
-* **ajsf/core**
-* **ajsf/bs3**
-* **ajsf/bs4**
-* **ajsf/material**
+* **zajsf/core**
+* **zajsf/bs3**
+* **zajsf/bs4**
+* **zajsf/material**
 * **locales**
 * **demo**
 * ...

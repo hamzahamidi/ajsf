@@ -108,115 +108,115 @@
                 }
             }
         },
-        "@ajsf/core": {
-            "root": "projects/ajsf-core",
-            "sourceRoot": "projects/ajsf-core/src",
+        "@zajsf/core": {
+            "root": "projects/zajsf-core",
+            "sourceRoot": "projects/zajsf-core/src",
             "projectType": "library",
             "prefix": "",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:ng-packagr",
                     "options": {
-                        "tsConfig": "projects/ajsf-core/tsconfig.lib.json",
-                        "project": "projects/ajsf-core/ng-package.json"
+                        "tsConfig": "projects/zajsf-core/tsconfig.lib.json",
+                        "project": "projects/zajsf-core/ng-package.json"
                     },
                     "configurations": {
                         "production": {
-                            "tsConfig": "projects/ajsf-core/tsconfig.lib.prod.json"
+                            "tsConfig": "projects/zajsf-core/tsconfig.lib.prod.json"
                         }
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/ajsf-core/src/test.ts",
-                        "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
-                        "karmaConfig": "projects/ajsf-core/karma.conf.js"
+                        "main": "projects/zajsf-core/src/test.ts",
+                        "tsConfig": "projects/zajsf-core/tsconfig.spec.json",
+                        "karmaConfig": "projects/zajsf-core/karma.conf.js"
                     }
                 }
             }
         },
-        "@ajsf/bootstrap4": {
+        "@zajsf/bootstrap4": {
             "projectType": "library",
-            "root": "projects/ajsf-bootstrap4",
-            "sourceRoot": "projects/ajsf-bootstrap4/src",
+            "root": "projects/zajsf-bootstrap4",
+            "sourceRoot": "projects/zajsf-bootstrap4/src",
             "prefix": "",
             "architect": {
 
                 "build": {
                     "builder": "@angular-devkit/build-angular:ng-packagr",
                     "options": {
-                        "tsConfig": "projects/ajsf-bootstrap4/tsconfig.lib.json",
-                        "project": "projects/ajsf-bootstrap4/ng-package.json"
+                        "tsConfig": "projects/zajsf-bootstrap4/tsconfig.lib.json",
+                        "project": "projects/zajsf-bootstrap4/ng-package.json"
                     },
                     "configurations": {
                         "production": {
-                            "tsConfig": "projects/ajsf-bootstrap4/tsconfig.lib.prod.json"
+                            "tsConfig": "projects/zajsf-bootstrap4/tsconfig.lib.prod.json"
                         }
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/ajsf-bootstrap4/src/test.ts",
-                        "tsConfig": "projects/ajsf-bootstrap4/tsconfig.spec.json",
-                        "karmaConfig": "projects/ajsf-bootstrap4/karma.conf.js"
+                        "main": "projects/zajsf-bootstrap4/src/test.ts",
+                        "tsConfig": "projects/zajsf-bootstrap4/tsconfig.spec.json",
+                        "karmaConfig": "projects/zajsf-bootstrap4/karma.conf.js"
                     }
                 }
             }
         },
-        "@ajsf/bootstrap3": {
+        "@zajsf/bootstrap3": {
             "projectType": "library",
-            "root": "projects/ajsf-bootstrap3",
-            "sourceRoot": "projects/ajsf-bootstrap3/src",
+            "root": "projects/zajsf-bootstrap3",
+            "sourceRoot": "projects/zajsf-bootstrap3/src",
             "prefix": "",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:ng-packagr",
                     "options": {
-                        "tsConfig": "projects/ajsf-bootstrap3/tsconfig.lib.json",
-                        "project": "projects/ajsf-bootstrap3/ng-package.json"
+                        "tsConfig": "projects/zajsf-bootstrap3/tsconfig.lib.json",
+                        "project": "projects/zajsf-bootstrap3/ng-package.json"
                     },
                     "configurations": {
                         "production": {
-                            "tsConfig": "projects/ajsf-bootstrap3/tsconfig.lib.prod.json"
+                            "tsConfig": "projects/zajsf-bootstrap3/tsconfig.lib.prod.json"
                         }
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/ajsf-bootstrap3/src/test.ts",
-                        "tsConfig": "projects/ajsf-bootstrap3/tsconfig.spec.json",
-                        "karmaConfig": "projects/ajsf-bootstrap3/karma.conf.js"
+                        "main": "projects/zajsf-bootstrap3/src/test.ts",
+                        "tsConfig": "projects/zajsf-bootstrap3/tsconfig.spec.json",
+                        "karmaConfig": "projects/zajsf-bootstrap3/karma.conf.js"
                     }
                 }
             }
         },
-        "@ajsf/material": {
+        "@zajsf/material": {
             "projectType": "library",
-            "root": "projects/ajsf-material",
-            "sourceRoot": "projects/ajsf-material/src",
+            "root": "projects/zajsf-material",
+            "sourceRoot": "projects/zajsf-material/src",
             "prefix": "",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:ng-packagr",
                     "options": {
-                        "tsConfig": "projects/ajsf-material/tsconfig.lib.json",
-                        "project": "projects/ajsf-material/ng-package.json"
+                        "tsConfig": "projects/zajsf-material/tsconfig.lib.json",
+                        "project": "projects/zajsf-material/ng-package.json"
                     },
                     "configurations": {
                         "production": {
-                            "tsConfig": "projects/ajsf-material/tsconfig.lib.prod.json"
+                            "tsConfig": "projects/zajsf-material/tsconfig.lib.prod.json"
                         }
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/ajsf-material/src/test.ts",
-                        "tsConfig": "projects/ajsf-material/tsconfig.spec.json",
-                        "karmaConfig": "projects/ajsf-material/karma.conf.js"
+                        "main": "projects/zajsf-material/src/test.ts",
+                        "tsConfig": "projects/zajsf-material/tsconfig.spec.json",
+                        "karmaConfig": "projects/zajsf-material/karma.conf.js"
                     }
                 }
             }

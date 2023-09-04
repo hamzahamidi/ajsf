@@ -1,11 +1,11 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 
+import { JsonPointer } from '@zajsf/core';
 import { Examples } from './example-schemas.model';
-import { JsonPointer } from '@ajsf/core';
 
 @Component({
   // tslint:disable-next-line:component-selector

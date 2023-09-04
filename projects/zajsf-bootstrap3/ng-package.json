@@ -1,0 +1,11 @@
+{
+    "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+    "dest": "../../dist/@zajsf/bootstrap3",
+    "lib": {
+        "entryFile": "src/public_api.ts"
+    },
+    "allowedNonPeerDependencies": [
+        "lodash-es",
+        "@zajsf/core"
+    ]
+}

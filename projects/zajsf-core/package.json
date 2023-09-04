@@ -1,0 +1,45 @@
+{
+    "name": "@zajsf/core",
+    "version": "0.8.0",
+    "description": "Angular JSON Schema Form builder core",
+    "author": "https://github.com/zahmo/zajsf/graphs/contributors",
+    "keywords": [
+        "Angular",
+        "ng",
+        "Angular14",
+        "Angular 14",
+        "Angular15",
+        "Angular 15",
+        "ng14",
+        "JSON Schema",
+        "form",
+        "forms",
+        "form builder",
+        "ajsf",
+        "angular json schema form"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zahmo/zajsf"
+    },
+    "bugs": {
+        "url": "https://github.com/zahmo/zajsf/issues"
+    },
+    "private": false,
+    "dependencies": {
+        "lodash-es": "~4.17.21",
+        "ajv": "^6.10.0",
+        "tslib": "^2.0.0"
+    },
+    "peerDependencies": {
+        "@angular/common": ">=15.0.0",
+        "@angular/core": ">=15.0.0",
+        "@angular/forms": ">=15.0.0",
+        "@angular/platform-browser": ">=15.0.0",
+        "rxjs": "^7.0.0"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.6"
+    }
+}
