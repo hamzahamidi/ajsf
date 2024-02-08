@@ -10,7 +10,7 @@ import {
   isNotExpression,
 } from "./utility.functions";
 import { isDefined, isEmpty, isMap, isNumber, isObject, isString } from "./validator.functions";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 
 /**
  * 'JsonPointer' class
@@ -870,7 +870,7 @@ export class JsonPointer {
    * //  { boolean = false } controlMustExist - Only return if control exists?
    * // { Pointer } - JSON Pointer (string) to the formGroup object
    */
-  static toControlPointer(dataPointer: Pointer, formGroup: FormGroup, controlMustExist: boolean = false) {
+  static toControlPointer(dataPointer: Pointer, formGroup: UntypedFormGroup, controlMustExist: boolean = false) {
     const dataPointerArray = this.parse(dataPointer);
     const controlPointerArray: string[] = [];
     let subGroup: any = formGroup;
