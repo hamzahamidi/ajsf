@@ -26,7 +26,6 @@ import { MaterialDesignFrameworkModule } from "@ajsf/material";
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    FlexLayoutModule,
     FormsModule,
     HttpClientModule,
     MatButtonModule,
@@ -36,7 +35,7 @@ import { MaterialDesignFrameworkModule } from "@ajsf/material";
     MatMenuModule,
     MatSelectModule,
     MatToolbarModule,
-    RouterModule.forRoot(routes, { relativeLinkResolution: "legacy" }),
+    RouterModule.forRoot(routes),
     Bootstrap3FrameworkModule,
     Bootstrap4FrameworkModule,
     Bootstrap5FrameworkModule,
