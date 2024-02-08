@@ -29,35 +29,46 @@
         "node_modules/@types/lodash-es/*"
       ],
       "@ajsf/core": [
-        "dist/@ajsf/core"
+        "./projects/ajsf-core/src/public_api.ts"
       ],
       "@ajsf/core/*": [
-        "dist/@ajsf/core/*"
+        "./projects/ajsf-core/src/lib/*"
       ],
       "@ajsf/bootstrap3": [
-        "dist/@ajsf/bootstrap3"
+        "./projects/ajsf-bootstrap3/src/public_api.ts"
       ],
       "@ajsf/bootstrap3/*": [
-        "dist/@ajsf/bootstrap3/*"
+        "./projects/ajsf-bootstrap3/src/lib/*"
       ],
+      
+      "@ajsf/bootstrap3": [
+        "./projects/ajsf-bootstrap3/src/public_api.ts"
+      ],
+      "@ajsf/bootstrap3/*": [
+        "./projects/ajsf-bootstrap3/src/lib/*"
+      ],
+      
       "@ajsf/bootstrap4": [
-        "dist/@ajsf/bootstrap4"
+        "./projects/ajsf-bootstrap4/src/public_api.ts"
       ],
       "@ajsf/bootstrap4/*": [
-        "dist/@ajsf/bootstrap4/*"
+        "./projects/ajsf-bootstrap4/src/lib/*"
       ],
+      
       "@ajsf/bootstrap5": [
-        "dist/@ajsf/bootstrap5"
+        "./projects/ajsf-bootstrap5/src/public_api.ts"
       ],
       "@ajsf/bootstrap5/*": [
-        "dist/@ajsf/bootstrap5/*"
+        "./projects/ajsf-bootstrap5/src/lib/*"
       ],
+      
       "@ajsf/material": [
-        "dist/@ajsf/material"
+        "./projects/ajsf-material/src/public_api.ts"
       ],
       "@ajsf/material/*": [
-        "dist/@ajsf/material/*"
+        "./projects/ajsf-material/src/lib/*"
       ]
+      
     }
   },
   "angularCompilerOptions": {

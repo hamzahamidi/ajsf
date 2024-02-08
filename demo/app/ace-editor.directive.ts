@@ -1,25 +1,23 @@
-import { Directive, ElementRef, EventEmitter, Input, Output } from '@angular/core';
-import ace from 'brace';
-import 'brace/mode/json';
-import 'brace/theme/sqlserver';
-
-
+import { Directive, ElementRef, EventEmitter, Input, Output } from "@angular/core";
+import ace from "brace";
+import "brace/mode/json";
+import "brace/theme/sqlserver";
 
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: '[ace-editor]'
+  selector: "[ace-editor]",
 })
 export class AceEditorDirective {
   _options: any = {};
   _highlightActiveLine = false;
   _showGutter = false;
   _readOnly = false;
-  _theme = 'sqlserver';
-  _mode = 'json';
+  _theme = "sqlserver";
+  _mode = "json";
   _autoUpdateContent = true;
   editor: any;
   oldText: any;
-  @Output('textChanged') textChanged = new EventEmitter();
+  @Output("textChanged") textChanged = new EventEmitter();
 
   constructor(elementRef: ElementRef) {
     const el = elementRef.nativeElement;
@@ -40,7 +38,7 @@ export class AceEditorDirective {
   }
 
   initEvents() {
-    this.editor.on('change', () => {
+    this.editor.on("change", () => {
       const newVal = this.editor.getValue();
       if (this.oldText) {
         this.textChanged.emit(newVal);
@@ -70,7 +68,9 @@ export class AceEditorDirective {
   }
 
   @Input() set text(text: any) {
-    if (!text) { text = ''; }
+    if (!text) {
+      text = "";
+    }
 
     if (this._autoUpdateContent === true) {
       this.editor.setValue(text);
