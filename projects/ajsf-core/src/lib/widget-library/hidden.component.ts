@@ -5,7 +5,7 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
 @Component({
   // tslint:disable-next-line:component-selector
   selector: "hidden-widget",
-  template: ` <input
+  template: `<input
       *ngIf="boundControl"
       [formControl]="formControl"
       [id]="'control' + layoutNode?._id"

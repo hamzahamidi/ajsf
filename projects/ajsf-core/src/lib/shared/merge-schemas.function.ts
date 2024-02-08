@@ -38,7 +38,7 @@ export function mergeSchemas(...schemas) {
         switch (key) {
           case "allOf":
             // Combine all items from both arrays
-            if (isArray(combinedValue) && isArray(schemaValue)) {
+            if (Array.isArray(combinedValue) && Array.isArray(schemaValue)) {
               combinedSchema.allOf = mergeSchemas(...combinedValue, ...schemaValue);
             } else {
               return { allOf: [...schemas] };
@@ -62,7 +62,7 @@ export function mergeSchemas(...schemas) {
           case "oneOf":
           case "enum":
             // Keep only items that appear in both arrays
-            if (isArray(combinedValue) && isArray(schemaValue)) {
+            if (Array.isArray(combinedValue) && Array.isArray(schemaValue)) {
               combinedSchema[key] = combinedValue.filter(
                 (item1) => schemaValue.findIndex((item2) => isEqual(item1, item2)) > -1
               );
@@ -101,19 +101,19 @@ export function mergeSchemas(...schemas) {
                   combinedObject[subKey] = schemaValue[subKey];
                   // If both keys are arrays, include all items from both arrays,
                   // excluding duplicates
-                } else if (isArray(schemaValue[subKey]) && isArray(combinedObject[subKey])) {
+                } else if (Array.isArray(schemaValue[subKey]) && Array.isArray(combinedObject[subKey])) {
                   combinedObject[subKey] = uniqueItems(...combinedObject[subKey], ...schemaValue[subKey]);
                   // If either key is an object, merge the schemas
                 } else if (
-                  (isArray(schemaValue[subKey]) || isObject(schemaValue[subKey])) &&
-                  (isArray(combinedObject[subKey]) || isObject(combinedObject[subKey]))
+                  (Array.isArray(schemaValue[subKey]) || isObject(schemaValue[subKey])) &&
+                  (Array.isArray(combinedObject[subKey]) || isObject(combinedObject[subKey]))
                 ) {
                   // If either key is an array, convert it to an object first
-                  const required = isArray(combinedSchema.required) ? combinedSchema.required : [];
-                  const combinedDependency = isArray(combinedObject[subKey])
+                  const required = Array.isArray(combinedSchema.required) ? combinedSchema.required : [];
+                  const combinedDependency = Array.isArray(combinedObject[subKey])
                     ? { required: uniqueItems(...required, combinedObject[subKey]) }
                     : combinedObject[subKey];
-                  const schemaDependency = isArray(schemaValue[subKey])
+                  const schemaDependency = Array.isArray(schemaValue[subKey])
                     ? { required: uniqueItems(...required, schemaValue[subKey]) }
                     : schemaValue[subKey];
                   combinedObject[subKey] = mergeSchemas(combinedDependency, schemaDependency);
@@ -128,7 +128,7 @@ export function mergeSchemas(...schemas) {
             break;
           case "items":
             // If arrays, keep only items that appear in both arrays
-            if (isArray(combinedValue) && isArray(schemaValue)) {
+            if (Array.isArray(combinedValue) && Array.isArray(schemaValue)) {
               combinedSchema.items = combinedValue.filter(
                 (item1) => schemaValue.findIndex((item2) => isEqual(item1, item2)) > -1
               );
@@ -139,9 +139,9 @@ export function mergeSchemas(...schemas) {
             } else if (isObject(combinedValue) && isObject(schemaValue)) {
               combinedSchema.items = mergeSchemas(combinedValue, schemaValue);
               // If object + array, combine object with each array item
-            } else if (isArray(combinedValue) && isObject(schemaValue)) {
+            } else if (Array.isArray(combinedValue) && isObject(schemaValue)) {
               combinedSchema.items = combinedValue.map((item) => mergeSchemas(item, schemaValue));
-            } else if (isObject(combinedValue) && isArray(schemaValue)) {
+            } else if (isObject(combinedValue) && Array.isArray(schemaValue)) {
               combinedSchema.items = schemaValue.map((item) => mergeSchemas(item, combinedValue));
             } else {
               return { allOf: [...schemas] };
@@ -187,7 +187,7 @@ export function mergeSchemas(...schemas) {
             if (isObject(combinedValue) && isObject(schemaValue)) {
               const notAnyOf = [combinedValue, schemaValue].reduce(
                 (notAnyOfArray, notSchema) =>
-                  isArray(notSchema.anyOf) && Object.keys(notSchema).length === 1
+                  Array.isArray(notSchema.anyOf) && Object.keys(notSchema).length === 1
                     ? [...notAnyOfArray, ...notSchema.anyOf]
                     : [...notAnyOfArray, notSchema],
                 []
@@ -269,7 +269,7 @@ export function mergeSchemas(...schemas) {
             break;
           case "required":
             // If arrays, include all items from both arrays, excluding duplicates
-            if (isArray(combinedValue) && isArray(schemaValue)) {
+            if (Array.isArray(combinedValue) && Array.isArray(schemaValue)) {
               combinedSchema.required = uniqueItems(...combinedValue, ...schemaValue);
               // If booleans, aet true if either true
             } else if (typeof schemaValue === "boolean" && typeof combinedValue === "boolean") {
@@ -292,8 +292,8 @@ export function mergeSchemas(...schemas) {
             break;
           case "type":
             if (
-              (isArray(schemaValue) || isString(schemaValue)) &&
-              (isArray(combinedValue) || isString(combinedValue))
+              (Array.isArray(schemaValue) || isString(schemaValue)) &&
+              (Array.isArray(combinedValue) || isString(combinedValue))
             ) {
               const combinedTypes = commonItems(combinedValue, schemaValue);
               if (!combinedTypes.length) {

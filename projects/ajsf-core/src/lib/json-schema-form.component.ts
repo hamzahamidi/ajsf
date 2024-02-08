@@ -613,7 +613,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     // Rename JSON Form-style 'options' lists to
     // Angular Schema Form-style 'titleMap' lists.
     const fixJsonFormOptions = (layout: any): any => {
-      if (isObject(layout) || isArray(layout)) {
+      if (isObject(layout) || Array.isArray(layout)) {
         forEach(
           layout,
           (value, key) => {
@@ -629,15 +629,15 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     };
 
     // Check for layout inputs and, if found, initialize form layout
-    if (isArray(this.layout)) {
+    if (Array.isArray(this.layout)) {
       this.jsf.layout = cloneDeep(this.layout);
-    } else if (isArray(this.form)) {
+    } else if (Array.isArray(this.form)) {
       this.jsf.AngularSchemaFormCompatibility = true;
       this.jsf.layout = cloneDeep(this.form);
-    } else if (this.form && isArray(this.form.form)) {
+    } else if (this.form && Array.isArray(this.form.form)) {
       this.jsf.JsonFormCompatibility = true;
       this.jsf.layout = fixJsonFormOptions(cloneDeep(this.form.form));
-    } else if (this.form && isArray(this.form.layout)) {
+    } else if (this.form && Array.isArray(this.form.layout)) {
       this.jsf.layout = cloneDeep(this.form.layout);
     } else {
       this.jsf.layout = ["*"];

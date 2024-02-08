@@ -1,11 +1,21 @@
-import {hasValue, inArray, isArray, isDefined, isEmpty, isMap, isObject, isSet, isString, PlainObject} from './validator.functions';
+import {
+  hasValue,
+  inArray,
+  isDefined,
+  isEmpty,
+  isMap,
+  isObject,
+  isSet,
+  isString,
+  PlainObject,
+} from "./validator.functions";
 
 /**
  * Utility function library:
  *
  * addClasses, copy, forEach, forEachCopy, hasOwn, mergeFilteredObject,
  * uniqueItems, commonItems, fixTitle, toTitleCase
-*/
+ */
 
 /**
  * 'addClasses' function
@@ -20,16 +30,24 @@ export function addClasses(
   oldClasses: string | string[] | Set<string>,
   newClasses: string | string[] | Set<string>
 ): string | string[] | Set<string> {
-  const badType = i => !isSet(i) && !isArray(i) && !isString(i);
-  if (badType(newClasses)) { return oldClasses; }
-  if (badType(oldClasses)) { oldClasses = ''; }
-  const toSet = i => isSet(i) ? i : isArray(i) ? new Set(i) : new Set(i.split(' '));
+  const badType = (i) => !isSet(i) && !Array.isArray(i) && !isString(i);
+  if (badType(newClasses)) {
+    return oldClasses;
+  }
+  if (badType(oldClasses)) {
+    oldClasses = "";
+  }
+  const toSet = (i) => (isSet(i) ? i : Array.isArray(i) ? new Set(i) : new Set(i.split(" ")));
   const combinedSet: Set<any> = toSet(oldClasses);
   const newSet: Set<any> = toSet(newClasses);
-  newSet.forEach(c => combinedSet.add(c));
-  if (isSet(oldClasses)) { return combinedSet; }
-  if (isArray(oldClasses)) { return Array.from(combinedSet); }
-  return Array.from(combinedSet).join(' ');
+  newSet.forEach((c) => combinedSet.add(c));
+  if (isSet(oldClasses)) {
+    return combinedSet;
+  }
+  if (Array.isArray(oldClasses)) {
+    return Array.from(combinedSet);
+  }
+  return Array.from(combinedSet).join(" ");
 }
 
 /**
@@ -44,13 +62,23 @@ export function addClasses(
  * // {Object|Array|string|number|boolean|null} - The copied object
  */
 export function copy(object: any, errors = false): any {
-  if (typeof object !== 'object' || object === null) { return object; }
-  if (isMap(object))    { return new Map(object); }
-  if (isSet(object))    { return new Set(object); }
-  if (isArray(object))  { return [ ...object ];   }
-  if (isObject(object)) { return { ...object };   }
+  if (typeof object !== "object" || object === null) {
+    return object;
+  }
+  if (isMap(object)) {
+    return new Map(object);
+  }
+  if (isSet(object)) {
+    return new Set(object);
+  }
+  if (Array.isArray(object)) {
+    return [...object];
+  }
+  if (isObject(object)) {
+    return { ...object };
+  }
   if (errors) {
-    console.error('copy error: Object to copy must be a JavaScript object or value.');
+    console.error("copy error: Object to copy must be a JavaScript object or value.");
   }
   return object;
 }
@@ -77,30 +105,35 @@ export function copy(object: any, errors = false): any {
  * // {void}
  */
 export function forEach(
-  object: any, fn: (v: any, k?: string | number, c?: any, rc?: any) => any,
-  recurse: boolean | string = false, rootObject: any = object, errors = false
+  object: any,
+  fn: (v: any, k?: string | number, c?: any, rc?: any) => any,
+  recurse: boolean | string = false,
+  rootObject: any = object,
+  errors = false
 ): void {
-  if (isEmpty(object)) { return; }
-  if ((isObject(object) || isArray(object)) && typeof fn === 'function') {
+  if (isEmpty(object)) {
+    return;
+  }
+  if ((isObject(object) || Array.isArray(object)) && typeof fn === "function") {
     for (const key of Object.keys(object)) {
       const value = object[key];
-      if (recurse === 'bottom-up' && (isObject(value) || isArray(value))) {
+      if (recurse === "bottom-up" && (isObject(value) || Array.isArray(value))) {
         forEach(value, fn, recurse, rootObject);
       }
       fn(value, key, object, rootObject);
-      if (recurse === 'top-down' && (isObject(value) || isArray(value))) {
+      if (recurse === "top-down" && (isObject(value) || Array.isArray(value))) {
         forEach(value, fn, recurse, rootObject);
       }
     }
   }
   if (errors) {
-    if (typeof fn !== 'function') {
-      console.error('forEach error: Iterator must be a function.');
-      console.error('function', fn);
+    if (typeof fn !== "function") {
+      console.error("forEach error: Iterator must be a function.");
+      console.error("function", fn);
     }
-    if (!isObject(object) && !isArray(object)) {
-      console.error('forEach error: Input object must be an object or array.');
-      console.error('object', object);
+    if (!isObject(object) && !Array.isArray(object)) {
+      console.error("forEach error: Input object must be an object or array.");
+      console.error("object", object);
     }
   }
 }
@@ -121,25 +154,28 @@ export function forEach(
  * // {Object | Array} - The resulting object or array
  */
 export function forEachCopy(
-  object: any, fn: (v: any, k?: string | number, o?: any, p?: string) => any,
+  object: any,
+  fn: (v: any, k?: string | number, o?: any, p?: string) => any,
   errors = false
 ): any {
-  if (!hasValue(object)) { return; }
-  if ((isObject(object) || isArray(object)) && typeof object !== 'function') {
-    const newObject: any = isArray(object) ? [] : {};
+  if (!hasValue(object)) {
+    return;
+  }
+  if ((isObject(object) || Array.isArray(object)) && typeof object !== "function") {
+    const newObject: any = Array.isArray(object) ? [] : {};
     for (const key of Object.keys(object)) {
       newObject[key] = fn(object[key], key, object);
     }
     return newObject;
   }
   if (errors) {
-    if (typeof fn !== 'function') {
-      console.error('forEachCopy error: Iterator must be a function.');
-      console.error('function', fn);
+    if (typeof fn !== "function") {
+      console.error("forEachCopy error: Iterator must be a function.");
+      console.error("function", fn);
     }
-    if (!isObject(object) && !isArray(object)) {
-      console.error('forEachCopy error: Input object must be an object or array.');
-      console.error('object', object);
+    if (!isObject(object) && !Array.isArray(object)) {
+      console.error("forEachCopy error: Input object must be an object or array.");
+      console.error("object", object);
     }
   }
 }
@@ -154,13 +190,21 @@ export function forEachCopy(
  * // {boolean} - true if object has property, false if not
  */
 export function hasOwn(object: any, property: string): boolean {
-  if (!object || !['number', 'string', 'symbol'].includes(typeof property) ||
-    (!isObject(object) && !isArray(object) && !isMap(object) && !isSet(object))
-  ) { return false; }
-  if (isMap(object) || isSet(object)) { return object.has(property); }
-  if (typeof property === 'number') {
-    if (isArray(object)) { return object[<number>property]; }
-    property = property + '';
+  if (
+    !object ||
+    !["number", "string", "symbol"].includes(typeof property) ||
+    (!isObject(object) && !Array.isArray(object) && !isMap(object) && !isSet(object))
+  ) {
+    return false;
+  }
+  if (isMap(object) || isSet(object)) {
+    return object.has(property);
+  }
+  if (typeof property === "number") {
+    if (Array.isArray(object)) {
+      return object[<number>property];
+    }
+    property = property + "";
   }
   return object.hasOwnProperty(property);
 }
@@ -171,7 +215,7 @@ export function hasOwn(object: any, property: string): boolean {
 export enum ExpressionType {
   EQUALS,
   NOT_EQUALS,
-  NOT_AN_EXPRESSION
+  NOT_AN_EXPRESSION,
 }
 
 /**
@@ -181,11 +225,11 @@ export enum ExpressionType {
  * // {expressionCandidate} expressionCandidate - potential expression
  */
 export function getExpressionType(expressionCandidate: string): ExpressionType {
-  if (expressionCandidate.indexOf('==') !== -1) {
+  if (expressionCandidate.indexOf("==") !== -1) {
     return ExpressionType.EQUALS;
   }
 
-  if (expressionCandidate.toString().indexOf('!=') !== -1) {
+  if (expressionCandidate.toString().indexOf("!=") !== -1) {
     return ExpressionType.NOT_EQUALS;
   }
 
@@ -193,15 +237,15 @@ export function getExpressionType(expressionCandidate: string): ExpressionType {
 }
 
 export function isEqual(expressionType) {
-  return expressionType as ExpressionType === ExpressionType.EQUALS;
+  return (expressionType as ExpressionType) === ExpressionType.EQUALS;
 }
 
 export function isNotEqual(expressionType) {
-  return expressionType as ExpressionType === ExpressionType.NOT_EQUALS;
+  return (expressionType as ExpressionType) === ExpressionType.NOT_EQUALS;
 }
 
 export function isNotExpression(expressionType) {
-  return expressionType as ExpressionType === ExpressionType.NOT_AN_EXPRESSION;
+  return (expressionType as ExpressionType) === ExpressionType.NOT_AN_EXPRESSION;
 }
 
 /**
@@ -212,19 +256,19 @@ export function isNotExpression(expressionType) {
  */
 export function getKeyAndValueByExpressionType(expressionType: ExpressionType, key: string) {
   if (isEqual(expressionType)) {
-    return key.split('==', 2);
+    return key.split("==", 2);
   }
 
   if (isNotEqual(expressionType)) {
-    return key.split('!=', 2);
+    return key.split("!=", 2);
   }
 
   return null;
 }
 
 export function cleanValueOfQuotes(keyAndValue): String {
-  if (keyAndValue.charAt(0) === '\'' && keyAndValue.charAt(keyAndValue.length - 1) === '\'') {
-    return keyAndValue.replace('\'', '').replace('\'', '');
+  if (keyAndValue.charAt(0) === "'" && keyAndValue.charAt(keyAndValue.length - 1) === "'") {
+    return keyAndValue.replace("'", "").replace("'", "");
   }
   return keyAndValue;
 }
@@ -252,8 +296,12 @@ export function mergeFilteredObject(
   keyFn = (key: string): string => key,
   valFn = (val: any): any => val
 ): PlainObject {
-  if (!isObject(sourceObject)) { return targetObject; }
-  if (!isObject(targetObject)) { targetObject = {}; }
+  if (!isObject(sourceObject)) {
+    return targetObject;
+  }
+  if (!isObject(targetObject)) {
+    targetObject = {};
+  }
   for (const key of Object.keys(sourceObject)) {
     if (!inArray(key, excludeKeys) && isDefined(sourceObject[key])) {
       targetObject[keyFn(key)] = valFn(sourceObject[key]);
@@ -274,7 +322,9 @@ export function mergeFilteredObject(
 export function uniqueItems(...items): string[] {
   const returnItems = [];
   for (const item of items) {
-    if (!returnItems.includes(item)) { returnItems.push(item); }
+    if (!returnItems.includes(item)) {
+      returnItems.push(item);
+    }
   }
   return returnItems;
 }
@@ -291,10 +341,13 @@ export function uniqueItems(...items): string[] {
 export function commonItems(...arrays): string[] {
   let returnItems = null;
   for (let array of arrays) {
-    if (isString(array)) { array = [array]; }
-    returnItems = returnItems === null ? [ ...array ] :
-      returnItems.filter(item => array.includes(item));
-    if (!returnItems.length) { return []; }
+    if (isString(array)) {
+      array = [array];
+    }
+    returnItems = returnItems === null ? [...array] : returnItems.filter((item) => array.includes(item));
+    if (!returnItems.length) {
+      return [];
+    }
   }
   return returnItems;
 }
@@ -307,7 +360,7 @@ export function commonItems(...arrays): string[] {
  * // {string} -
  */
 export function fixTitle(name: string): string {
-  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' '));
+  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " "));
 }
 
 /**
@@ -326,25 +379,51 @@ export function fixTitle(name: string): string {
  * // {string|string[]} forceWords? -
  * // {string} -
  */
-export function toTitleCase(input: string, forceWords?: string|string[]): string {
-  if (!isString(input)) { return input; }
-  let forceArray: string[] = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'en',
-   'for', 'if', 'in', 'nor', 'of', 'on', 'or', 'per', 'the', 'to', 'v', 'v.',
-   'vs', 'vs.', 'via'];
-  if (isString(forceWords)) { forceWords = (<string>forceWords).split('|'); }
-  if (isArray(forceWords)) { forceArray = forceArray.concat(forceWords); }
-  const forceArrayLower: string[] = forceArray.map(w => w.toLowerCase());
-  const noInitialCase: boolean =
-    input === input.toUpperCase() || input === input.toLowerCase();
-  let prevLastChar = '';
+export function toTitleCase(input: string, forceWords?: string | string[]): string {
+  if (!isString(input)) {
+    return input;
+  }
+  let forceArray: string[] = [
+    "a",
+    "an",
+    "and",
+    "as",
+    "at",
+    "but",
+    "by",
+    "en",
+    "for",
+    "if",
+    "in",
+    "nor",
+    "of",
+    "on",
+    "or",
+    "per",
+    "the",
+    "to",
+    "v",
+    "v.",
+    "vs",
+    "vs.",
+    "via",
+  ];
+  if (isString(forceWords)) {
+    forceWords = (<string>forceWords).split("|");
+  }
+  if (Array.isArray(forceWords)) {
+    forceArray = forceArray.concat(forceWords);
+  }
+  const forceArrayLower: string[] = forceArray.map((w) => w.toLowerCase());
+  const noInitialCase: boolean = input === input.toUpperCase() || input === input.toLowerCase();
+  let prevLastChar = "";
   input = input.trim();
   return input.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, (word, idx) => {
     if (!noInitialCase && word.slice(1).search(/[A-Z]|\../) !== -1) {
       return word;
     } else {
       let newWord: string;
-      const forceWord: string =
-        forceArray[forceArrayLower.indexOf(word.toLowerCase())];
+      const forceWord: string = forceArray[forceArrayLower.indexOf(word.toLowerCase())];
       if (!forceWord) {
         if (noInitialCase) {
           if (word.slice(1).search(/\../) !== -1) {
@@ -356,11 +435,12 @@ export function toTitleCase(input: string, forceWords?: string|string[]): string
           newWord = word[0].toUpperCase() + word.slice(1);
         }
       } else if (
-        forceWord === forceWord.toLowerCase() && (
-          idx === 0 || idx + word.length === input.length ||
-          prevLastChar === ':' || input[idx - 1].search(/[^\s-]/) !== -1 ||
-          (input[idx - 1] !== '-' && input[idx + word.length] === '-')
-        )
+        forceWord === forceWord.toLowerCase() &&
+        (idx === 0 ||
+          idx + word.length === input.length ||
+          prevLastChar === ":" ||
+          input[idx - 1].search(/[^\s-]/) !== -1 ||
+          (input[idx - 1] !== "-" && input[idx + word.length] === "-"))
       ) {
         newWord = forceWord[0].toUpperCase() + forceWord.slice(1);
       } else {

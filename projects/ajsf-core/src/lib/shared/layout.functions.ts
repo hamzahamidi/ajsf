@@ -163,7 +163,7 @@ export function buildLayout(jsf, widgetLibrary) {
           if (hasOwn(items, "dataPointer")) {
             return items.dataPointer;
           }
-          if (isArray(items.items)) {
+          if (Array.isArray(items.items)) {
             for (const item of items.items) {
               if (hasOwn(item, "dataPointer") && item.dataPointer.indexOf("/-") !== -1) {
                 return item.dataPointer;
@@ -226,7 +226,7 @@ export function buildLayout(jsf, widgetLibrary) {
         } else {
           newNode.type = checkInlineType(newNode.type, nodeSchema, newNode);
         }
-        if (nodeSchema.type === "object" && isArray(nodeSchema.required)) {
+        if (nodeSchema.type === "object" && Array.isArray(nodeSchema.required)) {
           nodeDataMap.set("required", nodeSchema.required);
         }
         newNode.dataType = nodeSchema.type || (hasOwn(nodeSchema, "$ref") ? "$ref" : null);
@@ -240,9 +240,9 @@ export function buildLayout(jsf, widgetLibrary) {
           newNode.options.minItems = Math.max(nodeSchema.minItems || 0, newNode.options.minItems || 0);
           newNode.options.listItems = Math.max(
             newNode.options.listItems || 0,
-            isArray(nodeValue) ? nodeValue.length : 0
+            Array.isArray(nodeValue) ? nodeValue.length : 0
           );
-          newNode.options.tupleItems = isArray(nodeSchema.items) ? nodeSchema.items.length : 0;
+          newNode.options.tupleItems = Array.isArray(nodeSchema.items) ? nodeSchema.items.length : 0;
           if (newNode.options.maxItems < newNode.options.tupleItems) {
             newNode.options.tupleItems = newNode.options.maxItems;
             newNode.options.listItems = 0;
@@ -278,7 +278,7 @@ export function buildLayout(jsf, widgetLibrary) {
         if (typeof newNode.options.copyValueTo === "string") {
           newNode.options.copyValueTo = [newNode.options.copyValueTo];
         }
-        if (isArray(newNode.options.copyValueTo)) {
+        if (Array.isArray(newNode.options.copyValueTo)) {
           newNode.options.copyValueTo = newNode.options.copyValueTo.map((item) =>
             JsonPointer.compile(JsonPointer.parseObjectPath(item), "-")
           );
@@ -346,7 +346,7 @@ export function buildLayout(jsf, widgetLibrary) {
           newNode.items[0].arrayItemType = newNode.options.tupleItems ? "tuple" : "list";
         }
 
-        if (isArray(newNode.items)) {
+        if (Array.isArray(newNode.items)) {
           const arrayListItems =
             newNode.items.filter((item) => item.type !== "$ref").length - newNode.options.tupleItems;
           if (arrayListItems > newNode.options.listItems) {
@@ -379,7 +379,10 @@ export function buildLayout(jsf, widgetLibrary) {
         // Add any additional default items
         if (!newNode.recursiveReference || newNode.options.required) {
           const arrayLength = Math.min(
-            Math.max(newNode.options.tupleItems + newNode.options.listItems, isArray(nodeValue) ? nodeValue.length : 0),
+            Math.max(
+              newNode.options.tupleItems + newNode.options.listItems,
+              Array.isArray(nodeValue) ? nodeValue.length : 0
+            ),
             newNode.options.maxItems
           );
           for (let i = newNode.items.length; i < arrayLength; i++) {
@@ -578,7 +581,7 @@ export function buildLayoutFromSchema(
   }
 
   if (newNode.dataType === "object") {
-    if (isArray(schema.required) && !nodeDataMap.has("required")) {
+    if (Array.isArray(schema.required) && !nodeDataMap.has("required")) {
       nodeDataMap.set("required", schema.required);
     }
     if (isObject(schema.properties)) {
@@ -636,7 +639,7 @@ export function buildLayoutFromSchema(
     if (!hasOwn(newNode.options, "listItems")) {
       newNode.options.listItems = 1;
     }
-    newNode.options.tupleItems = isArray(schema.items) ? schema.items.length : 0;
+    newNode.options.tupleItems = Array.isArray(schema.items) ? schema.items.length : 0;
     if (newNode.options.maxItems <= newNode.options.tupleItems) {
       newNode.options.tupleItems = newNode.options.maxItems;
       newNode.options.listItems = 0;
@@ -658,7 +661,7 @@ export function buildLayoutFromSchema(
     let additionalItemsSchemaPointer: string = null;
 
     // If 'items' is an array = tuple items
-    if (isArray(schema.items)) {
+    if (Array.isArray(schema.items)) {
       newNode.items = [];
       for (let i = 0; i < newNode.options.tupleItems; i++) {
         let newItem: any;
@@ -677,7 +680,7 @@ export function buildLayoutFromSchema(
             jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
               jsf,
               widgetLibrary,
-              isArray(nodeValue) ? nodeValue[i] : null,
+              Array.isArray(nodeValue) ? nodeValue[i] : null,
               schemaPointer + "/items/" + i,
               itemRecursive ? "" : dataPointer + "/" + i,
               true,
@@ -698,13 +701,13 @@ export function buildLayoutFromSchema(
             },
             jsf,
             widgetLibrary,
-            isArray(nodeValue) ? nodeValue[i] : null
+            Array.isArray(nodeValue) ? nodeValue[i] : null
           );
         } else {
           newItem = buildLayoutFromSchema(
             jsf,
             widgetLibrary,
-            isArray(nodeValue) ? nodeValue[i] : null,
+            Array.isArray(nodeValue) ? nodeValue[i] : null,
             schemaPointer + "/items/" + i,
             dataPointer + "/" + i,
             true,
@@ -763,7 +766,7 @@ export function buildLayoutFromSchema(
         const arrayLength = Math.min(
           Math.max(
             itemRecursive ? 0 : newNode.options.tupleItems + newNode.options.listItems,
-            isArray(nodeValue) ? nodeValue.length : 0
+            Array.isArray(nodeValue) ? nodeValue.length : 0
           ),
           newNode.options.maxItems
         );
@@ -778,7 +781,7 @@ export function buildLayoutFromSchema(
                 },
                 jsf,
                 widgetLibrary,
-                isArray(nodeValue) ? nodeValue[i] : null
+                Array.isArray(nodeValue) ? nodeValue[i] : null
               )
             );
           }
@@ -920,7 +923,7 @@ export function mapLayout(layout, fn, layoutPointer = "", rootLayout = layout) {
         delete item.tabs;
       }
       if (hasOwn(item, "items")) {
-        itemsArray = isArray(item.items) ? item.items : [item.items];
+        itemsArray = Array.isArray(item.items) ? item.items : [item.items];
       }
     }
     if (itemsArray.length) {
@@ -930,7 +933,7 @@ export function mapLayout(layout, fn, layoutPointer = "", rootLayout = layout) {
     if (!isDefined(newNode)) {
       indexPad--;
     } else {
-      if (isArray(newNode)) {
+      if (Array.isArray(newNode)) {
         indexPad += newNode.length - 1;
       }
       newLayout = newLayout.concat(newNode);
@@ -1015,7 +1018,7 @@ export function buildTitleMap(titleMap, enumList, fieldRequired = true, flatList
   let newTitleMap: TitleMapItem[] = [];
   let hasEmptyValue = false;
   if (titleMap) {
-    if (isArray(titleMap)) {
+    if (Array.isArray(titleMap)) {
       if (enumList) {
         for (const i of Object.keys(titleMap)) {
           if (isObject(titleMap[i])) {
@@ -1095,7 +1098,7 @@ export function buildTitleMap(titleMap, enumList, fieldRequired = true, flatList
     if (flatList) {
       newTitleMap = newTitleMap.reduce((groupTitleMap, title) => {
         if (hasOwn(title, "group")) {
-          if (isArray(title.items)) {
+          if (Array.isArray(title.items)) {
             groupTitleMap = [
               ...groupTitleMap,
               ...title.items.map((item) => ({

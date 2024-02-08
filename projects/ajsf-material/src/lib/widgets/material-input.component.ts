@@ -6,7 +6,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 @Component({
   // tslint:disable-next-line:component-selector
   selector: "material-input-widget",
-  template: ` <mat-form-field
+  template: `<mat-form-field
       [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'standard'"
       [class]="options?.htmlClass || ''"
       [floatLabel]="

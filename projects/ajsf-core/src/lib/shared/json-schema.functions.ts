@@ -1,7 +1,7 @@
 import cloneDeep from "lodash-es/cloneDeep";
 import { forEach, hasOwn, mergeFilteredObject } from "./utility.functions";
 import { getType, hasValue, inArray, isArray, isNumber, isObject, isString } from "./validator.functions";
-import { JsonPointer } from "./jsonpointer.functions";
+import { JsonPointer, Pointer } from "./jsonpointer.functions";
 import { mergeSchemas } from "./merge-schemas.function";
 
 /**
@@ -132,7 +132,7 @@ export function buildSchemaFromData(data, requireAllFields = false, isRoot = tru
  * //  { string = 'schema' } returnType - what to return?
  * //  - The located sub-schema
  */
-export function getFromSchema(schema, dataPointer, returnType = "schema") {
+export function getFromSchema(schema, dataPointer: Pointer, returnType = "schema") {
   const dataPointerArray: any[] = JsonPointer.parse(dataPointer);
   if (dataPointerArray === null) {
     console.error(`getFromSchema error: Invalid JSON Pointer: ${dataPointer}`);
@@ -160,7 +160,7 @@ export function getFromSchema(schema, dataPointer, returnType = "schema") {
           subSchemaFound = true;
           subSchema = subSchema.items;
           schemaPointer.push("items");
-        } else if (isArray(subSchema.items)) {
+        } else if (Array.isArray(subSchema.items)) {
           if (!isNaN(key) && subSchema.items.length >= +key) {
             subSchemaFound = true;
             subSchema = subSchema.items[+key];
@@ -225,7 +225,7 @@ export function getFromSchema(schema, dataPointer, returnType = "schema") {
  * //  { Map<string, number> = new Map() } arrayMap - optional
  * // { string } -
  */
-export function removeRecursiveReferences(pointer, recursiveRefMap, arrayMap = new Map()) {
+export function removeRecursiveReferences(pointer: Pointer, recursiveRefMap, arrayMap = new Map()) {
   if (!pointer) {
     return "";
   }
@@ -270,7 +270,7 @@ export function getInputType(schema, layoutNode: any = null) {
   }
   let schemaType = schema.type;
   if (schemaType) {
-    if (isArray(schemaType)) {
+    if (Array.isArray(schemaType)) {
       // If multiple types listed, use most inclusive type
       schemaType =
         inArray("object", schemaType) && hasOwn(schema, "properties")
@@ -343,7 +343,7 @@ export function getInputType(schema, layoutNode: any = null) {
   if (hasOwn(schema, "$ref")) {
     return "$ref";
   }
-  if (isArray(schema.oneOf) || isArray(schema.anyOf)) {
+  if (Array.isArray(schema.oneOf) || Array.isArray(schema.anyOf)) {
     return "one-of";
   }
   console.error(`getInputType error: Unable to determine input type for ${schemaType}`);
@@ -365,7 +365,7 @@ export function getInputType(schema, layoutNode: any = null) {
  * //  { any = null } layoutNode -
  * // { string }
  */
-export function checkInlineType(controlType, schema, layoutNode: any = null) {
+export function checkInlineType(controlType: string, schema, layoutNode: any = null) {
   if (!isString(controlType) || (controlType.slice(0, 8) !== "checkbox" && controlType.slice(0, 5) !== "radio")) {
     return controlType;
   }
@@ -399,13 +399,13 @@ export function checkInlineType(controlType, schema, layoutNode: any = null) {
  * //  { string } schemaPointer - the pointer to the item to check
  * // { boolean } - true if the item is required, false if not
  */
-export function isInputRequired(schema, schemaPointer) {
+export function isInputRequired(schema, schemaPointer: string): boolean {
   if (!isObject(schema)) {
     console.error("isInputRequired error: Input schema must be an object.");
     return false;
   }
   const listPointerArray = JsonPointer.parse(schemaPointer);
-  if (isArray(listPointerArray)) {
+  if (Array.isArray(listPointerArray)) {
     if (!listPointerArray.length) {
       return schema.required === true;
     }
@@ -417,7 +417,7 @@ export function isInputRequired(schema, schemaPointer) {
       listPointerArray.pop();
     }
     const parentSchema = JsonPointer.get(schema, listPointerArray) || {};
-    if (isArray(parentSchema.required)) {
+    if (Array.isArray(parentSchema.required)) {
       return parentSchema.required.includes(keyName);
     }
     if (parentSchema.type === "array") {
@@ -524,8 +524,8 @@ export function updateInputOptions(layoutNode, schema, jsf) {
 export function getTitleMapFromOneOf(schema: any = {}, flatList: boolean = null, validateOnly = false) {
   let titleMap = null;
   const oneOf = schema.oneOf || schema.anyOf || null;
-  if (isArray(oneOf) && oneOf.every((item) => item.title)) {
-    if (oneOf.every((item) => isArray(item.enum) && item.enum.length === 1)) {
+  if (Array.isArray(oneOf) && oneOf.every((item) => item.title)) {
+    if (oneOf.every((item) => Array.isArray(item.enum) && item.enum.length === 1)) {
       if (validateOnly) {
         return true;
       }
@@ -636,9 +636,9 @@ export function getControlValidators(schema) {
 export function resolveSchemaReferences(
   schema,
   schemaRefLibrary,
-  schemaRecursiveRefMap,
-  dataRecursiveRefMap,
-  arrayMap
+  schemaRecursiveRefMap: Map<string, string>,
+  dataRecursiveRefMap: Map<string, string>,
+  arrayMap: Map<string, number>
 ) {
   if (!isObject(schema)) {
     console.error("resolveSchemaReferences error: schema must be an object.");
@@ -741,7 +741,7 @@ export function resolveSchemaReferences(
       if (subSchema.type === "array" && (hasOwn(subSchema, "items") || hasOwn(subSchema, "additionalItems"))) {
         const dataPointer = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
         if (!arrayMap.has(dataPointer)) {
-          const tupleItems = isArray(subSchema.items) ? subSchema.items.length : 0;
+          const tupleItems = Array.isArray(subSchema.items) ? subSchema.items.length : 0;
           arrayMap.set(dataPointer, tupleItems);
         }
       }
@@ -763,8 +763,8 @@ export function resolveSchemaReferences(
  */
 export function getSubSchema(
   schema,
-  pointer,
-  schemaRefLibrary = null,
+  pointer: Pointer,
+  schemaRefLibrary: object = null,
   schemaRecursiveRefMap: Map<string, string> = null,
   usedPointers: string[] = []
 ) {
@@ -811,12 +811,12 @@ export function getSubSchema(
         // TODO: Convert schemas with 'type' arrays to 'oneOf'
 
         // Combine allOf subSchemas
-        if (isArray(subSchema.allOf)) {
+        if (Array.isArray(subSchema.allOf)) {
           return combineAllOf(subSchema);
         }
 
         // Fix incorrectly placed array object required lists
-        if (subSchema.type === "array" && isArray(subSchema.required)) {
+        if (subSchema.type === "array" && Array.isArray(subSchema.required)) {
           return fixRequiredArrayProperties(subSchema);
         }
       }
@@ -837,7 +837,7 @@ export function getSubSchema(
  * //  - converted schema object
  */
 export function combineAllOf(schema) {
-  if (!isObject(schema) || !isArray(schema.allOf)) {
+  if (!isObject(schema) || !Array.isArray(schema.allOf)) {
     return schema;
   }
   let mergedSchema = mergeSchemas(...schema.allOf);
@@ -859,7 +859,7 @@ export function combineAllOf(schema) {
  * //  - converted schema object
  */
 export function fixRequiredArrayProperties(schema) {
-  if (schema.type === "array" && isArray(schema.required)) {
+  if (schema.type === "array" && Array.isArray(schema.required)) {
     const itemsObject = hasOwn(schema.items, "properties")
       ? "items"
       : hasOwn(schema.additionalItems, "properties")

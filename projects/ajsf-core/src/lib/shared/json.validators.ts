@@ -7,7 +7,6 @@ import {
   AsyncIValidatorFn,
   getType,
   hasValue,
-  isArray,
   isBoolean,
   isDefined,
   isEmpty,
@@ -181,7 +180,7 @@ export class JsonValidators {
         return null;
       }
       const currentValue: any = control.value;
-      const isValid = isArray(requiredType)
+      const isValid = Array.isArray(requiredType)
         ? (<SchemaPrimitiveType[]>requiredType).some((type) => isType(currentValue, type))
         : isType(currentValue, <SchemaPrimitiveType>requiredType);
       return xor(isValid, invert) ? null : { type: { requiredType, currentValue } };
@@ -200,7 +199,7 @@ export class JsonValidators {
    * // {IValidatorFn}
    */
   static enum(allowedValues: any[]): IValidatorFn {
-    if (!isArray(allowedValues)) {
+    if (!Array.isArray(allowedValues)) {
       return JsonValidators.nullValidator;
     }
     return (control: AbstractControl, invert = false): ValidationErrors | null => {
@@ -214,7 +213,7 @@ export class JsonValidators {
         (isBoolean(enumValue, "strict") && toJavaScriptType(inputValue, "boolean") === enumValue) ||
         (enumValue === null && !hasValue(inputValue)) ||
         isEqual(enumValue, inputValue);
-      const isValid = isArray(currentValue)
+      const isValid = Array.isArray(currentValue)
         ? currentValue.every((inputValue) => allowedValues.some((enumValue) => isEqualVal(enumValue, inputValue)))
         : allowedValues.some((enumValue) => isEqualVal(enumValue, currentValue));
       return xor(isValid, invert) ? null : { enum: { allowedValues, currentValue } };
@@ -642,7 +641,7 @@ export class JsonValidators {
       if (isEmpty(control.value)) {
         return null;
       }
-      const currentItems = isArray(control.value) ? control.value.length : 0;
+      const currentItems = Array.isArray(control.value) ? control.value.length : 0;
       const isValid = currentItems >= minimumItems;
       return xor(isValid, invert) ? null : { minItems: { minimumItems, currentItems } };
     };
@@ -661,7 +660,7 @@ export class JsonValidators {
       return JsonValidators.nullValidator;
     }
     return (control: AbstractControl, invert = false): ValidationErrors | null => {
-      const currentItems = isArray(control.value) ? control.value.length : 0;
+      const currentItems = Array.isArray(control.value) ? control.value.length : 0;
       const isValid = currentItems <= maximumItems;
       return xor(isValid, invert) ? null : { maxItems: { maximumItems, currentItems } };
     };
@@ -710,7 +709,7 @@ export class JsonValidators {
       return JsonValidators.nullValidator;
     }
     return (control: AbstractControl, invert = false): ValidationErrors | null => {
-      if (isEmpty(control.value) || !isArray(control.value)) {
+      if (isEmpty(control.value) || !Array.isArray(control.value)) {
         return null;
       }
       const currentItems = control.value;

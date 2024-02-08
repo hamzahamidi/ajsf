@@ -423,7 +423,7 @@ export class JsonSchemaFormService {
   setArrayItemTitle(parentCtx: any = {}, childNode: any = null, index: number = null): string {
     const parentNode = parentCtx.layoutNode;
     const parentValues: any = this.getFormControlValue(parentCtx);
-    const isArrayItem = (parentNode.type || "").slice(-5) === "array" && isArray(parentValues);
+    const isArrayItem = (parentNode.type || "").slice(-5) === "array" && Array.isArray(parentValues);
     const text = JsonPointer.getFirst(
       isArrayItem && childNode.type !== "$ref"
         ? [
@@ -442,7 +442,7 @@ export class JsonSchemaFormService {
     if (!text) {
       return text;
     }
-    const childValue = isArray(parentValues) && index < parentValues.length ? parentValues[index] : parentValues;
+    const childValue = Array.isArray(parentValues) && index < parentValues.length ? parentValues[index] : parentValues;
     return this.parseText(text, childValue, parentValues, index);
   }
 
@@ -591,7 +591,7 @@ export class JsonSchemaFormService {
     ctx.layoutNode.value = value;
 
     // Set values of any related controls in copyValueTo array
-    if (isArray(ctx.options.copyValueTo)) {
+    if (Array.isArray(ctx.options.copyValueTo)) {
       for (const item of ctx.options.copyValueTo) {
         const targetControl = getControl(this.formGroup, item);
         if (isObject(targetControl) && typeof targetControl.setValue === "function") {

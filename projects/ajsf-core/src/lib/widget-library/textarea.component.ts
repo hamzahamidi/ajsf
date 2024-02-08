@@ -5,7 +5,7 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
 @Component({
   // tslint:disable-next-line:component-selector
   selector: "textarea-widget",
-  template: ` <div [class]="options?.htmlClass || ''">
+  template: `<div [class]="options?.htmlClass || ''">
     <label
       *ngIf="options?.title"
       [attr.for]="'control' + layoutNode?._id"

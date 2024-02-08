@@ -1,12 +1,13 @@
 import { AbstractControl } from "@angular/forms";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { hasOwn } from "../shared/utility.functions";
 import { JsonSchemaFormService } from "../json-schema-form.service";
+import { Subscription } from "rxjs";
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: "submit-widget",
-  template: ` <div [class]="options?.htmlClass || ''">
+  template: `<div [class]="options?.htmlClass || ''">
     <input
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [attr.readonly]="options?.readonly ? 'readonly' : null"
@@ -21,7 +22,7 @@ import { JsonSchemaFormService } from "../json-schema-form.service";
     />
   </div>`,
 })
-export class SubmitComponent implements OnInit {
+export class SubmitComponent implements OnInit, OnDestroy {
   formControl: AbstractControl;
   controlName: string;
   controlValue: any;
@@ -32,6 +33,8 @@ export class SubmitComponent implements OnInit {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
+  isValidChangesSubs: Subscription;
+
   constructor(private jsf: JsonSchemaFormService) {}
 
   ngOnInit() {
@@ -41,11 +44,17 @@ export class SubmitComponent implements OnInit {
       this.controlDisabled = this.options.disabled;
     } else if (this.jsf.formOptions.disableInvalidSubmit) {
       this.controlDisabled = !this.jsf.isValid;
-      this.jsf.isValidChanges.subscribe((isValid) => (this.controlDisabled = !isValid));
+      this.isValidChangesSubs = this.isValidChangesSubs = this.jsf.isValidChanges.subscribe(
+        (isValid) => (this.controlDisabled = !isValid)
+      );
     }
     if (this.controlValue === null || this.controlValue === undefined) {
       this.controlValue = this.options.title;
     }
+  }
+  ngOnDestroy(): void {
+    this.isValidChangesSubs?.unsubscribe();
+    this.isValidChangesSubs = null;
   }
 
   updateValue(event) {

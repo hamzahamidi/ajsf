@@ -142,16 +142,16 @@ export function buildFormGroupTemplate(
       const minItems = Math.max(schema.minItems || 0, nodeOptions.get("minItems") || 0);
       const maxItems = Math.min(schema.maxItems || 1000, nodeOptions.get("maxItems") || 1000);
       let additionalItemsPointer: string = null;
-      if (isArray(schema.items)) {
+      if (Array.isArray(schema.items)) {
         // 'items' is an array = tuple items
         const tupleItems =
-          nodeOptions.get("tupleItems") || (isArray(schema.items) ? Math.min(schema.items.length, maxItems) : 0);
+          nodeOptions.get("tupleItems") || (Array.isArray(schema.items) ? Math.min(schema.items.length, maxItems) : 0);
         for (let i = 0; i < tupleItems; i++) {
           if (i < minItems) {
             controls.push(
               buildFormGroupTemplate(
                 jsf,
-                isArray(nodeValue) ? nodeValue[i] : nodeValue,
+                Array.isArray(nodeValue) ? nodeValue[i] : nodeValue,
                 setValues,
                 schemaPointer + "/items/" + i,
                 dataPointer + "/" + i,
@@ -181,7 +181,7 @@ export function buildFormGroupTemplate(
               );
             }
             controls.push(
-              isArray(nodeValue)
+              Array.isArray(nodeValue)
                 ? buildFormGroupTemplate(
                     jsf,
                     nodeValue[i],
@@ -232,13 +232,13 @@ export function buildFormGroupTemplate(
           const arrayLength = Math.min(
             Math.max(
               itemRecursive ? 0 : itemOptions.get("tupleItems") + itemOptions.get("listItems") || 0,
-              isArray(nodeValue) ? nodeValue.length : 0
+              Array.isArray(nodeValue) ? nodeValue.length : 0
             ),
             maxItems
           );
           for (let i = controls.length; i < arrayLength; i++) {
             controls.push(
-              isArray(nodeValue)
+              Array.isArray(nodeValue)
                 ? buildFormGroupTemplate(
                     jsf,
                     nodeValue[i],
@@ -337,7 +337,7 @@ export function mergeValues(...valuesToMerge) {
   for (const currentValue of valuesToMerge) {
     if (!isEmpty(currentValue)) {
       if (typeof currentValue === "object" && (isEmpty(mergedValues) || typeof mergedValues !== "object")) {
-        if (isArray(currentValue)) {
+        if (Array.isArray(currentValue)) {
           mergedValues = [...currentValue];
         } else if (isObject(currentValue)) {
           mergedValues = { ...currentValue };
@@ -346,19 +346,19 @@ export function mergeValues(...valuesToMerge) {
         mergedValues = currentValue;
       } else if (isObject(mergedValues) && isObject(currentValue)) {
         Object.assign(mergedValues, currentValue);
-      } else if (isObject(mergedValues) && isArray(currentValue)) {
+      } else if (isObject(mergedValues) && Array.isArray(currentValue)) {
         const newValues = [];
         for (const value of currentValue) {
           newValues.push(mergeValues(mergedValues, value));
         }
         mergedValues = newValues;
-      } else if (isArray(mergedValues) && isObject(currentValue)) {
+      } else if (Array.isArray(mergedValues) && isObject(currentValue)) {
         const newValues = [];
         for (const value of mergedValues) {
           newValues.push(mergeValues(value, currentValue));
         }
         mergedValues = newValues;
-      } else if (isArray(mergedValues) && isArray(currentValue)) {
+      } else if (Array.isArray(mergedValues) && Array.isArray(currentValue)) {
         const newValues = [];
         for (let i = 0; i < Math.max(mergedValues.length, currentValue.length); i++) {
           if (i < mergedValues.length && i < currentValue.length) {
@@ -387,7 +387,7 @@ export function setRequiredFields(schema: any, formControlTemplate: any): boolea
   let fieldsRequired = false;
   if (hasOwn(schema, "required") && !isEmpty(schema.required)) {
     fieldsRequired = true;
-    let requiredArray = isArray(schema.required) ? schema.required : [schema.required];
+    let requiredArray = Array.isArray(schema.required) ? schema.required : [schema.required];
     requiredArray = forEach(requiredArray, (key) =>
       JsonPointer.set(formControlTemplate, "/" + key + "/validators/required", [])
     );
@@ -419,11 +419,11 @@ export function formatFormData(
   if (formData === null || typeof formData !== "object") {
     return formData;
   }
-  const formattedData = isArray(formData) ? [] : {};
+  const formattedData = Array.isArray(formData) ? [] : {};
   JsonPointer.forEachDeep(formData, (value, dataPointer) => {
     // If returnEmptyFields === true,
     // add empty arrays and objects to all allowed keys
-    if (returnEmptyFields && isArray(value)) {
+    if (returnEmptyFields && Array.isArray(value)) {
       JsonPointer.set(formattedData, dataPointer, []);
     } else if (returnEmptyFields && isObject(value) && !isDate(value)) {
       JsonPointer.set(formattedData, dataPointer, {});
@@ -527,7 +527,7 @@ export function getControl(formGroup: any, dataPointer: Pointer, returnGroup = f
     if (hasOwn(subGroup, "controls")) {
       subGroup = subGroup.controls;
     }
-    if (isArray(subGroup) && key === "-") {
+    if (Array.isArray(subGroup) && key === "-") {
       subGroup = subGroup[subGroup.length - 1];
     } else if (hasOwn(subGroup, key)) {
       subGroup = subGroup[key];
