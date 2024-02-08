@@ -10,7 +10,7 @@
     "module": "es2020",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2022",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "typeRoots": [
@@ -40,36 +40,26 @@
       "@ajsf/bootstrap3/*": [
         "./projects/ajsf-bootstrap3/src/lib/*"
       ],
-      
-      "@ajsf/bootstrap3": [
-        "./projects/ajsf-bootstrap3/src/public_api.ts"
-      ],
-      "@ajsf/bootstrap3/*": [
-        "./projects/ajsf-bootstrap3/src/lib/*"
-      ],
-      
       "@ajsf/bootstrap4": [
         "./projects/ajsf-bootstrap4/src/public_api.ts"
       ],
       "@ajsf/bootstrap4/*": [
         "./projects/ajsf-bootstrap4/src/lib/*"
       ],
-      
       "@ajsf/bootstrap5": [
         "./projects/ajsf-bootstrap5/src/public_api.ts"
       ],
       "@ajsf/bootstrap5/*": [
         "./projects/ajsf-bootstrap5/src/lib/*"
       ],
-      
       "@ajsf/material": [
         "./projects/ajsf-material/src/public_api.ts"
       ],
       "@ajsf/material/*": [
         "./projects/ajsf-material/src/lib/*"
       ]
-      
-    }
+    },
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
