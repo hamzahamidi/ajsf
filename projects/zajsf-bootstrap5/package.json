@@ -1,0 +1,51 @@
+{
+    "name": "@zajsf/bootstrap5",
+    "version": "17.2.5-alpha.2",
+    "description": "Angular JSON Schema Form builder using Bootstrap 5 UI",
+    "author": "https://github.com/zahmo/zajsf/graphs/contributors",
+    "keywords": [
+        "Angular",
+        "ng",
+        "Angular15",
+        "Angular 15",
+        "Angular16",
+        "Angular 16",
+        "Angular17",
+        "Angular 17",
+        "ng15",
+        "ng16",
+        "ng17",
+        "JSON Schema",
+        "form",
+        "forms",
+        "form builder",
+        "form themes",
+        "bootstrap",
+        "bootstrap 5",
+        "ajsf",
+        "zajsf",
+        "angular json schema form"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zahmo/zajsf"
+    },
+    "bugs": {
+        "url": "https://github.com/zahmo/zajsf/issues"
+    },
+    "private": false,
+    "dependencies": {
+        "lodash-es": "~4.17.21",
+        "@zajsf/core": "~17.2.5-alpha.2",
+        "@zajsf/cssframework": "~17.2.5-alpha.2",
+        "tslib": "^2.0.0"
+    },
+    "peerDependencies": {
+        "@angular/common": ">=17.0.0",
+        "@angular/core": ">=17.0.0"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.6"
+    }
+}

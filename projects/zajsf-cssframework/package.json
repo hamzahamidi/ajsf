@@ -1,0 +1,48 @@
+{
+    "name": "@zajsf/cssframework",
+    "version": "17.2.5-alpha.2",
+    "description": "Angular JSON Schema Form builder cssframework",
+    "author": "https://github.com/zahmo/zajsf/graphs/contributors",
+    "keywords": [
+        "Angular",
+        "ng",
+        "Angular15",
+        "Angular 15",
+        "Angular16",
+        "Angular 16",
+        "Angular17",
+        "Angular 17",
+        "ng15",
+        "ng16",
+        "ng17",
+        "JSON Schema",
+        "form",
+        "forms",
+        "form builder",
+        "form themes",
+        "ajsf",
+        "zajsf",
+        "angular json schema form"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zahmo/zajsf"
+    },
+    "bugs": {
+        "url": "https://github.com/zahmo/zajsf/issues"
+    },
+    "private": false,
+    "peerDependencies": {
+        "@angular/common": "^17.0.0",
+        "@angular/core": "^17.0.0"
+    },
+    "dependencies": {
+        "tslib": "^2.3.0",
+        "@zajsf/core": "~17.2.5-alpha.2"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.6"
+    },
+    "sideEffects": false
+}

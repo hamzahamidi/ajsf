@@ -1,0 +1,95 @@
+/* style sheet created to help replace angular flex-layout package
+which is out of maintenance
+see-https://github.com/angular/flex-layout
+adapted from 
+https://github.com/angular/flex-layout/issues/1433
+https://github.com/angular/flex-layout/issues/1433#issue-1508899434
+*/
+
+[fxLayout] {
+    box-sizing: border-box;
+    display: flex;
+}
+
+[fxLayout="row wrap"] {
+    flex-flow: row wrap;
+}
+
+[fxLayout="row"] {
+    flex-direction: row;
+}
+
+[fxLayout="column"] {
+    flex-direction: column;
+}
+
+[fxLayoutAlign="center center"] {
+    display: flex;
+    place-content: center;
+    align-items: center;
+}
+
+[fxLayoutAlign="start center"] {
+    display: flex;
+    place-content: center flex-start;
+    align-items: center;
+}
+
+[fxLayoutAlign="start start"] {
+    display: flex;
+    place-content: flex-start flex-start;
+    align-items: center;
+}
+
+[fxLayoutAlign="end center"] {
+    display: flex;
+    place-content: center flex-end;
+    align-items: center;
+}
+
+[fxFlex] {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 100%;
+}
+
+[fxFlex="none"] {
+    flex: none;
+}
+
+@media only screen and (min-width: 960px) {
+    [fxFlex-gt-sm="50"] {
+        flex: 1 1 50% !important;
+        box-sizing: border-box;
+        max-width: 50% !important;
+    }
+    [fxFlex-gt-sm="33"] {
+        flex: 1 1 33% !important;
+        box-sizing: border-box;
+        max-width: 33% !important;
+    }
+}
+
+[fxFlex="33"] {
+    flex: 1 1 33%;
+    box-sizing: border-box;
+    max-width: 33%;
+}
+
+[fxFlex="67"] {
+    flex: 1 1 67%;
+    box-sizing: border-box;
+    max-width: 67%;
+}
+
+@mixin flex {
+    @for $i from 0 through 20 {
+        [fxFlex="#{$i*5}"] {
+            flex: 1 1 $i*5%;
+            box-sizing: border-box;
+            max-width: $i*5%;
+        }
+    }
+}
+
+@include flex;

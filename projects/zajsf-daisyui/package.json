@@ -1,0 +1,56 @@
+{
+    "name": "@zajsf/daisyui",
+    "version": "17.2.5-alpha.2",
+    "description": "Angular JSON Schema Form builder using DaisyUI",
+    "author": "https://github.com/zahmo/zajsf/graphs/contributors",
+    "keywords": [
+        "Angular",
+        "ng",
+        "Angular15",
+        "Angular 15",
+        "Angular16",
+        "Angular 16",
+        "Angular17",
+        "Angular 17",
+        "ng15",
+        "ng16",
+        "ng17",
+        "JSON Schema",
+        "form",
+        "forms",
+        "form builder",
+        "form themes",
+        "daisyui",
+        "tailwind",
+        "tailwindcss",
+        "tailwind css",
+        "ajsf",
+        "zajsf",
+        "angular json schema form"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zahmo/zajsf"
+    },
+    "bugs": {
+        "url": "https://github.com/zahmo/zajsf/issues"
+    },
+    "private": false,
+    "peerDependencies": {
+        "@angular/common": "^17.0.0",
+        "@angular/core": "^17.0.0"
+    },
+
+    "dependencies": {
+        "tslib": "^2.3.0",
+        "@zajsf/core": "~17.2.5-alpha.2",
+        "@zajsf/cssframework": "~17.2.5-alpha.2"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.6",
+        "daisyui": "^4.7.0",
+        "jsdom": "^16.7.0"
+    },
+    "sideEffects": false
+}

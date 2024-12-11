@@ -13,7 +13,7 @@ updates:
       # Prefix all commit messages with "build"
       prefix: "build"
   - package-ecosystem: "npm"
-    directory: "/projects/ajsf-core"
+    directory: "/projects/zajsf-core"
     schedule:
       interval: "weekly"
       day: "sunday"
@@ -21,7 +21,7 @@ updates:
     commit-message:
       prefix: "build"
   - package-ecosystem: "npm"
-    directory: "/projects/ajsf-material"
+    directory: "/projects/zajsf-material"
     schedule:
       interval: "weekly"
       day: "sunday"
@@ -29,7 +29,7 @@ updates:
     commit-message:
       prefix: "build"
   - package-ecosystem: "npm"
-    directory: "/projects/ajsf-bootstrap3"
+    directory: "/projects/zajsf-bootstrap3"
     schedule:
       interval: "weekly"
       day: "sunday"
@@ -37,7 +37,7 @@ updates:
     commit-message:
       prefix: "build"
   - package-ecosystem: "npm"
-    directory: "/projects/ajsf-bootstrap4"
+    directory: "/projects/zajsf-bootstrap4"
     schedule:
       interval: "weekly"
       day: "sunday"

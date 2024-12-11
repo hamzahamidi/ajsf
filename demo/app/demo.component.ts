@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { trigger, state, style, animate, transition } from '@angular/animations';
-import { ActivatedRoute, Router } from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { ActivatedRoute, Router } from '@angular/router';
 
+import { Framework, FrameworkLibraryService, JsonPointer } from '@zajsf/core';
 import { Examples } from './example-schemas.model';
-import { JsonPointer } from '@ajsf/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -24,7 +24,7 @@ import { JsonPointer } from '@ajsf/core';
     ]),
   ],
 })
-export class DemoComponent implements OnInit {
+export class DemoComponent implements OnInit,AfterViewInit {
   examples: any = Examples;
   languageList: any = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh'];
   languages: any = {
@@ -36,13 +36,19 @@ export class DemoComponent implements OnInit {
     'pt': 'Portuguese',
     'zh': 'Chinese'
   };
-  frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'no-framework'];
-  frameworks: any = {
+  frameworkList: any =[]// ['material-design', 'bootstrap-3', 'bootstrap-4','bootstrap-5','daisyui','no-framework',];
+  frameworks: any ={};
+  /*
+  {
     'material-design': 'Material Design',
     'bootstrap-3': 'Bootstrap 3',
     'bootstrap-4': 'Bootstrap 4',
-    'no-framework': 'None (plain HTML)',
+    'bootstrap-5': 'Bootstrap 5',
+    'daisyui': 'DaisyUI',
+    'no-framework': 'None (plain HTML)'
+    
   };
+  */
   selectedSet = 'ng-jsf';
   selectedSetName = '';
   selectedExample = 'ng-jsf-flex-layout';
@@ -67,7 +73,7 @@ export class DemoComponent implements OnInit {
     loadExternalAssets: true, // Load external css and JavaScript for frameworks
     returnEmptyFields: false, // Don't return values for empty input fields
     setSchemaDefaults: true, // Always use schema defaults for empty fields
-    defautWidgetOptions: { feedback: true }, // Show inline feedback icons
+    defaultWidgetOptions: { feedback: true }, // Show inline feedback icons
   };
   liveFormData: any = {};
   formValidationErrors: any;
@@ -79,16 +85,29 @@ export class DemoComponent implements OnInit {
     printMargin: false,
     autoScrollEditorIntoView: true,
   };
+  selectedTheme:string;
+  themeList:any=[];
+
   @ViewChild(MatMenuTrigger, { static: true }) menuTrigger: MatMenuTrigger;
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
-    private router: Router
-  ) { }
+    private router: Router,
+    private jsfFLService:FrameworkLibraryService,
+  ) { 
+
+
+  }
+  ngAfterViewInit(): void {
+
+  }
 
   ngOnInit() {
     // Subscribe to query string to detect schema to load
+    this.frameworks=this.jsfFLService.getFrameworkList()
+    .reduce((acc,item)=>{acc[item.name]=item.text;return acc},{});
+    this.frameworkList=Object.keys(this.frameworks);
     this.route.queryParams.subscribe(
       params => {
         if (params['set']) {
@@ -111,9 +130,44 @@ export class DemoComponent implements OnInit {
         if (params['language']) {
           this.selectedLanguage = params['language'];
         }
+        if (params['theme']) {
+          this.selectedTheme = params['theme'];
+        }
         this.loadSelectedExample();
       }
     );
+    
+    //TODO review-throwing ExpressionChangedAfterItHasBeenCheckedError 
+    //for now wrapped in setTimeout
+    this.jsfFLService.activeFrameworkName$.subscribe((afName=>{
+      let activeFramework:Framework& { [key: string]: any; }=this.jsfFLService.activeFramework;
+      if(activeFramework.getConfig){
+        let cssfwConfig=activeFramework.getConfig();
+        setTimeout(()=>{
+          let tlist=cssfwConfig?.widgetstyles?.__themes__||[]
+          //append the demo app theme to the list
+          if(activeFramework.name=="material-design"){
+            tlist=[].concat({name:"demo-theme",text:"Demo Theme"},tlist);
+          }
+          this.themeList=tlist;
+          ///this.requestThemeChange(tlist[0]||"no-theme");
+          if(this.selectedTheme){//if theme was set in params
+            let themeNames=tlist.map(thm=>{return thm.name});
+            //if selectedTheme not from this framework, set to first in framework
+            if(themeNames.indexOf(this.selectedTheme)<0){
+              this.selectedTheme=tlist[0]?.name||"no-theme"
+            }
+          }else{
+            this.selectedTheme=tlist[0]?.name||"no-theme"
+          }
+          
+        },0)
+        
+       
+      }
+    }))
+    //
+
   }
 
   onSubmit(data: any) {
@@ -145,7 +199,7 @@ export class DemoComponent implements OnInit {
     const errorArray = [];
     for (const error of this.formValidationErrors) {
       const message = error.message;
-      const dataPathArray = JsonPointer.parse(error.dataPath);
+      const dataPathArray = JsonPointer.parse(error.instacePath||"");
       if (dataPathArray.length) {
         let field = dataPathArray[0];
         for (let i = 1; i < dataPathArray.length; i++) {
@@ -177,7 +231,8 @@ export class DemoComponent implements OnInit {
         '/?set=' + selectedSet +
         '&example=' + selectedExample +
         '&framework=' + this.selectedFramework +
-        '&language=' + this.selectedLanguage
+        '&language=' + this.selectedLanguage+
+        '&theme=' + this.selectedTheme
       );
       this.liveFormData = {};
       this.submittedFormData = null;
@@ -194,8 +249,10 @@ export class DemoComponent implements OnInit {
   }
 
   loadSelectedLanguage() {
-    window.location.href = `${window.location.pathname}?set=${this.selectedSet}&example=${this.selectedExample}&framework=${this.selectedFramework}&language=${this.selectedLanguage}`;
+    window.location.href = `${window.location.pathname}?set=${this.selectedSet}&example=${this.selectedExample}&framework=${this.selectedFramework}&language=${this.selectedLanguage}&theme=${this.selectedTheme}`;
   }
+
+
 
   // Display the form entered by the user
   // (runs whenever the user changes the jsonform object in the ACE input field)
@@ -245,11 +302,14 @@ export class DemoComponent implements OnInit {
 
   toggleFormOption(option: string) {
     if (option === 'feedback') {
-      this.jsonFormOptions.defautWidgetOptions.feedback =
-        !this.jsonFormOptions.defautWidgetOptions.feedback;
+      this.jsonFormOptions.defaultWidgetOptions.feedback =
+        !this.jsonFormOptions.defaultWidgetOptions.feedback;
     } else {
       this.jsonFormOptions[option] = !this.jsonFormOptions[option];
     }
     this.generateForm(this.jsonFormSchema);
   }
+
+
+
 }

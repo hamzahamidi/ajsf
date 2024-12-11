@@ -1,0 +1,13 @@
+{
+
+    "stylesheets": [
+        "bootstrap.min.css",
+        "bootstrap-theme.min.css"
+    ],
+    "scripts": [
+        "jquery.min.js",
+        "jquery-ui.min.js",
+        "bootstrap.min.js"
+    ]
+
+}

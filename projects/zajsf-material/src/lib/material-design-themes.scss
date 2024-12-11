@@ -1,0 +1,71 @@
+/* see https://material.angular.io/guide/theming */
+
+@use '@angular/material' as mat;
+@include mat.core();
+$indigo-primary: mat.define-palette(mat.$indigo-palette, 500);
+$green-accent: mat.define-palette(mat.$green-palette, A200, A100, A400);
+$red-warn: mat.define-palette(mat.$red-palette);
+$pink-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$deep-purple-primary: mat.define-palette(mat.$deep-purple-palette, 500);
+$amber-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$pink-primary: mat.define-palette(mat.$pink-palette, 500);
+$bluegrey-accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400);
+$typography:mat.define-typography-config();
+$density:0;
+
+/*Palettes (primary, accent, warn)-indigo, pink, red */
+
+$indigo-pink-primary: $indigo-primary;
+$indigo-pink-accent: $pink-accent;
+$indigo-pink-warn: $red-warn;
+$indigo-pink-theme: mat.define-light-theme(( color: ( primary: $indigo-pink-primary, accent: $indigo-pink-accent, warn:$indigo-pink-warn), typography: $typography, density: $density));
+.indigo-pink {
+    @include mat.core-theme($indigo-pink-theme);
+    @include mat.all-component-themes($indigo-pink-theme);
+    @include mat.button-color($indigo-pink-theme);
+}
+
+
+/*Palettes (primary, accent, warn)-purple, green, red */
+
+$purple-green-primary: $indigo-primary;
+$purple-green-accent: $green-accent;
+$purple-green-warn: $red-warn;
+$purple-green-theme: mat.define-dark-theme(( color: ( primary: $purple-green-primary, accent: $purple-green-accent, warn:$purple-green-warn)));
+.purple-green {
+    @include mat.core-color($purple-green-theme);
+    @include mat.all-component-colors($purple-green-theme);
+    @include mat.button-color($purple-green-theme);
+}
+
+
+/*Palettes (primary, accent, warn)-deep-purple, amber, red */
+
+$deeppurple-amber-primary: $deep-purple-primary;
+$deeppurple-amber-accent: $amber-accent;
+$deeppurple-amber-warn: $red-warn;
+$deeppurple-amber-theme: mat.define-light-theme(( color: ( primary: $deeppurple-amber-primary, accent: $deeppurple-amber-accent, warn:$deeppurple-amber-warn)));
+.deeppurple-amber {
+    @include mat.core-color($deeppurple-amber-theme);
+    @include mat.all-component-colors($deeppurple-amber-theme);
+    @include mat.button-color($deeppurple-amber-theme);
+}
+
+
+/*Palettes (primary, accent, warn)-pink, blue-grey, red */
+
+$pink-bluegrey-primary: $pink-primary;
+$pink-bluegrey-accent: $bluegrey-accent;
+$pink-bluegrey-warn: $red-warn;
+$pink-bluegrey-theme: mat.define-dark-theme(( color: ( primary: $pink-bluegrey-primary, accent: $pink-bluegrey-accent, warn:$pink-bluegrey-warn)));
+.pink-bluegrey {
+    @include mat.core-color($pink-bluegrey-theme);
+    @include mat.all-component-colors($pink-bluegrey-theme);
+    @include mat.button-color($pink-bluegrey-theme);
+}
+
+.material_default {
+    @include mat.core-color($indigo-pink-theme);
+    @include mat.all-component-colors($indigo-pink-theme);
+    @include mat.button-color($indigo-pink-theme);
+}

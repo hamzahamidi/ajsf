@@ -1,0 +1,61 @@
+[data-theme="daisyui_leaf"] .dui-btn {
+    border-radius: 60% 60% 60% 60%;
+    /* - not working for radio groups margin: 2px;*/
+    border: 2px solid lightgrey;
+}
+
+[data-theme="daisyui_leaf"] .tw-dui-btn-sm {
+    height: 2.5rem
+}
+
+[data-theme="daisyui_leaf"] .leaf {
+    /*width: 8em;
+    height: 3em;
+    */
+    border-radius: 1% 100% 1% 100%;
+    rotate: 165deg;
+    margin: 2px;
+    border: 2px solid lightgrey;
+}
+
+[data-theme="daisyui_leaf"] .leaf>span {
+    display: inline-block;
+    rotate: 195deg;
+}
+
+[data-theme="daisyui_leaf"] .tw-dui-input {
+    border-top-left-radius: 9999px;
+    border-bottom-right-radius: 9999px
+}
+
+[data-theme="daisyui_leaf"] .tw-dui-select {
+    border-top-left-radius: 9999px;
+    border-bottom-right-radius: 9999px
+}
+
+[data-theme="daisyui_default"] .tw-dui-btn {
+    border-radius: 9999px
+}
+
+[data-theme="daisyui_leaf"] {
+    --rounded-btn: 2rem
+}
+
+[data-theme="daisyui_leaf"] .tw-dui-border {
+    border-radius: 1rem;
+}
+
+
+/*this rule should apply to the element that has both data-theme="daisyui_leaf"
+ and class="border", whereas the previous one applies strictly to 
+ descendants data-theme="daisyui_leaf" elements having class="border"
+*/
+
+.border[data-theme="daisyui_leaf"] {
+    border-radius: 1rem;
+}
+
+[data-theme="daisyui_leaf"] input[type=number] {
+    border-top-left-radius: 9999px;
+    border-bottom-right-radius: 5000px;
+}

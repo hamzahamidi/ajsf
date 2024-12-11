@@ -1,0 +1,6 @@
+{
+
+    "stylesheets": ["bootstrap.min.css"],
+    "scripts": ["bootstrap.bundle.min.js"]
+
+}

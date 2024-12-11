@@ -1,0 +1,41 @@
+/*adapted from bootstrap 3 to fix input groups */
+
+.input-group .form-control:first-child,
+.input-group-text:first-child,
+.input-group-btn:first-child>.btn,
+.input-group-btn:first-child>.btn-group>.btn,
+.input-group-btn:first-child>.dropdown-toggle,
+.input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle),
+.input-group-btn:last-child>.btn-group:not(:last-child)>.btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group-text:first-child {
+    border-right: 0;
+}
+
+.input-group .form-control:last-child,
+.input-group-text:last-child,
+.input-group-btn:last-child>.btn,
+.input-group-btn:last-child>.btn-group>.btn,
+.input-group-btn:last-child>.dropdown-toggle,
+.input-group-btn:first-child>.btn:not(:first-child),
+.input-group-btn:first-child>.btn-group:not(:first-child)>.btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.input-group-text:last-child {
+    border-left: 0;
+}
+
+.input-group .form-control:not(:first-child):not(:last-child),
+.input-group-text:not(:first-child):not(:last-child),
+.input-group-btn:not(:first-child):not(:last-child) {
+    border-radius: 0
+}
+
+.btn-close>span:first-child {
+    display: none;
+}

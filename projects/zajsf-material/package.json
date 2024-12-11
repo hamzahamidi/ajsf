@@ -1,0 +1,49 @@
+{
+    "name": "@zajsf/material",
+    "version": "17.2.5-alpha.2",
+    "description": "Angular JSON Schema Form builder using Angular Material UI",
+    "author": "https://github.com/zahmo/zajsf/graphs/contributors",
+    "keywords": [
+        "Angular",
+        "ng",
+        "Angular15",
+        "Angular 15",
+        "Angular16",
+        "Angular 16",
+        "Angular17",
+        "Angular 17",
+        "ng15",
+        "ng16",
+        "ng17",
+        "JSON Schema",
+        "form",
+        "forms",
+        "form builder",
+        "form themes",
+        "material",
+        "angular material",
+        "material design",
+        "ajsf",
+        "zajsf",
+        "angular json schema form"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zahmo/zajsf"
+    },
+    "bugs": {
+        "url": "https://github.com/zahmo/zajsf/issues"
+    },
+    "private": false,
+    "dependencies": {
+        "lodash-es": "~4.17.21",
+        "@zajsf/core": "~17.2.5-alpha.2",
+        "@zajsf/cssframework": "~17.2.5-alpha.2",
+        "tslib": "^2.0.0"
+    },
+    "peerDependencies": {
+        "@angular/material": ">=17.0.0",
+        "@angular/cdk": ">=17.0.0"
+    }
+}
