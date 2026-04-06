@@ -12,51 +12,20 @@
     "importHelpers": true,
     "target": "ES2022",
     "resolveJsonModule": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "manual_typings"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types", "manual_typings"],
     "paths": {
-      "@angular/*": [
-        "./node_modules/@angular/*"
-      ],
-      "lodash/*": [
-        "node_modules/@types/lodash-es/*"
-      ],
-      "@ajsf/core": [
-        "./projects/ajsf-core/src/public_api.ts"
-      ],
-      "@ajsf/core/*": [
-        "./projects/ajsf-core/src/lib/*"
-      ],
-      "@ajsf/bootstrap3": [
-        "./projects/ajsf-bootstrap3/src/public_api.ts"
-      ],
-      "@ajsf/bootstrap3/*": [
-        "./projects/ajsf-bootstrap3/src/lib/*"
-      ],
-      "@ajsf/bootstrap4": [
-        "./projects/ajsf-bootstrap4/src/public_api.ts"
-      ],
-      "@ajsf/bootstrap4/*": [
-        "./projects/ajsf-bootstrap4/src/lib/*"
-      ],
-      "@ajsf/bootstrap5": [
-        "./projects/ajsf-bootstrap5/src/public_api.ts"
-      ],
-      "@ajsf/bootstrap5/*": [
-        "./projects/ajsf-bootstrap5/src/lib/*"
-      ],
-      "@ajsf/material": [
-        "./projects/ajsf-material/src/public_api.ts"
-      ],
-      "@ajsf/material/*": [
-        "./projects/ajsf-material/src/lib/*"
-      ]
+      "@angular/*": ["./node_modules/@angular/*"],
+      "lodash/*": ["node_modules/@types/lodash-es/*"],
+      "@ajsf/core": ["./projects/ajsf-core/src/public_api.ts"],
+      "@ajsf/core/*": ["./projects/ajsf-core/src/lib/*"],
+      "@ajsf/bootstrap3": ["./projects/ajsf-bootstrap3/src/public_api.ts"],
+      "@ajsf/bootstrap3/*": ["./projects/ajsf-bootstrap3/src/lib/*"],
+      "@ajsf/bootstrap4": ["./projects/ajsf-bootstrap4/src/public_api.ts"],
+      "@ajsf/bootstrap4/*": ["./projects/ajsf-bootstrap4/src/lib/*"],
+      "@ajsf/bootstrap5": ["./projects/ajsf-bootstrap5/src/public_api.ts"],
+      "@ajsf/bootstrap5/*": ["./projects/ajsf-bootstrap5/src/lib/*"],
+      "@ajsf/material": ["./projects/ajsf-material/src/public_api.ts"],
+      "@ajsf/material/*": ["./projects/ajsf-material/src/lib/*"]
     },
     "useDefineForClassFields": false
   },
