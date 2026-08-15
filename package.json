@@ -1,5 +1,6 @@
 {
   "name": "demo",
+  "private": true,
   "version": "15.0.0",
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "description": "Angular JSON Schema Form builder Demo",
@@ -82,7 +83,10 @@
     "test:material": "ng test @ajsf/material",
     "publish:coverage": "./node_modules/.bin/codecov",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "version:set": "node scripts/set-version.js",
+    "test:scripts": "jasmine scripts/*.spec.js",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "dependencies": {
     "@angular/animations": "^14.2.0",
@@ -112,9 +116,11 @@
     "@types/node": "^12.11.1",
     "codecov": "^3.8.3",
     "codelyzer": "^6.0.0",
+    "conventional-changelog-cli": "^4.1.0",
+    "jasmine": "^4.6.0",
     "jasmine-core": "~4.3.0",
-    "karma-chrome-launcher": "~3.1.0",
     "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
