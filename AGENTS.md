@@ -71,6 +71,7 @@ A version containing a hyphen goes to the `next` dist-tag, everything else to `l
 - **Never add `Co-Authored-By` or any agent attribution** to a commit message or a branch name.
 - Base branch is `main`.
 - Explain why in the commit body, not what. The diff already says what.
+- **Use SSH for git operations**, not HTTPS. `origin` is `git@github.com:hamzahamidi/ajsf.git`. An HTTPS push of anything under `.github/workflows/` is rejected unless the OAuth token carries the `workflow` scope, which the `gh` login does not have by default. SSH is not subject to that.
 
 ## Writing style
 
