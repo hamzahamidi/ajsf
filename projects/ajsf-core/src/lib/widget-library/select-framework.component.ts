@@ -1,5 +1,5 @@
 import {
-  Component, ComponentFactoryResolver, ComponentRef, Input,
+  Component, ComponentRef, Input,
   OnChanges, OnInit, ViewChild, ViewContainerRef
 } from '@angular/core';
 
@@ -21,7 +21,6 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
     widgetContainer: ViewContainerRef;
 
   constructor(
-    private componentFactory: ComponentFactoryResolver,
     private jsf: JsonSchemaFormService
   ) { }
 
@@ -35,9 +34,7 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
 
   updateComponent() {
     if (this.widgetContainer && !this.newComponent && this.jsf.framework) {
-      this.newComponent = this.widgetContainer.createComponent(
-        this.componentFactory.resolveComponentFactory(this.jsf.framework)
-      );
+      this.newComponent = this.widgetContainer.createComponent(this.jsf.framework);
     }
     if (this.newComponent) {
       for (const input of ['layoutNode', 'layoutIndex', 'dataIndex']) {

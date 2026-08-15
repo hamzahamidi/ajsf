@@ -1,6 +1,5 @@
 import {
   Component,
-  ComponentFactoryResolver,
   ComponentRef,
   Input,
   OnChanges,
@@ -25,7 +24,6 @@ export class TemplateComponent implements OnInit, OnChanges {
     widgetContainer: ViewContainerRef;
 
   constructor(
-    private componentFactory: ComponentFactoryResolver,
     private jsf: JsonSchemaFormService
   ) { }
 
@@ -39,9 +37,7 @@ export class TemplateComponent implements OnInit, OnChanges {
 
   updateComponent() {
     if (this.widgetContainer && !this.newComponent && this.layoutNode.options.template) {
-      this.newComponent = this.widgetContainer.createComponent(
-        this.componentFactory.resolveComponentFactory(this.layoutNode.options.template)
-      );
+      this.newComponent = this.widgetContainer.createComponent(this.layoutNode.options.template);
     }
     if (this.newComponent) {
       for (const input of ['layoutNode', 'layoutIndex', 'dataIndex']) {
