@@ -9,6 +9,13 @@ name: Release
 # workflow run, so that chain would silently never publish. Making it work
 # needs a PAT or a GitHub App, which reintroduces the long-lived credential
 # OIDC exists to remove. So the tag is an output here, not an input.
+#
+# Three jobs, in this order for a reason. An environment protection rule blocks
+# a job before ANY of its steps run, so building inside the gated job would
+# mean approving before knowing whether it compiles. `verify` is therefore
+# ungated and runs first, and `release` publishes the artifact `verify` already
+# built. Approving means "this built and passed, ship it" rather than "go ahead
+# and try".
 
 on:
   push:
@@ -27,7 +34,7 @@ jobs:
       publish: ${{ steps.check.outputs.publish }}
       dist-tag: ${{ steps.check.outputs.dist-tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Is this version already published
         id: check
@@ -54,28 +61,17 @@ jobs:
             echo "[release] @ajsf/core@$VERSION is not on npm, releasing"
           fi
 
-  release:
+  verify:
     needs: decide
     if: needs.decide.outputs.publish == 'true'
     runs-on: ubuntu-latest
-    # Requires a manual approval before anything reaches npm. Merging decides
-    # WHAT ships and when the build runs; this decides whether it actually
-    # goes out. Publishing is irreversible, so the pause the manual tag used
-    # to provide lives here instead. Configure the environment once in
-    # Settings > Environments > npm-publish with yourself as a required
-    # reviewer. Free on public repositories.
-    environment: npm-publish
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Use an npm that supports OIDC
-        run: npm i -g npm@latest
 
       - run: npm ci
 
@@ -103,6 +99,44 @@ jobs:
             fi
           done
           echo "[release] all four packages at $VERSION"
+
+      # Publishing the artifact verify built, rather than rebuilding inside the
+      # gated job, means what ships is exactly what passed.
+      - name: Upload the verified packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: ajsf-dist-${{ needs.decide.outputs.version }}
+          path: dist/@ajsf/
+          retention-days: 7
+          if-no-files-found: error
+
+  release:
+    needs: [decide, verify]
+    if: needs.decide.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    # Requires a manual approval before anything reaches npm. By the time this
+    # job is offered for approval, verify has already built and tested the
+    # exact artifact it will publish. Configure the environment once in
+    # Settings > Environments > npm-publish with yourself as a required
+    # reviewer. Free on public repositories.
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Use an npm that supports OIDC
+        run: npm i -g npm@latest
+
+      - name: Download the verified packages
+        uses: actions/download-artifact@v8
+        with:
+          name: ajsf-dist-${{ needs.decide.outputs.version }}
+          path: dist/@ajsf/
 
       - name: Publish core
         run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
