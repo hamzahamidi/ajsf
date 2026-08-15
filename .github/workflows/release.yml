@@ -1,17 +1,63 @@
 name: Release
 
+# Releases are driven by the version in projects/ajsf-core/package.json, set by
+# `npm run version:set`. Merging that bump to main publishes it. Every other
+# merge is a no-op, because the version is already on npm.
+#
+# This is deliberately ONE workflow rather than "merge creates a tag, tag
+# triggers publish". A tag pushed with GITHUB_TOKEN does not start another
+# workflow run, so that chain would silently never publish. Making it work
+# needs a PAT or a GitHub App, which reintroduces the long-lived credential
+# OIDC exists to remove. So the tag is an output here, not an input.
+
 on:
   push:
-    tags: ['v*']
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
-  release:
+  decide:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      publish: ${{ steps.check.outputs.publish }}
+      dist-tag: ${{ steps.check.outputs.dist-tag }}
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Is this version already published
+        id: check
+        run: |
+          VERSION=$(node -p "require('./projects/ajsf-core/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          case "$VERSION" in
+            *-*) echo "dist-tag=next" >> "$GITHUB_OUTPUT" ;;
+            *)   echo "dist-tag=latest" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+          # Test the output, not the exit code. `npm view pkg@missing-version`
+          # exits 0 with empty stdout; only a missing package exits non-zero.
+          # Keying on the exit code would report "already published" every time
+          # and never release anything.
+          PUBLISHED=$(npm view "@ajsf/core@$VERSION" version 2>/dev/null || true)
+
+          if [ -n "$PUBLISHED" ]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "[release] @ajsf/core@$VERSION is already on npm, nothing to do"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "[release] @ajsf/core@$VERSION is not on npm, releasing"
+          fi
+
+  release:
+    needs: decide
+    if: needs.decide.outputs.publish == 'true'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -39,27 +85,32 @@ jobs:
           npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
           npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
-      - name: Resolve the version and dist-tag from the git tag
-        id: release
+      - name: Confirm every package carries the release version
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          PKG=$(node -p "require('./projects/ajsf-core/package.json').version")
-          if [ "$VERSION" != "$PKG" ]; then
-            echo "[release] tag $VERSION does not match @ajsf/core version $PKG"
-            exit 1
-          fi
-          case "$VERSION" in
-            *-*) DIST_TAG=next ;;
-            *)   DIST_TAG=latest ;;
-          esac
-          echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
-          echo "[release] publishing $VERSION to the $DIST_TAG dist-tag"
+          VERSION="${{ needs.decide.outputs.version }}"
+          for pkg in core bootstrap3 bootstrap4 material; do
+            BUILT=$(node -p "require('./dist/@ajsf/$pkg/package.json').version")
+            if [ "$BUILT" != "$VERSION" ]; then
+              echo "[release] dist/@ajsf/$pkg is $BUILT, expected $VERSION"
+              exit 1
+            fi
+          done
+          echo "[release] all four packages at $VERSION"
 
       - name: Publish core
-        run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ steps.release.outputs.dist-tag }}
+        run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
 
       - name: Publish frameworks
         run: |
           for pkg in bootstrap3 bootstrap4 material; do
-            npm publish "dist/@ajsf/$pkg" --provenance --access public --tag ${{ steps.release.outputs.dist-tag }}
+            npm publish "dist/@ajsf/$pkg" --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
           done
+
+      - name: Tag the released commit
+        run: |
+          VERSION="${{ needs.decide.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "Release $VERSION"
+          git push origin "v$VERSION"
+          echo "[release] tagged v$VERSION on ${GITHUB_SHA}"
