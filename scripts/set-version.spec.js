@@ -1,0 +1,104 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { setVersion } = require('./set-version');
+
+function fixture() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ajsf-'));
+  const write = (name, json) => {
+    fs.mkdirSync(path.join(dir, name), { recursive: true });
+    fs.writeFileSync(path.join(dir, name, 'package.json'), JSON.stringify(json, null, 2));
+  };
+  write('ajsf-core', {
+    name: '@ajsf/core', version: '0.8.0',
+    dependencies: { 'lodash-es': '~4.17.21' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0', rxjs: '^7.0.0' },
+  });
+  write('ajsf-material', {
+    name: '@ajsf/material', version: '0.8.0',
+    dependencies: { '@ajsf/core': '~0.8.0' },
+    peerDependencies: { '@angular/material': '>=14.0.0', '@angular/cdk': '>=14.0.0' },
+  });
+  write('ajsf-bootstrap3', {
+    name: '@ajsf/bootstrap3', version: '0.8.0',
+    dependencies: { '@ajsf/core': '~0.8.0' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
+  });
+  write('ajsf-bootstrap4', {
+    name: '@ajsf/bootstrap4', version: '0.8.0',
+    dependencies: { '@ajsf/core': '~0.8.0' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
+  });
+  return dir;
+}
+
+const read = (dir, name) =>
+  JSON.parse(fs.readFileSync(path.join(dir, name, 'package.json'), 'utf8'));
+
+const ALL = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4'];
+const FRAMEWORKS = ['ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4'];
+
+describe('setVersion', () => {
+  it('sets the version on all four packages', () => {
+    const dir = fixture();
+    setVersion('18.0.0', 18, dir);
+    ALL.forEach(p => expect(read(dir, p).version).toEqual('18.0.0'));
+  });
+
+  it('bumps the internal @ajsf/core range in lockstep', () => {
+    const dir = fixture();
+    setVersion('18.0.0', 18, dir);
+    FRAMEWORKS.forEach(p =>
+      expect(read(dir, p).dependencies['@ajsf/core']).toEqual('^18.0.0'));
+  });
+
+  it('pins the internal @ajsf/core range exactly for a prerelease', () => {
+    const dir = fixture();
+    setVersion('0.9.0-rc.0', null, dir);
+    FRAMEWORKS.forEach(p =>
+      expect(read(dir, p).dependencies['@ajsf/core']).toEqual('0.9.0-rc.0'));
+  });
+
+  it('bounds the Angular peer ranges to the given major', () => {
+    const dir = fixture();
+    setVersion('18.0.0', 18, dir);
+    expect(read(dir, 'ajsf-core').peerDependencies['@angular/core']).toEqual('^18.0.0');
+    expect(read(dir, 'ajsf-material').peerDependencies['@angular/material']).toEqual('^18.0.0');
+    expect(read(dir, 'ajsf-material').peerDependencies['@angular/cdk']).toEqual('^18.0.0');
+  });
+
+  it('leaves non-Angular dependencies alone', () => {
+    const dir = fixture();
+    setVersion('18.0.0', 18, dir);
+    expect(read(dir, 'ajsf-core').peerDependencies.rxjs).toEqual('^7.0.0');
+    expect(read(dir, 'ajsf-core').dependencies['lodash-es']).toEqual('~4.17.21');
+  });
+
+  it('leaves Angular peers alone when angularMajor is null', () => {
+    const dir = fixture();
+    setVersion('0.9.0', null, dir);
+    expect(read(dir, 'ajsf-core').version).toEqual('0.9.0');
+    expect(read(dir, 'ajsf-core').peerDependencies['@angular/core']).toEqual('>=14.0.0');
+  });
+
+  it('rejects a malformed version without writing anything', () => {
+    const dir = fixture();
+    expect(() => setVersion('16.0', 16, dir)).toThrowError(/not a valid version/);
+    expect(() => setVersion('v16.0.0', 16, dir)).toThrowError(/not a valid version/);
+    expect(() => setVersion('sixteen', 16, dir)).toThrowError(/not a valid version/);
+    ALL.forEach(p => expect(read(dir, p).version).toEqual('0.8.0'));
+  });
+
+  it('rejects an Angular major that disagrees with the version major', () => {
+    const dir = fixture();
+    expect(() => setVersion('17.0.0', 18, dir))
+      .toThrowError(/has major 17, which does not match Angular 18/);
+    ALL.forEach(p => expect(read(dir, p).version).toEqual('0.8.0'));
+  });
+
+  it('allows a major mismatch when no Angular major is given', () => {
+    const dir = fixture();
+    setVersion('0.9.0', null, dir);
+    expect(read(dir, 'ajsf-core').version).toEqual('0.9.0');
+  });
+});
