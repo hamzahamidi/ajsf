@@ -39,6 +39,21 @@ function setVersion(nextVersion, angularMajor, packagesDir) {
       manifest.dependencies['@ajsf/core'] = prerelease ? nextVersion : `^${nextVersion}`;
     }
 
+    // Keywords say which Angular a package targets, so they move with the
+    // major rather than being remembered separately. Angular<N>, Angular <N>
+    // and ng<N> are retargeted in place; everything else is untouched.
+    if (angularMajor !== null && Array.isArray(manifest.keywords)) {
+      const versioned = /^(Angular ?|ng)\d+$/;
+      const rest = manifest.keywords.filter((word) => !versioned.test(word));
+      manifest.keywords = [
+        ...rest.slice(0, 2),
+        `Angular${angularMajor}`,
+        `Angular ${angularMajor}`,
+        `ng${angularMajor}`,
+        ...rest.slice(2),
+      ];
+    }
+
     if (angularMajor !== null && manifest.peerDependencies) {
       for (const peer of ANGULAR_PEERS) {
         if (manifest.peerDependencies[peer]) {
