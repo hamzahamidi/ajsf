@@ -52,6 +52,8 @@ It refuses to write anything when the version is malformed or when the two argum
 
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
 
+⚠️ **Release only when the published product changes.** A new version is for things a consumer of `@ajsf/*` can observe: widget behaviour, the public API, dependencies, supported Angular range. CI configuration, workflows, test suites, lint setup, contributor docs and internal refactors do not get a release, however large the diff. They land on `main` without touching the version and the release workflow correctly does nothing.
+
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
 3. The `verify` job builds and runs all four suites, ungated, and uploads `dist` as an artifact.
