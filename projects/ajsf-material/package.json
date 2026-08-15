@@ -1,6 +1,6 @@
 {
   "name": "@ajsf/material",
-  "version": "0.8.0",
+  "version": "14.0.0-rc.0",
   "description": "Angular JSON Schema Form builder using Angular Material UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
@@ -29,12 +29,12 @@
   "private": false,
   "dependencies": {
     "lodash-es": "~4.17.21",
-    "@ajsf/core": "~0.8.0",
+    "@ajsf/core": "14.0.0-rc.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/flex-layout": ">=14.0.0-beta.40",
-    "@angular/material": ">=14.0.0",
-    "@angular/cdk": ">=14.0.0"
+    "@angular/material": "^14.0.0",
+    "@angular/cdk": "^14.0.0"
   }
 }
