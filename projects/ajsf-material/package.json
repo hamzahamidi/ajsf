@@ -33,7 +33,6 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/flex-layout": ">=14.0.0-beta.40",
     "@angular/material": "^14.0.0",
     "@angular/cdk": "^14.0.0"
   }

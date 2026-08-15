@@ -27,10 +27,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [style.justify-content]="getFlexAttribute('justify-content')"
         [style.align-items]="getFlexAttribute('align-items')"
         [style.align-content]="getFlexAttribute('align-content')"
-        [fxLayout]="getFlexAttribute('layout')"
-        [fxLayoutGap]="options?.fxLayoutGap"
-        [fxLayoutAlign]="options?.fxLayoutAlign"
-        [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
+        [style.gap]="options?.fxLayoutGap"
+        [style.justify-content]="getJustifyContent()"
+        [style.align-items]="getAlignItems()"></flex-layout-root-widget>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>
@@ -57,10 +56,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [style.justify-content]="getFlexAttribute('justify-content')"
         [style.align-items]="getFlexAttribute('align-items')"
         [style.align-content]="getFlexAttribute('align-content')"
-        [fxLayout]="getFlexAttribute('layout')"
-        [fxLayoutGap]="options?.fxLayoutGap"
-        [fxLayoutAlign]="options?.fxLayoutAlign"
-        [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
+        [style.gap]="options?.fxLayoutGap"
+        [style.justify-content]="getJustifyContent()"
+        [style.align-items]="getAlignItems()"></flex-layout-root-widget>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
     </fieldset>
@@ -90,10 +88,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
             [style.justify-content]="getFlexAttribute('justify-content')"
             [style.align-items]="getFlexAttribute('align-items')"
             [style.align-content]="getFlexAttribute('align-content')"
-            [fxLayout]="getFlexAttribute('layout')"
-            [fxLayoutGap]="options?.fxLayoutGap"
-            [fxLayoutAlign]="options?.fxLayoutAlign"
-            [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
+            [style.gap]="options?.fxLayoutGap"
+            [style.justify-content]="getJustifyContent()"
+            [style.align-items]="getAlignItems()"></flex-layout-root-widget>
           </fieldset>
       </mat-card-content>
       <mat-card-footer>
@@ -127,10 +124,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [style.justify-content]="getFlexAttribute('justify-content')"
           [style.align-items]="getFlexAttribute('align-items')"
           [style.align-content]="getFlexAttribute('align-content')"
-          [fxLayout]="getFlexAttribute('layout')"
-          [fxLayoutGap]="options?.fxLayoutGap"
-          [fxLayoutAlign]="options?.fxLayoutAlign"
-          [attr.fxFlexFill]="options?.fxLayoutAlign"></flex-layout-root-widget>
+          [style.gap]="options?.fxLayoutGap"
+          [style.justify-content]="getJustifyContent()"
+          [style.align-items]="getAlignItems()"></flex-layout-root-widget>
       </fieldset>
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
@@ -186,6 +182,31 @@ export class FlexLayoutSectionComponent implements OnInit {
 
   toggleExpanded() {
     if (this.options.expandable) { this.expanded = !this.expanded; }
+  }
+
+  // fxLayoutAlign="start center" used to come from @angular/flex-layout, which
+  // is deprecated and has no Angular 16+ release. These map the same option
+  // values onto justify-content and align-items, so schemas setting
+  // fxLayoutAlign or fxLayoutGap keep working unchanged. The existing
+  // [style.display], [style.flex-direction] and [style.flex-wrap] bindings
+  // already cover what fxLayout did.
+  private static readonly ALIGN = {
+    start: 'flex-start', end: 'flex-end', center: 'center',
+    'space-between': 'space-between', 'space-around': 'space-around',
+    'space-evenly': 'space-evenly', stretch: 'stretch', baseline: 'baseline',
+  };
+
+  private fxAlign(position: number): string {
+    const value = `${(this.options || {}).fxLayoutAlign || ''}`.trim().split(/\s+/)[position];
+    return FlexLayoutSectionComponent.ALIGN[value] || null;
+  }
+
+  getJustifyContent(): string {
+    return this.getFlexAttribute('justify-content') || this.fxAlign(0);
+  }
+
+  getAlignItems(): string {
+    return this.getFlexAttribute('align-items') || this.fxAlign(1);
   }
 
   // Set attributes for flexbox container

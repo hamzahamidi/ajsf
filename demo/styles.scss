@@ -69,3 +69,34 @@ body {
 .debug { border: 1px solid red !important; }
 
 .mat-input-container.mat-form-field { width: 100%; }
+
+// Replaces @angular/flex-layout, which is deprecated and has no Angular 16+
+// release. fxLayout.lt-sm needed a real media query, so these carry the
+// breakpoint the directive used to apply.
+.demo-columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+
+  @media (max-width: 599.98px) {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+.demo-column {
+  flex: 0 0 calc(50% - 12px);
+  max-width: calc(50% - 12px);
+
+  @media (max-width: 599.98px) {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+}
+
+.demo-stack {
+  display: flex;
+  flex-direction: column;
+}
