@@ -192,6 +192,12 @@ replaces (e.g. "Supersedes #123").
 Releases are automated. There is no npm token: publishing uses npm Trusted
 Publishing over OIDC, so it only works from this repository's release workflow.
 
+Release only when the published product changes: widget behaviour, the public
+API, dependencies, or the supported Angular range. CI configuration, test
+suites, lint setup and contributor documentation do not get a release, however
+large the diff. They land without touching the version, and the release
+workflow then does nothing.
+
 The package major always matches the Angular major it targets, so `@ajsf/* 16.x`
 is for Angular 16. Minor and patch are free.
 

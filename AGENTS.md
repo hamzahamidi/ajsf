@@ -52,6 +52,8 @@ It refuses to write anything when the version is malformed or when the two argum
 
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
 
+⚠️ **Release only when the published product changes.** A new version is for things a consumer of `@ajsf/*` can observe: widget behaviour, the public API, dependencies, supported Angular range. CI configuration, workflows, test suites, lint setup, contributor docs and internal refactors do not get a release, however large the diff. They land on `main` without touching the version and the release workflow correctly does nothing.
+
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The workflow reads the version from `projects/ajsf-core/package.json`, checks npm, and runs the full build and test suite. Every merge that does not change the version is a no-op.
 3. Approve the `npm-publish` deployment. Nothing reaches npm before this.
