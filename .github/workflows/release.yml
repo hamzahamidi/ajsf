@@ -58,6 +58,13 @@ jobs:
     needs: decide
     if: needs.decide.outputs.publish == 'true'
     runs-on: ubuntu-latest
+    # Requires a manual approval before anything reaches npm. Merging decides
+    # WHAT ships and when the build runs; this decides whether it actually
+    # goes out. Publishing is irreversible, so the pause the manual tag used
+    # to provide lives here instead. Configure the environment once in
+    # Settings > Environments > npm-publish with yourself as a required
+    # reviewer. Free on public repositories.
+    environment: npm-publish
     steps:
       - uses: actions/checkout@v4
 
