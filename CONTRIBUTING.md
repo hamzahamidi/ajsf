@@ -53,14 +53,30 @@ See also [GitHub's guide on contributing](https://help.github.com/articles/fork-
 If you want to do multiple unrelated changes, use separate branches and pull
 requests.
 
+### Prerequisites
+
+This project pins its Node version in `.nvmrc`. Use it, because the Angular version
+in use does not support every Node release:
+
+```bash
+$ nvm use
+```
+
+If `nvm use` leaves you on the wrong version, source nvm with `--no-use` first
+(`. "$NVM_DIR/nvm.sh" --no-use`) and run it again. Otherwise the shell keeps your
+default Node and installs or builds silently run on the wrong version.
+
+The repository has a `package-lock.json` and no `yarn.lock`, so use npm. CI installs
+with `npm ci`.
+
 ### Start the development environment
 
 Let's first generate all the bundles we need to start the demo:
 
 ```bash
 $ cd ajsf
-$ yarn install or npm install
-$ yarn start
+$ npm install
+$ npm start
 ```
 
 You can stop the demo application.
@@ -71,6 +87,19 @@ Now let's start the demo application in watch mode too. So, open a new terminal 
 This method is tricky but it works perfectly in all environments (I tried other methods like npm-run-all
 or concurrently packages but angular-cli build doesn't restart after a failed build).
 If you have a better method please send a PR.
+
+### Running the tests
+
+The library tests run in headless Chrome and need the launcher flags:
+
+```bash
+$ npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+```
+
+Substitute `test:bs3`, `test:bs4` or `test:material` for the other packages.
+
+`npm run test:scripts` runs the tests for the files in `scripts/`. It is plain jasmine
+with no browser, so it takes about a second, and CI runs it too.
 
 ### Commits
 
@@ -157,3 +186,34 @@ request and to make review easier.
 When you replace a pull request by another one, add a message in the
 description of the new pull request on GitHub referencing the pull request it
 replaces (e.g. "Supersedes #123").
+
+## Releasing (maintainers)
+
+Releases are automated. There is no npm token: publishing uses npm Trusted
+Publishing over OIDC, so it only works from this repository's release workflow.
+
+The package major always matches the Angular major it targets, so `@ajsf/* 16.x`
+is for Angular 16. Minor and patch are free.
+
+1. Set the version. One script writes it to all four packages, along with the
+   internal `@ajsf/core` range and the Angular peer ranges, because setting those
+   separately is how a package ships resolving to the previous core:
+
+   ```bash
+   $ npm run version:set -- 16.1.0 16
+   ```
+
+   The second argument is the Angular major. The script refuses to write anything
+   if it disagrees with the version, or if the version is malformed.
+
+2. Commit the change, open a pull request, and merge it once CI is green.
+
+3. Approve the `npm-publish` deployment. Nothing reaches npm before this.
+
+4. The workflow publishes `@ajsf/core` first, then the three framework packages,
+   and tags the commit afterwards.
+
+A version containing a hyphen (`16.0.0-rc.1`) publishes to the `next` dist-tag
+instead of `latest`, so it does not change what `npm install @ajsf/core` resolves
+to. Do not create release tags by hand: the workflow writes them, so a tag always
+means that version shipped.

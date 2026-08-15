@@ -24,6 +24,27 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 * [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
 * [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
 
+## Version compatibility
+
+From `14.0.0` onward, the `@ajsf` major matches the Angular major it targets, the same
+convention Angular Material uses. So install the major that matches your Angular:
+
+```shell
+npm install @ajsf/material@16   # for Angular 16
+```
+
+⚠️ Prefer that over `@latest` once you are on a bounded version. `@latest` always points
+at the newest release, which targets the newest Angular, and installing it on an older
+Angular will fail to resolve.
+
+Peer ranges are bounded from `14.0.0` onward, so npm reports a clear resolution error
+rather than installing a combination that was never built or tested.
+
+`0.8.0` and earlier predate this scheme. They declare open peer ranges (`>=14.0.0`) and
+were built against Angular 14. There is no release for Angular 15, which reached end of
+life. See the [versions on npm](https://www.npmjs.com/package/@ajsf/core?activeTab=versions)
+for what is currently available.
+
 ## Check out the live demo and play with the examples
 
 [Check out some examples here.](https://hamidihamza.com/ajsf)
