@@ -18,15 +18,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, lts/*]
+        node-version: [16.x, 18.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Node ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+    - name: Test scripts
+      run: npm run test:scripts
     - name: Build libs and demo
       run: npm run build:demo
     - name: Test libs

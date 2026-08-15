@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Use an npm that supports OIDC
+        run: npm i -g npm@latest
+
+      - run: npm ci
+
+      - name: Test scripts
+        run: npm run test:scripts
+
+      - name: Build libraries
+        run: npm run build:libs
+
+      - name: Test libraries
+        run: |
+          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+
+      - name: Resolve the version and dist-tag from the git tag
+        id: release
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./projects/ajsf-core/package.json').version")
+          if [ "$VERSION" != "$PKG" ]; then
+            echo "[release] tag $VERSION does not match @ajsf/core version $PKG"
+            exit 1
+          fi
+          case "$VERSION" in
+            *-*) DIST_TAG=next ;;
+            *)   DIST_TAG=latest ;;
+          esac
+          echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "[release] publishing $VERSION to the $DIST_TAG dist-tag"
+
+      - name: Publish core
+        run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ steps.release.outputs.dist-tag }}
+
+      - name: Publish frameworks
+        run: |
+          for pkg in bootstrap3 bootstrap4 material; do
+            npm publish "dist/@ajsf/$pkg" --provenance --access public --tag ${{ steps.release.outputs.dist-tag }}
+          done

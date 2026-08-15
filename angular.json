@@ -94,24 +94,6 @@
         }
       }
     },
-    "demo-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "demo:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "demo:serve:production"
-            }
-          }
-        }
-      }
-    },
     "@ajsf/core": {
       "root": "projects/ajsf-core",
       "sourceRoot": "projects/ajsf-core/src",

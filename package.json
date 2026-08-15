@@ -83,7 +83,6 @@
     "test:material": "ng test @ajsf/material",
     "publish:coverage": "./node_modules/.bin/codecov",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "version:set": "node scripts/set-version.js",
     "test:scripts": "jasmine scripts/*.spec.js",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
@@ -125,7 +124,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^14.1.0",
-    "protractor": "~7.0.0",
     "ts-node": "~8.6.2",
     "tsickle": "^0.46.3",
     "tslib": "^2.3.1",
