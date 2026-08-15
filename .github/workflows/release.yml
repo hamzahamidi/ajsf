@@ -1,8 +1,14 @@
 name: Release
 
 # Releases are driven by the version in projects/ajsf-core/package.json, set by
-# `npm run version:set`. Merging that bump to main publishes it. Every other
-# merge is a no-op, because the version is already on npm.
+# `npm run version:set`. Merging a commit that CHANGES that version publishes
+# it. Every other merge is a no-op.
+#
+# The trigger is the change, not a mismatch with npm. A repository version
+# sitting ahead of what is published is normal, and treating that as "release
+# me" starts a run on every unrelated merge and leaves it waiting at the
+# approval gate. The npm check remains, demoted to a safety net that refuses to
+# republish an existing version.
 #
 # This is deliberately ONE workflow rather than "merge creates a tag, tag
 # triggers publish". A tag pushed with GITHUB_TOKEN does not start another
@@ -35,11 +41,14 @@ jobs:
       dist-tag: ${{ steps.check.outputs.dist-tag }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2   # need the previous commit to diff the version
 
-      - name: Is this version already published
+      - name: Did this push change the version
         id: check
         run: |
-          VERSION=$(node -p "require('./projects/ajsf-core/package.json').version")
+          MANIFEST=projects/ajsf-core/package.json
+          VERSION=$(node -p "require('./$MANIFEST').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
           case "$VERSION" in
@@ -47,18 +56,37 @@ jobs:
             *)   echo "dist-tag=latest" >> "$GITHUB_OUTPUT" ;;
           esac
 
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CHANGED=yes
+            echo "[release] manual dispatch, treating as a release"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            PREVIOUS=$(git show HEAD^:"$MANIFEST" 2>/dev/null \
+              | node -p "try{JSON.parse(require('fs').readFileSync(0,'utf8')).version}catch(e){''}" || true)
+            if [ "$PREVIOUS" = "$VERSION" ]; then
+              CHANGED=no
+              echo "[release] version unchanged at $VERSION, nothing to do"
+            else
+              CHANGED=yes
+              echo "[release] version changed from ${PREVIOUS:-none} to $VERSION"
+            fi
+          else
+            CHANGED=no
+            echo "[release] no previous commit to compare, nothing to do"
+          fi
+
+          # Safety net, not the trigger: never republish an existing version.
           # Test the output, not the exit code. `npm view pkg@missing-version`
           # exits 0 with empty stdout; only a missing package exits non-zero.
-          # Keying on the exit code would report "already published" every time
-          # and never release anything.
           PUBLISHED=$(npm view "@ajsf/core@$VERSION" version 2>/dev/null || true)
 
-          if [ -n "$PUBLISHED" ]; then
+          if [ "$CHANGED" = "no" ]; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
-            echo "[release] @ajsf/core@$VERSION is already on npm, nothing to do"
+          elif [ -n "$PUBLISHED" ]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "[release] refusing: @ajsf/core@$VERSION is already on npm"
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
-            echo "[release] @ajsf/core@$VERSION is not on npm, releasing"
+            echo "[release] releasing $VERSION"
           fi
 
   verify:
@@ -123,10 +151,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # NOT .nvmrc. This job publishes prebuilt tarballs and never compiles
+      # anything, so it does not need the Angular toolchain's Node 16. It does
+      # need an npm new enough for OIDC trusted publishing, and current npm
+      # requires Node 22 or newer, so pinning Node 16 here made
+      # `npm i -g npm@latest` fail with EBADENGINE before any publish ran.
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Use an npm that supports OIDC

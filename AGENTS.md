@@ -53,9 +53,12 @@ It refuses to write anything when the version is malformed or when the two argum
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
 
 1. Open a PR containing only the `npm run version:set` bump.
-2. Merge it. The workflow reads the version from `projects/ajsf-core/package.json`, checks npm, and runs the full build and test suite. Every merge that does not change the version is a no-op.
-3. Approve the `npm-publish` deployment. Nothing reaches npm before this.
-4. The workflow publishes `core` first, then the three framework packages, and tags the commit afterwards.
+2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
+3. The `verify` job builds and runs all four suites, ungated, and uploads `dist` as an artifact.
+4. Approve the `npm-publish` deployment. Nothing reaches npm before this, and by now the build is green.
+5. `release` publishes the artifact `verify` built, `core` first, then the three framework packages, and tags the commit.
+
+The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes prebuilt tarballs and compiles nothing, but it needs an npm recent enough for OIDC, and current npm requires Node 22 or later. Pinning it to `.nvmrc` made `npm i -g npm@latest` fail with `EBADENGINE` before any publish ran.
 
 A version containing a hyphen goes to the `next` dist-tag, everything else to `latest`. Do not create release tags by hand: the workflow writes them, so a tag always means the version shipped.
 
