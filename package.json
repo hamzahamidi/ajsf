@@ -92,7 +92,6 @@
     "@angular/common": "^14.2.0",
     "@angular/compiler": "^14.2.0",
     "@angular/core": "^14.2.0",
-    "@angular/flex-layout": "^14.0.0-beta.40",
     "@angular/forms": "^14.2.0",
     "@angular/material": "^14.1.1",
     "@angular/platform-browser": "^14.2.0",

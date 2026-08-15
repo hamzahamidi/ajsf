@@ -66,14 +66,13 @@
     </mat-menu>
   </div>
 </div>
-<div fxLayout="row" fxLayoutAlign="space-around start"
-  fxLayout.lt-sm="column" fxLayoutAlign.lt-sm="flex-start center">
+<div class="demo-columns">
 
-  <mat-card fxFlex="0 0 calc(50% - 12px)">
+  <mat-card class="demo-column">
     <h4 class="default-cursor" (click)="toggleVisible('options')">
       {{visible.options ? '▼' : '▶'}} Selected Framework and Options
     </h4>
-    <div *ngIf="visible.options" fxLayout="column" [@expandSection]="true">
+    <div *ngIf="visible.options" class="demo-stack" [@expandSection]="true">
       <mat-form-field>
         <mat-select
           [(ngModel)]="selectedFramework"
@@ -140,7 +139,7 @@
     </div>
   </mat-card>
 
-  <mat-card fxFlex="0 0 calc(50% - 12px)">
+  <mat-card class="demo-column">
     <h4 class="default-cursor" (click)="toggleVisible('form')">
       {{visible.form ? '▼' : '▶'}} Generated Form
     </h4>
@@ -166,7 +165,7 @@
     <h4 class="default-cursor" (click)="toggleVisible('output')">
       {{visible.output ? '▼' : '▶'}} Form Output
     </h4>
-    <div *ngIf="visible.output" fxLayout="column" [@expandSection]="true">
+    <div *ngIf="visible.output" class="demo-stack" [@expandSection]="true">
       <div>
         Valid?:
         <strong *ngIf="formIsValid || prettyValidationErrors"

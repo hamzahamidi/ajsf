@@ -4,7 +4,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -24,7 +23,7 @@ import { MaterialDesignFrameworkModule } from '@ajsf/material';
 @NgModule({
   declarations: [AceEditorDirective, DemoComponent, DemoRootComponent],
   imports: [
-    BrowserModule, BrowserAnimationsModule, FlexLayoutModule, FormsModule,
+    BrowserModule, BrowserAnimationsModule, FormsModule,
     HttpClientModule, MatButtonModule, MatCardModule, MatCheckboxModule,
     MatIconModule, MatMenuModule, MatSelectModule, MatToolbarModule,
     RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),

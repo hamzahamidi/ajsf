@@ -8,7 +8,6 @@ import {
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
@@ -32,7 +31,6 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MaterialDesignFramework} from './material-design.framework';
 import {MATERIAL_FRAMEWORK_COMPONENTS} from './widgets/public_api';
-import {fixAngularFlex} from './angular-flex-monkey-patch';
 
 /**
  * unused @angular/material modules:
@@ -55,7 +53,6 @@ export const ANGULAR_MATERIAL_MODULES = [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        FlexLayoutModule,
         ...ANGULAR_MATERIAL_MODULES,
         WidgetLibraryModule,
         JsonSchemaFormModule,
@@ -74,8 +71,4 @@ export const ANGULAR_MATERIAL_MODULES = [
         { provide: Framework, useClass: MaterialDesignFramework, multi: true },
     ]
 })
-export class MaterialDesignFrameworkModule {
-  constructor() {
-    fixAngularFlex();
-  }
-}
+export class MaterialDesignFrameworkModule { }
