@@ -87,6 +87,11 @@ body {
 }
 
 .demo-column {
+  // fxFlex applied box-sizing: border-box to its flex items. Without it the
+  // mat-card padding is added on top of the 50% basis, each card measures
+  // 776px instead of 744px at a 1512px viewport, and the page scrolls
+  // horizontally. Measured against production before and after.
+  box-sizing: border-box;
   flex: 0 0 calc(50% - 12px);
   max-width: calc(50% - 12px);
 
