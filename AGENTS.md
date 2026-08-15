@@ -89,6 +89,15 @@ A version containing a hyphen goes to the `next` dist-tag, everything else to `l
 
 `docs/superpowers/` holds generated design and planning documents. It is gitignored on purpose. Do not add it.
 
+## When behaviour differs, work out which side is wrong
+
+A difference between your change and what was there before is not automatically your regression. Study both possibilities before "fixing" it, because the two need opposite responses:
+
+- **You broke it.** Fix your change. Example: replacing `fxFlex` lost the `box-sizing: border-box` that directive applied, so `mat-card` padding pushed each column 32px wider and the page scrolled sideways. Production had no overflow, so the new behaviour was wrong.
+- **You fixed something that was already broken.** Keep it, say so, and update whatever pinned the old behaviour. Example: `getFlexAttribute('layout')` read `(a || 'row') + b ? ' ' + b : ''`. `+` binds tighter than `?:`, so it always returned `' ' + fxLayoutWrap` and `fxLayout: 'column'` evaluated to `" undefined"`. That option had never worked.
+
+The corpus baseline pins **current** behaviour including bugs, so a corpus failure can mean either. Read the diff before deciding, and never re-record a baseline just to make a suite green.
+
 ## Traps
 
 Each of these cost real debugging time. They look like bugs in your code and are not.

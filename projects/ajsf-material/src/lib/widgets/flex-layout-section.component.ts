@@ -228,10 +228,6 @@ export class FlexLayoutSectionComponent implements OnInit {
           this.options[attribute] || ['column', 'nowrap'][index];
       case 'justify-content': case 'align-items': case 'align-content':
         return this.options[attribute];
-      case 'layout':
-        return (this.options.fxLayout || 'row') +
-          this.options.fxLayoutWrap ? ' ' + this.options.fxLayoutWrap : '';
-
     }
   }
 }
