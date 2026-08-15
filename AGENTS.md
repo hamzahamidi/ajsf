@@ -52,6 +52,8 @@ It refuses to write anything when the version is malformed or when the two argum
 
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
 
+⚠️ **Between releases, the version in `projects/ajsf-core/package.json` must equal the version currently on npm.** The workflow decides by comparing the two, so a version sitting in `main` that has not been published makes every merge start a release run that waits at the approval gate. Bumping the version *is* the release, so never merge a bump before the release is meant to happen, and never bundle one into an unrelated pull request.
+
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The workflow reads the version from `projects/ajsf-core/package.json`, checks npm, and runs the full build and test suite. Every merge that does not change the version is a no-op.
 3. Approve the `npm-publish` deployment. Nothing reaches npm before this.

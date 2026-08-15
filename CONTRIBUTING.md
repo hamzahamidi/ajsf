@@ -195,6 +195,12 @@ Publishing over OIDC, so it only works from this repository's release workflow.
 The package major always matches the Angular major it targets, so `@ajsf/* 16.x`
 is for Angular 16. Minor and patch are free.
 
+Between releases the version in `projects/ajsf-core/package.json` must match the
+version on npm. The workflow decides by comparing the two, so an unpublished
+version sitting in `main` makes every merge start a release run that waits at the
+approval gate. The bump is the release: put it in its own pull request, and merge
+it only when you mean to publish.
+
 1. Set the version. One script writes it to all four packages, along with the
    internal `@ajsf/core` range and the Angular peer ranges, because setting those
    separately is how a package ships resolving to the previous core:
