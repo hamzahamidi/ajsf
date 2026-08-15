@@ -37,5 +37,14 @@ jobs:
         npm run test:bs3 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+    # The codecov npm package is deprecated and its uploader now fails against
+    # the current API with "result.split is not a function". This action is the
+    # supported path. It is non-blocking on purpose: a coverage upload outage
+    # should not fail a build whose tests all passed.
     - name: Publish code coverage
-      run: npm run publish:coverage
+      uses: codecov/codecov-action@v7
+      continue-on-error: true
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage
+        fail_ci_if_error: false
