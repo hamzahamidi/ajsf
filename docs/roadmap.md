@@ -30,6 +30,27 @@ returns an empty package until a stable release moves it.
 
     npm deprecate "@ajsf/bootstrap5@0.0.0" "Placeholder only, not a usable release."
 
+### Fix the lodash dependency, which is currently wrong
+
+All four published packages declare `lodash-es` and import plain `lodash`.
+Source carries 19 `from 'lodash/...'` imports and zero `lodash-es` imports, and
+plain `lodash` is declared nowhere. It resolves in this repository only because
+karma and webpack-bundle-analyzer pull it in as development dependencies.
+
+A consumer therefore installs an unused package and resolves the one actually
+imported by luck. This has been shipping since before the Angular walk.
+
+The fix is to remove it rather than to correct the name. Five functions are
+used, and their transitive graph is 152 files:
+
+    uniqueId        a counter, three lines
+    map, filter     native, where they are used on arrays
+    cloneDeep       structuredClone
+    isEqual         the only one needing care
+
+`isEqual` handles NaN, Dates, Maps and Sets, so a naive replacement would
+differ quietly. Verify it against the corpus, which now records validity.
+
 ### Raise the Codecov project target
 
 `codecov.yml` has `project: auto` because coverage was 56 percent when it was
@@ -47,38 +68,35 @@ The 19 Angular alerts are fixed by the walk above, since they are all against
 versions the upgrade replaces. That is the strongest practical argument for
 finishing it.
 
-The 3 `lodash-es` alerts are not reachable. They are `_.template` code
-injection and prototype pollution in `_.unset` and array paths. The library
-imports only `cloneDeep`, `filter`, `isEqual`, `map` and `uniqueId`. Worth
-confirming again after any lodash upgrade rather than assuming.
+The 3 `lodash-es` alerts are not reachable twice over. They are `_.template`
+code injection and prototype pollution in `_.unset` and array paths, none of
+which the library calls, and `lodash-es` is not imported at all: the code
+imports plain `lodash`, as the item above describes. Removing the dependency
+closes them.
 
 The 72 development alerts are worth one pass to confirm none of them affect the
 published artifacts, then triaging in bulk.
 
 ## Correctness
 
-### Group C: the deferred bugs
+### Group C: what is left
 
-Four helpers were left alone deliberately during the fix work, because each is
-load bearing. Call sites counted across the four packages:
+Four helpers were deferred during the fix work because each is load bearing.
+Two are now done and took two others with them.
 
-    isEmpty    47   treats Date, Map, Set and RegExp as empty
-    isNumber   21   global isNaN, so null, '', true and [] are all numbers
-    hasOwn    134   returns the element rather than a boolean for a numeric key
-    getType    21   getType('') is 'integer', falls out of isNumber
+`isEmpty` reported a Date, Map, Set and RegExp as empty, so roughly fifteen
+validator guards skipped those values entirely. Fixed.
 
-`isEmpty` is the one to schedule first. Roughly fifteen of its call sites are
-the `if (isEmpty(control.value)) { return null; }` guard at the top of a
-validator, so a Date valued or Map valued control bypasses validation
-completely today. Fixing it turns those guards back on, which is the point and
-also why it cannot land during an upgrade.
+`isNumber` used the global isNaN, so null, the empty string, booleans, arrays
+and Dates all counted as numbers. Fixed, and it repaired `getType('')`,
+`isPrimitive([])`, and the NaN that `toJavaScriptType` and `toSchemaType`
+returned for dates, booleans and the empty string.
 
-`isNumber` cascades into `getType`, `isPrimitive`, `toJavaScriptType` and
-`merge-schemas`. Fixing it makes `type('number')` stop accepting `true`. Wide,
-and no user has asked for it.
-
-`hasOwn` at 134 call sites is the largest blast radius in the library for the
-smallest visible payoff. Revisit alone, after the walk, with a full corpus run.
+`hasOwn` is the remainder, at 134 call sites. It returns the element rather
+than a boolean for a numeric key on an array, so `hasOwn([0, 1], 0)` is `0` and
+reads as false. It is the largest reach in the library for the smallest visible
+payoff, and nothing user facing depends on it. Revisit alone, after the walk,
+with a full corpus run.
 
 ### Bugs frozen into the corpus baseline
 
@@ -120,6 +138,49 @@ prerequisite for 2019-09 and 2020-12, whose support lives behind separate entry
 points. Worth doing as its own change, separate from the draft work, so a
 failure has one cause.
 
+### JSON Schema is validated twice, by two implementations
+
+`json-schema-form.service.ts:249` runs `validateFormData(this.data)`, an ajv
+function compiled from the whole schema, and uses its output for `isValid` and
+`validationErrors`. Separately, `getControlValidators` builds a validator per
+control out of `JsonValidators`, which is a hand written implementation of the
+same specification. Both run against the same data.
+
+That duplication is where most of the bugs found during the Angular walk lived.
+`exclusiveMinimum` was an exclusive maximum, `uniqueItems` never reported a
+duplicate, and `dependencies` made any form using it permanently invalid. ajv
+gets all three right, and has for years.
+
+The duplication is not gratuitous. Angular reactive forms want a `ValidatorFn`
+per control so a field can carry its own error state, while ajv reports
+document level errors keyed by JSON pointer. Mapping ajv errors back onto
+controls by pointer is a known pattern and would delete most of
+`json.validators.ts`, which is 895 lines.
+
+Two things to establish before committing to it. Whether running ajv on the
+whole document per keystroke is acceptable, or whether errors should be mapped
+from the existing single run. And whether consumers depend on `JsonValidators`
+directly, since it is exported from `public_api.ts` and removing it is a
+breaking change on its own.
+
+This is worth more than any single fix left on this page, because it removes
+the class of bug rather than instances of it.
+
+### Not zod, and not lodash, for the type helpers
+
+Both come up. Neither fits.
+
+zod validates shapes authored in TypeScript at build time. AJSF receives an
+arbitrary JSON Schema at run time and has no compile time type to describe, and
+zod would not touch `isNumber` or `isEmpty`, which are internal predicates
+rather than schema validation.
+
+lodash cannot replace the predicates either, because the semantics differ on
+purpose. `isNumber('3')` has to be true, since a form input is a string and a
+schema may carry `"3"`, while lodash says false. `isNumber(NaN)` has to be
+false, while lodash says true. `_.isEmpty(new Date())` is true in lodash, which
+is the same bug fixed in `isEmpty` here.
+
 ### Conditional layout
 
 `if`, `then` and `else` validate correctly today and the layout ignores them, so
@@ -133,7 +194,7 @@ Five files carry most of the library:
 
     1068  shared/layout.functions.ts
     1012  shared/jsonpointer.functions.ts
-     909  shared/json.validators.ts
+     895  shared/json.validators.ts
      883  json-schema-form.service.ts
      788  shared/json-schema.functions.ts
 
