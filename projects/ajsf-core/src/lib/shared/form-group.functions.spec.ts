@@ -1426,3 +1426,28 @@ describe('form-group.functions', () => {
     });
   });
 });
+
+describe('buildFormGroupTemplate, keys needing escaping', () => {
+  // A key holding / or ~ produced a pointer isJsonPointer rejects, so compile()
+  // returned null and the whole form failed to build rather than one field.
+  it('builds a control for a key containing a tilde', () => {
+    const result: any = buildFormGroupTemplate(makeJsf({
+      type: 'object', properties: { 'a~b': { type: 'string' } },
+    }));
+    expect(Object.keys(result.controls)).toContain('a~b');
+  });
+
+  it('builds a control for a key containing a slash', () => {
+    const result: any = buildFormGroupTemplate(makeJsf({
+      type: 'object', properties: { 'a/b': { type: 'string' } },
+    }));
+    expect(Object.keys(result.controls)).toContain('a/b');
+  });
+
+  it('marks such a key required without corrupting the pointer', () => {
+    const result: any = buildFormGroupTemplate(makeJsf({
+      type: 'object', required: ['a/b'], properties: { 'a/b': { type: 'string' } },
+    }));
+    expect(result.controls['a/b'].validators.required).toEqual([]);
+  });
+});

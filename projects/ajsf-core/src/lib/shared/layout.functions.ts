@@ -574,15 +574,15 @@ export function buildLayoutFromSchema(
         )
         .forEach(key => {
           const keySchemaPointer = hasOwn(schema.properties, key) ?
-            '/properties/' + key : '/additionalProperties';
+            '/properties/' + JsonPointer.escape(key) : '/additionalProperties';
           const innerItem = buildLayoutFromSchema(
             jsf, widgetLibrary, isObject(nodeValue) ? nodeValue[key] : null,
             schemaPointer + keySchemaPointer,
-            dataPointer + '/' + key,
+            dataPointer + '/' + JsonPointer.escape(key),
             false, null, null, forRefLibrary, dataPointerPrefix
           );
           if (innerItem) {
-            if (isInputRequired(schema, '/' + key)) {
+            if (isInputRequired(schema, '/' + JsonPointer.escape(key))) {
               innerItem.options.required = true;
               jsf.fieldsRequired = true;
             }

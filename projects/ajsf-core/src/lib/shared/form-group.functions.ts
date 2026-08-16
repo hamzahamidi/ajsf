@@ -127,10 +127,10 @@ export function buildFormGroupTemplate(
           .forEach(key => controls[key] = buildFormGroupTemplate(
             jsf, JsonPointer.get(nodeValue, [<string>key]), setValues,
             schemaPointer + (hasOwn(schema.properties, key) ?
-              '/properties/' + key : '/additionalProperties'
+              '/properties/' + JsonPointer.escape(key) : '/additionalProperties'
             ),
-            dataPointer + '/' + key,
-            templatePointer + '/controls/' + key
+            dataPointer + '/' + JsonPointer.escape(key),
+            templatePointer + '/controls/' + JsonPointer.escape(key)
           ));
         jsf.formOptions.fieldsRequired = setRequiredFields(schema, controls);
       }
@@ -377,7 +377,8 @@ export function setRequiredFields(schema: any, formControlTemplate: any): boolea
     fieldsRequired = true;
     let requiredArray = isArray(schema.required) ? schema.required : [schema.required];
     requiredArray = forEach(requiredArray,
-      key => JsonPointer.set(formControlTemplate, '/' + key + '/validators/required', [])
+      key => JsonPointer.set(formControlTemplate,
+        '/' + JsonPointer.escape(key) + '/validators/required', [])
     );
   }
   return fieldsRequired;
