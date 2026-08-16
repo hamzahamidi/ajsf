@@ -16,6 +16,13 @@ describe('package guards', () => {
     expect(readManifest('package.json').private).toBe(true);
   });
 
+  it('keeps the root version at 0.0.0 so it cannot read as a library version', () => {
+    // The releases page carried this number for years (15.0.0, 14.0.0) while
+    // npm served @ajsf/* 0.8.0 and 0.7.0. Pinning it at 0.0.0 makes it
+    // obviously not a release.
+    expect(readManifest('package.json').version).toEqual('0.0.0');
+  });
+
   it('keeps every library publishable', () => {
     LIBRARIES.forEach((lib) => {
       expect(readManifest(`${lib}/package.json`).private).toBe(false);

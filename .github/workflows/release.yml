@@ -188,3 +188,29 @@ jobs:
           git tag -a "v$VERSION" -m "Release $VERSION"
           git push origin "v$VERSION"
           echo "[release] tagged v$VERSION on ${GITHUB_SHA}"
+
+      # Without this the releases page shows nothing for a real release. It
+      # previously listed the demo application's version (15.0.0, 14.0.0),
+      # which had no relationship to what was on npm, where the libraries were
+      # 0.8.0 and 0.7.0. Library releases are tagged v<version> to keep them
+      # distinguishable from those older, unrelated entries.
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ needs.decide.outputs.version }}"
+          DIST_TAG="${{ needs.decide.outputs.dist-tag }}"
+          NOTES=$(printf '%s\n' \
+            "\`@ajsf/core\`, \`@ajsf/material\`, \`@ajsf/bootstrap3\` and \`@ajsf/bootstrap4\` published at \`$VERSION\` on the \`$DIST_TAG\` dist-tag." \
+            "" \
+            "\`\`\`sh" \
+            "npm install @ajsf/core@$VERSION" \
+            "\`\`\`" \
+            "")
+          PRERELEASE=""
+          case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+          gh release create "v$VERSION" \
+            --title "$VERSION" \
+            --notes "$NOTES" \
+            --generate-notes \
+            $PRERELEASE

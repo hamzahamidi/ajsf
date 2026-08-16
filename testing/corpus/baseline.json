@@ -764,7 +764,7 @@
     "error": null
   },
   "material-design/jsf-fields-range": {
-    "controls": 1,
+    "controls": 2,
     "error": null
   },
   "material-design/jsf-fields-section": {
@@ -940,7 +940,7 @@
     "error": null
   },
   "material-design/rjsf-numbers": {
-    "controls": 8,
+    "controls": 10,
     "error": null
   },
   "material-design/rjsf-ordering": {

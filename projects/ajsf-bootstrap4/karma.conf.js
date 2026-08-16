@@ -30,6 +30,8 @@ module.exports = function (config) {
       ],
     },
     reporters: ['progress', 'kjhtml'],
+    // The 320-case corpus takes longer than the 30s default between messages.
+    browserNoActivityTimeout: 120000,
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

@@ -1,5 +1,14 @@
 // * { border: 1px solid red !important; }
 @use '@angular/material' as mat;
+// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
+@include mat.all-component-typographies();
 @include mat.core();
 $demo-app-primary: mat.define-palette(mat.$blue-palette);
 $demo-app-accent:  mat.define-palette(mat.$amber-palette, A200, A100, A400);
@@ -64,11 +73,13 @@ body {
 
 .check-row { margin-top: 8px; }
 
-.cdk-overlay-container .cdk-overlay-pane .mat-menu-panel { max-width: 560px; }
+.cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel { max-width: 560px; }
 
 .debug { border: 1px solid red !important; }
 
-.mat-input-container.mat-form-field { width: 100%; }
+// .mat-input-container was the pre-MDC class, so the compound selector it used
+// to be part of can never match now. MDC uses .mat-mdc-form-field alone.
+.mat-mdc-form-field { width: 100%; }
 
 // Replaces @angular/flex-layout, which is deprecated and has no Angular 16+
 // release. fxLayout.lt-sm needed a real media query, so these carry the

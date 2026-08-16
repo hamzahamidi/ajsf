@@ -48,6 +48,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>`,
   styles: [`
+    /* Element selectors, not internal classes: both still exist under MDC. */
     mat-radio-group { display: inline-flex; }
     mat-radio-button { margin: 2px; }
     mat-error { font-size: 75%; }
