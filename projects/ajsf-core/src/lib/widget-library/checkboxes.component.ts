@@ -29,7 +29,7 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
           [name]="checkboxItem?.name"
           [readonly]="options?.readonly ? 'readonly' : null"
           [value]="checkboxItem.value"
-          (change)="updateValue($event)">
+          (change)="updateValue($event, checkboxItem)">
         <span [innerHTML]="checkboxItem.name"></span>
       </label>
     </div>
@@ -51,7 +51,7 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
             [name]="checkboxItem?.name"
             [readonly]="options?.readonly ? 'readonly' : null"
             [value]="checkboxItem.value"
-            (change)="updateValue($event)">
+            (change)="updateValue($event, checkboxItem)">
           <span [innerHTML]="checkboxItem?.name"></span>
         </label>
       </div>
@@ -91,10 +91,17 @@ export class CheckboxesComponent implements OnInit {
     }
   }
 
-  updateValue(event) {
-    for (const checkboxItem of this.checkboxList) {
-      if (event.target.value === checkboxItem.value) {
-        checkboxItem.checked = event.target.checked;
+  updateValue(event, checkboxItem?: any) {
+    if (checkboxItem) {
+      checkboxItem.checked = event.target.checked;
+    } else {
+      // The DOM coerces [value] to a string, so comparing it against a number or
+      // boolean from the enum never matched and every click was ignored. The
+      // template passes the item now; this path remains for external callers.
+      for (const item of this.checkboxList) {
+        if (event.target.value === `${item.value}`) {
+          item.checked = event.target.checked;
+        }
       }
     }
     if (this.boundControl) {
