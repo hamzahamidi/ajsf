@@ -1,9 +1,9 @@
 {
-  "name": "demo",
+  "name": "ajsf-workspace",
   "private": true,
-  "version": "15.0.0",
+  "version": "0.0.0",
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
-  "description": "Angular JSON Schema Form builder Demo",
+  "description": "Angular JSON Schema Form workspace: builds the @ajsf packages and the demo",
   "engines": {
     "node": "^16.14.0 || >=18.10.0",
     "npm": ">=8.5.0"
