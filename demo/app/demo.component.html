@@ -1,6 +1,14 @@
 <div class="demo-page-header">
   <mat-toolbar class="mat-elevation-z4 mat-medium" color="primary">
-    Angular JSON Schema Form — Demonstration Playground
+    <span class="toolbar-title">Angular JSON Schema Form — Demonstration Playground</span>
+    <button mat-icon-button
+      class="theme-toggle"
+      type="button"
+      [attr.aria-label]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+      [title]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+      (click)="toggleDarkMode()">
+      <mat-icon>{{darkMode ? 'light_mode' : 'dark_mode'}}</mat-icon>
+    </button>
   </mat-toolbar>
   <div class="header-content">
     An Angular <a href="http://json-schema.org/">JSON Schema</a> Form builder
@@ -131,6 +139,7 @@
       ace-editor
       [text]="jsonFormSchema"
       [options]="aceEditorOptions"
+      [theme]="aceTheme"
       [readOnly]="false"
       [autoUpdateContent]="true"
       (textChanged)="generateForm($event)"
@@ -143,7 +152,9 @@
     <h4 class="default-cursor" (click)="toggleVisible('form')">
       {{visible.form ? '▼' : '▶'}} Generated Form
     </h4>
-    <div *ngIf="visible.form" class="json-schema-form" [@expandSection]="true">
+    <div *ngIf="visible.form" class="json-schema-form" [@expandSection]="true"
+      [attr.data-bs-theme]="formPaneTheme"
+      [class.light-form-pane]="lightFormPane">
       <div *ngIf="!formActive">{{jsonFormStatusMessage}}</div>
 
       <!-- This is the form! -->
