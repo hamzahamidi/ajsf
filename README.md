@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/hamzahamidi/ajsf/actions?query=workflow%3ACI+branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/workflows/CI/badge.svg" alt="CI Status"></a>
+  <a href="https://codecov.io/gh/hamzahamidi/ajsf"><img src="https://codecov.io/gh/hamzahamidi/ajsf/branch/main/graph/badge.svg" alt="Code coverage"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
   <a href="https://github.com/hamzahamidi/ajsf/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="LICENSE IMT"></a>
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
@@ -19,10 +20,10 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 
 ## Packages
 
-* [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
-* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
-* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
-* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
+* [`@ajsf/core`](./README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/core.svg)](https://www.npmjs.com/package/@ajsf/core)
+* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap3.svg)](https://www.npmjs.com/package/@ajsf/bootstrap3)
+* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap4.svg)](https://www.npmjs.com/package/@ajsf/bootstrap4)
+* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/material.svg)](https://www.npmjs.com/package/@ajsf/material)
 
 ## Version compatibility
 

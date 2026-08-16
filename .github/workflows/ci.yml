@@ -41,12 +41,20 @@ jobs:
         npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
     # The codecov npm package is deprecated and its uploader now fails against
     # the current API with "result.split is not a function". This action is the
-    # supported path. It is non-blocking on purpose: a coverage upload outage
-    # should not fail a build whose tests all passed.
+    # supported path.
+    #
+    # Only one leg uploads. Both produce identical coverage for the same commit,
+    # so uploading twice just makes Codecov merge duplicates.
+    #
+    # Failures are surfaced rather than swallowed. This step previously ran with
+    # continue-on-error and fail_ci_if_error: false, and reported success while
+    # every upload was rejected with "Token required because branch is
+    # protected". Nine pull requests merged before anyone noticed there was no
+    # coverage data. An upload that cannot fail cannot tell you it is broken.
     - name: Publish code coverage
+      if: matrix.node-version == '20.x'
       uses: codecov/codecov-action@v7
-      continue-on-error: true
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage
-        fail_ci_if_error: false
+        fail_ci_if_error: true

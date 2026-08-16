@@ -1,0 +1,37 @@
+# Codecov configuration. Reference: https://docs.codecov.com/docs/codecovyml-reference
+#
+# Two different targets, on purpose.
+#
+# `patch` is a fixed 80%: code being added or changed in a pull request has no
+# legacy excuse, so it carries the real standard.
+#
+# `project` is `auto`, meaning a pull request may not drop total coverage below
+# what main already has. It is deliberately not a fixed 80%, because coverage is
+# well under that today and a fixed target would fail every pull request until
+# the day it is reached, which trains everyone to ignore the check. Raise it in
+# steps as the number climbs, and only to a figure already met.
+#
+# `if_not_found: success` matters right now: main has no coverage report yet, so
+# there is nothing to compare against until the first upload lands there.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 0.5%
+        if_not_found: success
+    patch:
+      default:
+        target: 80%
+        if_not_found: success
+
+comment:
+  layout: "reach, diff, flags, files"
+  require_changes: true
+
+# Test and example code should not count towards the coverage of the product.
+ignore:
+  - "**/*.spec.ts"
+  - "testing/**"
+  - "demo/**"
+  - "scripts/**"

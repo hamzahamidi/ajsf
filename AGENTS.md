@@ -64,6 +64,14 @@ The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes
 
 A version containing a hyphen goes to the `next` dist-tag, everything else to `latest`. Do not create release tags by hand: the workflow writes them, so a tag always means the version shipped.
 
+## Coverage
+
+Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all four libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
+
+**Codecov authenticates with the `CODECOV_TOKEN` secret, not OIDC**, which is deliberate and differs from the npm publishing flow. `codecov/codecov-action` does accept `use_oidc: true`, but the CLI has a reported failure mode where it ignores the OIDC credential, falls back to tokenless and then fails on a rate limit (`codecov-action#1461`, closed with no stated fix), and fork pull requests receive no `id-token` at all. The token is the predictable option. Do not switch this to OIDC without confirming an upload actually lands.
+
+⚠️ **Never give the upload step `continue-on-error` or `fail_ci_if_error: false`.** It carried both from #361 to #370 and reported success on every run while Codecov rejected every upload with `Token required because branch is protected`. Nine pull requests merged before anyone noticed. A step that cannot fail cannot tell you it is broken.
+
 ## Constraints
 
 - **The public API is frozen** while the Angular upgrade is in progress. Do not remove or rename any export from a `public_api.ts`. In particular `@ajsf/material` must keep exporting `FlexLayoutRootComponent` and `FlexLayoutSectionComponent`, and the `flex-layout-root-widget`, `flex-layout-section-widget` selectors and the `ng-jsf-flex-layout` widget name must keep working. They appear in consumer layout schemas.
@@ -84,6 +92,7 @@ A version containing a hyphen goes to the `next` dist-tag, everything else to `l
 - Plain and direct. Concrete numbers rather than adjectives.
 - Avoid: ensure, leverage, comprehensive, robust, seamless, optimize, overall, ultimately, additionally, furthermore, moreover.
 - State a build or test result only if you ran it. Otherwise say it is unverified.
+- **Keep pull request descriptions under 150 words.** PRs #361 to #369 averaged 314 and were called out as much longer than needed. Three things earn their place: what changed, what was deliberately not done and why, and the verification result. Cut version tables the lockfile already records, prose that restates the diff, and reasoning that belongs in the commit body. A reviewer reads the description to decide where to look, not instead of looking.
 
 ## Not committed
 
