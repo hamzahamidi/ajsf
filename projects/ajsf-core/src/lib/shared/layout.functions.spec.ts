@@ -1475,3 +1475,45 @@ describe('buildLayout', () => {
     });
   });
 });
+
+describe('buildTitleMap, recurring group names', () => {
+  // buildTitleMap mutates the objects it is given: the flattening branch does
+  // `delete title.group`. A fresh fixture per test, or a shared one leaks.
+  const grouped = () => [
+    { group: 'A', name: 'a1', value: 1 },
+    { group: 'B', name: 'b1', value: 2 },
+    { group: 'A', name: 'a2', value: 3 },
+  ];
+
+  it('combines a group name that recurs non-adjacently', () => {
+    const result: any = buildTitleMap(grouped(), null, true, false);
+    expect(result.map((g: any) => g.group)).toEqual(['A', 'B']);
+    expect(result[0].items.map((i: any) => i.value)).toEqual([1, 3]);
+    expect(result[1].items.map((i: any) => i.value)).toEqual([2]);
+  });
+
+  it('still combines adjacent repeats', () => {
+    const result: any = buildTitleMap([
+      { group: 'A', name: 'a1', value: 1 },
+      { group: 'A', name: 'a2', value: 2 },
+    ], null, true, false);
+    expect(result.length).toBe(1);
+    expect(result[0].items.map((i: any) => i.value)).toEqual([1, 2]);
+  });
+
+  it('leaves ungrouped entries alongside groups', () => {
+    const result: any = buildTitleMap([
+      { group: 'A', name: 'a1', value: 1 },
+      { name: 'plain', value: 2 },
+      { group: 'A', name: 'a2', value: 3 },
+    ], null, true, false);
+    expect(result.length).toBe(2);
+    expect(result[0].items.map((i: any) => i.value)).toEqual([1, 3]);
+    expect(result[1]).toEqual({ name: 'plain', value: 2 });
+  });
+
+  it('is unchanged when flattening', () => {
+    const result: any = buildTitleMap(grouped(), null, true, true);
+    expect(result.map((i: any) => i.name)).toEqual(['A: a1', 'B: b1', 'A: a2']);
+  });
+});
