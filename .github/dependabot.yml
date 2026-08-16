@@ -1,0 +1,47 @@
+version: 2
+
+# Only the root manifest and ajsf-core are watched. The four framework packages
+# declare `@ajsf/core`, a range that `npm run version:set` owns and that must
+# not be edited independently of the version.
+#
+# `ignore` applies to version updates only, so security updates still arrive
+# whatever is listed below.
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build"
+    groups:
+      patches:
+        patterns: ["*"]
+        update-types: ["patch"]
+    ignore:
+      # Angular majors move one at a time, in their own pull request.
+      - dependency-name: "@angular*"
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+
+  - package-ecosystem: "npm"
+    directory: "/projects/ajsf-core"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "build"
+    groups:
+      patches:
+        patterns: ["*"]
+        update-types: ["patch"]
+    ignore:
+      - dependency-name: "@angular*"
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
