@@ -1517,3 +1517,32 @@ describe('buildTitleMap, recurring group names', () => {
     expect(result.map((i: any) => i.name)).toEqual(['A: a1', 'B: b1', 'A: a2']);
   });
 });
+
+describe('buildLayout, array layout node with no items', () => {
+  // The branch below reads items[0] on every line, so an empty list threw and
+  // took the entire form with it rather than losing one field.
+  it('does not throw when an array layout node ends up with no items', () => {
+    const jsf = makeJsf({
+      schema: {
+        type: 'object',
+        properties: { things: { type: 'array', items: { type: 'string' } } },
+      },
+      layout: [{ key: 'things', type: 'array', items: [] }],
+    });
+
+    expect(() => buildLayout(jsf, widgetLibrary)).not.toThrow();
+  });
+
+  it('still builds an array layout node that has items', () => {
+    const jsf = makeJsf({
+      schema: {
+        type: 'object',
+        properties: { things: { type: 'array', items: { type: 'string' } } },
+      },
+      layout: [{ key: 'things', type: 'array', items: ['things/-'] }],
+    });
+
+    const result: any = buildLayout(jsf, widgetLibrary);
+    expect(result.length).toBeGreaterThan(0);
+  });
+});
