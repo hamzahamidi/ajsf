@@ -677,11 +677,20 @@ export class JsonValidators {
     if (!unique) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value) || !isArray(control.value)) { return null; }
-      const sorted: any[] = control.value.slice().sort();
+      // JSON Schema compares items by value, so two objects that look the same
+      // are duplicates. The previous version sorted the array and compared
+      // adjacent items with ===, which never matches an object, and only pushed
+      // when duplicateItems already contained the item. Since it started empty,
+      // that condition was never true and the validator always passed.
+      const items: any[] = control.value;
       const duplicateItems = [];
-      for (let i = 1; i < sorted.length; i++) {
-        if (sorted[i - 1] === sorted[i] && duplicateItems.includes(sorted[i])) {
-          duplicateItems.push(sorted[i]);
+      for (let i = 0; i < items.length; i++) {
+        for (let j = i + 1; j < items.length; j++) {
+          if (isEqual(items[i], items[j]) &&
+            !duplicateItems.some(duplicate => isEqual(duplicate, items[i]))
+          ) {
+            duplicateItems.push(items[i]);
+          }
         }
       }
       const isValid = !duplicateItems.length;
