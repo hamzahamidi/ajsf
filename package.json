@@ -84,7 +84,8 @@
     "lint": "ng lint",
     "version:set": "node scripts/set-version.js",
     "test:scripts": "jasmine scripts/*.spec.js",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "corpus:index": "node scripts/generate-corpus-index.js"
   },
   "dependencies": {
     "@angular/animations": "^15.2.10",
