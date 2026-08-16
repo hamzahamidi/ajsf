@@ -826,12 +826,33 @@ describe('JsonValidators', () => {
       expect(JsonValidators.uniqueItems(true)(ctrl(['a', 'b']))).toBeNull();
     });
 
-    it('also accepts an array containing duplicates', () => {
-      // The duplicate check requires the item to already be in duplicateItems,
-      // which starts empty, so duplicates are never collected.
-      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 2]))).toBeNull();
-      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 1, 1]))).toBeNull();
-      expect(JsonValidators.uniqueItems()(ctrl(['a', 'a', 'a']))).toBeNull();
+    it('rejects an array containing duplicates', () => {
+      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 2])))
+        .toEqual({ uniqueItems: { duplicateItems: [1] } });
+      expect(JsonValidators.uniqueItems()(ctrl(['a', 'a', 'a'])))
+        .toEqual({ uniqueItems: { duplicateItems: ['a'] } });
+    });
+
+    it('reports each duplicated item once, however many times it repeats', () => {
+      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 1, 1])))
+        .toEqual({ uniqueItems: { duplicateItems: [1] } });
+    });
+
+    it('compares items by value, so equal objects and arrays are duplicates', () => {
+      expect(JsonValidators.uniqueItems()(ctrl([{ x: 1 }, { x: 1 }])))
+        .toEqual({ uniqueItems: { duplicateItems: [{ x: 1 }] } });
+      expect(JsonValidators.uniqueItems()(ctrl([[1], [1]])))
+        .toEqual({ uniqueItems: { duplicateItems: [[1]] } });
+    });
+
+    it('finds duplicates that are not next to each other', () => {
+      expect(JsonValidators.uniqueItems()(ctrl([{ x: 1 }, { y: 2 }, { x: 1 }])))
+        .toEqual({ uniqueItems: { duplicateItems: [{ x: 1 }] } });
+    });
+
+    it('treats a number and its string form as different items', () => {
+      // JSON Schema compares by value and type, so 1 and '1' are not duplicates.
+      expect(JsonValidators.uniqueItems()(ctrl([1, '1']))).toBeNull();
     });
 
     it('passes non-array values through untested', () => {
@@ -841,9 +862,8 @@ describe('JsonValidators', () => {
       expect(validator(ctrl({ a: 1 }))).toBeNull();
     });
 
-    it('reports an empty duplicate list when inverted', () => {
-      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 2]), true))
-        .toEqual({ uniqueItems: { duplicateItems: [] } });
+    it('passes a duplicated array when inverted', () => {
+      expect(JsonValidators.uniqueItems()(ctrl([1, 1, 2]), true)).toBeNull();
     });
   });
 
