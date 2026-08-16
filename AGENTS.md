@@ -165,4 +165,13 @@ Each of these cost real debugging time. They look like bugs in your code and are
     .forEach(n=>console.log(n.padEnd(34),String(d[n]).padEnd(14),'->',require('./node_modules/'+n+'/package.json').version))"
   ```
 
+- ⚠️ **OIDC cannot perform a package's first publish.** npm will not let you configure a trusted publisher for a package that does not exist yet, and there is no token in this repository, so the release workflow cannot create one. Adding a fifth package therefore fails at its own publish step while the four existing ones succeed. Before the first release that contains a new package, publish a placeholder from a machine with an npm login:
+
+  ```bash
+  # from a directory containing only a minimal package.json for the new name
+  npm publish --access public          # version 0.0.0, never used by anyone
+  ```
+
+  Then add the trusted publisher for it at `npmjs.com/package/<name>/access`, pointing at `hamzahamidi/ajsf` and `release.yml`, and the workflow takes over from the next version onwards. Check with `curl -s -o /dev/null -w '%{http_code}' https://registry.npmjs.org/@ajsf%2F<name>`: 404 means the placeholder is still needed.
+
 - **`@angular/flex-layout` is deprecated and stops at `15.0.0-beta.42`.** It has no Angular 16 or later release and never will. Removing it is tracked work, not an incidental cleanup.
