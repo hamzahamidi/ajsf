@@ -79,16 +79,16 @@ describe('mergeSchemas', () => {
   });
 
   describe('allOf', () => {
-    it('merges the contents of both allOf arrays into a single object', () => {
-      // BUG: the merged result is assigned to allOf directly, so allOf ends up
-      // holding an object instead of an array of schemas.
+    it('concatenates both allOf arrays, keeping allOf an array', () => {
       expect(mergeSchemas({ allOf: [{ minimum: 1 }] }, { allOf: [{ maximum: 9 }] }))
-        .toEqual({ allOf: { minimum: 1, maximum: 9 } });
+        .toEqual({ allOf: [{ minimum: 1 }, { maximum: 9 }] });
     });
 
-    it('nests an allOf object when the allOf contents cannot be merged', () => {
+    it('keeps mutually exclusive members side by side rather than merging them', () => {
+      // Each member of allOf must validate on its own, so contradictory members
+      // stay separate and the data simply fails both.
       expect(mergeSchemas({ allOf: [{ type: 'string' }] }, { allOf: [{ type: 'number' }] }))
-        .toEqual({ allOf: { allOf: [{ type: 'string' }, { type: 'number' }] } });
+        .toEqual({ allOf: [{ type: 'string' }, { type: 'number' }] });
     });
 
     it('returns allOf of the whole schemas when one allOf value is not an array', () => {
@@ -224,13 +224,11 @@ describe('mergeSchemas', () => {
       )).toEqual({ dependencies: { a: { type: 'object', minProperties: 1 } } });
     });
 
-    it('nests the array inside required when converting an array dependency to an object', () => {
-      // BUG: uniqueItems() is called with the dependency array as a single
-      // argument instead of spread, so required holds an array of arrays.
+    it('flattens the array into required when converting an array dependency to an object', () => {
       expect(mergeSchemas(
         { dependencies: { a: ['x'] } },
         { dependencies: { a: { type: 'object' } } }
-      )).toEqual({ dependencies: { a: { required: [['x']], type: 'object' } } });
+      )).toEqual({ dependencies: { a: { required: ['x'], type: 'object' } } });
     });
 
     it('seeds the converted dependency with the already combined required array', () => {
@@ -239,7 +237,7 @@ describe('mergeSchemas', () => {
         { dependencies: { a: { type: 'object' } } }
       )).toEqual({
         required: ['r'],
-        dependencies: { a: { required: ['r', ['x']], type: 'object' } },
+        dependencies: { a: { required: ['r', 'x'], type: 'object' } },
       });
     });
 
