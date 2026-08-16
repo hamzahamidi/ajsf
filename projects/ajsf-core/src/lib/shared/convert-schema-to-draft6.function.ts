@@ -28,10 +28,18 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   let newSchema = { ...schema };
   const simpleTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
 
-  if (typeof newSchema.$schema === 'string' &&
-    /http\:\/\/json\-schema\.org\/draft\-0\d\/schema\#/.test(newSchema.$schema)
-  ) {
-    draft = newSchema.$schema[30];
+  // The draft number is read through a capture group and converted, rather than
+  // taken as a character. $schema[30] is the right character, but it is a
+  // string, so every later comparison (draft === 1, draft === 2) was false and
+  // the v1 and v2 rules never ran. It also overwrote a correct numeric draft
+  // passed in options, so declaring $schema disabled the conversion it should
+  // have enabled.
+  if (typeof newSchema.$schema === 'string') {
+    const declaredDraft = /http\:\/\/json\-schema\.org\/draft\-0(\d)\/schema\#/
+      .exec(newSchema.$schema);
+    if (declaredDraft) {
+      draft = Number(declaredDraft[1]);
+    }
   }
 
   // Convert v1-v2 'contentEncoding' to 'media.binaryEncoding'

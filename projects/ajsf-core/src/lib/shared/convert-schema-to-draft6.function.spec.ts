@@ -672,16 +672,51 @@ describe('convertSchemaToDraft6', () => {
 
   describe('draft detection from $schema', () => {
 
-    // The draft is read as a character, so it is the string '2' and never equals the
-    // number 2. The draft 1 and 2 'optional' rule therefore never fires from $schema.
-    it('should not apply the draft 2 required rule to a draft 02 schema', () => {
+    // Drafts 1 and 2 treat every property as required unless it is marked
+    // optional, so declaring one of them is enough to build the required array.
+    it('applies the draft 2 required rule to a draft 02 schema', () => {
       expect(convertSchemaToDraft6({
         $schema: 'http://json-schema.org/draft-02/schema#',
         properties: { a: {} },
       })).toEqual({
         $schema: 'http://json-schema.org/draft-06/schema#',
         properties: { a: {} },
+        required: ['a'],
       } as any);
+    });
+
+    it('applies the same rule to a draft 01 schema', () => {
+      expect(convertSchemaToDraft6({
+        $schema: 'http://json-schema.org/draft-01/schema#',
+        properties: { a: {}, b: {} },
+      }).required).toEqual(['a', 'b']);
+    });
+
+    it('exempts a property marked optional', () => {
+      expect(convertSchemaToDraft6({
+        $schema: 'http://json-schema.org/draft-02/schema#',
+        properties: { a: {}, b: { optional: true } },
+      }).required).toEqual(['a']);
+    });
+
+    it('leaves drafts 3 and later to declare required themselves', () => {
+      for (const draft of ['03', '04']) {
+        expect(convertSchemaToDraft6({
+          $schema: `http://json-schema.org/draft-${draft}/schema#`,
+          properties: { a: {} },
+        }).required).toBeUndefined();
+      }
+    });
+
+    // The draft used to be read as a character, so it was the string '2' rather
+    // than the number 2. That never matched, and it also overwrote a correct
+    // numeric draft passed in options, so declaring $schema disabled the
+    // conversion instead of enabling it.
+    it('does not let a declared $schema override an explicit draft option', () => {
+      expect(convertSchemaToDraft6({
+        $schema: 'http://json-schema.org/draft-02/schema#',
+        properties: { a: {}, b: {} },
+      }, { draft: 2 }).required).toEqual(['a', 'b']);
     });
   });
 
