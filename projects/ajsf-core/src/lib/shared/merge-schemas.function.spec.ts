@@ -314,10 +314,9 @@ describe('mergeSchemas', () => {
       )).toEqual({ maximum: 5, maxLength: 8, maxItems: 2, maxProperties: 3 });
     });
 
-    it('coerces boolean exclusiveMaximum values to numbers', () => {
-      // isNumber() returns true for booleans, so Math.min(true, false) === 0.
+    it('keeps boolean exclusiveMaximum values apart rather than coercing them', () => {
       expect(mergeSchemas({ exclusiveMaximum: true }, { exclusiveMaximum: false }))
-        .toEqual({ exclusiveMaximum: 0 });
+        .toEqual({ allOf: [{ exclusiveMaximum: true }, { exclusiveMaximum: false }] });
     });
 
     it('returns allOf when a maximum keyword value is not numeric', () => {

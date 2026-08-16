@@ -192,7 +192,12 @@ export function isString(value) {
  */
 export function isNumber(value, strict: any = false) {
   if (strict && typeof value !== 'number') { return false; }
-  return !isNaN(value) && value !== value / 0;
+  // Numeric strings count, so a schema may carry "3". Everything else does not,
+  // including null, '', booleans, arrays and Dates, all of which the global
+  // isNaN would coerce to a number.
+  if (typeof value !== 'number' && typeof value !== 'string') { return false; }
+  if (typeof value === 'string' && !value.trim().length) { return false; }
+  return Number.isFinite(Number(value));
 }
 
 /**
@@ -205,8 +210,8 @@ export function isNumber(value, strict: any = false) {
  * // {boolean } - true if number, false if not
  */
 export function isInteger(value, strict: any = false) {
-  if (strict && typeof value !== 'number') { return false; }
-  return !isNaN(value) &&  value !== value / 0 && value % 1 === 0;
+  if (!isNumber(value, strict)) { return false; }
+  return Number(value) % 1 === 0;
 }
 
 /**
@@ -409,6 +414,7 @@ export function toJavaScriptType(value, types, strictIntegers = true)  {
     // convert the date to a string
     if (isDate(value)) { return toIsoString(value); }
     if (isNumber(value)) { return value.toString(); }
+    if (isBoolean(value, 'strict')) { return value.toString(); }
   }
   // If value is a date, and types includes 'integer' or 'number',
   // but not 'string', convert the date to a number
