@@ -4,8 +4,9 @@ Written after `17.2.0-rc.1`. Everything here was found while walking Angular 14
 to 17 and is recorded so it does not have to be rediscovered. Items are ordered
 by what they cost a user, not by how interesting they are.
 
-Related: [JSON Schema drafts](./json-schema-drafts.md) has the detail for the
-draft work summarised below.
+Related: [execution plan](./execution-plan.md) is the ordered sequence this feeds,
+[JSON Schema drafts](./json-schema-drafts.md) has the detail for the draft work
+summarised below.
 
 ## Now
 
