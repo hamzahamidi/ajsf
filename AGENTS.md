@@ -170,8 +170,13 @@ Each of these cost real debugging time. They look like bugs in your code and are
   ```bash
   # from a directory containing only a minimal package.json for the new name
   npm publish --access public          # version 0.0.0, never used by anyone
+  npm deprecate "@ajsf/<name>@0.0.0" "Placeholder only, not a usable release."
   ```
 
-  Then add the trusted publisher for it at `npmjs.com/package/<name>/access`, pointing at `hamzahamidi/ajsf` and `release.yml`, and the workflow takes over from the next version onwards. Check with `curl -s -o /dev/null -w '%{http_code}' https://registry.npmjs.org/@ajsf%2F<name>`: 404 means the placeholder is still needed.
+  **Deprecate it straight away.** npm claims the `latest` dist-tag on a package's first publish whatever `--tag` says, so `latest` ends up on the empty stub and `npm install @ajsf/<name>` returns it. `latest` cannot be removed, only moved by a later stable release, and a release candidate goes to `next` rather than `latest`, so the stub can sit there for a while. Deprecating makes npm print a warning on install in the meantime.
+
+  Then add the trusted publisher at `npmjs.com/package/<name>/access` with publisher GitHub Actions, organisation `hamzahamidi`, repository `ajsf`, workflow `release.yml`, environment `npm-publish` (it must match `environment:` in the release job), and only the `npm publish` permission. The workflow takes over from the next version onwards.
+
+  Check whether a package still needs this with `npm view @ajsf/<name> version --prefer-online`. Do not trust a plain registry fetch straight after publishing: it returns 404 for several minutes while the package propagates, which looks exactly like a failed publish.
 
 - **`@angular/flex-layout` is deprecated and stops at `15.0.0-beta.42`.** It has no Angular 16 or later release and never will. Removing it is tracked work, not an incidental cleanup.
