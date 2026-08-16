@@ -5,8 +5,8 @@ import {
   OnChanges,
   OnInit
 } from '@angular/core';
-import cloneDeep from 'lodash/cloneDeep';
-import map from 'lodash/map';
+import cloneDeep from 'lodash-es/cloneDeep';
+import map from 'lodash-es/map';
 import {JsonSchemaFormService, addClasses, inArray} from '@ajsf/core';
 
 /**

@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import {
   _executeAsyncValidators,
   _executeValidators,

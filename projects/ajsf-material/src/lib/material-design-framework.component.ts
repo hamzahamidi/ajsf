@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
 import {isDefined, JsonSchemaFormService} from '@ajsf/core';
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from 'lodash-es/cloneDeep';
 
 @Component({
   // tslint:disable-next-line:component-selector

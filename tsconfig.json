@@ -25,7 +25,7 @@
       "@angular/*": [
         "./node_modules/@angular/*"
       ],
-      "lodash/*": [
+      "lodash-es/*": [
         "node_modules/@types/lodash-es/*"
       ],
       "@ajsf/core": [
