@@ -2,6 +2,7 @@ import { Directive, ElementRef, EventEmitter, Input, Output } from '@angular/cor
 import ace from 'brace';
 import 'brace/mode/json';
 import 'brace/theme/sqlserver';
+import 'brace/theme/tomorrow_night';
 
 
 

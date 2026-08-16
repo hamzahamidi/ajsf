@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Examples } from './example-schemas.model';
 import { JsonPointer } from '@ajsf/core';
 
+const DARK_MODE_KEY = 'ajsf-demo-dark-mode';
+
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'demo',
@@ -80,7 +82,35 @@ export class DemoComponent implements OnInit {
     printMargin: false,
     autoScrollEditorIntoView: true,
   };
+  darkMode = false;
   @ViewChild(MatMenuTrigger, { static: true }) menuTrigger: MatMenuTrigger;
+
+  // Bootstrap 5 opts a subtree into its dark palette with this attribute.
+  // Bootstrap 3 and 4 have no dark theme, so their pane stays light.
+  get formPaneTheme(): string | null {
+    return this.darkMode && this.selectedFramework === 'bootstrap-5' ? 'dark' : null;
+  }
+
+  // Bootstrap 3 and 4 ship no dark theme, so their pane keeps a light surface
+  // rather than putting dark page text on light form controls.
+  get lightFormPane(): boolean {
+    return this.darkMode &&
+      (this.selectedFramework === 'bootstrap-3' || this.selectedFramework === 'bootstrap-4');
+  }
+
+  get aceTheme(): string {
+    return this.darkMode ? 'tomorrow_night' : 'sqlserver';
+  }
+
+  toggleDarkMode() {
+    this.setDarkMode(!this.darkMode);
+    localStorage.setItem(DARK_MODE_KEY, String(this.darkMode));
+  }
+
+  private setDarkMode(on: boolean) {
+    this.darkMode = on;
+    document.body.classList.toggle('dark-theme', on);
+  }
 
   constructor(
     private http: HttpClient,
@@ -89,6 +119,10 @@ export class DemoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    const stored = localStorage.getItem(DARK_MODE_KEY);
+    this.setDarkMode(stored === null ?
+      matchMedia('(prefers-color-scheme: dark)').matches : stored === 'true');
+
     // Subscribe to query string to detect schema to load
     this.route.queryParams.subscribe(
       params => {

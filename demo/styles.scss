@@ -16,6 +16,35 @@ $demo-app-warn:    mat.define-palette(mat.$red-palette);
 $demo-app-theme:   mat.define-light-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
 @include mat.all-component-themes($demo-app-theme);
 
+// Colors only: all-component-themes would emit the typography a second time.
+$demo-app-dark-theme: mat.define-dark-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
+.dark-theme {
+  @include mat.all-component-colors($demo-app-dark-theme);
+}
+
+
+:root {
+  --demo-bg: rgb(250, 250, 250);
+  --demo-fg: rgba(0, 0, 0, 0.87);
+  --demo-editor-bg: rgb(253, 253, 253);
+  --demo-border: #ccc;
+  --demo-data-good: #dfd;
+  --demo-data-bad: #fcc;
+  --demo-header-bg: #{mat.get-color-from-palette($demo-app-primary, lighter)};
+  --demo-header-fg: rgba(0, 0, 0, 0.87);
+}
+
+.dark-theme {
+  --demo-bg: #303030;
+  --demo-fg: #fff;
+  --demo-editor-bg: #1d1f21;
+  --demo-border: #555;
+  --demo-data-good: #1b3a1b;
+  --demo-data-bad: #4a1f1f;
+  --demo-header-bg: #1a2733;
+  --demo-header-fg: #fff;
+}
+
 $font-family: 'Roboto', 'Noto', 'Helvetica Neue', sans-serif;
 $row-height: 56px;
 
@@ -29,7 +58,8 @@ mat-toolbar {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(250, 250, 250) !important;
+  background-color: var(--demo-bg) !important;
+  color: var(--demo-fg);
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -40,7 +70,8 @@ body {
 }
 
 .demo-page-header {
-  background-color: mat.get-color-from-palette($demo-app-primary, lighter);
+  background-color: var(--demo-header-bg);
+  color: var(--demo-header-fg);
   margin-bottom: 12px;
   .header-content {
     font-family: $font-family;
@@ -58,16 +89,16 @@ body {
 [ace-editor], .data-good, .data-bad {
   border-radius: 3px;
   padding: 6px;
-  border: 1px solid #ccc !important;
+  border: 1px solid var(--demo-border) !important;
 }
 
-[ace-editor] { background-color: rgb(253, 253, 253) !important; }
+[ace-editor] { background-color: var(--demo-editor-bg) !important; }
 
 .avoidwrap { display:inline-block; }
 
-.data-good { background-color: #dfd; }
+.data-good { background-color: var(--demo-data-good); }
 
-.data-bad { background-color: #fcc; }
+.data-bad { background-color: var(--demo-data-bad); }
 
 .default-cursor:hover { cursor: default; }
 
@@ -116,3 +147,16 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+mat-toolbar .toolbar-title { flex: 1 1 auto; }
+
+.dark-theme .json-schema-form.light-form-pane {
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.87);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+// Plain HTML has no stylesheet to theme, so let the browser render its native
+// controls dark instead of leaving white boxes on a dark page.
+.dark-theme .json-schema-form:not(.light-form-pane) { color-scheme: dark; }
