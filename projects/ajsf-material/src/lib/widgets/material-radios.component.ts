@@ -48,7 +48,9 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>`,
   styles: [`
+    /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
     mat-radio-group { display: inline-flex; }
+    /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
     mat-radio-button { margin: 2px; }
     mat-error { font-size: 75%; }
   `]

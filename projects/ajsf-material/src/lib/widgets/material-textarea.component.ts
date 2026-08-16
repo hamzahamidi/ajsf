@@ -1,7 +1,7 @@
 import { AbstractControl } from '@angular/forms';
 import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
-import { MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS as MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/legacy-form-field';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -54,7 +54,7 @@ import { MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS as MAT_FORM_FIELD_DEFAULT_OPTIONS
       [innerHTML]="options?.errorMessage"></mat-error>`,
   styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
-    ::ng-deep json-schema-form mat-form-field .mat-form-field-wrapper .mat-form-field-flex
+    ::ng-deep json-schema-form mat-form-field .mat-mdc-form-field-wrapper .mat-form-field-flex
       .mat-form-field-infix { width: initial; }
   `],
 })
