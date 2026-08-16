@@ -14,14 +14,7 @@ const RECORD = false;
 export interface CorpusResult {
   controls: number;
   error: string | null;
-  /**
-   * Whether the form validates with nothing filled in.
-   *
-   * Recorded because `controls` and `error` cannot see a change in what
-   * validates. The dependencies validator returned an error object for every
-   * satisfied dependency, so four example schemas built forms that could never
-   * be submitted, and the corpus stayed green throughout.
-   */
+  /** Validity with nothing filled in, or null if the form never emitted. */
   valid: boolean | null;
 }
 
@@ -104,8 +97,6 @@ export function runCorpus(frameworkName: string, modules: Type<any>[]) {
         } catch (e) {
           error = (e as Error).message || String(e);
         }
-        // null when the form never emitted, which is the case for a schema
-        // that threw before it built anything.
         const valid = fixture.componentInstance.valid;
 
         if (RECORD) {
