@@ -106,5 +106,22 @@ Each of these cost real debugging time. They look like bugs in your code and are
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.
 - **`jasmine@7` installs on Node 16 and then fails at run time** with `ReferenceError: structuredClone is not defined`, which arrived in Node 17. The repository pins jasmine 4. The same applies to `conventional-changelog-cli`, pinned to v4 because v5 needs Node 18.
-- **`ng update --force` resolves inconsistently.** On the Angular 16 step it left `@angular/core` at `16.2.12` while `@angular/common` and `@angular/compiler-cli` jumped to `17.3.12`, and TypeScript to an Angular 17 range, producing `error TS2305: Module '"@angular/core"' has no exported member 'ɵIMAGE_CONFIG'`. Migrations were unaffected, but after any forced update compare installed versions against declared ones, then run bare `ng update` to confirm nothing is still pending for the major you just crossed.
+- **`ng update` on a partial package list resolves inconsistently, and `--force` hides it.** Updating only `@angular/core`, `cli`, `material` and `cdk` leaves every other `@angular/*` package free to resolve on its own, and they land on the *next* major. On the Angular 16 step, with `--force`, that produced a mixed tree: `@angular/core` at `16.2.12` beside `@angular/common` and `@angular/compiler-cli` at `17.3.12`, TypeScript on an Angular 17 range, and `error TS2305: Module '"@angular/core"' has no exported member 'ɵIMAGE_CONFIG'`. Without `--force` the same partial list simply fails, which is the better outcome.
+
+  **Name every `@angular/*` package on the command line and `--force` is not needed.** Read them out of `package.json` rather than typing a list from memory:
+
+  ```bash
+  npx ng update $(node -p "const p=require('./package.json');
+    Object.keys({...p.dependencies,...p.devDependencies})
+      .filter(n=>n.startsWith('@angular')).map(n=>n+'@18').join(' ')")
+  ```
+
+  Afterwards, compare installed against declared and run bare `ng update` to confirm nothing is still pending for the major you just crossed:
+
+  ```bash
+  node -e "const p=require('./package.json'),d={...p.dependencies,...p.devDependencies};
+    Object.keys(d).filter(n=>/^@angular|^(typescript|ng-packagr|zone\.js)$/.test(n)).sort()
+    .forEach(n=>console.log(n.padEnd(34),String(d[n]).padEnd(14),'->',require('./node_modules/'+n+'/package.json').version))"
+  ```
+
 - **`@angular/flex-layout` is deprecated and stops at `15.0.0-beta.42`.** It has no Angular 16 or later release and never will. Removing it is tracked work, not an incidental cleanup.
