@@ -583,6 +583,12 @@ Finally, if you want to see what scripts a particular framework will automatical
 
 In production, load these assets in the application and remove `loadExternalAssets` to avoid loading them twice.
 
+## Sponsors
+
+AJSF is maintained in spare time, under the MIT license, with no company behind it. Angular brings a major version about every six months, and each one means keeping five npm packages compatible. Sponsorship buys time for that work.
+
+Your name or company logo would go here. [Sponsor AJSF](https://github.com/sponsors/hamzahamidi).
+
 ## Contributing
 
 See the [contributing guide](./CONTRIBUTING.md) for local setup, tests, and pull request guidance.
