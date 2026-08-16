@@ -57,6 +57,36 @@ No code change is needed. `FlexLayoutRootComponent`, `FlexLayoutSectionComponent
 `fxLayoutGap` all behave as before. The version jump is the Angular-aligned scheme
 starting, not a rewrite: `14.0.0` targets the same Angular 14 that `0.8.0` did.
 
+## JSON Schema versions
+
+Your existing schemas keep working. AJSF stays backward compatible with the older drafts,
+and nothing you have today needs changing.
+
+| Draft | Status |
+| --- | --- |
+| Draft 1, 2, 3, 4 | Supported, converted to draft 6 internally |
+| Draft 6 | Supported directly |
+| Draft 7 | Supported, including `if`, `then` and `else` |
+| 2019-09, 2020-12 | Not supported yet |
+
+Older drafts pass through `convertSchemaToDraft6` before the form is built. Keywords it
+does not recognise are carried through untouched rather than dropped, which is why draft 7
+schemas validate correctly.
+
+Two limits are worth knowing about before you rely on them.
+
+**Draft 7 conditionals validate, but the layout does not follow them.** `if`, `then` and
+`else` are enforced, so a field that becomes required because of another field's value
+really is required and the form will not submit without it. The layout is built once,
+though, so that field is not marked as required until you try to submit. `readOnly` and
+`writeOnly` are accepted and currently have no effect: they are annotations, and neither
+the validator nor the widgets act on them.
+
+**2020-12 is not supported yet.** A schema declaring
+`"$schema": "https://json-schema.org/draft/2020-12/schema"` fails to compile and the form
+does not render, so it fails loudly rather than quietly. It needs a newer validator, and
+`prefixItems` replaces the array form of `items`, which is how AJSF recognises tuples.
+
 ## Check out the live demo and play with the examples
 
 [Check out some examples here.](https://hamidihamza.com/ajsf)
@@ -296,7 +326,7 @@ Combining inputs is useful when each form stores its data and schema together. S
 
 #### Compatibility modes
 
-If you have used Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery, Angular JSON Schema Form recognizes their input names and custom input objects. It supports JSON Schema [draft 6](http://json-schema.org/draft-06/schema), [draft 4](http://json-schema.org/draft-04/schema), [draft 3](http://json-schema.org/draft-03/schema), and the [truncated draft 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut).
+If you have used Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery, Angular JSON Schema Form recognizes their input names and custom input objects. It also accepts the [truncated draft 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut). See [JSON Schema versions](#json-schema-versions) for the drafts AJSF supports.
 
 Angular Schema Form (AngularJS) compatibility:
 

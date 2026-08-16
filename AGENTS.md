@@ -92,7 +92,39 @@ Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all
 - Plain and direct. Concrete numbers rather than adjectives.
 - Avoid: ensure, leverage, comprehensive, robust, seamless, optimize, overall, ultimately, additionally, furthermore, moreover.
 - State a build or test result only if you ran it. Otherwise say it is unverified.
-- **Keep pull request descriptions under 150 words.** PRs #361 to #369 averaged 314 and were called out as much longer than needed. Three things earn their place: what changed, what was deliberately not done and why, and the verification result. Cut version tables the lockfile already records, prose that restates the diff, and reasoning that belongs in the commit body. A reviewer reads the description to decide where to look, not instead of looking.
+- Pull request descriptions follow a fixed shape. See below.
+
+## Pull request descriptions
+
+Use these four headings, in this order, as plain prose:
+
+```markdown
+## Summary
+
+One or two sentences: what this does, and why it exists.
+
+## Changes
+
+What changed, in paragraphs. Group related edits into one sentence rather
+than listing every file.
+
+## Release impact
+
+Whether this publishes, at what version, and why. Say plainly when there
+is no release.
+
+## Validation
+
+What was run and what it reported. Past tense, concrete numbers.
+```
+
+Add `## Compatibility` when the public API or a consumer visible option is involved.
+
+**Target 100 to 150 words.** PRs #361 to #372 run 96 to 156 after being rewritten by hand; the originals averaged 314 and were called out as much longer than needed.
+
+⚠️ **No tables, no code fences, no warning symbols, no bold mid-sentence.** All twelve rewritten descriptions contain zero of each. Before and after output, version tables and command transcripts belong in the commit body or a review comment, not here.
+
+Third person and declarative: "Removes the deprecated dependency", not "I removed" or "This PR removes". A reviewer reads the description to decide where to look, not instead of looking.
 
 ## Not committed
 
