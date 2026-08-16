@@ -83,6 +83,25 @@ The button set path (`checkboxbuttons`, `radiobuttons`) is migrated off the dead
 `btn-default` and `sr-only` but not measured. Bootstrap 5's own idiom there is
 `btn-check`, which also wants the input as a sibling of the label.
 
+## Two layout defects, shared by all three
+
+Neither is class drift, and neither is a regression. Both were measured in the
+demo on 2026-08-16 and both reproduce on Bootstrap 4, which none of the fixes
+above touched.
+
+The array remove button rides at the top of its row. It is the first child of
+the wrapper and floats right (`float-end` in Bootstrap 5, inherited from
+`.close` in Bootstrap 3 and 4), and a float leaves normal flow and pins to the
+top of its containing block. Measured against the input it sits beside, the
+button centre is 44px high on Bootstrap 5 and 39px on Bootstrap 4, and the
+taller the row the worse it reads. Fixing it means making that row a flex
+container and aligning the button rather than floating it, which is a change to
+shared framework templates and wants its own measurement pass.
+
+An array also renders its title twice, once as the field label and again as a
+heading taken raw from the property name, so a `phone_numbers` property shows
+"Phone Numbers" followed by "Phone_numbers".
+
 The Bootstrap 4 pass is larger still. Every row above needs its Bootstrap 4
 column applied, and the result is a visible change for anyone relying on the
 current output, so it wants its own release note rather than a quiet fix.
