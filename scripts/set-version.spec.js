@@ -12,7 +12,7 @@ function fixture() {
   write('ajsf-core', {
     name: '@ajsf/core', version: '0.8.0',
     keywords: ['Angular', 'ng', 'Angular14', 'Angular 14', 'ng14', 'JSON Schema'],
-    dependencies: { 'lodash-es': '~4.17.21' },
+    dependencies: { ajv: '^6.10.0' },
     peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0', rxjs: '^7.0.0' },
   });
   write('ajsf-material', {
@@ -78,7 +78,7 @@ describe('setVersion', () => {
     const dir = fixture();
     setVersion('18.0.0', 18, dir);
     expect(read(dir, 'ajsf-core').peerDependencies.rxjs).toEqual('^7.0.0');
-    expect(read(dir, 'ajsf-core').dependencies['lodash-es']).toEqual('~4.17.21');
+    expect(read(dir, 'ajsf-core').dependencies.ajv).toEqual('^6.10.0');
   });
 
   it('leaves Angular peers alone when angularMajor is null', () => {

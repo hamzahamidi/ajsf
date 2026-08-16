@@ -30,27 +30,6 @@ returns an empty package until a stable release moves it.
 
     npm deprecate "@ajsf/bootstrap5@0.0.0" "Placeholder only, not a usable release."
 
-### Fix the lodash dependency, which is currently wrong
-
-All four published packages declare `lodash-es` and import plain `lodash`.
-Source carries 19 `from 'lodash/...'` imports and zero `lodash-es` imports, and
-plain `lodash` is declared nowhere. It resolves in this repository only because
-karma and webpack-bundle-analyzer pull it in as development dependencies.
-
-A consumer therefore installs an unused package and resolves the one actually
-imported by luck. This has been shipping since before the Angular walk.
-
-The fix is to remove it rather than to correct the name. Five functions are
-used, and their transitive graph is 152 files:
-
-    uniqueId        a counter, three lines
-    map, filter     native, where they are used on arrays
-    cloneDeep       structuredClone
-    isEqual         the only one needing care
-
-`isEqual` handles NaN, Dates, Maps and Sets, so a naive replacement would
-differ quietly. Verify it against the corpus, which now records validity.
-
 ### Raise the Codecov project target
 
 `codecov.yml` has `project: auto` because coverage was 56 percent when it was
@@ -68,11 +47,9 @@ The 19 Angular alerts are fixed by the walk above, since they are all against
 versions the upgrade replaces. That is the strongest practical argument for
 finishing it.
 
-The 3 `lodash-es` alerts are not reachable twice over. They are `_.template`
-code injection and prototype pollution in `_.unset` and array paths, none of
-which the library calls, and `lodash-es` is not imported at all: the code
-imports plain `lodash`, as the item above describes. Removing the dependency
-closes them.
+The 3 `lodash-es` alerts are closed: lodash is gone from all five packages.
+`@ajsf/core` now depends on `ajv` and `tslib` only, and the four framework
+packages on `@ajsf/core` and `tslib`.
 
 The 72 development alerts are worth one pass to confirm none of them affect the
 published artifacts, then triaging in bulk.

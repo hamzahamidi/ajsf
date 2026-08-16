@@ -1,6 +1,4 @@
-import cloneDeep from 'lodash/cloneDeep';
-import filter from 'lodash/filter';
-import map from 'lodash/map';
+import { cloneDeep } from './clone-deep.function';
 import {
   AbstractControl,
   UntypedFormArray,
@@ -301,9 +299,12 @@ export function buildFormGroup(template: any): AbstractControl {
         });
         return new UntypedFormGroup(groupControls, validatorFn);
       case 'FormArray':
-        return new UntypedFormArray(filter(map(template.controls,
-          controls => buildFormGroup(controls)
-        )), validatorFn);
+        return new UntypedFormArray(
+          (template.controls || [])
+            .map(controls => buildFormGroup(controls))
+            .filter(Boolean),
+          validatorFn
+        );
       case 'FormControl':
         return new UntypedFormControl(template.value, validatorFns);
     }

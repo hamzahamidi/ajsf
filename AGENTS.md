@@ -2,25 +2,28 @@
 
 Notes for AI coding agents working in this repository. Humans may find the traps section useful too.
 
-`@ajsf/*` is a JSON Schema form builder for Angular, published as four packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3` and `@ajsf/bootstrap4` framework packages. All four version in lockstep.
+`@ajsf/*` is a JSON Schema form builder for Angular, published as five packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4` and `@ajsf/bootstrap5` framework packages. All five version in lockstep.
 
 ## Environment
 
-The repository targets **Angular 14.2 on Node 16.13.2** (`.nvmrc`) with TypeScript 4.7.
+The repository targets **Angular 17.3 on Node 18.17.1** (`.nvmrc`) with TypeScript 5.4.
+Read the version out of `.nvmrc` rather than typing it: it moves with each
+Angular major, and an older Node fails the build with a CLI version check
+rather than anything that points at the real cause.
 
 ⚠️ **`nvm use` does not stick unless nvm is sourced with `--no-use`.** Without it the shell keeps the default Node and everything still appears to work, so a build or an install silently runs on the wrong version. Start every shell that touches the toolchain with:
 
 ```bash
 export NVM_DIR="$HOME/.nvm"
 . "$NVM_DIR/nvm.sh" --no-use
-nvm use 16.13.2
+nvm use "$(cat .nvmrc)"
 ```
 
 ## Commands
 
 ```bash
 npm ci                       # install
-npm run build:libs           # build all four packages into dist/@ajsf/
+npm run build:libs           # build all five packages into dist/@ajsf/
 npm run build:demo           # build the libraries and the demo app
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
@@ -33,7 +36,7 @@ Library tests need the headless launcher flags:
 npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 ```
 
-Substitute `test:bs3`, `test:bs4`, `test:material` for the other three.
+Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material` for the others.
 
 ## Versioning
 
@@ -56,7 +59,7 @@ Publishing is automated through `.github/workflows/release.yml` and npm OIDC Tru
 
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
-3. The `verify` job builds and runs all four suites, ungated, and uploads `dist` as an artifact.
+3. The `verify` job builds and runs all five suites, ungated, and uploads `dist` as an artifact.
 4. Approve the `npm-publish` deployment. Nothing reaches npm before this, and by now the build is green.
 5. `release` publishes the artifact `verify` built, `core` first, then the three framework packages, and tags the commit.
 
@@ -66,7 +69,7 @@ A version containing a hyphen goes to the `next` dist-tag, everything else to `l
 
 ## Coverage
 
-Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all four libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
+Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all five libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
 
 **Codecov authenticates with the `CODECOV_TOKEN` secret, not OIDC**, which is deliberate and differs from the npm publishing flow. `codecov/codecov-action` does accept `use_oidc: true`, but the CLI has a reported failure mode where it ignores the OIDC credential, falls back to tokenless and then fails on a rate limit (`codecov-action#1461`, closed with no stated fix), and fork pull requests receive no `id-token` at all. The token is the predictable option. Do not switch this to OIDC without confirming an upload actually lands.
 

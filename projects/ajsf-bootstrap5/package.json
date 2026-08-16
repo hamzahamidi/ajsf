@@ -28,15 +28,11 @@
   },
   "private": false,
   "dependencies": {
-    "lodash-es": "~4.17.21",
     "@ajsf/core": "17.2.0-rc.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/common": "^17.0.0",
     "@angular/core": "^17.0.0"
-  },
-  "devDependencies": {
-    "@types/lodash-es": "^4.17.6"
   }
 }

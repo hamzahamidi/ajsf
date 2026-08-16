@@ -83,7 +83,6 @@
     "@angular/router": "^17.3.12",
     "brace": "^0.11.1",
     "core-js": "^3.6.5",
-    "lodash-es": "~4.17.21",
     "rxjs": "^7.0.0",
     "zone.js": "~0.14.10"
   },
@@ -93,7 +92,6 @@
     "@angular/compiler-cli": "^17.3.12",
     "@angular/language-service": "^17.3.12",
     "@types/jasmine": "~4.0.0",
-    "@types/lodash": "^4.14.182",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
     "conventional-changelog-cli": "^4.1.0",

@@ -10,6 +10,8 @@ export {
   JavaScriptType, PrimitiveValue, PlainObject, IValidatorFn, AsyncIValidatorFn
 } from './validator.functions';
 
+export { cloneDeep } from './clone-deep.function';
+
 export {
   addClasses, copy, forEach, forEachCopy, hasOwn, mergeFilteredObject,
   uniqueItems, commonItems, fixTitle, toTitleCase

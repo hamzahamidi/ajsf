@@ -1,7 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
-import cloneDeep from 'lodash/cloneDeep';
-import map from 'lodash/map';
-import {JsonSchemaFormService, addClasses, inArray} from '@ajsf/core';
+import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core';
 
 /**
  * Bootstrap 3 framework for Angular JSON Schema Form.
@@ -202,7 +200,7 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
 
         if (this.options.debug) {
           const vars: any[] = [];
-          this.debugOutput = map(vars, thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
+          this.debugOutput = vars.map(thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
         }
       }
       this.frameworkInitialized = true;
