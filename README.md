@@ -583,6 +583,10 @@ Finally, if you want to see what scripts a particular framework will automatical
 
 In production, load these assets in the application and remove `loadExternalAssets` to avoid loading them twice.
 
+## Sponsors
+
+[Support AJSF through GitHub Sponsors](https://github.com/sponsors/hamzahamidi). Sponsors are recognized here according to their selected tier.
+
 ## Contributing
 
 See the [contributing guide](./CONTRIBUTING.md) for local setup, tests, and pull request guidance.
