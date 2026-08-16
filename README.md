@@ -20,10 +20,10 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 
 ## Packages
 
-* [`@ajsf/core`](./README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fcore.svg)](https://badge.fury.io/js/%40ajsf%2Fcore)
-* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap3.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap3)
-* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fbootstrap4.svg)](https://badge.fury.io/js/%40ajsf%2Fbootstrap4)
-* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://badge.fury.io/js/%40ajsf%2Fmaterial.svg)](https://badge.fury.io/js/%40ajsf%2Fmaterial)
+* [`@ajsf/core`](./README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/core.svg)](https://www.npmjs.com/package/@ajsf/core)
+* [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap3.svg)](https://www.npmjs.com/package/@ajsf/bootstrap3)
+* [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap4.svg)](https://www.npmjs.com/package/@ajsf/bootstrap4)
+* [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/material.svg)](https://www.npmjs.com/package/@ajsf/material)
 
 ## Version compatibility
 
