@@ -69,7 +69,13 @@ This example playground features over 70 different JSON Schemas for you to try (
 
 Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/package/@ajsf/material) renders with [Angular Material](https://material.angular.io), and there are Bootstrap 3 and Bootstrap 4 packages alongside it.
 
-**Install the major that matches your Angular**, as described in [Version compatibility](#version-compatibility) above. For Angular 17:
+`@ajsf/material` renders Angular Material components, so it declares `@angular/material` and `@angular/cdk` as peer dependencies. Your app needs both installed, with a theme and animations set up. `ng add @angular/material` does all three:
+
+```shell
+ng add @angular/material
+```
+
+**Then install the major that matches your Angular**, as described in [Version compatibility](#version-compatibility) above. For Angular 17:
 
 ```shell
 npm install @ajsf/material@17
@@ -83,8 +89,9 @@ yarn add @ajsf/material@17
 
 Then import `MaterialDesignFrameworkModule` in your main application module like this:
 
-```javascript
+```typescript
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
@@ -94,6 +101,8 @@ import { AppComponent } from './app.component';
 @NgModule({
   declarations: [ AppComponent ],
   imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
     MaterialDesignFrameworkModule
   ],
   providers: [],
@@ -101,6 +110,8 @@ import { AppComponent } from './app.component';
 })
 export class AppModule { }
 ```
+
+`BrowserAnimationsModule` is required, not optional: the framework module pulls in `MatSelect`, `MatDatepicker`, `MatExpansion`, `MatTabs`, `MatStepper` and others that use animations, and without it the first form throws `Found the synthetic property @transformPanel`. Use `NoopAnimationsModule` instead if you want the components without the motion.
 
 Four framework modules are currently included, the import is the same as above :
 
@@ -164,7 +175,9 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `bootstrap-4` for Bootstrap 4
 * `no-framework` for plain HTML
 
-Setting `loadExternalAssets="true"` will automatically load any additional assets needed by the display framework. It is useful when you are trying out this library, but production sites should instead load all required assets separately. For full details see 'Changing or adding frameworks', below.
+Setting `loadExternalAssets="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. For full details see 'Changing or adding frameworks', below.
+
+Note what this does and does not cover. For `bootstrap-4` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
 
 ### Data-only mode
 
@@ -454,8 +467,8 @@ import { YourInputWidgetComponent } from './your-input-widget.component';
 import { YourCustomWidgetComponent } from './your-custom-widget.component';
 ...
 const yourNewWidgets = {
-  input: YourInputWidgetComponent,          // Replace existing 'input' widget
-  custom-control: YourCustomWidgetComponent // Add new 'custom-control' widget
+  'text': YourInputWidgetComponent,           // Replace the existing 'text' widget
+  'custom-control': YourCustomWidgetComponent // Add a new 'custom-control' widget
 }
 ```
 
@@ -475,13 +488,13 @@ import { WidgetLibraryService } from '@ajsf/core';
 ...
 constructor(private widgetLibrary: WidgetLibraryService) { }
 ...
-// Replace existing 'input' widget:
-widgetLibrary.registerWidget('input', YourInputWidgetComponent);
+// Replace the existing 'text' widget:
+widgetLibrary.registerWidget('text', YourInputWidgetComponent);
 // Add new 'custom-control' widget:
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-To see many examples of widgets, explore the source code, or call `getAllWidgets()` from the `WidgetLibraryService` to see all widgets currently available in the library. All default widget components are in the `projects/json-schema-form/src/lib/widget-library` folder, and all custom Material Design widget components are in the `projects/json-schema-form/src/lib/framework-library/material-design-framework` folder. (The Bootstrap 3 and Bootstrap 4 frameworks just reformat the default widgets, and so do not include any custom widgets of their own.)
+To see many examples of widgets, explore the source code, or call `getAllWidgets()` from the `WidgetLibraryService` to see all widgets currently available in the library. All default widget components are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), and the custom Material Design widget components are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets). (The Bootstrap 3 and Bootstrap 4 frameworks just reformat the default widgets, and so do not include any custom widgets of their own.)
 
 ### Changing or adding frameworks
 
@@ -530,7 +543,7 @@ Alternately, during development, you may find it helpful to let Angular JSON Sch
 * Add `loadExternalAssets: true` to your `options` object, or
 * Add `loadExternalAssets="true"` to your `<json-schema-form>` tag, as shown above
 
-Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScritps()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
+Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScripts()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
 
 However, if you are creating a production site you should load these assets separately, and make sure to remove all references to `loadExternalAssets` to prevent the assets from being loaded twice.
 
@@ -540,4 +553,4 @@ If you like this project and want to contribute you can check this [documentatio
 
 ## License
 
-[MIT](/LICENSE)
+[MIT](https://github.com/hamzahamidi/ajsf/blob/main/LICENSE)
