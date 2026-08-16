@@ -207,7 +207,6 @@
       }
     }
   },
-  "defaultProject": "demo",
   "schematics": {
     "@schematics/angular:component": {
       "style": "scss"
