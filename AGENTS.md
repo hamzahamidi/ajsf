@@ -126,6 +126,19 @@ Add `## Compatibility` when the public API or a consumer visible option is invol
 
 Third person and declarative: "Removes the deprecated dependency", not "I removed" or "This PR removes". A reviewer reads the description to decide where to look, not instead of looking.
 
+## Code comments
+
+The default is no comment. Add one only for information the code cannot express: an invariant that is not obvious, an external contract, a compatibility constraint or an intentional limitation.
+
+Before keeping a comment, all four statements must be true:
+
+1. A clearer name, type, helper or test cannot replace it.
+2. It explains why the code has to work this way. It does not narrate the next line.
+3. It describes the current code without relying on the pull request or its history.
+4. It fits in one short sentence. If it needs a paragraph, simplify the code or move the context to the commit body or documentation.
+
+Delete comments about previous implementations, fixed bugs, debugging history, test results, line percentages and facts visible in the code. Keep public API documentation and short warnings whose removal could lead to a correctness bug.
+
 ## Not committed
 
 `docs/superpowers/` holds generated design and planning documents. It is gitignored on purpose. Do not add it.
