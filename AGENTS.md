@@ -123,6 +123,13 @@ What was run and what it reported. Past tense, concrete numbers.
 
 Add `## Compatibility` when the public API or a consumer visible option is involved.
 
+**A release pull request describes the release, not the work being released.** The
+bump carries only a version change, and every fix in it already had its own reviewed
+pull request. Re-narrating them puts the reviewer's attention in the wrong place and is
+how a 95 word description becomes 254. Say what publishes, at what version, and that
+main was verified. Leave `## Compatibility` out unless the bump itself moves a peer
+range: the notes belong on the pull request that made the change.
+
 **Target 100 to 150 words.** PRs #361 to #372 run 96 to 156 after being rewritten by hand; the originals averaged 314 and were called out as much longer than needed.
 
 ⚠️ **No tables, no code fences, no warning symbols, no bold mid-sentence.** All twelve rewritten descriptions contain zero of each. Before and after output, version tables and command transcripts belong in the commit body or a review comment, not here.
