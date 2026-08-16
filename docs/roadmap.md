@@ -75,6 +75,40 @@ reads as false. It is the largest reach in the library for the smallest visible
 payoff, and nothing user facing depends on it. Revisit alone, after the walk,
 with a full corpus run.
 
+### Audit backlog, 2026-08-16
+
+An audit of `@ajsf/core` reported 28 defects; 25 survived a three-lens
+refutation panel. Four were fixed straight away, because they were unambiguous
+specification violations confined to one file: `multipleOf` using a remainder,
+`minLength` and `maxLength` counting UTF-16 units, and `minItems` exempting the
+empty array. The rest, worst first:
+
+    A property name containing / or ~ throws, and no form renders
+    An array named by key in a custom layout renders no fields and no Add button
+    Tuple slots are typed as list items, so a fixed slot gets a remove button
+    checkboxes ignores every click when the enum values are not strings
+    The auto-added "None" option stores the four-character string "null"
+    disableInvalidSubmit is dead for a layout-declared submit, so onSubmit emits null
+    A recursive array silently drops every item of the supplied data
+    toDataPointer emits the key unescaped, producing a pointer it then rejects
+    exclusiveMinimum and exclusiveMaximum never produce a control validator
+    A nullable type such as ['string','null'] loses every validator
+    mergeSchemas reads additionalProperties off the wrong object
+    A combinedSchema.combinedSchema typo drops a conflicting additionalProperties
+    convertSchemaToDraft6 appends a suffix to the id when writing $id
+    mergeSchemas intersects tuple items by value rather than by position
+    The array item template is cloned from the last tuple slot, not additionalItems
+    An array layout node with an empty item list throws and the form fails
+    setCopy accepts an empty pointer and writes a key named "undefined"
+    forEachDeepCopy and getCopy flatten Date, Map and Set to an empty object
+    buildTitleMap opens a duplicate group when a group name recurs non-adjacently
+    remove on a Map does nothing while has() still reports the key
+
+`minProperties` and `maxProperties` count declared properties rather than
+entered values, so an untouched form already has every key. That is not fixed
+here because it is the same disagreement as the item below: the hand-written
+validator and ajv reading the same document differently. Fix it there.
+
 ### Bugs frozen into the corpus baseline
 
 Six of the 400 baseline entries record a thrown error as expected behaviour,

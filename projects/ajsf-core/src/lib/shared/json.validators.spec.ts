@@ -296,6 +296,22 @@ describe('JsonValidators', () => {
     });
   });
 
+  describe('minLength and maxLength, code points', () => {
+    // JSON Schema counts code points, while String.length counts UTF-16 units,
+    // so an emoji read as two characters.
+    it('counts an astral character as one', () => {
+      expect(JsonValidators.maxLength(1)(ctrl('\u{1F600}'))).toBeNull();
+      expect(JsonValidators.minLength(2)(ctrl('\u{1F600}')))
+        .toEqual({ minLength: { minimumLength: 2, currentLength: 1 } });
+    });
+
+    it('is unchanged for characters in the basic plane', () => {
+      expect(JsonValidators.maxLength(3)(ctrl('abc'))).toBeNull();
+      expect(JsonValidators.minLength(3)(ctrl('ab')))
+        .toEqual({ minLength: { minimumLength: 3, currentLength: 2 } });
+    });
+  });
+
   describe('pattern', () => {
     it('returns the no-op validator when no pattern is given', () => {
       expect(JsonValidators.pattern(null)(ctrl('abc'))).toBeNull();
@@ -601,6 +617,24 @@ describe('JsonValidators', () => {
     });
   });
 
+  describe('multipleOf, decimal steps', () => {
+    // A remainder is unusable on decimals, and the library runs ajv over the same
+    // data, so the two validation paths have to agree.
+    it('accepts plain two-decimal values against a 0.01 step', () => {
+      const validator = JsonValidators.multipleOf(0.01);
+      for (const value of [0.03, 0.1, 9, 12.34, 99.99]) {
+        expect(validator(ctrl(value))).withContext(`${value}`).toBeNull();
+      }
+    });
+
+    it('still rejects a value that is not a multiple', () => {
+      expect(JsonValidators.multipleOf(0.01)(ctrl(0.015)))
+        .toEqual({ multipleOf: { multipleOfValue: 0.01, currentValue: 0.015 } });
+      expect(JsonValidators.multipleOf(2)(ctrl(3)))
+        .toEqual({ multipleOf: { multipleOfValue: 2, currentValue: 3 } });
+    });
+  });
+
   describe('minProperties', () => {
     it('returns the no-op validator when no minimum is given', () => {
       expect(JsonValidators.minProperties(null)(ctrl({ a: 1 }))).toBeNull();
@@ -771,9 +805,16 @@ describe('JsonValidators', () => {
       expect(JsonValidators.minItems(undefined)(ctrl([1]))).toBeNull();
     });
 
-    it('treats an empty array as valid regardless of the minimum', () => {
-      expect(JsonValidators.minItems(2)(ctrl([]))).toBeNull();
+    it('rejects an empty array, which is the length the minimum exists to catch', () => {
+      expect(JsonValidators.minItems(2)(ctrl([])))
+        .toEqual({ minItems: { minimumItems: 2, currentItems: 0 } });
+      expect(JsonValidators.minItems(1)(ctrl([])))
+        .toEqual({ minItems: { minimumItems: 1, currentItems: 0 } });
+    });
+
+    it('ignores a value that was never entered', () => {
       expect(JsonValidators.minItems(2)(ctrl(null))).toBeNull();
+      expect(JsonValidators.minItems(2)(ctrl(undefined))).toBeNull();
     });
 
     it('accepts an array with at least the minimum number of items', () => {
