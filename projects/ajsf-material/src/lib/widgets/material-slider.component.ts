@@ -6,16 +6,15 @@ import { JsonSchemaFormService } from '@ajsf/core';
   // tslint:disable-next-line:component-selector
   selector: 'material-slider-widget',
   template: `
-    <mat-slider thumbLabel *ngIf="boundControl"
-      [formControl]="formControl"
+    <mat-slider discrete *ngIf="boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [id]="'control' + layoutNode?._id"
       [max]="options?.maximum"
       [min]="options?.minimum"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
-      (blur)="options.showErrors = true"><input matSliderThumb /></mat-slider>
-    <mat-slider thumbLabel *ngIf="!boundControl"
+      ><input matSliderThumb [formControl]="formControl" (blur)="options.showErrors = true" /></mat-slider>
+    <mat-slider discrete *ngIf="!boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [disabled]="controlDisabled || options?.readonly"
       [id]="'control' + layoutNode?._id"

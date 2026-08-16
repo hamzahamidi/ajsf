@@ -7,6 +7,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
   template: `
     <nav mat-tab-nav-bar
       [attr.aria-label]="options?.label || options?.title || ''"
+      [tabPanel]="tabPanel"
       [style.width]="'100%'">
         <a mat-tab-link *ngFor="let item of layoutNode?.items; let i = index"
           [active]="selectedItem === i"
@@ -15,6 +16,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
             [innerHTML]="setTabTitle(item, i)"></span>
         </a>
     </nav>
+    <!-- MDC requires mat-tab-nav-bar to reference a mat-tab-nav-panel, which
+         did not exist before v15. It wraps the content the nav switches. -->
+    <div mat-tab-nav-panel #tabPanel>
     <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
       [class]="options?.htmlClass || ''">
       <select-framework-widget *ngIf="selectedItem === i"
@@ -22,6 +26,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
         [layoutIndex]="(layoutIndex || []).concat(i)"
         [layoutNode]="layoutItem"></select-framework-widget>
+    </div>
     </div>`,
   styles: [` a { cursor: pointer; } `],
 })
