@@ -84,6 +84,9 @@
     "lint": "ng lint",
     "version:set": "node scripts/set-version.js",
     "test:scripts": "jasmine scripts/*.spec.js",
+    "coverage:clean": "node -e \"require('fs').rmSync('coverage',{recursive:true,force:true})\"",
+    "coverage:report": "node scripts/coverage-summary.js --files",
+    "coverage": "npm run coverage:clean && npm run test:core -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:bs3 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run coverage:report",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "corpus:index": "node scripts/generate-corpus-index.js"
   },
