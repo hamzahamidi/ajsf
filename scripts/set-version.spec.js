@@ -138,3 +138,114 @@ describe('setVersion', () => {
     expect(read(dir, 'ajsf-core').version).toEqual('0.9.0');
   });
 });
+
+describe('setRootKeywords', () => {
+  const { setRootKeywords } = require('./set-version');
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+
+  let file;
+
+  /** Writes a throwaway workspace manifest and returns its path. */
+  function rootManifest(manifest) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ajsf-root-'));
+    file = path.join(dir, 'package.json');
+    fs.writeFileSync(file, JSON.stringify(manifest, null, 2) + '\n');
+    return file;
+  }
+
+  function read() {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  }
+
+  it('retargets the workspace keywords to the current Angular major', () => {
+    rootManifest({ version: '0.0.0', keywords: ['Angular', 'ng', 'Angular14', 'Angular 14', 'ng14', 'form'] });
+    setRootKeywords(file, 17);
+    expect(read().keywords).toEqual(['Angular', 'ng', 'Angular17', 'Angular 17', 'ng17', 'form']);
+  });
+
+  it('collapses a long history of majors down to the current one', () => {
+    rootManifest({
+      version: '0.0.0',
+      keywords: ['Angular', 'ng', 'Angular6', 'Angular 6', 'ng6', 'Angular14', 'Angular 14', 'ng14', 'ajsf'],
+    });
+    setRootKeywords(file, 17);
+    expect(read().keywords.filter((k) => /^(Angular ?|ng)\d+$/.test(k)))
+      .toEqual(['Angular17', 'Angular 17', 'ng17']);
+  });
+
+  // The workspace is private and package-guards.spec.js asserts this stays put.
+  it('never changes the workspace version', () => {
+    rootManifest({ version: '0.0.0', keywords: ['Angular14'] });
+    setRootKeywords(file, 17);
+    expect(read().version).toEqual('0.0.0');
+  });
+
+  it('keeps every non versioned keyword', () => {
+    rootManifest({ version: '0.0.0', keywords: ['Angular', 'ng', 'ng14', 'JSON Schema', 'form builder'] });
+    setRootKeywords(file, 17);
+    expect(read().keywords).toContain('JSON Schema');
+    expect(read().keywords).toContain('form builder');
+  });
+
+  it('does nothing when no Angular major is given', () => {
+    rootManifest({ version: '0.0.0', keywords: ['Angular14'] });
+    expect(setRootKeywords(file, null)).toBeNull();
+    expect(read().keywords).toEqual(['Angular14']);
+  });
+
+  it('leaves a manifest with no keywords alone', () => {
+    rootManifest({ version: '0.0.0' });
+    setRootKeywords(file, 17);
+    expect(read().keywords).toBeUndefined();
+  });
+});
+
+describe('syncNodeEngine', () => {
+  const { syncNodeEngine } = require('./set-version');
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+
+  let dir;
+
+  function write(name, contents) {
+    const file = path.join(dir, name);
+    fs.writeFileSync(file, JSON.stringify(contents, null, 2) + '\n');
+    return file;
+  }
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ajsf-eng-'));
+  });
+
+  it('copies the Angular CLI node requirement onto the workspace', () => {
+    const root = write('package.json', { engines: { node: '^16.14.0 || >=18.10.0', npm: '>=8.5.0' } });
+    const cli = write('cli.json', { engines: { node: '^18.13.0 || >=20.9.0' } });
+    syncNodeEngine(root, cli);
+    expect(JSON.parse(fs.readFileSync(root, 'utf8')).engines.node).toEqual('^18.13.0 || >=20.9.0');
+  });
+
+  it('leaves the npm requirement alone', () => {
+    const root = write('package.json', { engines: { node: '>=1', npm: '>=8.5.0' } });
+    const cli = write('cli.json', { engines: { node: '^18.13.0 || >=20.9.0' } });
+    syncNodeEngine(root, cli);
+    expect(JSON.parse(fs.readFileSync(root, 'utf8')).engines.npm).toEqual('>=8.5.0');
+  });
+
+  // npm ci has to be able to run before this is meaningful, so a missing
+  // node_modules must not be an error.
+  it('returns null when the CLI is not installed', () => {
+    const root = write('package.json', { engines: { node: '>=1' } });
+    expect(syncNodeEngine(root, path.join(dir, 'absent.json'))).toBeNull();
+    expect(JSON.parse(fs.readFileSync(root, 'utf8')).engines.node).toEqual('>=1');
+  });
+
+  it('does nothing when the workspace declares no engines', () => {
+    const root = write('package.json', { version: '0.0.0' });
+    const cli = write('cli.json', { engines: { node: '>=20' } });
+    syncNodeEngine(root, cli);
+    expect(JSON.parse(fs.readFileSync(root, 'utf8')).engines).toBeUndefined();
+  });
+});
