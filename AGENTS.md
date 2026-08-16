@@ -84,6 +84,7 @@ A version containing a hyphen goes to the `next` dist-tag, everything else to `l
 - Plain and direct. Concrete numbers rather than adjectives.
 - Avoid: ensure, leverage, comprehensive, robust, seamless, optimize, overall, ultimately, additionally, furthermore, moreover.
 - State a build or test result only if you ran it. Otherwise say it is unverified.
+- **Keep pull request descriptions under 150 words.** PRs #361 to #369 averaged 314 and were called out as much longer than needed. Three things earn their place: what changed, what was deliberately not done and why, and the verification result. Cut version tables the lockfile already records, prose that restates the diff, and reasoning that belongs in the commit body. A reviewer reads the description to decide where to look, not instead of looking.
 
 ## Not committed
 
