@@ -27,6 +27,21 @@ import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.con
 import { map } from 'rxjs/operators';
 
 
+/**
+ * Drops keys whose value is null or undefined.
+ *
+ * forEachCopy keeps a key for every entry it visits, including the ones whose
+ * callback returned null, and isEmpty() only asks whether an object has keys.
+ * Without this, a dependency that is satisfied still contributes
+ * `{ theField: null }`, isEmpty reports false, and the validator returns an
+ * error object for a form that is correct.
+ */
+function withoutNullValues(object: any): any {
+  if (!object) { return { }; }
+  return Object.keys(object)
+    .filter(key => isDefined(object[key]))
+    .reduce((kept, key) => { kept[key] = object[key]; return kept; }, { });
+}
 
 /**
  * 'JsonValidators' class
@@ -564,29 +579,52 @@ export class JsonValidators {
 
           // Validate schema dependencies
           requiringFieldErrors = _mergeObjects(requiringFieldErrors,
-            forEachCopy(properties, (requirements, requiredField) => {
-              const requiredFieldErrors = _mergeObjects(
-                forEachCopy(requirements, (requirement, parameter) => {
+            withoutNullValues(forEachCopy(properties, (requirements, requiredField) => {
+              // forEachCopy calls back with (value, key), so the keyword name is
+              // the second argument and its argument is the first.
+              // The values are merged rather than the object itself, because a
+              // validator already returns an object keyed by its own error name
+              // and forEachCopy would file that under the same key again.
+              const requiredFieldErrors = withoutNullValues(_mergeObjects(
+                ...Object.values(forEachCopy(requirements, (parameter, requirement) => {
                   let validator: IValidatorFn = null;
+                  // A boolean exclusiveMaximum or exclusiveMinimum is the draft 4
+                  // modifier of maximum/minimum, not a bound of its own, and the
+                  // branch below consumes it. Treating it as a keyword would
+                  // validate against the bound `true`.
+                  if ((requirement === 'exclusiveMaximum' || requirement === 'exclusiveMinimum') &&
+                    isBoolean(parameter, 'strict')
+                  ) {
+                    return null;
+                  }
                   if (requirement === 'maximum' || requirement === 'minimum') {
-                    const exclusive = !!requirements['exclusiveM' + requirement.slice(1)];
-                    validator = JsonValidators[requirement](parameter, exclusive);
+                    // Draft 4 wrote an exclusive bound as a boolean beside the
+                    // bound itself, so that form picks the exclusive validator.
+                    // The previous code passed the flag as a second argument,
+                    // which neither validator accepts, so it did nothing.
+                    // Draft 6 writes exclusiveMaximum as a number, and that is
+                    // already handled as its own keyword by the branch below.
+                    const exclusiveName = 'exclusiveM' + requirement.slice(1);
+                    const exclusive = requirements[exclusiveName] === true;
+                    validator = JsonValidators[exclusive ? exclusiveName : requirement](parameter);
                   } else if (typeof JsonValidators[requirement] === 'function') {
                     validator = JsonValidators[requirement](parameter);
                   }
-                  return !isDefined(validator) ?
-                    null : validator(control.value[requiredField]);
-                })
-              );
-              return isEmpty(requiredFieldErrors) ?
-                null : { [requiredField]: requiredFieldErrors };
-            })
+                  // Validators read .value, so the raw value has to be wrapped.
+                  return !isDefined(validator) ? null :
+                    validator({ value: control.value[requiredField] } as AbstractControl);
+                }) || { })
+              ));
+              // forEachCopy already files this under requiredField, so returning
+              // { [requiredField]: ... } here would nest the key inside itself.
+              return isEmpty(requiredFieldErrors) ? null : requiredFieldErrors;
+            }))
           );
-          return isEmpty(requiringFieldErrors) ?
-            null : { [requiringField]: requiringFieldErrors };
+          return isEmpty(requiringFieldErrors) ? null : requiringFieldErrors;
         })
       );
-      return isEmpty(allErrors) ? null : allErrors;
+      const realErrors = withoutNullValues(allErrors);
+      return isEmpty(realErrors) ? null : realErrors;
     };
   }
 

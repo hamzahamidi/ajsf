@@ -684,69 +684,86 @@ describe('JsonValidators', () => {
       expect(validator(ctrl(null))).toBeNull();
     });
 
-    it('reports a missing property dependency under a doubly nested key', () => {
+    it('reports a missing property dependency under the requiring field', () => {
       const validator = JsonValidators.dependencies({ credit_card: ['billing_address'] });
 
       expect(validator(ctrl({ credit_card: '1234' }))).toEqual({
-        credit_card: { credit_card: { billing_address: { required: true } } }
+        credit_card: { billing_address: { required: true } }
       });
     });
 
-    it('still returns a non-null object when the dependency is satisfied', () => {
+    it('returns null when the dependency is satisfied', () => {
       const validator = JsonValidators.dependencies({ credit_card: ['billing_address'] });
 
       expect(validator(ctrl({ credit_card: '1234', billing_address: '1 Main St' })))
-        .toEqual({ credit_card: null });
+        .toBeNull();
     });
 
-    it('still returns a non-null object when the requiring field is absent', () => {
+    it('returns null when the requiring field is absent', () => {
       const validator = JsonValidators.dependencies({ credit_card: ['billing_address'] });
 
-      expect(validator(ctrl({ other: 'x' }))).toEqual({ credit_card: null });
+      expect(validator(ctrl({ other: 'x' }))).toBeNull();
     });
 
-    it('walks the schema form with required and properties keys', () => {
+    it('merges required and properties errors under one requiring field', () => {
       const validator = JsonValidators.dependencies({
         credit_card: {
           required: ['billing_address'],
-          properties: { billing_address: { minLength: 5 } }
+          properties: { holder: { minLength: 5 } }
         }
       });
-      const result = validator(ctrl({ credit_card: '1234', billing_address: 'abc' }));
 
-      expect(result).not.toBeNull();
-      expect(result.credit_card).toBeDefined();
+      expect(validator(ctrl({ credit_card: '1234', holder: 'abc' }))).toEqual({
+        credit_card: {
+          billing_address: { required: true },
+          holder: { minLength: { minimumLength: 5, currentLength: 3 } }
+        }
+      });
     });
 
-    it('runs a named validator when a property requirement value is a validator name', () => {
-      // forEachCopy yields (value, key), so the requirement is taken from the
-      // value and the parameter from the key.
+    it('applies a schema dependency keyword to the named property', () => {
       const validator = JsonValidators.dependencies({
-        credit_card: {
-          properties: { billing_address: { 5: 'minLength' } }
-        }
+        credit_card: { properties: { billing_address: { minLength: 5 } } }
       });
-      const result = validator(ctrl({ credit_card: '1234', billing_address: 'abc' }));
 
-      expect(result).not.toBeNull();
+      expect(validator(ctrl({ credit_card: '1234', billing_address: 'abc' }))).toEqual({
+        credit_card: { billing_address: { minLength: { minimumLength: 5, currentLength: 3 } } }
+      });
+      expect(validator(ctrl({ credit_card: '1234', billing_address: '1 Main St' })))
+        .toBeNull();
     });
 
-    it('runs the maximum and minimum requirement branch', () => {
+    it('treats a boolean exclusiveMaximum as the draft 4 modifier of maximum', () => {
       const validator = JsonValidators.dependencies({
         credit_card: {
-          properties: { billing_address: { 10: 'maximum', exclusiveMaximum: true } }
+          properties: { amount: { maximum: 10, exclusiveMaximum: true } }
         }
       });
 
-      expect(() => validator(ctrl({ credit_card: '1234', billing_address: 5 }))).not.toThrow();
-      expect(validator(ctrl({ credit_card: '1234', billing_address: 5 }))).not.toBeNull();
+      // The bound is exclusive, so 10 fails and 9 passes. The boolean itself is
+      // not validated against, which would compare the value to `true`.
+      expect(validator(ctrl({ credit_card: '1234', amount: 10 }))).toEqual({
+        credit_card: { amount: { exclusiveMaximum: { exclusiveMaximumValue: 10, currentValue: 10 } } }
+      });
+      expect(validator(ctrl({ credit_card: '1234', amount: 9 }))).toBeNull();
+    });
+
+    it('applies a numeric exclusiveMaximum as its own draft 6 keyword', () => {
+      const validator = JsonValidators.dependencies({
+        credit_card: { properties: { amount: { exclusiveMaximum: 5 } } }
+      });
+
+      expect(validator(ctrl({ credit_card: '1234', amount: 9 }))).toEqual({
+        credit_card: { amount: { exclusiveMaximum: { exclusiveMaximumValue: 5, currentValue: 9 } } }
+      });
+      expect(validator(ctrl({ credit_card: '1234', amount: 1 }))).toBeNull();
     });
 
     it('does not throw when inverted', () => {
       const validator = JsonValidators.dependencies({ credit_card: ['billing_address'] });
 
       expect(() => validator(ctrl({ credit_card: '1234' }), true)).not.toThrow();
-      expect(validator(ctrl({ credit_card: '1234' }), true)).toEqual({ credit_card: null });
+      expect(validator(ctrl({ credit_card: '1234' }), true)).toBeNull();
     });
   });
 
