@@ -922,7 +922,9 @@ export class JsonPointer {
       ) {
         const secondKey = pointerArray.shift();
         const pointerSuffix = this.toDataPointer(pointerArray, schema[firstKey][secondKey]);
-        return pointerSuffix === null ? null : '/' + secondKey + pointerSuffix;
+        // parse() returned secondKey unescaped, so it has to go back escaped:
+        // toSchemaPointer does the same at the matching site.
+        return pointerSuffix === null ? null : '/' + this.escape(secondKey) + pointerSuffix;
       } else if (firstKey === 'additionalItems' ||
         (firstKey === 'items' && isObject(schema.items))
       ) {

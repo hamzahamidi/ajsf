@@ -11,6 +11,31 @@ import { JsonPointer } from './jsonpointer.functions';
  * given a pointer array), so every fixture is built inside the test that uses it.
  */
 describe('JsonPointer', () => {
+  describe('toDataPointer, key escaping', () => {
+    // parse() hands back an unescaped key, so it has to be re-escaped on the way
+    // out or the result is a pointer the library's own validator rejects.
+    it('escapes a key containing a tilde', () => {
+      const schema = { properties: { 'a~b': { type: 'string' } } };
+      const pointer = JsonPointer.toDataPointer('/properties/a~0b', schema);
+      expect(pointer).toEqual('/a~0b');
+      expect(JsonPointer.isJsonPointer(pointer)).toBe(true);
+      expect(JsonPointer.parse(pointer)).toEqual(['a~b']);
+    });
+
+    it('escapes a key containing a slash', () => {
+      const schema = { properties: { 'a/b': { type: 'string' } } };
+      const pointer = JsonPointer.toDataPointer('/properties/a~1b', schema);
+      expect(pointer).toEqual('/a~1b');
+      expect(JsonPointer.parse(pointer)).toEqual(['a/b']);
+    });
+
+    it('leaves an ordinary key alone', () => {
+      const schema = { properties: { plain: { type: 'string' } } };
+      expect(JsonPointer.toDataPointer('/properties/plain', schema)).toEqual('/plain');
+    });
+  });
+
+
 
   // Many branches log to console.error on purpose. Silencing keeps the run readable.
   beforeEach(() => {
