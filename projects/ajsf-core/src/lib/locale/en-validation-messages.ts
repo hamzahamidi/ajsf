@@ -42,8 +42,8 @@ export const enValidationMessages: any = { // Default English error messages
   maximum: 'Must be {{maximumValue}} or less',
   exclusiveMaximum: 'Must be less than {{exclusiveMaximumValue}}',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `Must have ${decimals} or fewer decimal places.`;
     } else {
       return `Must be a multiple of ${error.multipleOfValue}.`;

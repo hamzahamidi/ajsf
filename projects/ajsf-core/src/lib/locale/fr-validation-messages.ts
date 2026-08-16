@@ -42,17 +42,17 @@ export const frValidationMessages: any = { // French error messages
   maximum: 'Doit être inférieur à {{maximumValue}}',
   exclusiveMaximum: 'Doit avoir maximum {{exclusiveMaximumValue}} charactères',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `Doit comporter ${decimals} ou moins de decimales.`;
     } else {
       return `Doit être un multiple de ${error.multipleOfValue}.`;
     }
   },
-  minProperties: 'Doit comporter au minimum {{minimumProperties}} éléments',
-  maxProperties: 'Doit comporter au maximum {{maximumProperties}} éléments',
-  minItems: 'Doit comporter au minimum {{minimumItems}} éléments',
-  maxItems: 'Doit comporter au maximum {{minimumItems}} éléments',
+  minProperties: 'Doit comporter au minimum {{minimumProperties}} éléments (actuellement: {{currentProperties}})',
+  maxProperties: 'Doit comporter au maximum {{maximumProperties}} éléments (actuellement: {{currentProperties}})',
+  minItems: 'Doit comporter au minimum {{minimumItems}} éléments (actuellement: {{currentItems}})',
+  maxItems: 'Doit comporter au maximum {{maximumItems}} éléments (actuellement: {{currentItems}})',
   uniqueItems: 'Tous les éléments doivent être uniques',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

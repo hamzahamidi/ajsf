@@ -51,17 +51,20 @@ const knownFormats: string[] = [
   'regex',
 ];
 
-// multipleOfValue inputs where (1 / value) % 10 === 0, so the decimal places
-// branch runs and the message reports Math.log10(1 / value) instead of the value.
+// multipleOfValue inputs that are exact negative powers of ten, so the decimal
+// places branch runs and the message reports Math.log10(1 / value) instead of
+// the value.
 const decimalPlacesCases: { value: number, decimals: string }[] = [
   { value: 0.1, decimals: '1' },
   { value: 0.01, decimals: '2' },
   { value: 0.001, decimals: '3' },
   { value: 0.0001, decimals: '4' },
+  { value: 0.00001, decimals: '5' },
 ];
 
 // multipleOfValue inputs that fall through to the "multiple of" branch, which
-// interpolates the raw value.
+// interpolates the raw value. 1, 10 and 100 give an integer Math.log10(1 / value)
+// too, so the decimal places branch also has to require a count above zero.
 const multipleOfCases: number[] = [1, 2, 3, 0.5, 0.25, 10, 100, -1];
 
 function placeholdersOf(message: string): string[] {
@@ -120,7 +123,7 @@ describe('Validation messages', () => {
       expect(offenders).toEqual([]);
     });
 
-    it('placeholders match the English ones in every locale except French', () => {
+    it('placeholders match the English ones in every locale', () => {
       const reference: { [key: string]: string } = {};
       Object.keys(enValidationMessages)
         .filter(key => typeof enValidationMessages[key] !== 'function')
@@ -129,16 +132,13 @@ describe('Validation messages', () => {
         });
       const offenders: string[] = [];
 
-      // French is excluded on purpose: see the locale quirks block below.
-      locales
-        .filter(locale => locale.name !== 'fr')
-        .forEach(({ name, messages }) => {
-          Object.keys(reference).forEach(key => {
-            if (placeholdersOf(messages[key]).join(',') !== reference[key]) {
-              offenders.push(`${name}.${key}`);
-            }
-          });
+      locales.forEach(({ name, messages }) => {
+        Object.keys(reference).forEach(key => {
+          if (placeholdersOf(messages[key]).join(',') !== reference[key]) {
+            offenders.push(`${name}.${key}`);
+          }
         });
+      });
 
       expect(offenders).toEqual([]);
     });
@@ -252,37 +252,44 @@ describe('Validation messages', () => {
         expect(result).toEqual(messages.multipleOf({ multipleOfValue: 0.1 }));
       });
 
-      it('reports a fractional count of decimal places for 0.05', () => {
-        // 1 / 0.05 is 20, and 20 % 10 === 0, so Math.log10(20) leaks into the message.
+      it('reports a multiple of 0.05, which is not a power of ten', () => {
+        // 1 / 0.05 is 20, so Math.log10(20) is fractional and the decimal
+        // places branch must not run.
         const result = messages.multipleOf({ multipleOfValue: 0.05 });
 
-        expect(result).toContain('1.3010299956639813');
+        expect(result).toContain('0.05');
+        expect(result).not.toContain('1.3010299956639813');
       });
 
-      it('reports a fractional count of decimal places for 0.005', () => {
+      it('reports a multiple of 0.005, which is not a power of ten', () => {
         const result = messages.multipleOf({ multipleOfValue: 0.005 });
 
-        expect(result).toContain('2.3010299956639813');
+        expect(result).toContain('0.005');
+        expect(result).not.toContain('2.3010299956639813');
       });
 
-      it('reports 0.00001 as a multiple because 1 / 0.00001 is not exactly 100000', () => {
+      it('reports 5 decimal places for 0.00001, whose reciprocal is inexact', () => {
+        // 1 / 0.00001 is 99999.99999999999, but Math.log10 of it is exactly 5.
         const result = messages.multipleOf({ multipleOfValue: 0.00001 });
 
-        expect(result).toContain('0.00001');
+        expect(result).toContain('5');
+        expect(result).not.toContain('0.00001');
       });
 
-      it('reports NaN decimal places for a negative multipleOfValue', () => {
-        // 1 / -0.1 is -10 and -10 % 10 is -0, which equals 0, so the decimal
-        // places branch runs and Math.log10 of a negative number is NaN.
+      it('reports a multiple of a negative multipleOfValue', () => {
+        // Math.log10 of a negative number is NaN, so the decimal places branch
+        // must not run.
         const result = messages.multipleOf({ multipleOfValue: -0.1 });
 
-        expect(result).toContain('NaN');
+        expect(result).toContain('-0.1');
+        expect(result).not.toContain('NaN');
       });
 
-      it('reports minus Infinity decimal places for an infinite multipleOfValue', () => {
+      it('reports a multiple of an infinite multipleOfValue', () => {
         const result = messages.multipleOf({ multipleOfValue: Infinity });
 
-        expect(result).toContain('-Infinity');
+        expect(result).toContain('Infinity');
+        expect(result).not.toContain('-Infinity');
       });
 
       it('reports a multiple of 0 for a zero multipleOfValue', () => {
@@ -371,14 +378,22 @@ describe('Validation messages', () => {
         .toEqual('Must have 2 or fewer decimal places.');
       expect(enValidationMessages.multipleOf({ multipleOfValue: 0.0001 }))
         .toEqual('Must have 4 or fewer decimal places.');
+      expect(enValidationMessages.multipleOf({ multipleOfValue: 0.00001 }))
+        .toEqual('Must have 5 or fewer decimal places.');
       expect(enValidationMessages.multipleOf({ multipleOfValue: 5 }))
         .toEqual('Must be a multiple of 5.');
+      expect(enValidationMessages.multipleOf({ multipleOfValue: 1 }))
+        .toEqual('Must be a multiple of 1.');
+      expect(enValidationMessages.multipleOf({ multipleOfValue: 10 }))
+        .toEqual('Must be a multiple of 10.');
+      expect(enValidationMessages.multipleOf({ multipleOfValue: 100 }))
+        .toEqual('Must be a multiple of 100.');
       expect(enValidationMessages.multipleOf({ multipleOfValue: 0.05 }))
-        .toEqual('Must have 1.3010299956639813 or fewer decimal places.');
+        .toEqual('Must be a multiple of 0.05.');
       expect(enValidationMessages.multipleOf({ multipleOfValue: -0.1 }))
-        .toEqual('Must have NaN or fewer decimal places.');
+        .toEqual('Must be a multiple of -0.1.');
       expect(enValidationMessages.multipleOf({ multipleOfValue: Infinity }))
-        .toEqual('Must have -Infinity or fewer decimal places.');
+        .toEqual('Must be a multiple of Infinity.');
     });
 
     it('exposes the documented template messages', () => {
@@ -395,22 +410,22 @@ describe('Validation messages', () => {
 
   describe('locale quirks', () => {
 
-    it('Italian uses day first date examples', () => {
+    it('Italian no longer uses day first date examples', () => {
       expect(itValidationMessages.format({ requiredFormat: 'date' }))
-        .toContain('"31-12-2000"');
+        .toContain('"2000-12-31"');
       expect(itValidationMessages.format({ requiredFormat: 'date' }))
-        .not.toContain('2000-12-31');
+        .not.toContain('31-12-2000');
       expect(itValidationMessages.format({ requiredFormat: 'date-time' }))
-        .toContain('"14-03-2000T01:59"');
+        .toContain('"2000-03-14T01:59"');
+      expect(itValidationMessages.format({ requiredFormat: 'date-time' }))
+        .not.toContain('14-03-2000');
     });
 
-    it('every locale except Italian uses the ISO date example', () => {
-      locales
-        .filter(locale => locale.name !== 'it')
-        .forEach(({ messages }) => {
-          expect(messages.format({ requiredFormat: 'date' })).toContain('2000-12-31');
-          expect(messages.format({ requiredFormat: 'date-time' })).toContain('2000-03-14T01:59');
-        });
+    it('every locale uses the ISO date example', () => {
+      locales.forEach(({ messages }) => {
+        expect(messages.format({ requiredFormat: 'date' })).toContain('2000-12-31');
+        expect(messages.format({ requiredFormat: 'date-time' })).toContain('2000-03-14T01:59');
+      });
     });
 
     it('Portuguese uses Brazilian examples', () => {
@@ -439,21 +454,22 @@ describe('Validation messages', () => {
         });
     });
 
-    it('French maxItems interpolates minimumItems', () => {
-      // Pinned as is: this looks like a copy and paste slip in the source.
-      expect(frValidationMessages.maxItems).toContain('{{minimumItems}}');
-      expect(frValidationMessages.maxItems).not.toContain('{{maximumItems}}');
+    it('French maxItems interpolates maximumItems', () => {
+      expect(frValidationMessages.maxItems).toContain('{{maximumItems}}');
+      expect(frValidationMessages.maxItems).not.toContain('{{minimumItems}}');
     });
 
-    it('French item and property messages drop the current count placeholder', () => {
-      expect(frValidationMessages.minItems).not.toContain('{{currentItems}}');
-      expect(frValidationMessages.maxItems).not.toContain('{{currentItems}}');
-      expect(frValidationMessages.minProperties).not.toContain('{{currentProperties}}');
-      expect(frValidationMessages.maxProperties).not.toContain('{{currentProperties}}');
+    it('French item and property messages carry the current count placeholder', () => {
+      expect(frValidationMessages.minItems).toContain('{{currentItems}}');
+      expect(frValidationMessages.maxItems).toContain('{{currentItems}}');
+      expect(frValidationMessages.minProperties).toContain('{{currentProperties}}');
+      expect(frValidationMessages.maxProperties).toContain('{{currentProperties}}');
     });
 
-    it('Spanish leaves the pattern message untranslated', () => {
-      expect(esValidationMessages.pattern).toEqual(enValidationMessages.pattern);
+    it('Spanish translates the pattern message', () => {
+      expect(esValidationMessages.pattern).not.toEqual(enValidationMessages.pattern);
+      expect(esValidationMessages.pattern)
+        .toEqual('Debe coincidir con el patrón: {{requiredPattern}}');
     });
 
     it('the other message strings differ between English and Spanish', () => {

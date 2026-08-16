@@ -2,7 +2,7 @@ export const esValidationMessages: any = { // Default Spanish error messages
   required: 'Este campo está requerido.',
   minLength: 'Debe tener {{minimumLength}} caracteres o más longitud (longitud actual: {{currentLength}})',
   maxLength: 'Debe tener {{maximumLength}} caracteres o menos longitud (longitud actual: {{currentLength}})',
-  pattern: 'Must match pattern: {{requiredPattern}}',
+  pattern: 'Debe coincidir con el patrón: {{requiredPattern}}',
   format: function (error) {
     switch (error.requiredFormat) {
       case 'date':
@@ -40,8 +40,8 @@ export const esValidationMessages: any = { // Default Spanish error messages
   maximum: 'Debe ser {{maximumValue}} o menos',
   exclusiveMaximum: 'Debe ser menor que {{exclusiveMaximumValue}}',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `Se permite un máximo de ${decimals} decimales`;
     } else {
       return `Debe ser múltiplo de ${error.multipleOfValue}.`;

@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { JsonValidators } from './json.validators';
 
 // Helper returning `any` so validators typed against AbstractControl accept it
@@ -407,14 +407,12 @@ describe('JsonValidators', () => {
         .toEqual({ format: { requiredFormat: 'email', currentValue: true } });
     });
 
-    it('is stateful for the color format because its RegExp carries the g flag', () => {
-      // jsonSchemaFormatTests['color'] is a shared RegExp with /g, so lastIndex
-      // persists between calls and identical inputs alternate pass and fail.
+    it('is stable for the color format across repeated checks of the same value', () => {
       const validator = JsonValidators.format('color');
-      const first = validator(ctrl('#fff'));
-      const second = validator(ctrl('#fff'));
 
-      expect(first === null).not.toEqual(second === null);
+      expect(validator(ctrl('#fff'))).toBeNull();
+      expect(validator(ctrl('#fff'))).toBeNull();
+      expect(validator(ctrl('#fff'))).toBeNull();
     });
 
     it('flips the result when inverted', () => {
@@ -449,7 +447,7 @@ describe('JsonValidators', () => {
       expect(JsonValidators.minimum(5)(ctrl('abc'))).toBeNull();
     });
 
-    it('compares numeric strings without converting them first', () => {
+    it('coerces numeric strings before comparing', () => {
       expect(JsonValidators.minimum(5)(ctrl('10'))).toBeNull();
       expect(JsonValidators.minimum(5)(ctrl('3')))
         .toEqual({ minimum: { minimumValue: 5, currentValue: '3' } });
@@ -473,15 +471,15 @@ describe('JsonValidators', () => {
       expect(JsonValidators.exclusiveMinimum(5)(ctrl(null))).toBeNull();
     });
 
-    it('behaves as an exclusive maximum: values below the bound pass', () => {
-      expect(JsonValidators.exclusiveMinimum(5)(ctrl(3))).toBeNull();
+    it('accepts a number strictly above the bound', () => {
+      expect(JsonValidators.exclusiveMinimum(5)(ctrl(10))).toBeNull();
     });
 
-    it('behaves as an exclusive maximum: values at or above the bound fail', () => {
+    it('rejects a number at or below the bound', () => {
       expect(JsonValidators.exclusiveMinimum(5)(ctrl(5)))
         .toEqual({ exclusiveMinimum: { exclusiveMinimumValue: 5, currentValue: 5 } });
-      expect(JsonValidators.exclusiveMinimum(5)(ctrl(10)))
-        .toEqual({ exclusiveMinimum: { exclusiveMinimumValue: 5, currentValue: 10 } });
+      expect(JsonValidators.exclusiveMinimum(5)(ctrl(3)))
+        .toEqual({ exclusiveMinimum: { exclusiveMinimumValue: 5, currentValue: 3 } });
     });
 
     it('accepts any non-numeric value', () => {
@@ -489,9 +487,9 @@ describe('JsonValidators', () => {
     });
 
     it('flips the result when inverted', () => {
-      expect(JsonValidators.exclusiveMinimum(5)(ctrl(3), true))
-        .toEqual({ exclusiveMinimum: { exclusiveMinimumValue: 5, currentValue: 3 } });
-      expect(JsonValidators.exclusiveMinimum(5)(ctrl(10), true)).toBeNull();
+      expect(JsonValidators.exclusiveMinimum(5)(ctrl(10), true))
+        .toEqual({ exclusiveMinimum: { exclusiveMinimumValue: 5, currentValue: 10 } });
+      expect(JsonValidators.exclusiveMinimum(5)(ctrl(3), true)).toBeNull();
     });
   });
 
@@ -654,10 +652,8 @@ describe('JsonValidators', () => {
         .toEqual({ maxProperties: { maximumProperties: 2, currentProperties: 3 } });
     });
 
-    it('throws on a null value because there is no empty guard', () => {
-      const validator = JsonValidators.maxProperties(2);
-
-      expect(() => validator(ctrl(null))).toThrow();
+    it('passes a null value through untested', () => {
+      expect(JsonValidators.maxProperties(2)(ctrl(null))).toBeNull();
     });
 
     it('counts string indices when given a string value', () => {
@@ -838,11 +834,11 @@ describe('JsonValidators', () => {
       expect(JsonValidators.uniqueItems()(ctrl(['a', 'a', 'a']))).toBeNull();
     });
 
-    it('throws on a non-array value', () => {
+    it('passes non-array values through untested', () => {
       const validator = JsonValidators.uniqueItems();
 
-      expect(() => validator(ctrl('abc'))).toThrow();
-      expect(() => validator(ctrl({ a: 1 }))).toThrow();
+      expect(validator(ctrl('abc'))).toBeNull();
+      expect(validator(ctrl({ a: 1 }))).toBeNull();
     });
 
     it('reports an empty duplicate list when inverted', () => {
@@ -903,11 +899,13 @@ describe('JsonValidators', () => {
       });
     });
 
-    it('counts undefined entries as passing validators', () => {
-      // The valid count uses validators.length, not the filtered length.
+    it('ignores undefined entries rather than counting them as passing validators', () => {
       const validator = JsonValidators.composeAnyOf([JsonValidators.minLength(5), null]);
 
-      expect(validator(ctrl('abc'))).toBeNull();
+      expect(validator(ctrl('abc'))).toEqual({
+        minLength: { minimumLength: 5, currentLength: 3 },
+        anyOf: true
+      });
     });
 
     it('reports anyOf false when inverted', () => {
@@ -946,6 +944,15 @@ describe('JsonValidators', () => {
       expect(validator(ctrl('abc'))).toEqual({
         minLength: { minimumLength: 5, currentLength: 3 },
         maxLength: { maximumLength: 2, currentLength: 3 },
+        oneOf: true
+      });
+    });
+
+    it('ignores undefined entries rather than counting them as valid', () => {
+      const validator = JsonValidators.composeOneOf([JsonValidators.minLength(5), null]);
+
+      expect(validator(ctrl('abc'))).toEqual({
+        minLength: { minimumLength: 5, currentLength: 3 },
         oneOf: true
       });
     });
@@ -1080,13 +1087,17 @@ describe('JsonValidators', () => {
       expect(JsonValidators.composeAsync([null])).toBeNull();
     });
 
-    it('builds a combined async validator without throwing', () => {
+    it('builds a combined async validator that returns an observable of the merged errors', () => {
       const asyncValidator: any = () => of(null);
       const validator = JsonValidators.composeAsync([asyncValidator]);
 
       expect(typeof validator).toEqual('function');
-      expect(() => validator(ctrl('abc'))).not.toThrow();
-      expect(validator(ctrl('abc'))).toBeDefined();
+      const result: any = validator(ctrl('abc'));
+      expect(result instanceof Observable).toBe(true);
+
+      let emitted: any = 'not emitted';
+      result.subscribe(value => emitted = value);
+      expect(emitted).toBeNull();
     });
   });
 
@@ -1155,9 +1166,9 @@ describe('JsonValidators', () => {
       expect(JsonValidators.requiredTrue(ctrl(null))).toEqual({ required: true });
     });
 
-    it('returns the no-op validator function when given no control', () => {
-      expect(typeof JsonValidators.requiredTrue(null)).toEqual('function');
-      expect(typeof JsonValidators.requiredTrue(undefined)).toEqual('function');
+    it('returns no error when given no control', () => {
+      expect(JsonValidators.requiredTrue(null)).toBeNull();
+      expect(JsonValidators.requiredTrue(undefined)).toBeNull();
     });
   });
 
@@ -1172,9 +1183,9 @@ describe('JsonValidators', () => {
       expect(JsonValidators.email(ctrl(null))).toEqual({ email: true });
     });
 
-    it('returns the no-op validator function when given no control', () => {
-      expect(typeof JsonValidators.email(null)).toEqual('function');
-      expect(typeof JsonValidators.email(undefined)).toEqual('function');
+    it('returns no error when given no control', () => {
+      expect(JsonValidators.email(null)).toBeNull();
+      expect(JsonValidators.email(undefined)).toBeNull();
     });
   });
 });

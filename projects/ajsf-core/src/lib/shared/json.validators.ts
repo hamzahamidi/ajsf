@@ -384,7 +384,7 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
       const currentValue = control.value;
-      const isValid = !isNumber(currentValue) || currentValue >= minimumValue;
+      const isValid = !isNumber(currentValue) || +currentValue >= minimumValue;
       return xor(isValid, invert) ?
         null : { 'minimum': { minimumValue, currentValue } };
     };
@@ -393,13 +393,13 @@ export class JsonValidators {
   /**
    * 'exclusiveMinimum' validator
    *
-   * Requires a control's numeric value to be less than a maximum amount.
+   * Requires a control's numeric value to be greater than a minimum amount.
    *
    * Any non-numeric value is also valid (according to the HTML forms spec,
-   * a non-numeric value doesn't have a maximum).
+   * a non-numeric value doesn't have a minimum).
    * https://www.w3.org/TR/html5/forms.html#attr-input-max
    *
-   * // {number} exclusiveMinimumValue - maximum allowed value
+   * // {number} exclusiveMinimumValue - minimum allowed value
    * // {IValidatorFn}
    */
   static exclusiveMinimum(exclusiveMinimumValue: number): IValidatorFn {
@@ -407,7 +407,7 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
       const currentValue = control.value;
-      const isValid = !isNumber(currentValue) || +currentValue < exclusiveMinimumValue;
+      const isValid = !isNumber(currentValue) || +currentValue > exclusiveMinimumValue;
       return xor(isValid, invert) ?
         null : { 'exclusiveMinimum': { exclusiveMinimumValue, currentValue } };
     };
@@ -516,6 +516,7 @@ export class JsonValidators {
   static maxProperties(maximumProperties: number): IValidatorFn {
     if (!hasValue(maximumProperties)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
+      if (isEmpty(control.value)) { return null; }
       const currentProperties = Object.keys(control.value).length || 0;
       const isValid = currentProperties <= maximumProperties;
       return xor(isValid, invert) ?
@@ -637,7 +638,7 @@ export class JsonValidators {
   static uniqueItems(unique = true): IValidatorFn {
     if (!unique) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
-      if (isEmpty(control.value)) { return null; }
+      if (isEmpty(control.value) || !isArray(control.value)) { return null; }
       const sorted: any[] = control.value.slice().sort();
       const duplicateItems = [];
       for (let i = 1; i < sorted.length; i++) {
@@ -709,7 +710,7 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       const arrayOfErrors =
         _executeValidators(control, presentValidators, invert).filter(isDefined);
-      const isValid = validators.length > arrayOfErrors.length;
+      const isValid = presentValidators.length > arrayOfErrors.length;
       return xor(isValid, invert) ?
         null : _mergeObjects(...arrayOfErrors, { 'anyOf': !invert });
     };
@@ -734,7 +735,7 @@ export class JsonValidators {
       const arrayOfErrors =
         _executeValidators(control, presentValidators);
       const validControls =
-        validators.length - arrayOfErrors.filter(isDefined).length;
+        presentValidators.length - arrayOfErrors.filter(isDefined).length;
       const isValid = validControls === 1;
       if (xor(isValid, invert)) { return null; }
       const arrayOfValids =
@@ -818,7 +819,7 @@ export class JsonValidators {
     return (control: AbstractControl) => {
       const observables =
         _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return map.call(forkJoin(observables), _mergeErrors);
+      return forkJoin(observables).pipe(map(_mergeErrors));
     };
   }
 
@@ -861,7 +862,7 @@ export class JsonValidators {
    * Validator that requires control value to be true.
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
-    if (!control) { return JsonValidators.nullValidator; }
+    if (!control) { return null; }
     return control.value === true ? null : { 'required': true };
   }
 
@@ -869,7 +870,7 @@ export class JsonValidators {
    * Validator that performs email validation.
    */
   static email(control: AbstractControl): ValidationErrors|null {
-    if (!control) { return JsonValidators.nullValidator; }
+    if (!control) { return null; }
     const EMAIL_REGEXP =
       // tslint:disable-next-line:max-line-length
       /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
