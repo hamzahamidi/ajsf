@@ -11,6 +11,46 @@ import { JsonPointer } from './jsonpointer.functions';
  * given a pointer array), so every fixture is built inside the test that uses it.
  */
 describe('JsonPointer', () => {
+  describe('setCopy, remove and forEachDeepCopy edge cases', () => {
+    it('rejects an empty pointer rather than writing a key named undefined', () => {
+      const result = JsonPointer.setCopy({ a: 1 }, '', 'x');
+      expect(result).toEqual({ a: 1 });
+      expect(Object.keys(result)).not.toContain('undefined');
+    });
+
+    it('still sets through a real pointer', () => {
+      expect(JsonPointer.setCopy({ a: 1 }, '/b', 2)).toEqual({ a: 1, b: 2 });
+    });
+
+    it('removes a key from a Map, so has() stops reporting it', () => {
+      const object: any = { m: new Map<string, any>([['k', 1]]) };
+      expect(JsonPointer.has(object, '/m/k')).toBe(true);
+      JsonPointer.remove(object, '/m/k');
+      expect(object.m.has('k')).toBe(false);
+      expect(JsonPointer.has(object, '/m/k')).toBe(false);
+    });
+
+    it('keeps a Date, Map or Set whole instead of flattening it', () => {
+      const date = new Date(5);
+      const map = new Map<string, any>([['k', 1]]);
+      const set = new Set<any>([1]);
+      const copied: any = JsonPointer.forEachDeepCopy({ date, map, set, n: 1 });
+      expect(copied.date instanceof Date).toBe(true);
+      expect(copied.date.getTime()).toBe(5);
+      expect(copied.map instanceof Map).toBe(true);
+      expect(copied.map.get('k')).toBe(1);
+      expect(copied.set instanceof Set).toBe(true);
+      expect(copied.n).toBe(1);
+    });
+
+    it('still walks plain objects and arrays', () => {
+      const copied: any = JsonPointer.forEachDeepCopy({ a: { b: [1, 2] } });
+      expect(copied).toEqual({ a: { b: [1, 2] } });
+      expect(copied.a).not.toBe(undefined);
+    });
+  });
+
+
   describe('toDataPointer, key escaping', () => {
     // parse() hands back an unescaped key, so it has to be re-escaped on the way
     // out or the result is a pointer the library's own validator rejects.
@@ -655,8 +695,8 @@ describe('JsonPointer', () => {
       expect(map.get('a').get('b')).toEqual(1);
     });
 
-    it('should set a key literally named undefined for the empty pointer', () => {
-      expect(JsonPointer.setCopy({}, '', 1)).toEqual({ 'undefined': 1 });
+    it('should reject the empty pointer, matching set()', () => {
+      expect(JsonPointer.setCopy({}, '', 1)).toEqual({});
     });
 
     it('should return the object unchanged for an invalid pointer', () => {
@@ -901,12 +941,16 @@ describe('JsonPointer', () => {
       expect(JsonPointer.forEachDeepCopy(undefined)).toBeUndefined();
     });
 
-    it('should return an empty object for a Date because spreading loses it', () => {
-      expect(JsonPointer.forEachDeepCopy(new Date(0))).toEqual({});
+    it('should return a Date whole rather than flattening it', () => {
+      const copied: any = JsonPointer.forEachDeepCopy(new Date(0));
+      expect(copied instanceof Date).toBe(true);
+      expect(copied.getTime()).toBe(0);
     });
 
-    it('should return an empty object for a Map because spreading loses the entries', () => {
-      expect(JsonPointer.forEachDeepCopy(new Map([['a', 1]]))).toEqual({});
+    it('should return a Map whole rather than losing the entries', () => {
+      const copied: any = JsonPointer.forEachDeepCopy(new Map([['a', 1]]));
+      expect(copied instanceof Map).toBe(true);
+      expect(copied.get('a')).toBe(1);
     });
 
     it('should return null when the iteratee is not a function', () => {

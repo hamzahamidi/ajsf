@@ -10,7 +10,7 @@ import {
   isNotExpression
 } from './utility.functions';
 import {Injectable} from '@angular/core';
-import {isArray, isDefined, isEmpty, isMap, isNumber, isObject, isString} from './validator.functions';
+import {isArray, isDate, isDefined, isEmpty, isMap, isNumber, isObject, isSet, isString} from './validator.functions';
 
 /**
  * 'JsonPointer' class
@@ -358,7 +358,9 @@ export class JsonPointer {
    */
   static setCopy(object, pointer, value, insert = false) {
     const keyArray = this.parse(pointer);
-    if (keyArray !== null) {
+    // set() carries the same length guard: without it an empty pointer leaves
+    // lastKey undefined and writes a property literally named 'undefined'.
+    if (keyArray !== null && keyArray.length) {
       const newObject = copy(object);
       let subObject = newObject;
       for (let i = 0; i < keyArray.length - 1; ++i) {
@@ -440,6 +442,8 @@ export class JsonPointer {
       if (isArray(parentObject)) {
         if (lastKey === '-') { lastKey = parentObject.length - 1; }
         parentObject.splice(lastKey, 1);
+      } else if (isMap(parentObject)) {
+        parentObject.delete(lastKey);
       } else if (isObject(parentObject)) {
         delete parentObject[lastKey];
       }
@@ -547,7 +551,11 @@ export class JsonPointer {
       console.error(`forEachDeepCopy error: Iterator is not a function:`, fn);
       return null;
     }
-    if (isObject(object) || isArray(object)) {
+    // A Date, Map or Set is an object to `isObject`, and spreading one yields {},
+    // so they are passed through whole rather than flattened.
+    if (isArray(object) || (isObject(object) && !isDate(object) &&
+      !isMap(object) && !isSet(object))
+    ) {
       let newObject = isArray(object) ? [ ...object ] : { ...object };
       if (!bottomUp) { newObject = fn(newObject, pointer, rootObject); }
       for (const key of Object.keys(newObject)) {
