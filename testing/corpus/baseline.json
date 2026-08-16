@@ -1,1602 +1,2002 @@
 {
   "bootstrap-3/asf-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-basic-json-schema-type": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-bootstrap-grid": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-complex-key-support": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/asf-hack-conditional-required": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-kitchen-sink": {
     "controls": 11,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-simple": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/asf-tab-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/asf-titlemap-examples": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-factory-sleek": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-ace": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-actions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-advancedfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-array": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-array-simple": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-authfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-autocomplete": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-checkbox": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-checkboxbuttons": {
     "controls": 0,
-    "error": "value.forEach is not a function"
+    "error": "value.forEach is not a function",
+    "valid": null
   },
   "bootstrap-3/jsf-fields-checkboxes": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-color": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-common": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-fieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-help": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-hidden": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-iconselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-imageselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-password": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-questions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-radiobuttons": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-radios": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/jsf-fields-range": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-section": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-select": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/jsf-fields-selectfieldset": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-selectfieldset-key": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-submit": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-tabarray": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-tabarray-maxitems": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-tabarray-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-fields-textarea": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-gettingstarted": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-previousvalues": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-previousvalues-multidimensional": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-basic": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-default": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-inlineref": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-morecomplex": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-schema-required": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/jsf-templating-idx": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-templating-tpldata": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-templating-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/jsf-templating-values": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/json-schema-draft01": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/json-schema-draft02": {
     "controls": 18,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/json-schema-draft03": {
     "controls": 20,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/json-schema-draft04": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/json-schema-draft06": {
     "controls": 21,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-data-only": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-deep-ref": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-flex-layout": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-layout-only": {
     "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')"
+    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
+    "valid": null
   },
   "bootstrap-3/ng-jsf-nested-arrays": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/ng-jsf-select-list-examples": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-select-widget-examples": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/ng-jsf-simple-array": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-alternatives": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-arrays": {
     "controls": 31,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-custom": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-date-and-time": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-errors": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/rjsf-files": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-large": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-nested": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-numbers": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-ordering": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-references": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-simple": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-3/rjsf-single": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/asf-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-basic-json-schema-type": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-bootstrap-grid": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-complex-key-support": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/asf-hack-conditional-required": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-kitchen-sink": {
     "controls": 11,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-simple": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/asf-tab-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/asf-titlemap-examples": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-factory-sleek": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-ace": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-actions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-advancedfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-array": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-array-simple": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-authfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-autocomplete": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-checkbox": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-checkboxbuttons": {
     "controls": 0,
-    "error": "value.forEach is not a function"
+    "error": "value.forEach is not a function",
+    "valid": null
   },
   "bootstrap-4/jsf-fields-checkboxes": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-color": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-common": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-fieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-help": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-hidden": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-iconselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-imageselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-password": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-questions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-radiobuttons": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-radios": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/jsf-fields-range": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-section": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-select": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/jsf-fields-selectfieldset": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-selectfieldset-key": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-submit": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-tabarray": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-tabarray-maxitems": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-tabarray-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-fields-textarea": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-gettingstarted": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-previousvalues": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-previousvalues-multidimensional": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-basic": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-default": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-inlineref": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-morecomplex": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-schema-required": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/jsf-templating-idx": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-templating-tpldata": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-templating-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/jsf-templating-values": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/json-schema-draft01": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/json-schema-draft02": {
     "controls": 18,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/json-schema-draft03": {
     "controls": 20,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/json-schema-draft04": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/json-schema-draft06": {
     "controls": 21,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-data-only": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-deep-ref": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-flex-layout": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-layout-only": {
     "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')"
+    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
+    "valid": null
   },
   "bootstrap-4/ng-jsf-nested-arrays": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/ng-jsf-select-list-examples": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-select-widget-examples": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/ng-jsf-simple-array": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-alternatives": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-arrays": {
     "controls": 31,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-custom": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-date-and-time": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-errors": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/rjsf-files": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-large": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-nested": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-numbers": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-ordering": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-references": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-simple": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-4/rjsf-single": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/asf-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-basic-json-schema-type": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-bootstrap-grid": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-complex-key-support": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/asf-hack-conditional-required": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-kitchen-sink": {
     "controls": 11,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-simple": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/asf-tab-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/asf-titlemap-examples": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-factory-sleek": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-ace": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-actions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-advancedfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-array": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-array-simple": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-authfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-autocomplete": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-checkbox": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-checkboxbuttons": {
     "controls": 0,
-    "error": "value.forEach is not a function"
+    "error": "value.forEach is not a function",
+    "valid": null
   },
   "bootstrap-5/jsf-fields-checkboxes": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-color": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-common": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-fieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-help": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-hidden": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-iconselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-imageselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-password": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-questions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-radiobuttons": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-radios": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/jsf-fields-range": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-section": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-select": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/jsf-fields-selectfieldset": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-selectfieldset-key": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-submit": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-tabarray": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-tabarray-maxitems": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-tabarray-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-fields-textarea": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-gettingstarted": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-previousvalues": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-previousvalues-multidimensional": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-basic": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-default": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-inlineref": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-morecomplex": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-schema-required": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/jsf-templating-idx": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-templating-tpldata": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-templating-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/jsf-templating-values": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/json-schema-draft01": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/json-schema-draft02": {
     "controls": 18,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/json-schema-draft03": {
     "controls": 20,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/json-schema-draft04": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/json-schema-draft06": {
     "controls": 21,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-data-only": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-deep-ref": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-flex-layout": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-layout-only": {
     "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')"
+    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
+    "valid": null
   },
   "bootstrap-5/ng-jsf-nested-arrays": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/ng-jsf-select-list-examples": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-select-widget-examples": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/ng-jsf-simple-array": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-alternatives": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-arrays": {
     "controls": 31,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-custom": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-date-and-time": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-errors": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/rjsf-files": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-large": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-nested": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-numbers": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-ordering": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-references": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-simple": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "bootstrap-5/rjsf-single": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/asf-array": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/asf-basic-json-schema-type": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/asf-bootstrap-grid": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/asf-complex-key-support": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/asf-hack-conditional-required": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/asf-kitchen-sink": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/asf-simple": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/asf-tab-array": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/asf-titlemap-examples": {
     "controls": 14,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-factory-sleek": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-ace": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-actions": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-advancedfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-array": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-array-simple": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-authfieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-autocomplete": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-checkbox": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/jsf-fields-checkboxbuttons": {
     "controls": 0,
-    "error": "value.forEach is not a function"
+    "error": "value.forEach is not a function",
+    "valid": null
   },
   "material-design/jsf-fields-checkboxes": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-color": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-common": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-fieldset": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-help": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-hidden": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-iconselect": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-imageselect": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-password": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-questions": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-radiobuttons": {
     "controls": 0,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-radios": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/jsf-fields-range": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-section": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-select": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/jsf-fields-selectfieldset": {
     "controls": 0,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-selectfieldset-key": {
     "controls": 0,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-submit": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-tabarray": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-tabarray-maxitems": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-tabarray-value": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-fields-textarea": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-gettingstarted": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-previousvalues": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-previousvalues-multidimensional": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-array": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-basic": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-default": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-inlineref": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-morecomplex": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-schema-required": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/jsf-templating-idx": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-templating-tpldata": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-templating-value": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/jsf-templating-values": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/json-schema-draft01": {
     "controls": 16,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/json-schema-draft02": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/json-schema-draft03": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/json-schema-draft04": {
     "controls": 18,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/json-schema-draft06": {
     "controls": 20,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-data-only": {
     "controls": 14,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-deep-ref": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-flex-layout": {
     "controls": 14,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-layout-only": {
     "controls": 0,
-    "error": null
+    "error": null,
+    "valid": null
   },
   "material-design/ng-jsf-nested-arrays": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/ng-jsf-select-list-examples": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-select-widget-examples": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/ng-jsf-simple-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-alternatives": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-arrays": {
     "controls": 31,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-custom": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-date-and-time": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-errors": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "material-design/rjsf-files": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-large": {
     "controls": 11,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-nested": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-numbers": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-ordering": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-references": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-simple": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "material-design/rjsf-single": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/asf-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-basic-json-schema-type": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-bootstrap-grid": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-complex-key-support": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/asf-hack-conditional-required": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-kitchen-sink": {
     "controls": 11,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-simple": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/asf-tab-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/asf-titlemap-examples": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-factory-sleek": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-ace": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-actions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-advancedfieldset": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-array": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-array-simple": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-authfieldset": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-autocomplete": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-checkbox": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-checkboxbuttons": {
     "controls": 0,
-    "error": "value.forEach is not a function"
+    "error": "value.forEach is not a function",
+    "valid": null
   },
   "no-framework/jsf-fields-checkboxes": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-color": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-common": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-fieldset": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-help": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-hidden": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-iconselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-imageselect": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-password": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-questions": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-radiobuttons": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-radios": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/jsf-fields-range": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-section": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-select": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/jsf-fields-selectfieldset": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-selectfieldset-key": {
     "controls": 1,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-submit": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-tabarray": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-tabarray-maxitems": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-tabarray-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-fields-textarea": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-gettingstarted": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-previousvalues": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-previousvalues-multidimensional": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-array": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-basic": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-default": {
     "controls": 13,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-inlineref": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-morecomplex": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-schema-required": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/jsf-templating-idx": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-templating-tpldata": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-templating-value": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/jsf-templating-values": {
     "controls": 4,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/json-schema-draft01": {
     "controls": 17,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/json-schema-draft02": {
     "controls": 18,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/json-schema-draft03": {
     "controls": 20,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/json-schema-draft04": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/json-schema-draft06": {
     "controls": 21,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-data-only": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-deep-ref": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-flex-layout": {
     "controls": 15,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-layout-only": {
     "controls": 0,
-    "error": null
+    "error": null,
+    "valid": null
   },
   "no-framework/ng-jsf-nested-arrays": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/ng-jsf-select-list-examples": {
     "controls": 10,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-select-widget-examples": {
     "controls": 19,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/ng-jsf-simple-array": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-alternatives": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-arrays": {
     "controls": 31,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-custom": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-date-and-time": {
     "controls": 5,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-errors": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": false
   },
   "no-framework/rjsf-files": {
     "controls": 3,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-large": {
     "controls": 12,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-nested": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-numbers": {
     "controls": 9,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-ordering": {
     "controls": 6,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-references": {
     "controls": 8,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-simple": {
     "controls": 7,
-    "error": null
+    "error": null,
+    "valid": true
   },
   "no-framework/rjsf-single": {
     "controls": 2,
-    "error": null
+    "error": null,
+    "valid": true
   }
 }
