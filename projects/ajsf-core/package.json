@@ -24,6 +24,7 @@
   "bugs": {
     "url": "https://github.com/hamzahamidi/ajsf/issues"
   },
+  "funding": "https://github.com/sponsors/hamzahamidi",
   "private": false,
   "dependencies": {
     "ajv": "^6.10.0",
