@@ -10,7 +10,7 @@
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
 </p>
 
-Note: This project is a continuation to [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) and is not affiliated with any organization.
+Note: This project is a continuation of [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) and is not affiliated with any organization.
 
 A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with:
 
@@ -61,11 +61,11 @@ starting, not a rewrite: `14.0.0` targets the same Angular 14 that `0.8.0` did.
 
 [Check out some examples here.](https://hamidihamza.com/ajsf)
 
-This example playground features over 70 different JSON Schemas for you to try (including all examples used by each of the three libraries listed above), and the ability to quickly view any example formatted with Material Design, Bootstrap 3, Bootstrap 4, or without any formatting.
+The playground includes more than 70 JSON Schemas. You can render each one with Material Design, Bootstrap 3, Bootstrap 4, or plain HTML.
 
 ## Installation
 
-### To install from NPM/YARN and use in your own project
+### To install from npm or Yarn and use in your own project
 
 Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/package/@ajsf/material) renders with [Angular Material](https://material.angular.io), and there are Bootstrap 3 and Bootstrap 4 packages alongside it.
 
@@ -113,7 +113,7 @@ export class AppModule { }
 
 `BrowserAnimationsModule` is required, not optional: the framework module pulls in `MatSelect`, `MatDatepicker`, `MatExpansion`, `MatTabs`, `MatStepper` and others that use animations, and without it the first form throws `Found the synthetic property @transformPanel`. Use `NoopAnimationsModule` instead if you want the components without the motion.
 
-Four framework modules are currently included, the import is the same as above :
+Four framework modules are available. Choose the one that matches the UI you want:
 
 * `MaterialDesignFrameworkModule` from `@ajsf/material` for Material Design
 * `Bootstrap3FrameworkModule` from `@ajsf/bootstrap3` for Bootstrap 3
@@ -135,19 +135,19 @@ npm start
 
 The repository ships a `package-lock.json`, so use npm rather than Yarn here: `npm ci` installs exactly the versions CI builds and tests with. See [`.nvmrc`](./.nvmrc) for the Node version.
 
-This should start a server with the example playground, which you can view in your browser at `http://localhost:4200`
+This starts the example playground at `http://localhost:4200`.
 
-The source code is composed as the following:
+The main directories are:
 
-* `projects/ajsf-core` - Angular JSON Schema Form main library
-* `projects/ajsf-bootstrap3` - Framework for Bootstrap 3
-* `projects/ajsf-bootstrap4` - Framework for Bootstrap 4
-* `projects/ajsf-material` - Framework for Angular Material
-* `projects/ajsf-core/src/lib/framework-library` - framework library
-* `projects/ajsf-core/src/lib/widget-library` - widget library
-* `projects/ajsf-core/src/lib/shared` - various utilities and helper functions
-* `demo` - the demonstration playground example application
-* `demo/assets/example-schemas` - JSON Schema examples used in the playground
+* `projects/ajsf-core`: Angular JSON Schema Form main library
+* `projects/ajsf-bootstrap3`: Bootstrap 3 framework
+* `projects/ajsf-bootstrap4`: Bootstrap 4 framework
+* `projects/ajsf-material`: Angular Material framework
+* `projects/ajsf-core/src/lib/framework-library`: framework library
+* `projects/ajsf-core/src/lib/widget-library`: widget library
+* `projects/ajsf-core/src/lib/shared`: utilities and helper functions
+* `demo`: example playground application
+* `demo/assets/example-schemas`: JSON Schema examples used in the playground
 
 There is no generated API reference yet. The functions under `projects/ajsf-core/src/lib/shared` carry doc comments describing what they do; the widget and framework libraries mostly do not.
 
@@ -166,7 +166,7 @@ For basic use, after loading JsonSchemaFormModule as described above, to display
 </json-schema-form>
 ```
 
-Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to process the submitted JSON form data. If you don't already have your own schemas, you can find a bunch of samples to test with in the `demo/assets/example-schemas` folder, as described above.
+Here, `schema` is a valid JSON Schema object and `onSubmit` calls a function that processes the submitted form data. Sample schemas are available in `demo/assets/example-schemas`.
 
 `framework` selects the template set to render with. The default is `no-framework`. The possible values are:
 
@@ -175,7 +175,7 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `bootstrap-4` for Bootstrap 4
 * `no-framework` for plain HTML
 
-Setting `loadExternalAssets="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. For full details see 'Changing or adding frameworks', below.
+Setting `loadExternalAssets="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details.
 
 Note what this does and does not cover. For `bootstrap-4` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
 
@@ -206,9 +206,9 @@ exampleJsonObject = {
 
 In this mode, Angular JSON Schema Form automatically generates a schema from your data. The generated schema is relatively simple, compared to what you could create on your own. However, as the above example shows, it does detect and enforce string, number, and boolean values (nulls are also assumed to be strings), and automatically allows array elements to be added, removed, and reordered.
 
-After displaying a form in this mode, you can also use the `formSchema` and `formLayout` outputs (described in 'Debugging inputs and outputs', below), to return the generated schema and layout, which will give you a head start on writing your own schemas and layouts by showing you examples created from your own data.
+After displaying a form in this mode, use the `formSchema` and `formLayout` outputs to inspect the generated schema and layout. See [Debugging inputs and outputs](#debugging-inputs-and-outputs).
 
-Also, notice that the 'ngModel' input supports Angular's 2-way data binding, just like other form controls, which is why it is not always necessary to use an onSubmit function.
+The `ngModel` input supports Angular's bidirectional data binding, so an `onSubmit` function is not always necessary.
 
 ### Advanced use
 
@@ -220,10 +220,10 @@ For more control over your form, you may provide these additional inputs:
 * `data` object to populate the form with default or previously submitted values
 * `options` object to set any global options for the form
 * `widgets` object to add custom widgets
-* `language` string to set the error message language (currently supports 'de', 'en', 'es', 'fr', 'it', 'pt', 'zh')
+* `language` string to set the error message language (currently supports `de`, `en`, `es`, `fr`, `it`, `pt`, and `zh`)
 * `framework` string or object to set which framework to use
 
-For `framework`, you can pass in your own custom framework object, or, if you've loaded multiple frameworks, you can specify the name of the framework you want to use. To switch between the included frameworks, use 'material-design', 'bootstrap-3', 'bootstrap-4', and 'no-framework'.
+For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `bootstrap-3`, `bootstrap-4`, and `no-framework`.
 
 If you want more detailed output, you may provide additional functions for `onChanges` to read the values in real time as the form is being filled out, and you may implement your own custom validation indicators from the boolean `isValid` or the detailed `validationErrors` outputs.
 
@@ -265,7 +265,7 @@ Note: If you prefer brackets around all your attributes, the following is functi
 </json-schema-form>
 ```
 
-If you use this syntax, make sure to include the nested quotes (`"'` and `'"`) around the language and framework names. (If you leave out the inner quotes, Angular will read them as a variable names, rather than strings, which will cause errors. All un-bracketed attributes, however, are automatically read as strings, so they don't need inner quotes.)
+With this syntax, include the nested quotes (`"'` and `'"`) around language and framework names. Without the inner quotes, Angular reads the values as variables instead of strings. Attributes without brackets are read as strings and do not need inner quotes.
 
 #### Single-input mode
 
@@ -292,11 +292,11 @@ const yourCompoundInputObject = {
 
 You can also mix these two styles depending on your needs. In the example playground, all examples use the combined `form` input for `schema`, `layout`, and `data`, which enables each example to control those three inputs, but the playground uses separate inputs for `language` and `framework`, enabling it to change those settings independent of the example.
 
-Combining inputs is useful if you have many unique forms and store each form's data and schema together. If you have one form (or many identical forms), it will likely be more useful to use separate inputs for your data and schema. Though even in that case, if you use a custom layout, you could store your schema and layout together and use one input for both.
+Combining inputs is useful when each form stores its data and schema together. Separate inputs are often clearer for one form or several forms with the same structure. A custom layout can still be stored with its schema and passed through the combined input.
 
 #### Compatibility modes
 
-If you have previously used another JSON form creation library (Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery), Angular JSON Schema Form recognizes the input names and custom input objects those libraries use, to make the transition easier. It should automatically work with JSON Schemas in [version 6](http://json-schema.org/draft-06/schema), [version 4](http://json-schema.org/draft-04/schema), [version 3](http://json-schema.org/draft-03/schema), or the [truncated version 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut). So the following will all work:
+If you have used Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery, Angular JSON Schema Form recognizes their input names and custom input objects. It supports JSON Schema [draft 6](http://json-schema.org/draft-06/schema), [draft 4](http://json-schema.org/draft-04/schema), [draft 3](http://json-schema.org/draft-03/schema), and the [truncated draft 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut).
 
 Angular Schema Form (AngularJS) compatibility:
 
@@ -331,7 +331,7 @@ JSON Form (jQuery) compatibility:
 </json-schema-form>
 ```
 
-Note: 2-way data binding will work with any dedicated data input, including 'data', 'model', 'ngModel', or 'formData'. However, 2-way binding will _not_ work with the combined 'form' input.
+Bidirectional data binding works with the `data`, `model`, `ngModel`, and `formData` inputs. It does not work with the combined `form` input.
 
 #### Debugging inputs and outputs
 
@@ -379,7 +379,7 @@ const yourFormLayout = [
 ]
 ```
 
-To set messages for the entire form, add them to the form options, inside the defautWidgetOptions validationMessages object, like this:
+To set messages for the entire form, add them to `defautWidgetOptions.validationMessages` in the form options. The `defautWidgetOptions` spelling is part of the public API and is preserved for compatibility.
 
 ```javascript
 const yourFormOptions = {
@@ -393,10 +393,10 @@ const yourFormOptions = {
 
 #### How to format error messages
 
-The validationMessages object (in either a layout node or the form options) contains the names of each error message you want to set as keys, and the corresponding messages as values. Messages may be in any of the following formats:
+The `validationMessages` object uses validator names as keys and messages as values. Messages may use any of these formats:
 
 * String: A plain text message, which is always the same.
-* String template: A text message that includes Angular template-style {{variables}}, which will be be replaced with values from the returned error object.
+* String template: Text containing Angular template style `{{variables}}`, replaced with values from the returned error object.
 * Function: A JavaScript function which accepts the error object as input, and returns a string error message.
 
 Here are examples of all three error message types:
@@ -412,20 +412,14 @@ validationMessages: {
   minLength: 'Must be at least {{minimumLength}} characters long.',
 
   // Function error message
-  // - example error object:   { multipleOfValue: 0.01, currentValue: 3.456 }
-  // - resulting error message: 'Must have 2 or fewer decimal places.'
-  multipleOf: function(error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
-      return `Must have ${decimals} or fewer decimal places.`;
-    } else {
-      return `Must be a multiple of ${error.multipleOfValue}.`;
-    }
+  // Example error: { minimumValue: 2, currentValue: 1 }
+  minimum: function(error) {
+    return `Must be at least ${error.minimumValue}; received ${error.currentValue}.`;
   }
 }
 ```
 
-(Note: These examples are from the default set of built-in error messages, which includes messages for all JSON Schema errors except type, const, enum, and dependencies.)
+The message key must match the validator error it handles. The table below lists the values available to each message.
 
 #### Available input validation errors and object values
 
@@ -472,7 +466,7 @@ const yourNewWidgets = {
 }
 ```
 
-...and...
+Use the widget map in a form:
 
 ```html
 <json-schema-form
@@ -481,7 +475,7 @@ const yourNewWidgets = {
 </json-schema-form>
 ```
 
-...or...
+You can also register widgets directly:
 
 ```javascript
 import { WidgetLibraryService } from '@ajsf/core';
@@ -494,7 +488,7 @@ widgetLibrary.registerWidget('text', YourInputWidgetComponent);
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-To see many examples of widgets, explore the source code, or call `getAllWidgets()` from the `WidgetLibraryService` to see all widgets currently available in the library. All default widget components are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), and the custom Material Design widget components are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets). (The Bootstrap 3 and Bootstrap 4 frameworks just reformat the default widgets, and so do not include any custom widgets of their own.)
+Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), and Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets). Bootstrap 3 and Bootstrap 4 reformat the default widgets and do not provide custom widgets.
 
 ### Changing or adding frameworks
 
@@ -512,7 +506,7 @@ const yourCustomFramework = {
 }
 ```
 
-...and...
+Use the framework in a form:
 
 ```html
 <json-schema-form
@@ -521,7 +515,7 @@ const yourCustomFramework = {
 </json-schema-form>
 ```
 
-...or...
+You can also register it directly:
 
 ```javascript
 import { FrameworkLibraryService } from '@ajsf/core';
@@ -531,13 +525,13 @@ constructor(private frameworkLibrary: FrameworkLibraryService) { }
 frameworkLibrary.setFramework(yourCustomFramework);
 ```
 
-The value of the required `framework` key is an Angular component which will be called to format each widget before it is displayed. The optional `widgets` object contains any custom widgets, which will override or supplement the built-in widgets. And the optional `stylesheets` and `scripts` arrays contain URLs to any additional external style sheets or JavaScript libraries required by the framework. These are the external stylesheets and scripts that will be loaded if the "loadExternalAssets" option is set to "true".
+The required `framework` key is the Angular component used to format each widget. The optional `widgets` object overrides or adds widgets. The optional `stylesheets` and `scripts` arrays contain external assets loaded when `loadExternalAssets` is `true`.
 
 #### Loading external assets required by a framework
 
-Most Web layout framework libraries (including both Bootstrap and Material Design) need additional external JavaScript and/or CSS assets loaded in order to work properly. The best practice is to load these assets separately in your site, before calling Angular JSON Schema Form. (For the included libraries, follow these links for more information about how to do this: [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) and [Angular Material](https://material.angular.io/guide/getting-started).)
+Most UI frameworks need external JavaScript or CSS assets. Load them in your application before rendering an Angular JSON Schema Form. See the setup guides for [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) and [Angular Material](https://material.angular.io/guide/getting-started).
 
-Alternately, during development, you may find it helpful to let Angular JSON Schema Form load these resources for you (as wed did in the 'Basic use' example, above), which you can do in several ways:
+During development, Angular JSON Schema Form can load these resources for you in three ways:
 
 * Call `setFramework` with a second parameter of `true` (e.g. `setFramework('material-design', true)`), or
 * Add `loadExternalAssets: true` to your `options` object, or
@@ -545,11 +539,11 @@ Alternately, during development, you may find it helpful to let Angular JSON Sch
 
 Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScripts()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
 
-However, if you are creating a production site you should load these assets separately, and make sure to remove all references to `loadExternalAssets` to prevent the assets from being loaded twice.
+In production, load these assets in the application and remove `loadExternalAssets` to avoid loading them twice.
 
-## contributing guide
+## Contributing
 
-If you like this project and want to contribute you can check this [documentation](./CONTRIBUTING.md).
+See the [contributing guide](./CONTRIBUTING.md) for local setup, tests, and pull request guidance.
 
 ## License
 
