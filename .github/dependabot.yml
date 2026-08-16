@@ -5,7 +5,9 @@ version: 2
 # not be edited independently of the version.
 #
 # `ignore` applies to version updates only, so security updates still arrive
-# whatever is listed below.
+# whatever is listed below. They are grouped separately for the same reason:
+# a group without `applies-to` covers version updates only, which left security
+# updates arriving one pull request at a time.
 updates:
   - package-ecosystem: "npm"
     directory: "/"
@@ -19,6 +21,9 @@ updates:
       patches:
         patterns: ["*"]
         update-types: ["patch"]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
     ignore:
       # Angular majors move one at a time, in their own pull request.
       - dependency-name: "@angular*"
@@ -39,6 +44,9 @@ updates:
       patches:
         patterns: ["*"]
         update-types: ["patch"]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
     ignore:
       - dependency-name: "@angular*"
       - dependency-name: "*"
