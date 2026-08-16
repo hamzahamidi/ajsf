@@ -174,10 +174,17 @@ jobs:
       - name: Publish core
         run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
 
+      # Derived from what verify actually built, rather than a hand written
+      # list. The list read "bootstrap3 bootstrap4 material" when @ajsf/bootstrap5
+      # was added, so the new package would have been skipped silently while the
+      # job reported success.
       - name: Publish frameworks
         run: |
-          for pkg in bootstrap3 bootstrap4 material; do
-            npm publish "dist/@ajsf/$pkg" --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
+          for dir in dist/@ajsf/*/; do
+            pkg=$(basename "$dir")
+            if [ "$pkg" = "core" ]; then continue; fi   # already published above
+            echo "[release] publishing @ajsf/$pkg"
+            npm publish "$dir" --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
           done
 
       - name: Tag the released commit
@@ -200,8 +207,11 @@ jobs:
         run: |
           VERSION="${{ needs.decide.outputs.version }}"
           DIST_TAG="${{ needs.decide.outputs.dist-tag }}"
+          # Listed from what was published rather than hand written, for the
+          # same reason the publish loop is.
+          PACKAGES=$(for d in dist/@ajsf/*/; do printf '`@ajsf/%s` ' "$(basename "$d")"; done)
           NOTES=$(printf '%s\n' \
-            "\`@ajsf/core\`, \`@ajsf/material\`, \`@ajsf/bootstrap3\` and \`@ajsf/bootstrap4\` published at \`$VERSION\` on the \`$DIST_TAG\` dist-tag." \
+            "$PACKAGES published at \`$VERSION\` on the \`$DIST_TAG\` dist-tag." \
             "" \
             "\`\`\`sh" \
             "npm install @ajsf/core@$VERSION" \
