@@ -37,6 +37,11 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   ) {
   }
 
+  get isSingleCheck(): boolean {
+    return this.layoutNode.type === 'checkbox' &&
+      !this.options.fieldAddonLeft && !this.options.fieldAddonRight;
+  }
+
   get showRemoveButton(): boolean {
     if (!this.options.removable || this.options.readonly ||
       this.layoutNode.type === '$ref'
@@ -123,28 +128,45 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {
         // Checkbox controls
+        // CheckboxComponent renders no element carrying htmlClass, so the
+        // single checkbox takes .form-check from the framework's own div.
         case 'checkbox':
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
+          this.widgetOptions.itemLabelHtmlClass = addClasses(
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
+          break;
         case 'checkboxes':
           this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
+            this.widgetOptions.htmlClass, 'form-check');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
+          this.widgetOptions.itemLabelHtmlClass = addClasses(
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'checkboxes-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'checkbox-inline');
+            this.widgetOptions.itemLabelHtmlClass,
+            'form-check form-check-inline form-check-label');
           break;
         // Radio controls
         case 'radio':
         case 'radios':
           this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'radio');
+            this.widgetOptions.htmlClass, 'form-check');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
+          this.widgetOptions.itemLabelHtmlClass = addClasses(
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'radios-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'radio');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'radio-inline');
+            this.widgetOptions.itemLabelHtmlClass,
+            'form-check form-check-inline form-check-label');
           break;
         // Button sets - checkboxbuttons and radiobuttons
         case 'checkboxbuttons':
@@ -154,9 +176,10 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass, 'btn');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, this.options.style || 'btn-default');
+            this.widgetOptions.itemLabelHtmlClass,
+            this.options.style || 'btn-outline-primary');
           this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'sr-only');
+            this.widgetOptions.fieldHtmlClass, 'visually-hidden');
           break;
         // Single button controls
         case 'button':

@@ -69,5 +69,68 @@ describe('FwBootstrap5Component', () => {
       expect(options.htmlClass).toContain('mine');
       expect(options.htmlClass).toContain('mb-3');
     });
+
+    it('gives checks and radios the Bootstrap 5 form-check trio', () => {
+      const single = initialize('checkbox');
+      expect(single.widgetOptions.fieldHtmlClass).toContain('form-check-input');
+      expect(single.widgetOptions.itemLabelHtmlClass).toContain('form-check-label');
+
+      const many = initialize('checkboxes');
+      expect(many.widgetOptions.htmlClass).toContain('form-check');
+
+      const radios = initialize('radios');
+      expect(radios.widgetOptions.htmlClass).toContain('form-check');
+      expect(radios.widgetOptions.fieldHtmlClass).toContain('form-check-input');
+    });
+
+    it('marks inline checks and radios with form-check-inline', () => {
+      for (const type of ['checkboxes-inline', 'radios-inline']) {
+        const { widgetOptions } = initialize(type);
+        expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-inline');
+        expect(widgetOptions.itemLabelHtmlClass).not.toContain('checkbox-inline');
+        expect(widgetOptions.itemLabelHtmlClass).not.toContain('radio-inline');
+      }
+    });
+
+    it('stops emitting the Bootstrap 3 checkbox and radio classes', () => {
+      for (const type of ['checkbox', 'checkboxes', 'radio', 'radios']) {
+        const { widgetOptions } = initialize(type);
+        const emitted = [
+          widgetOptions.htmlClass, widgetOptions.fieldHtmlClass,
+          widgetOptions.itemLabelHtmlClass,
+        ].join(' ');
+        expect(emitted).not.toMatch(/(^|\s)(checkbox|radio)(\s|$)/);
+      }
+    });
+
+    it('uses a live Bootstrap 5 button class for button sets', () => {
+      const { widgetOptions } = initialize('radiobuttons');
+      expect(widgetOptions.itemLabelHtmlClass).toContain('btn-outline-primary');
+      expect(widgetOptions.fieldHtmlClass).toContain('visually-hidden');
+      expect(widgetOptions.fieldHtmlClass).not.toContain('sr-only');
+    });
+  });
+
+  // The single checkbox has no element of its own carrying htmlClass, so
+  // .form-check has to come from the framework's own wrapper div.
+  describe('single checkbox wrapper', () => {
+    const render = (node: any) => {
+      component.layoutNode = node;
+      component.initializeFramework();
+      fixture.detectChanges();
+      return fixture.nativeElement.querySelector('.form-check');
+    };
+
+    it('marks the wrapper for a plain checkbox', () => {
+      expect(render({ type: 'checkbox', options: {} })).toBeTruthy();
+    });
+
+    it('leaves the wrapper alone for a text field', () => {
+      expect(render({ type: 'text', options: {} })).toBeNull();
+    });
+
+    it('leaves the wrapper alone when an addon makes it an input group', () => {
+      expect(render({ type: 'checkbox', options: { fieldAddonLeft: '@' } })).toBeNull();
+    });
   });
 });

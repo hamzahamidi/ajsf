@@ -57,15 +57,31 @@ Bootstrap 5 component class. That restores the vertical rhythm, which was the
 reported symptom, and gives labels their half rem of separation. Two lines,
 because both classes land on elements the framework template renders itself.
 
+`checkbox` and `radio` then followed. Bootstrap wants `form-check` on a
+wrapper, `form-check-input` on the input and `form-check-label` on the label.
+The first reading of this said it needed a core widget change, because
+`checkbox-widget` renders a bare `<label>` with no wrapper. That was wrong:
+`.form-check` is a descendant selector, and the framework renders its own div
+around the widget, so the class reaches the input from there. Measured against
+canonical Bootstrap markup the geometry is identical, and no core file changed.
+
+The one type that needs the framework div is the single `checkbox`, since
+`checkbox-widget` reads no `htmlClass` at all. The vertical `checkboxes` and
+`radios` widgets already bind `htmlClass` per item, and the inline variants take
+`form-check form-check-inline` on the item label.
+
 ## Still open
 
-`checkbox` and `radio` are not a rename. Bootstrap wants `form-check` on a
-wrapper, `form-check-input` on the input and `form-check-label` on the label.
-The framework can set the last two through `fieldHtmlClass` and
-`itemLabelHtmlClass`, but `checkbox-widget` in core renders a bare `<label>`
-holding an `<input>` and a `<span>`, with no wrapper for `form-check` to land
-on. So it needs a core widget change, not a framework one, and it affects every
-framework that renders a checkbox.
+`form-check-label` emits no declarations in this DOM shape. Bootstrap defines it
+only through sibling selectors such as `.form-check-input:disabled ~
+.form-check-label`, and the widgets nest the input inside the label. So the
+class is emitted as the contract, but disabled and validation label states stay
+inert until the input becomes a sibling. That is a core restructure across
+`checkbox`, `checkboxes` and `radios`, affecting four packages.
+
+The button set path (`checkboxbuttons`, `radiobuttons`) is migrated off the dead
+`btn-default` and `sr-only` but not measured. Bootstrap 5's own idiom there is
+`btn-check`, which also wants the input as a sibling of the label.
 
 The Bootstrap 4 pass is larger still. Every row above needs its Bootstrap 4
 column applied, and the result is a visible change for anyone relying on the
