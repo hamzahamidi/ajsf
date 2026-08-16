@@ -306,13 +306,14 @@ describe("Validator functions", () => {
       expect(isNumber(-Infinity)).toBe(false);
     });
 
-    // Global isNaN coerces these to 0 or 1, so they read as numbers
-    it("accepts null, empty string, booleans and arrays", () => {
-      expect(isNumber(null)).toBe(true);
-      expect(isNumber("")).toBe(true);
-      expect(isNumber(true)).toBe(true);
-      expect(isNumber([])).toBe(true);
-      expect(isNumber(new Date())).toBe(true);
+    it("rejects null, empty string, booleans, arrays and dates", () => {
+      expect(isNumber(null)).toBe(false);
+      expect(isNumber("")).toBe(false);
+      expect(isNumber("   ")).toBe(false);
+      expect(isNumber(true)).toBe(false);
+      expect(isNumber([])).toBe(false);
+      expect(isNumber([5])).toBe(false);
+      expect(isNumber(new Date())).toBe(false);
     });
 
     it("requires a JavaScript number when strict", () => {
@@ -344,12 +345,11 @@ describe("Validator functions", () => {
       expect(isInteger({})).toBe(false);
     });
 
-    // Same coercion quirk as isNumber: these all yield a remainder of 0
-    it("accepts null, empty string, booleans and arrays", () => {
-      expect(isInteger(null)).toBe(true);
-      expect(isInteger("")).toBe(true);
-      expect(isInteger(true)).toBe(true);
-      expect(isInteger([])).toBe(true);
+    it("rejects null, empty string, booleans and arrays", () => {
+      expect(isInteger(null)).toBe(false);
+      expect(isInteger("")).toBe(false);
+      expect(isInteger(true)).toBe(false);
+      expect(isInteger([])).toBe(false);
     });
 
     it("requires a JavaScript number when strict", () => {
@@ -533,9 +533,8 @@ describe("Validator functions", () => {
       expect(getType("abc")).toEqual("string");
     });
 
-    // The empty string coerces to 0, so isInteger claims it before isString
-    it("returns 'integer' for the empty string", () => {
-      expect(getType("")).toEqual("integer");
+    it("returns 'string' for the empty string", () => {
+      expect(getType("")).toEqual("string");
     });
 
     it("only detects JavaScript numbers when strict", () => {
@@ -608,9 +607,8 @@ describe("Validator functions", () => {
       expect(isPrimitive(() => null)).toBe(false);
     });
 
-    // An array coerces to 0, so isNumber accepts it
-    it("returns true for an array", () => {
-      expect(isPrimitive([])).toBe(true);
+    it("returns false for an array", () => {
+      expect(isPrimitive([])).toBe(false);
     });
   });
 
@@ -654,8 +652,8 @@ describe("Validator functions", () => {
     });
 
     it("stringifies numbers and booleans when 'string' is allowed", () => {
-      expect(toJavaScriptType(true, "string")).toEqual("true");
       expect(toJavaScriptType(10.5, "string")).toEqual("10.5");
+      expect(toJavaScriptType(true, "string")).toEqual("true");
     });
 
     it("converts a date to an ISO day string when 'string' is allowed", () => {
@@ -664,19 +662,18 @@ describe("Validator functions", () => {
       );
     });
 
-    // parseInt / parseFloat run on the date's display string, which is not numeric
-    it("returns NaN for a date when only a numeric type is allowed", () => {
-      expect(toJavaScriptType(new Date(2011, 9, 5), "number")).toBeNaN();
-      expect(toJavaScriptType(new Date(2011, 9, 5), "integer")).toBeNaN();
+    it("returns the timestamp of a date when only a numeric type is allowed", () => {
+      expect(toJavaScriptType(new Date(2011, 9, 5), "number"))
+        .toEqual(new Date(2011, 9, 5).getTime());
     });
 
     it("returns the timestamp of an invalid date when only a numeric type is allowed", () => {
       expect(toJavaScriptType(new Date("not a date"), "number")).toBeNaN();
     });
 
-    it("returns NaN for the empty string with a numeric type", () => {
-      expect(toJavaScriptType("", "integer")).toBeNaN();
-      expect(toJavaScriptType("", "number")).toBeNaN();
+    it("returns null for the empty string with a numeric type", () => {
+      expect(toJavaScriptType("", "integer")).toBeNull();
+      expect(toJavaScriptType("", "number")).toBeNull();
     });
   });
 
@@ -709,11 +706,9 @@ describe("Validator functions", () => {
       expect(toSchemaType(true, ["string"])).toEqual("true");
     });
 
-    // parseFloat("true") is NaN, and the unary plus keeps it NaN
-    it("returns NaN for a boolean when a numeric type is allowed", () => {
-      expect(toSchemaType(true, ["number"])).toBeNaN();
-      expect(toSchemaType(false, ["number"])).toBeNaN();
-      expect(toSchemaType(true, ["number", "string"])).toBeNaN();
+    it("converts a boolean to 1 or 0 when a numeric type is allowed", () => {
+      expect(toSchemaType(true, ["number"])).toEqual(1);
+      expect(toSchemaType(false, ["number"])).toEqual(0);
     });
 
     it("converts null to an empty string or to zero", () => {
@@ -726,8 +721,8 @@ describe("Validator functions", () => {
       expect(toSchemaType(undefined, ["string"])).toBeUndefined();
     });
 
-    it("returns NaN for the empty string with an integer type", () => {
-      expect(toSchemaType("", ["integer"])).toBeNaN();
+    it("converts the empty string to zero when an integer type is allowed", () => {
+      expect(toSchemaType("", ["integer"])).toEqual(0);
     });
 
     it("keeps the empty string when 'string' is allowed", () => {
