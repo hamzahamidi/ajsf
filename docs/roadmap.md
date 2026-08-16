@@ -107,6 +107,14 @@ bugs pinned so that a regression is visible. Anyone fixing one must update the
 baseline in the same commit, and should not read a red corpus as their own
 mistake.
 
+### Bootstrap 4 is Bootstrap 3 markup
+
+The Bootstrap 4 package emits a class list identical to the Bootstrap 3 one, so
+checkboxes, radios, labels, help text and validation states all render
+unstyled. Bootstrap 5 had the same drift and its spacing half is fixed; the
+checkbox half needs a wrapper element that core does not render today. Measured
+class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
+
 ### fxLayout has never worked
 
 `getFlexAttribute('layout')` reads `(a || 'row') + b ? ' ' + b : ''`. `+` binds

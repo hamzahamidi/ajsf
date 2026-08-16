@@ -103,10 +103,11 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           addClasses(this.options.htmlClass, 'list-group') :
           this.layoutNode.arrayItem && this.layoutNode.type !== '$ref' ?
             addClasses(this.options.htmlClass, 'list-group-item') :
-            addClasses(this.options.htmlClass, 'form-group');
+            // Bootstrap 5 dropped .form-group in favour of margin utilities.
+            addClasses(this.options.htmlClass, 'mb-3');
       this.widgetOptions.htmlClass = '';
       this.options.labelHtmlClass =
-        addClasses(this.options.labelHtmlClass, 'control-label');
+        addClasses(this.options.labelHtmlClass, 'form-label');
       this.widgetOptions.activeClass =
         addClasses(this.widgetOptions.activeClass, 'active');
       this.options.fieldAddonLeft =
