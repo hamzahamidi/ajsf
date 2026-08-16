@@ -14,14 +14,22 @@ const RECORD = false;
 export interface CorpusResult {
   controls: number;
   error: string | null;
+  /** Validity with nothing filled in, or null if the form never emitted. */
+  valid: boolean | null;
 }
 
 @Component({
-  template: `<json-schema-form [form]="form" [framework]="framework"></json-schema-form>`,
+  template: `
+    <json-schema-form
+      [form]="form"
+      [framework]="framework"
+      (isValid)="valid = $event"
+    ></json-schema-form>`,
 })
 class CorpusHostComponent {
   form: any;
   framework: string;
+  valid: boolean | null = null;
 }
 
 /**
@@ -89,9 +97,10 @@ export function runCorpus(frameworkName: string, modules: Type<any>[]) {
         } catch (e) {
           error = (e as Error).message || String(e);
         }
+        const valid = fixture.componentInstance.valid;
 
         if (RECORD) {
-          recorded[key] = { controls, error };
+          recorded[key] = { controls, error, valid };
           return;
         }
 
@@ -107,6 +116,9 @@ export function runCorpus(frameworkName: string, modules: Type<any>[]) {
         expect(controls)
           .withContext(`${key} rendered ${controls} controls, baseline has ${expected.controls}`)
           .toEqual(expected.controls);
+        expect(valid)
+          .withContext(`${key} validates as ${valid}, baseline has ${expected.valid}`)
+          .toEqual(expected.valid);
       });
     });
   });
