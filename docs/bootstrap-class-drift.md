@@ -34,6 +34,12 @@ package being changed.
     input-group-append       live  keep               DEAD  drop the wrapper
     sr-only                  live  keep               DEAD  visually-hidden
 
+One caveat before anyone acts on that table. The probe detects a class whose
+rules set properties on the element itself, so a purely contextual selector
+such as `.tab-content > .tab-pane` reads as DEAD even where it is defined.
+`tab-content` and `active` are therefore unverified rather than confirmed dead,
+and want checking by hand before they are touched.
+
 `form-group` is the only one Bootstrap 4 kept, which is why Bootstrap 4 has
 vertical rhythm and Bootstrap 5 has none. It is the whole of the reported
 symptom.
@@ -70,11 +76,6 @@ Bootstrap 3 is correct as it stands and should not be touched.
 ## Testing
 
 The corpus cannot referee this. It records `controls`, `error` and `valid`, and
-a class rename moves none of them. It needs DOM assertions in the framework
+a class rename moves none of them. It needs assertions in the framework
 component specs instead, asserting the emitted class rather than its effect, so
 the test does not depend on a CDN.
-
-One caveat on the probe: it detects classes whose rules set properties on the
-element itself. A purely contextual selector such as `.tab-content > .tab-pane`
-reads as DEAD even when defined, so `tab-content` and `active` in the emitted
-list are unverified rather than confirmed dead.
