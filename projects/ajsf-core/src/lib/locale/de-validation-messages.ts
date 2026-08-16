@@ -42,8 +42,8 @@ export const deValidationMessages: any = { // Default German error messages
   maximum: 'Darf maximal {{maximumValue}} sein',
   exclusiveMaximum: 'Muss kleiner als {{exclusiveMaximumValue}} sein',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `Maximal ${decimals} Dezimalstellen erlaubt`;
     } else {
       return `Muss ein Vielfaches von ${error.multipleOfValue} sein`;

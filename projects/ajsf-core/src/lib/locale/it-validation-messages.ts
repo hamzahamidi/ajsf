@@ -6,13 +6,13 @@ export const itValidationMessages: any = { // Default Italian error messages
   format: function (error) {
     switch (error.requiredFormat) {
       case 'date':
-        return 'Deve essere una data, come "31-12-2000"';
+        return 'Deve essere una data, come "2000-12-31"';
       case 'time':
         return 'Deve essere un orario, come "16:20" o "03:14:15.9265"';
       case 'date-time':
-        return 'Deve essere data-orario, come "14-03-2000T01:59" or "14-03-2000T01:59:26.535Z"';
+        return 'Deve essere data-orario, come "2000-03-14T01:59" or "2000-03-14T01:59:26.535Z"';
       case 'email':
-        return 'Deve essere un indirzzo email, come "name@example.com"';
+        return 'Deve essere un indirizzo email, come "name@example.com"';
       case 'hostname':
         return 'Deve essere un hostname, come "example.com"';
       case 'ipv4':
@@ -42,8 +42,8 @@ export const itValidationMessages: any = { // Default Italian error messages
   maximum: 'Deve essere {{maximumValue}} o meno',
   exclusiveMaximum: 'Deve essere minore di {{exclusiveMaximumValue}}',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `Deve avere ${decimals} o meno decimali.`;
     } else {
       return `Deve essere multiplo di ${error.multipleOfValue}.`;

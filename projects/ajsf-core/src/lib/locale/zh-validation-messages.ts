@@ -42,8 +42,8 @@ export const zhValidationMessages: any = { // Chinese error messages
   maximum: '必须小于或者等于最大值: {{maximumValue}}',
   exclusiveMaximum: '必须小于最大值: {{exclusiveMaximumValue}}',
   multipleOf: function (error) {
-    if ((1 / error.multipleOfValue) % 10 === 0) {
-      const decimals = Math.log10(1 / error.multipleOfValue);
+    const decimals = Math.log10(1 / error.multipleOfValue);
+    if (error.multipleOfValue > 0 && Number.isInteger(decimals) && decimals > 0) {
       return `必须有 ${decimals} 位或更少的小数位`;
     } else {
       return `必须为 ${error.multipleOfValue} 的倍数`;
