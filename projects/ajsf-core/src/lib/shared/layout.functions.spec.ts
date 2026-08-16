@@ -49,9 +49,9 @@ const widgetLibrary: any = {
 };
 
 /**
- * Removes every '_id' key, at any depth. Layout node ids come from lodash
- * uniqueId(), whose counter is global across the whole test bundle, so their
- * values can never be asserted.
+ * Removes every '_id' key, at any depth. The id counter is module scoped and
+ * therefore global across the whole test bundle, so the values can never be
+ * asserted.
  */
 function stripIds(node: any): any {
   if (Array.isArray(node)) { return node.map(stripIds); }

@@ -1,5 +1,5 @@
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
+import { cloneDeep } from './shared/clone-deep.function';
+import { deepEqual } from './shared/deep-equal.function';
 
 import {
   ChangeDetectionStrategy,
@@ -65,7 +65,6 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
  *
  * This library depends on:
  *  - Angular (obviously)                  https://angular.io
- *  - lodash, JavaScript utility library   https://github.com/lodash/lodash
  *  - ajv, Another JSON Schema validator   https://github.com/epoberezkin/ajv
  *
  * In addition, the Example Playground also depends on:
@@ -246,7 +245,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       ) {
         // If only 'form' input changed, get names of changed keys
         changedInput = Object.keys(this.previousInputs.form || {})
-          .filter(key => !isEqual(this.previousInputs.form[key], this.form[key]))
+          .filter(key => !deepEqual(this.previousInputs.form[key], this.form[key]))
           .map(key => `form.${key}`);
         resetFirst = false;
       }

@@ -26,7 +26,6 @@
   },
   "private": false,
   "dependencies": {
-    "lodash-es": "~4.17.21",
     "ajv": "^6.10.0",
     "tslib": "^2.0.0"
   },
@@ -36,8 +35,5 @@
     "@angular/forms": "^17.0.0",
     "@angular/platform-browser": "^17.0.0",
     "rxjs": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/lodash-es": "^4.17.6"
   }
 }

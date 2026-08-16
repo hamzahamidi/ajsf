@@ -1,5 +1,4 @@
-import uniqueId from 'lodash/uniqueId';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from './clone-deep.function';
 import {
   checkInlineType,
   getFromSchema,
@@ -25,6 +24,10 @@ import {
   } from './validator.functions';
 import { JsonPointer } from './jsonpointer.functions';
 import { TitleMapItem } from '../json-schema-form.service';
+
+let idCounter = 0;
+
+const uniqueId = () => String(++idCounter);
 
 
 

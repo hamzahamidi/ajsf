@@ -24,7 +24,7 @@ describe('JsonSchemaFormService', () => {
   let jsf: JsonSchemaFormService;
   let widgetLibrary: WidgetLibraryService;
 
-  /** Deep clone without pulling lodash into the spec. */
+  /** Deep clone, kept independent of the library's own cloneDeep. */
   const clone = (value: any): any => JSON.parse(JSON.stringify(value));
 
   /**

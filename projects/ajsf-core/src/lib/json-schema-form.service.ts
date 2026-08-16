@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from './shared/clone-deep.function';
 import Ajv from 'ajv';
 import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
 import {

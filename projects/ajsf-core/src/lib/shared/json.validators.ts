@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual';
+import { deepEqual } from './deep-equal.function';
 import {
   _executeAsyncValidators,
   _executeValidators,
@@ -213,7 +213,7 @@ export class JsonValidators {
         (isBoolean(enumValue, 'strict') &&
           toJavaScriptType(inputValue, 'boolean') === enumValue) ||
         (enumValue === null && !hasValue(inputValue)) ||
-        isEqual(enumValue, inputValue);
+        deepEqual(enumValue, inputValue);
       const isValid = isArray(currentValue) ?
         currentValue.every(inputValue => allowedValues.some(enumValue =>
           isEqualVal(enumValue, inputValue)
@@ -655,8 +655,8 @@ export class JsonValidators {
       const duplicateItems = [];
       for (let i = 0; i < items.length; i++) {
         for (let j = i + 1; j < items.length; j++) {
-          if (isEqual(items[i], items[j]) &&
-            !duplicateItems.some(duplicate => isEqual(duplicate, items[i]))
+          if (deepEqual(items[i], items[j]) &&
+            !duplicateItems.some(duplicate => deepEqual(duplicate, items[i]))
           ) {
             duplicateItems.push(items[i]);
           }
