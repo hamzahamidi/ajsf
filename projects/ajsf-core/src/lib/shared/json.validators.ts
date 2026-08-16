@@ -267,7 +267,7 @@ export class JsonValidators {
     if (!hasValue(minimumLength)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
-      const currentLength = isString(control.value) ? control.value.length : 0;
+      const currentLength = isString(control.value) ? Array.from(control.value).length : 0;
       const isValid = currentLength >= minimumLength;
       return xor(isValid, invert) ?
         null : { 'minLength': { minimumLength, currentLength } };
@@ -286,7 +286,7 @@ export class JsonValidators {
   static maxLength(maximumLength: number): IValidatorFn {
     if (!hasValue(maximumLength)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
-      const currentLength = isString(control.value) ? control.value.length : 0;
+      const currentLength = isString(control.value) ? Array.from(control.value).length : 0;
       const isValid = currentLength <= maximumLength;
       return xor(isValid, invert) ?
         null : { 'maxLength': { maximumLength, currentLength } };
@@ -481,8 +481,12 @@ export class JsonValidators {
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
       const currentValue = control.value;
+      // A remainder is unusable on decimals: 9 % 0.01 is 0.009999999999999813,
+      // so multipleOf 0.01 rejects almost every two-decimal number. ajv divides,
+      // and the library runs ajv over the same data, so the two must agree.
+      const division = currentValue / multipleOfValue;
       const isValid = isNumber(currentValue) &&
-        currentValue % multipleOfValue === 0;
+        division === parseInt(`${division}`, 10);
       return xor(isValid, invert) ?
         null : { 'multipleOf': { multipleOfValue, currentValue } };
     };
@@ -613,7 +617,9 @@ export class JsonValidators {
   static minItems(minimumItems: number): IValidatorFn {
     if (!hasValue(minimumItems)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
-      if (isEmpty(control.value)) { return null; }
+      // isEmpty([]) is true, so the usual guard exempted the one array length
+      // minItems exists to reject. Arrays skip the guard, everything else keeps it.
+      if (!isArray(control.value) && isEmpty(control.value)) { return null; }
       const currentItems = isArray(control.value) ? control.value.length : 0;
       const isValid = currentItems >= minimumItems;
       return xor(isValid, invert) ?
