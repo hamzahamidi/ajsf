@@ -1044,12 +1044,16 @@ export function buildTitleMap(
     } else {
       newTitleMap = newTitleMap.reduce((groupTitleMap, title) => {
         if (hasOwn(title, 'group')) {
-          if (title.group !== (groupTitleMap[groupTitleMap.length - 1] || {}).group) {
-            groupTitleMap.push({ group: title.group, items: title.items || [] });
+          // Matching groups combine, so an already open group is found by name.
+          // Comparing only against the last entry opened a second group whenever
+          // a name recurred with anything in between.
+          let openGroup = groupTitleMap.find(item => item.group === title.group);
+          if (!openGroup) {
+            openGroup = { group: title.group, items: title.items || [] };
+            groupTitleMap.push(openGroup);
           }
           if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
-            groupTitleMap[groupTitleMap.length - 1].items
-              .push({ name: title.name, value: title.value });
+            openGroup.items.push({ name: title.name, value: title.value });
             if (title.value === undefined || title.value === null) {
               hasEmptyValue = true;
             }
