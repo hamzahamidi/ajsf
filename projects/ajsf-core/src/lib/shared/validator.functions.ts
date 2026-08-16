@@ -161,6 +161,10 @@ export function hasValue(value) {
  */
 export function isEmpty(value) {
   if (isArray(value)) { return !value.length; }
+  // Object.keys() is [] for these, so the plain object branch would call them
+  // empty even when they hold a value.
+  if (isDate(value)) { return false; }
+  if (isMap(value) || isSet(value)) { return !value.size; }
   if (isObject(value)) { return !Object.keys(value).length; }
   return value === undefined || value === null || value === '';
 }

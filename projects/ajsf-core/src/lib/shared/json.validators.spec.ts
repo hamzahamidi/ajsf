@@ -393,11 +393,9 @@ describe('JsonValidators', () => {
       expect(JsonValidators.format('bogus' as any)(ctrl('anything'))).toBeNull();
     });
 
-    it('returns null for a Date value because a Date counts as empty', () => {
-      // Object.keys(new Date()) is [], so isEmpty() short circuits before the
-      // branch that was written to allow Date objects.
+    it('validates a Date value rather than skipping it', () => {
       expect(JsonValidators.format('date')(ctrl(new Date('2020-01-01')))).toBeNull();
-      expect(JsonValidators.format('email')(ctrl(new Date('2020-01-01')))).toBeNull();
+      expect(JsonValidators.format('email')(ctrl(new Date('2020-01-01')))).not.toBeNull();
     });
 
     it('rejects a non-string primitive value', () => {

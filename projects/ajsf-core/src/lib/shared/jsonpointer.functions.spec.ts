@@ -491,9 +491,14 @@ describe('JsonPointer', () => {
       expect(JsonPointer.getFirst([[{ a: 1 }]])).toBeUndefined();
     });
 
-    it('should return undefined for a Map because isEmpty treats every Map as empty', () => {
+    it('should read the first value from a Map', () => {
       const items = new Map<any, any>([[{ a: 1 }, '/a']]);
-      expect(JsonPointer.getFirst(items)).toBeUndefined();
+      expect(JsonPointer.getFirst(items)).toEqual(1);
+    });
+
+    it('should return undefined for an empty Map, as it does for an empty array', () => {
+      expect(JsonPointer.getFirst(new Map<any, any>(), 'dv')).toBeUndefined();
+      expect(JsonPointer.getFirst([], 'dv')).toBeUndefined();
     });
 
     it('should return the default value for input that is neither array nor map', () => {

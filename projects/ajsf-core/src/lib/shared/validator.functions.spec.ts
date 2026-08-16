@@ -261,10 +261,15 @@ describe("Validator functions", () => {
       expect(isEmpty(false)).toBe(false);
     });
 
-    // Dates and Maps have no own enumerable keys, so they take the isObject branch
-    it("returns true for a Date and for an empty Map", () => {
-      expect(isEmpty(new Date())).toBe(true);
+    it("treats a Date as a value, never as empty", () => {
+      expect(isEmpty(new Date())).toBe(false);
+    });
+
+    it("measures a Map or Set by size rather than by own keys", () => {
       expect(isEmpty(new Map())).toBe(true);
+      expect(isEmpty(new Map([[1, 2]]))).toBe(false);
+      expect(isEmpty(new Set())).toBe(true);
+      expect(isEmpty(new Set([1]))).toBe(false);
     });
   });
 
