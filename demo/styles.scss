@@ -77,8 +77,9 @@ body {
 
 .debug { border: 1px solid red !important; }
 
-/* TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*/
-.mat-input-container.mat-mdc-form-field { width: 100%; }
+// .mat-input-container was the pre-MDC class, so the compound selector it used
+// to be part of can never match now. MDC uses .mat-mdc-form-field alone.
+.mat-mdc-form-field { width: 100%; }
 
 // Replaces @angular/flex-layout, which is deprecated and has no Angular 16+
 // release. fxLayout.lt-sm needed a real media query, so these carry the
