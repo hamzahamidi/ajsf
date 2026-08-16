@@ -37,12 +37,6 @@ export function mergeSchemas(...schemas) {
       } else {
         switch (key) {
           case 'allOf':
-            // Combine all items from both arrays.
-            // The result has to stay an array: allOf holds a list of schemas
-            // that must all validate. Merging them into one object made
-            // ajv.compile throw "schema is invalid: data/allOf should be array"
-            // from compileAjvSchema, which does not catch, so the form never
-            // rendered.
             if (isArray(combinedValue) && isArray(schemaValue)) {
               combinedSchema.allOf = [ ...combinedValue, ...schemaValue ];
             } else {
@@ -117,11 +111,6 @@ export function mergeSchemas(...schemas) {
                   (isArray(schemaValue[subKey]) || isObject(schemaValue[subKey])) &&
                   (isArray(combinedObject[subKey]) || isObject(combinedObject[subKey]))
                 ) {
-                  // If either key is an array, convert it to an object first.
-                  // The dependency array is spread, not passed whole: passing it
-                  // as a single argument nested it inside required, producing
-                  // required: [['x']], which ajv rejects with
-                  // "data/dependencies/a/required/0 should be string".
                   const required = isArray(combinedSchema.required) ?
                     combinedSchema.required : [];
                   const combinedDependency = isArray(combinedObject[subKey]) ?

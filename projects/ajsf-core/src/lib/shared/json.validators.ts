@@ -27,15 +27,7 @@ import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.con
 import { map } from 'rxjs/operators';
 
 
-/**
- * Drops keys whose value is null or undefined.
- *
- * forEachCopy keeps a key for every entry it visits, including the ones whose
- * callback returned null, and isEmpty() only asks whether an object has keys.
- * Without this, a dependency that is satisfied still contributes
- * `{ theField: null }`, isEmpty reports false, and the validator returns an
- * error object for a form that is correct.
- */
+// forEachCopy retains keys whose callback returns null.
 function withoutNullValues(object: any): any {
   if (!object) { return { }; }
   return Object.keys(object)
@@ -570,53 +562,35 @@ export class JsonValidators {
             properties = dependencies[requiringField]['properties'] || { };
           }
 
-          // Validate property dependencies
           for (const requiredField of requiredFields) {
             if (xor(!hasValue(control.value[requiredField]), invert)) {
               requiringFieldErrors[requiredField] = { 'required': true };
             }
           }
 
-          // Validate schema dependencies
           requiringFieldErrors = _mergeObjects(requiringFieldErrors,
             withoutNullValues(forEachCopy(properties, (requirements, requiredField) => {
-              // forEachCopy calls back with (value, key), so the keyword name is
-              // the second argument and its argument is the first.
-              // The values are merged rather than the object itself, because a
-              // validator already returns an object keyed by its own error name
-              // and forEachCopy would file that under the same key again.
+              // forEachCopy passes (value, key), unlike Array.forEach.
               const requiredFieldErrors = withoutNullValues(_mergeObjects(
                 ...Object.values(forEachCopy(requirements, (parameter, requirement) => {
                   let validator: IValidatorFn = null;
-                  // A boolean exclusiveMaximum or exclusiveMinimum is the draft 4
-                  // modifier of maximum/minimum, not a bound of its own, and the
-                  // branch below consumes it. Treating it as a keyword would
-                  // validate against the bound `true`.
+                  // Draft 4 uses booleans here as modifiers, not bounds.
                   if ((requirement === 'exclusiveMaximum' || requirement === 'exclusiveMinimum') &&
                     isBoolean(parameter, 'strict')
                   ) {
                     return null;
                   }
                   if (requirement === 'maximum' || requirement === 'minimum') {
-                    // Draft 4 wrote an exclusive bound as a boolean beside the
-                    // bound itself, so that form picks the exclusive validator.
-                    // The previous code passed the flag as a second argument,
-                    // which neither validator accepts, so it did nothing.
-                    // Draft 6 writes exclusiveMaximum as a number, and that is
-                    // already handled as its own keyword by the branch below.
                     const exclusiveName = 'exclusiveM' + requirement.slice(1);
                     const exclusive = requirements[exclusiveName] === true;
                     validator = JsonValidators[exclusive ? exclusiveName : requirement](parameter);
                   } else if (typeof JsonValidators[requirement] === 'function') {
                     validator = JsonValidators[requirement](parameter);
                   }
-                  // Validators read .value, so the raw value has to be wrapped.
                   return !isDefined(validator) ? null :
                     validator({ value: control.value[requiredField] } as AbstractControl);
                 }) || { })
               ));
-              // forEachCopy already files this under requiredField, so returning
-              // { [requiredField]: ... } here would nest the key inside itself.
               return isEmpty(requiredFieldErrors) ? null : requiredFieldErrors;
             }))
           );
@@ -677,11 +651,6 @@ export class JsonValidators {
     if (!unique) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value) || !isArray(control.value)) { return null; }
-      // JSON Schema compares items by value, so two objects that look the same
-      // are duplicates. The previous version sorted the array and compared
-      // adjacent items with ===, which never matches an object, and only pushed
-      // when duplicateItems already contained the item. Since it started empty,
-      // that condition was never true and the validator always passed.
       const items: any[] = control.value;
       const duplicateItems = [];
       for (let i = 0; i < items.length; i++) {
