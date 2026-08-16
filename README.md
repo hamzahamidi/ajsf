@@ -29,18 +29,23 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 ## Version compatibility
 
 From `14.0.0` onward, the `@ajsf` major matches the Angular major it targets, the same
-convention Angular Material uses. So install the major that matches your Angular:
+convention Angular Material uses. For the newest Angular major supported by AJSF, install
+the current release:
+
+```shell
+npm install @ajsf/material
+```
+
+npm uses the `latest` tag when no version is specified. If your application uses an older
+Angular major, install the matching AJSF major instead:
 
 ```shell
 npm install @ajsf/material@17   # for Angular 17
 ```
 
-⚠️ Prefer that over `@latest` once you are on a bounded version. `@latest` always points
-at the newest release, which targets the newest Angular, and installing it on an older
-Angular will fail to resolve.
-
 Peer ranges are bounded from `14.0.0` onward, so npm reports a clear resolution error
-rather than installing a combination that was never built or tested.
+rather than installing a combination that was never built or tested. This also means a
+plain install fails when the application is not on the newest supported Angular major.
 
 `0.8.0` and earlier predate this scheme. They declare open peer ranges (`>=14.0.0`) and
 were built against Angular 14. There is no release for Angular 15, which reached end of
@@ -106,17 +111,20 @@ Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/p
 ng add @angular/material
 ```
 
-**Then install the major that matches your Angular**, as described in [Version compatibility](#version-compatibility) above. For Angular 17:
+Then install AJSF. npm uses the current `latest` release when no version is specified:
 
 ```shell
-npm install @ajsf/material@17
+npm install @ajsf/material
 ```
 
 Or with [Yarn](https://yarnpkg.com):
 
 ```shell
-yarn add @ajsf/material@17
+yarn add @ajsf/material
 ```
+
+For an older Angular major, install the matching AJSF major as described in
+[Version compatibility](#version-compatibility).
 
 Then import `MaterialDesignFrameworkModule` in your main application module like this:
 
