@@ -31,17 +31,22 @@ function fixture() {
     dependencies: { '@ajsf/core': '~0.8.0' },
     peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
   });
+  write('ajsf-bootstrap5', {
+    name: '@ajsf/bootstrap5', version: '0.8.0',
+    dependencies: { '@ajsf/core': '~0.8.0' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
+  });
   return dir;
 }
 
 const read = (dir, name) =>
   JSON.parse(fs.readFileSync(path.join(dir, name, 'package.json'), 'utf8'));
 
-const ALL = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4'];
-const FRAMEWORKS = ['ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4'];
+const ALL = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5'];
+const FRAMEWORKS = ['ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5'];
 
 describe('setVersion', () => {
-  it('sets the version on all four packages', () => {
+  it('sets the version on every package', () => {
     const dir = fixture();
     setVersion('18.0.0', 18, dir);
     ALL.forEach(p => expect(read(dir, p).version).toEqual('18.0.0'));

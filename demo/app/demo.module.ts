@@ -18,6 +18,7 @@ import { routes } from './demo.routes';
 import { JsonSchemaFormModule } from '@ajsf/core';
 import { Bootstrap4FrameworkModule } from '@ajsf/bootstrap4';
 import { Bootstrap3FrameworkModule } from '@ajsf/bootstrap3';
+import { Bootstrap5FrameworkModule } from '@ajsf/bootstrap5';
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { MaterialDesignFrameworkModule } from '@ajsf/material';
     RouterModule.forRoot(routes, {}),
     Bootstrap4FrameworkModule,
     Bootstrap3FrameworkModule,
+    Bootstrap5FrameworkModule,
     MaterialDesignFrameworkModule,
     JsonSchemaFormModule
   ],

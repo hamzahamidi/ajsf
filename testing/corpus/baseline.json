@@ -639,6 +639,326 @@
     "controls": 2,
     "error": null
   },
+  "bootstrap-5/asf-array": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/asf-basic-json-schema-type": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/asf-bootstrap-grid": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/asf-complex-key-support": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/asf-hack-conditional-required": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/asf-kitchen-sink": {
+    "controls": 11,
+    "error": null
+  },
+  "bootstrap-5/asf-simple": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/asf-tab-array": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/asf-titlemap-examples": {
+    "controls": 15,
+    "error": null
+  },
+  "bootstrap-5/jsf-factory-sleek": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-ace": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-actions": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-advancedfieldset": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-array": {
+    "controls": 9,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-array-simple": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-authfieldset": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-autocomplete": {
+    "controls": 6,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-checkbox": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-checkboxbuttons": {
+    "controls": 0,
+    "error": "value.forEach is not a function"
+  },
+  "bootstrap-5/jsf-fields-checkboxes": {
+    "controls": 15,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-color": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-common": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-fieldset": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-help": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-hidden": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-iconselect": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-imageselect": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-password": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-questions": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-radiobuttons": {
+    "controls": 9,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-radios": {
+    "controls": 13,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-range": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-section": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-select": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-selectfieldset": {
+    "controls": 1,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-selectfieldset-key": {
+    "controls": 1,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-submit": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-tabarray": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-tabarray-maxitems": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-tabarray-value": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-fields-textarea": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-gettingstarted": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-previousvalues": {
+    "controls": 10,
+    "error": null
+  },
+  "bootstrap-5/jsf-previousvalues-multidimensional": {
+    "controls": 6,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-array": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-basic": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-default": {
+    "controls": 13,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-inlineref": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-morecomplex": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/jsf-schema-required": {
+    "controls": 9,
+    "error": null
+  },
+  "bootstrap-5/jsf-templating-idx": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-templating-tpldata": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-templating-value": {
+    "controls": 2,
+    "error": null
+  },
+  "bootstrap-5/jsf-templating-values": {
+    "controls": 4,
+    "error": null
+  },
+  "bootstrap-5/json-schema-draft01": {
+    "controls": 17,
+    "error": null
+  },
+  "bootstrap-5/json-schema-draft02": {
+    "controls": 18,
+    "error": null
+  },
+  "bootstrap-5/json-schema-draft03": {
+    "controls": 20,
+    "error": null
+  },
+  "bootstrap-5/json-schema-draft04": {
+    "controls": 19,
+    "error": null
+  },
+  "bootstrap-5/json-schema-draft06": {
+    "controls": 21,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-data-only": {
+    "controls": 15,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-deep-ref": {
+    "controls": 6,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-flex-layout": {
+    "controls": 15,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-layout-only": {
+    "controls": 0,
+    "error": "Cannot set properties of undefined (setting 'isInputWidget')"
+  },
+  "bootstrap-5/ng-jsf-nested-arrays": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-select-list-examples": {
+    "controls": 10,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-select-widget-examples": {
+    "controls": 19,
+    "error": null
+  },
+  "bootstrap-5/ng-jsf-simple-array": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/rjsf-alternatives": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/rjsf-arrays": {
+    "controls": 31,
+    "error": null
+  },
+  "bootstrap-5/rjsf-custom": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/rjsf-date-and-time": {
+    "controls": 5,
+    "error": null
+  },
+  "bootstrap-5/rjsf-errors": {
+    "controls": 9,
+    "error": null
+  },
+  "bootstrap-5/rjsf-files": {
+    "controls": 3,
+    "error": null
+  },
+  "bootstrap-5/rjsf-large": {
+    "controls": 12,
+    "error": null
+  },
+  "bootstrap-5/rjsf-nested": {
+    "controls": 8,
+    "error": null
+  },
+  "bootstrap-5/rjsf-numbers": {
+    "controls": 9,
+    "error": null
+  },
+  "bootstrap-5/rjsf-ordering": {
+    "controls": 6,
+    "error": null
+  },
+  "bootstrap-5/rjsf-references": {
+    "controls": 8,
+    "error": null
+  },
+  "bootstrap-5/rjsf-simple": {
+    "controls": 7,
+    "error": null
+  },
+  "bootstrap-5/rjsf-single": {
+    "controls": 2,
+    "error": null
+  },
   "material-design/asf-array": {
     "controls": 3,
     "error": null

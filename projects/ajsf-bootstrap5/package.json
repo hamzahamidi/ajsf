@@ -1,7 +1,7 @@
 {
-  "name": "@ajsf/core",
+  "name": "@ajsf/bootstrap5",
   "version": "17.2.0-rc.1",
-  "description": "Angular JSON Schema Form builder core",
+  "description": "Angular JSON Schema Form builder using Bootstrap 5 UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
     "Angular",
@@ -13,6 +13,8 @@
     "form",
     "forms",
     "form builder",
+    "Bootstrap",
+    "Bootstrap 5",
     "ajsf",
     "angular json schema form"
   ],
@@ -27,15 +29,12 @@
   "private": false,
   "dependencies": {
     "lodash-es": "~4.17.21",
-    "ajv": "^6.10.0",
+    "@ajsf/core": "17.2.0-rc.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/common": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "@angular/forms": "^17.0.0",
-    "@angular/platform-browser": "^17.0.0",
-    "rxjs": "^7.0.0"
+    "@angular/core": "^17.0.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.6"

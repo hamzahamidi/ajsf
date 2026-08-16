@@ -23,6 +23,7 @@ A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, an
 * [`@ajsf/core`](./README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/core.svg)](https://www.npmjs.com/package/@ajsf/core)
 * [`@ajsf/bootstrap3`](./projects/ajsf-bootstrap3/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap3.svg)](https://www.npmjs.com/package/@ajsf/bootstrap3)
 * [`@ajsf/bootstrap4`](./projects/ajsf-bootstrap4/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap4.svg)](https://www.npmjs.com/package/@ajsf/bootstrap4)
+* [`@ajsf/bootstrap5`](./projects/ajsf-bootstrap5/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/bootstrap5.svg)](https://www.npmjs.com/package/@ajsf/bootstrap5)
 * [`@ajsf/material`](./projects/ajsf-material/README.md) [![npm version](https://img.shields.io/npm/v/@ajsf/material.svg)](https://www.npmjs.com/package/@ajsf/material)
 
 ## Version compatibility
@@ -91,13 +92,13 @@ does not render, so it fails loudly rather than quietly. It needs a newer valida
 
 [Check out some examples here.](https://hamidihamza.com/ajsf)
 
-The playground includes more than 70 JSON Schemas. You can render each one with Material Design, Bootstrap 3, Bootstrap 4, or plain HTML.
+The playground includes more than 70 JSON Schemas. You can render each one with Material Design, Bootstrap 3, Bootstrap 4, Bootstrap 5, or plain HTML.
 
 ## Installation
 
 ### To install from npm or Yarn and use in your own project
 
-Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/package/@ajsf/material) renders with [Angular Material](https://material.angular.io), and there are Bootstrap 3 and Bootstrap 4 packages alongside it.
+Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/package/@ajsf/material) renders with [Angular Material](https://material.angular.io), and there are Bootstrap 3, Bootstrap 4 and Bootstrap 5 packages alongside it.
 
 `@ajsf/material` renders Angular Material components, so it declares `@angular/material` and `@angular/cdk` as peer dependencies. Your app needs both installed, with a theme and animations set up. `ng add @angular/material` does all three:
 
@@ -148,6 +149,7 @@ Four framework modules are available. Choose the one that matches the UI you wan
 * `MaterialDesignFrameworkModule` from `@ajsf/material` for Material Design
 * `Bootstrap3FrameworkModule` from `@ajsf/bootstrap3` for Bootstrap 3
 * `Bootstrap4FrameworkModule` from `@ajsf/bootstrap4` for Bootstrap 4
+* `Bootstrap5FrameworkModule` from `@ajsf/bootstrap5` for Bootstrap 5
 * `JsonSchemaFormModule` from `@ajsf/core` for plain HTML (no styling)
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
@@ -172,6 +174,7 @@ The main directories are:
 * `projects/ajsf-core`: Angular JSON Schema Form main library
 * `projects/ajsf-bootstrap3`: Bootstrap 3 framework
 * `projects/ajsf-bootstrap4`: Bootstrap 4 framework
+* `projects/ajsf-bootstrap5`: Bootstrap 5 framework
 * `projects/ajsf-material`: Angular Material framework
 * `projects/ajsf-core/src/lib/framework-library`: framework library
 * `projects/ajsf-core/src/lib/widget-library`: widget library
@@ -203,11 +206,12 @@ Here, `schema` is a valid JSON Schema object and `onSubmit` calls a function tha
 * `material-design` for Material Design
 * `bootstrap-3` for Bootstrap 3
 * `bootstrap-4` for Bootstrap 4
+* `bootstrap-5` for Bootstrap 5
 * `no-framework` for plain HTML
 
 Setting `loadExternalAssets="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details.
 
-Note what this does and does not cover. For `bootstrap-4` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
+Note what this does and does not cover. For `bootstrap-4` and `bootstrap-5` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
 
 ### Data-only mode
 
@@ -253,7 +257,7 @@ For more control over your form, you may provide these additional inputs:
 * `language` string to set the error message language (currently supports `de`, `en`, `es`, `fr`, `it`, `pt`, and `zh`)
 * `framework` string or object to set which framework to use
 
-For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `bootstrap-3`, `bootstrap-4`, and `no-framework`.
+For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `bootstrap-3`, `bootstrap-4`, `bootstrap-5`, and `no-framework`.
 
 If you want more detailed output, you may provide additional functions for `onChanges` to read the values in real time as the form is being filled out, and you may implement your own custom validation indicators from the boolean `isValid` or the detailed `validationErrors` outputs.
 
@@ -383,7 +387,7 @@ Finally, Angular JSON Schema Form includes some additional inputs and outputs fo
 
 ## Customizing
 
-In addition to a large number of user-settable options, Angular JSON Schema Form also has the ability to load custom form control widgets and layout frameworks. All forms are constructed from these basic components. The default widget library includes all standard HTML 5 form controls, as well as several common layout patterns, such as multiple checkboxes and tab sets. The default framework library includes templates to style forms using Material Design, Bootstrap 3, or Bootstrap 4 (or plain HTML with no formatting, which is not useful in production, but can be helpful for development and debugging).
+In addition to a large number of user-settable options, Angular JSON Schema Form also has the ability to load custom form control widgets and layout frameworks. All forms are constructed from these basic components. The default widget library includes all standard HTML 5 form controls, as well as several common layout patterns, such as multiple checkboxes and tab sets. The default framework library includes templates to style forms using Material Design, Bootstrap 3, Bootstrap 4, or Bootstrap 5 (or plain HTML with no formatting, which is not useful in production, but can be helpful for development and debugging).
 
 ### User settings
 
@@ -518,11 +522,11 @@ widgetLibrary.registerWidget('text', YourInputWidgetComponent);
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), and Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets). Bootstrap 3 and Bootstrap 4 reformat the default widgets and do not provide custom widgets.
+Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), and Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets). Bootstrap 3, Bootstrap 4 and Bootstrap 5 reformat the default widgets and do not provide custom widgets.
 
 ### Changing or adding frameworks
 
-To change the active framework, either use the `framework` input of the `<json-schema-form>` tag, or load the `FrameworkLibraryService` and call `setFramework(yourCustomFramework)`, with either the name of an available framework ('bootstrap-3', 'bootstrap-4', 'material-design', or 'no-framework'), or with your own custom framework object, like so:
+To change the active framework, either use the `framework` input of the `<json-schema-form>` tag, or load the `FrameworkLibraryService` and call `setFramework(yourCustomFramework)`, with either the name of an available framework ('bootstrap-3', 'bootstrap-4', 'bootstrap-5', 'material-design', or 'no-framework'), or with your own custom framework object, like so:
 
 ```javascript
 import { YourFrameworkComponent } from './your-framework.component';
