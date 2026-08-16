@@ -88,8 +88,8 @@ mistake.
 
 The Bootstrap 4 package emits a class list identical to the Bootstrap 3 one, so
 checkboxes, radios, labels, help text and validation states all render
-unstyled. Bootstrap 5 had the same drift and its spacing half is fixed; the
-checkbox half needs a wrapper element that core does not render today. Measured
+unstyled. Bootstrap 5 had the same drift and is now migrated, spacing and
+checks alike, without touching core. The same approach applies here. Measured
 class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
 
 ### fxLayout has never worked
