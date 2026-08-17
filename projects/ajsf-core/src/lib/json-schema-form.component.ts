@@ -16,7 +16,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { convertSchemaToDraft6 } from './shared/convert-schema-to-draft6.function';
+import { convertSchemaToDraft6 } from './shared/schema-draft.functions';
 import { forEach, hasOwn } from './shared/utility.functions';
 import { FrameworkLibraryService } from './framework-library/framework-library.service';
 import {

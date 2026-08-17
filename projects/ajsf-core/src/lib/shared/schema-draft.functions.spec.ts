@@ -1,4 +1,4 @@
-import { convertSchemaToDraft6, detectDraft } from './convert-schema-to-draft6.function';
+import { convertSchemaToDraft6, detectDraft } from './schema-draft.functions';
 
 describe('convertSchemaToDraft6', () => {
 
