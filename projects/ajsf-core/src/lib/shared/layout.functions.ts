@@ -285,6 +285,23 @@ export function buildLayout(jsf, widgetLibrary) {
       nodeDataMap.set('inputType', newNode.type);
       nodeDataMap.set('widget', newNode.widget);
 
+      // The gate below tests the layout node, not the schema, so a layout entry
+      // that names an array by key carries no 'items' and skipped the whole block:
+      // no item nodes and no Add button. Fill the items from the schema instead.
+      // Only for widgets that render them, since checkboxes ignores items entirely.
+      if (newNode.dataType === 'array' && !hasOwn(newNode, 'items') &&
+        !hasOwn(newNode, 'additionalItems') &&
+        inArray(newNode.type, ['array', 'tabarray'])
+      ) {
+        const fromSchema = buildLayoutFromSchema(
+          jsf, widgetLibrary, nodeValue, schemaPointer, newNode.dataPointer,
+          newNode.arrayItem, newNode.arrayItemType, newNode.options.removable
+        );
+        if (fromSchema && isArray(fromSchema.items) && fromSchema.items.length) {
+          newNode.items = fromSchema.items;
+        }
+      }
+
       if (newNode.dataType === 'array' &&
         (hasOwn(newNode, 'items') || hasOwn(newNode, 'additionalItems'))
       ) {
