@@ -149,11 +149,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-3/jsf-fields-radios": {
-    "controls": 13,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-3/jsf-fields-range": {
     "controls": 2,
     "error": null,
@@ -163,11 +158,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-3/jsf-fields-select": {
-    "controls": 5,
-    "error": null,
-    "valid": false
   },
   "bootstrap-3/jsf-fields-selectfieldset": {
     "controls": 1,
@@ -244,11 +234,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-3/jsf-schema-required": {
-    "controls": 9,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-3/jsf-templating-idx": {
     "controls": 2,
     "error": null,
@@ -268,21 +253,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-3/json-schema-draft01": {
-    "controls": 17,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-3/json-schema-draft02": {
-    "controls": 18,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-3/json-schema-draft03": {
-    "controls": 20,
-    "error": null,
-    "valid": false
   },
   "bootstrap-3/json-schema-draft04": {
     "controls": 19,
@@ -549,11 +519,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-4/jsf-fields-radios": {
-    "controls": 13,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-4/jsf-fields-range": {
     "controls": 2,
     "error": null,
@@ -563,11 +528,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-4/jsf-fields-select": {
-    "controls": 5,
-    "error": null,
-    "valid": false
   },
   "bootstrap-4/jsf-fields-selectfieldset": {
     "controls": 1,
@@ -644,11 +604,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-4/jsf-schema-required": {
-    "controls": 9,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-4/jsf-templating-idx": {
     "controls": 2,
     "error": null,
@@ -668,21 +623,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-4/json-schema-draft01": {
-    "controls": 17,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-4/json-schema-draft02": {
-    "controls": 18,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-4/json-schema-draft03": {
-    "controls": 20,
-    "error": null,
-    "valid": false
   },
   "bootstrap-4/json-schema-draft04": {
     "controls": 19,
@@ -949,11 +889,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-5/jsf-fields-radios": {
-    "controls": 13,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-5/jsf-fields-range": {
     "controls": 2,
     "error": null,
@@ -963,11 +898,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-5/jsf-fields-select": {
-    "controls": 5,
-    "error": null,
-    "valid": false
   },
   "bootstrap-5/jsf-fields-selectfieldset": {
     "controls": 1,
@@ -1044,11 +974,6 @@
     "error": null,
     "valid": true
   },
-  "bootstrap-5/jsf-schema-required": {
-    "controls": 9,
-    "error": null,
-    "valid": false
-  },
   "bootstrap-5/jsf-templating-idx": {
     "controls": 2,
     "error": null,
@@ -1068,21 +993,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "bootstrap-5/json-schema-draft01": {
-    "controls": 17,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-5/json-schema-draft02": {
-    "controls": 18,
-    "error": null,
-    "valid": false
-  },
-  "bootstrap-5/json-schema-draft03": {
-    "controls": 20,
-    "error": null,
-    "valid": false
   },
   "bootstrap-5/json-schema-draft04": {
     "controls": 19,
@@ -1349,11 +1259,6 @@
     "error": null,
     "valid": true
   },
-  "material-design/jsf-fields-radios": {
-    "controls": 12,
-    "error": null,
-    "valid": false
-  },
   "material-design/jsf-fields-range": {
     "controls": 2,
     "error": null,
@@ -1363,11 +1268,6 @@
     "controls": 3,
     "error": null,
     "valid": true
-  },
-  "material-design/jsf-fields-select": {
-    "controls": 4,
-    "error": null,
-    "valid": false
   },
   "material-design/jsf-fields-selectfieldset": {
     "controls": 0,
@@ -1444,11 +1344,6 @@
     "error": null,
     "valid": true
   },
-  "material-design/jsf-schema-required": {
-    "controls": 8,
-    "error": null,
-    "valid": false
-  },
   "material-design/jsf-templating-idx": {
     "controls": 1,
     "error": null,
@@ -1468,21 +1363,6 @@
     "controls": 3,
     "error": null,
     "valid": true
-  },
-  "material-design/json-schema-draft01": {
-    "controls": 16,
-    "error": null,
-    "valid": false
-  },
-  "material-design/json-schema-draft02": {
-    "controls": 17,
-    "error": null,
-    "valid": false
-  },
-  "material-design/json-schema-draft03": {
-    "controls": 19,
-    "error": null,
-    "valid": false
   },
   "material-design/json-schema-draft04": {
     "controls": 18,
@@ -1749,11 +1629,6 @@
     "error": null,
     "valid": true
   },
-  "no-framework/jsf-fields-radios": {
-    "controls": 13,
-    "error": null,
-    "valid": false
-  },
   "no-framework/jsf-fields-range": {
     "controls": 2,
     "error": null,
@@ -1763,11 +1638,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "no-framework/jsf-fields-select": {
-    "controls": 5,
-    "error": null,
-    "valid": false
   },
   "no-framework/jsf-fields-selectfieldset": {
     "controls": 1,
@@ -1844,11 +1714,6 @@
     "error": null,
     "valid": true
   },
-  "no-framework/jsf-schema-required": {
-    "controls": 9,
-    "error": null,
-    "valid": false
-  },
   "no-framework/jsf-templating-idx": {
     "controls": 2,
     "error": null,
@@ -1868,21 +1733,6 @@
     "controls": 4,
     "error": null,
     "valid": true
-  },
-  "no-framework/json-schema-draft01": {
-    "controls": 17,
-    "error": null,
-    "valid": false
-  },
-  "no-framework/json-schema-draft02": {
-    "controls": 18,
-    "error": null,
-    "valid": false
-  },
-  "no-framework/json-schema-draft03": {
-    "controls": 20,
-    "error": null,
-    "valid": false
   },
   "no-framework/json-schema-draft04": {
     "controls": 19,

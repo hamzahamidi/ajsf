@@ -45,104 +45,6 @@ const simpleTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 
 
 /** Rewrites draft 1 to 4 keywords into their draft 6 spellings. */
 /**
- * Keywords that only drafts 1 and 2 use: 'contentEncoding', 'maxDecimal' and the
- * 'minimumCanEqual' and 'maximumCanEqual' pair. Delete this to drop drafts 1 and 2.
- *
- * Runs before the draft 3 step because 'maxDecimal' clears 'divisibleBy', which
- * the draft 3 step then reads.
- */
-function convertDraft1And2Keywords(newSchema: any, draft: number, changed: boolean): DraftState {
-    // Convert v1-v2 'contentEncoding' to 'media.binaryEncoding'
-    // Note: This is only used in JSON hyper-schema (not regular JSON schema)
-    if (newSchema.contentEncoding) {
-      newSchema.media = { binaryEncoding: newSchema.contentEncoding };
-      delete newSchema.contentEncoding;
-      changed = true;
-    }
-
-    // Convert v1 'maxDecimal' to 'multipleOf'
-    if (typeof newSchema.maxDecimal === 'number') {
-      newSchema.multipleOf = 1 / Math.pow(10, newSchema.maxDecimal);
-      delete newSchema.divisibleBy;
-      changed = true;
-      if (!draft || draft === 2) { draft = 1; }
-    }
-
-    // Convert v1-v2 boolean 'minimumCanEqual' to 'exclusiveMinimum'
-    if (typeof newSchema.minimum === 'number' && newSchema.minimumCanEqual === false) {
-      newSchema.exclusiveMinimum = newSchema.minimum;
-      delete newSchema.minimum;
-      changed = true;
-    } else if (typeof newSchema.minimumCanEqual === 'boolean') {
-      delete newSchema.minimumCanEqual;
-      changed = true;
-    }
-
-    // Convert v1-v2 boolean 'maximumCanEqual' to 'exclusiveMaximum'
-    if (typeof newSchema.maximum === 'number' && newSchema.maximumCanEqual === false) {
-      newSchema.exclusiveMaximum = newSchema.maximum;
-      delete newSchema.maximum;
-      changed = true;
-    } else if (typeof newSchema.maximumCanEqual === 'boolean') {
-      delete newSchema.maximumCanEqual;
-      changed = true;
-    }
-
-  return { newSchema, draft, changed };
-}
-
-/**
- * Keywords draft 3 still uses, some of them since draft 1: 'extends', 'disallow',
- * 'divisibleBy' and the string form of 'dependencies'. Delete this to drop draft 3,
- * but only after drafts 1 and 2 have gone, since they use these too.
- */
-function convertDraft3Keywords(newSchema: any, draft: number, changed: boolean): DraftState {
-    // Convert v1-v3 'extends' to 'allOf'
-    if (typeof newSchema.extends === 'object') {
-      newSchema.allOf = typeof newSchema.extends.map === 'function' ?
-        newSchema.extends.map(subSchema => convertSchemaToDraft6(subSchema, { changed, draft })) :
-        [convertSchemaToDraft6(newSchema.extends, { changed, draft })];
-      delete newSchema.extends;
-      changed = true;
-    }
-
-    // Convert v1-v3 'disallow' to 'not'
-    if (newSchema.disallow) {
-      if (typeof newSchema.disallow === 'string') {
-        newSchema.not = { type: newSchema.disallow };
-      } else if (typeof newSchema.disallow.map === 'function') {
-        newSchema.not = {
-          anyOf: newSchema.disallow
-            .map(type => typeof type === 'object' ? type : { type })
-        };
-      }
-      delete newSchema.disallow;
-      changed = true;
-    }
-
-    // Convert v2-v3 'divisibleBy' to 'multipleOf'
-    if (typeof newSchema.divisibleBy === 'number') {
-      newSchema.multipleOf = newSchema.divisibleBy;
-      delete newSchema.divisibleBy;
-      changed = true;
-    }
-
-    // Convert v3 string 'dependencies' properties to arrays
-    if (typeof newSchema.dependencies === 'object' &&
-      Object.keys(newSchema.dependencies)
-        .some(key => typeof newSchema.dependencies[key] === 'string')
-    ) {
-      newSchema.dependencies = { ...newSchema.dependencies };
-      Object.keys(newSchema.dependencies)
-        .filter(key => typeof newSchema.dependencies[key] === 'string')
-        .forEach(key => newSchema.dependencies[key] = [newSchema.dependencies[key]]);
-      changed = true;
-    }
-
-  return { newSchema, draft, changed };
-}
-
-/**
  * Keywords draft 4 still uses: the boolean form of 'exclusiveMinimum' and
  * 'exclusiveMaximum', which draft 6 made numeric. Delete this to drop draft 4.
  */
@@ -172,49 +74,34 @@ function convertDraft4Keywords(newSchema: any, draft: number, changed: boolean):
 
 /** Turns per property 'optional', 'required' and 'requires' into the parent's 'required' array and 'dependencies' object, which is the shape the form builder reads. */
 function collectRequiredKeys(newSchema: any, draft: number, changed: boolean): DraftState {
-    // Search object 'properties' for 'optional', 'required', and 'requires' items,
-    // and convert them into object 'required' arrays and 'dependencies' objects
+    // Drafts 1 to 3 are no longer supported, so 'optional', 'required: true' and
+    // 'requires' on a property carry no meaning. They are still deleted, because a
+    // boolean 'required' and a string 'requires' are invalid from draft 4 onward
+    // and ajv rejects the whole schema rather than ignoring the keyword.
     if (typeof newSchema.properties === 'object') {
       const properties = { ...newSchema.properties };
-      const requiredKeys = Array.isArray(newSchema.required) ?
-        new Set(newSchema.required) : new Set();
-
-      // Convert v1-v2 boolean 'optional' properties to 'required' array
-      // Draft 1 and 2 mark optional properties rather than required ones. This is
-      // gated on the declared draft alone: inferring it from a single
-      // 'optional: true' made every other property required, which no schema asked
-      // for.
-      if (draft === 1 || draft === 2) {
-        Object.keys(properties)
-          .filter(key => properties[key].optional !== true)
-          .forEach(key => requiredKeys.add(key));
-        changed = true;
+      const dropped = Object.keys(properties).filter(key =>
+        typeof properties[key] === 'object' && (
+          properties[key].required === true ||
+          properties[key].optional === true ||
+          properties[key].requires
+        ));
+      if (dropped.length) {
+        // Loud, because the alternative is a form that quietly stops enforcing a
+        // required field.
+        console.warn(
+          'JSON Schema draft 1 to 3 is no longer supported, so these properties ' +
+          'lost their required, optional or requires keyword: ' + dropped.join(', ') +
+          '. Use a draft 4 or later "required" array instead.'
+        );
       }
-
-      // Convert v3 boolean 'required' properties to 'required' array
-      if (Object.keys(properties).some(key => properties[key].required === true)) {
-        Object.keys(properties)
-          .filter(key => properties[key].required === true)
-          .forEach(key => requiredKeys.add(key));
+      dropped.forEach(key => {
+        properties[key] = { ...properties[key] };
+        delete properties[key].required;
+        delete properties[key].optional;
+        delete properties[key].requires;
         changed = true;
-      }
-
-      if (requiredKeys.size) { newSchema.required = Array.from(requiredKeys); }
-
-      // Convert v1-v2 array or string 'requires' properties to 'dependencies' object
-      if (Object.keys(properties).some(key => properties[key].requires)) {
-        const dependencies = typeof newSchema.dependencies === 'object' ?
-          { ...newSchema.dependencies } : {};
-        Object.keys(properties)
-          .filter(key => properties[key].requires)
-          .forEach(key => dependencies[key] =
-            typeof properties[key].requires === 'string' ?
-              [properties[key].requires] : properties[key].requires
-          );
-        newSchema.dependencies = dependencies;
-        changed = true;
-      }
-
+      });
       newSchema.properties = properties;
     }
 
@@ -384,8 +271,6 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   if (declared !== null) { draft = declared; }
 
   let state: DraftState = { newSchema: { ...schema }, draft, changed };
-  state = convertDraft1And2Keywords(state.newSchema, state.draft, state.changed);
-  state = convertDraft3Keywords(state.newSchema, state.draft, state.changed);
   state = convertDraft4Keywords(state.newSchema, state.draft, state.changed);
   state = collectRequiredKeys(state.newSchema, state.draft, state.changed);
   state = normaliseIdentifiers(state.newSchema, state.draft, state.changed);
