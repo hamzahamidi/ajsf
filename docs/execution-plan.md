@@ -101,6 +101,33 @@ the freeze runs while the walk does.
 **12. After the freeze lifts.** Removing the deprecated validators, and `hasOwn`
 revisited alone with a full corpus run.
 
+## Every breaking step ships as a release candidate
+
+Decided 2026-08-17. The 19.0.0 work is not one release. Each step is published as
+`19.0.0-rc.N`, which carries a hyphen and so goes to the `next` dist-tag, leaving
+`latest` on 18.3.0 until the series is finished. A consumer opts in with
+`npm install @ajsf/core@next` and can report against a single change rather than
+against a pile of them.
+
+That fixes the order, because `version:set` writes the Angular peer ranges from
+the major it is given. An `rc` numbered 19 cannot be cut while the workspace is
+on Angular 18, so the upgrade comes first:
+
+    19.0.0-rc.0   Angular 19 itself, no behaviour change
+    19.0.0-rc.1   the converter split, ajv 8, draft 7 default, draft 4 floor
+    19.0.0-rc.2   the tuple and array semantics: findings 3, 15
+    19.0.0-rc.3   the allOf merging: findings 11, 12, 14
+    19.0.0-rc.4   the widget and submit changes: findings 5, 6, 21
+    19.0.0        promoted to latest once the series has been exercised
+
+Numbering is per step rather than per finding, so a step can carry more than one
+finding when they share a file. What matters is that a consumer bisecting a
+regression lands on a change small enough to read, which the corpus cannot do for
+them: five of the eight breaking findings are invisible to it.
+
+Only the final stable release moves `latest`. A release candidate that turns out
+wrong is abandoned rather than patched, since nothing depends on it by default.
+
 ## Three decisions
 
 **Decided 2026-08-17: sniffing goes, `defaultDraft` defaults to draft 7, and the
