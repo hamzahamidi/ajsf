@@ -214,7 +214,10 @@ export function buildFormGroupTemplate(
         }
         // const itemOptions = jsf.dataMap.get(itemRefPointer) || new Map();
         const itemOptions = nodeOptions;
-        if (!itemRecursive || hasOwn(validators, 'required')) {
+        // validators never carries 'required' here, the parent writes that later, so
+        // for a recursive array this was always false and every supplied item was
+        // dropped. Supplied data is finite, so filling from it still terminates.
+        if (!itemRecursive || hasOwn(validators, 'required') || isArray(nodeValue)) {
           const arrayLength = Math.min(Math.max(
             itemRecursive ? 0 :
               (itemOptions.get('tupleItems') + itemOptions.get('listItems')) || 0,
