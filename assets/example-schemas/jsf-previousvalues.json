@@ -5,16 +5,22 @@
       "items": {
         "type": "object",
         "title": "Friend",
+        "required": [
+          "nick"
+        ],
         "properties": {
           "nick": {
             "type": "string",
-            "title": "Nickname",
-            "required": true
+            "title": "Nickname"
           },
           "gender": {
             "type": "string",
             "title": "Gender",
-            "enum": [ "male", "female", "alien" ]
+            "enum": [
+              "male",
+              "female",
+              "alien"
+            ]
           },
           "age": {
             "type": "integer",
@@ -26,9 +32,20 @@
   },
   "value": {
     "friends": [
-      { "nick": "tidoust", "gender": "male",   "age": 34 },
-      { "nick": "titine",  "gender": "female", "age": 6 },
-      { "nick": "E.T.",    "gender": "alien" }
+      {
+        "nick": "tidoust",
+        "gender": "male",
+        "age": 34
+      },
+      {
+        "nick": "titine",
+        "gender": "female",
+        "age": 6
+      },
+      {
+        "nick": "E.T.",
+        "gender": "alien"
+      }
     ]
   }
 }
