@@ -11,7 +11,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'template-widget',
     template: `<div #widgetContainer></div>`,
     standalone: false

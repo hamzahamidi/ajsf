@@ -3,7 +3,6 @@ import { JsonSchemaFormService } from '@ajsf/core';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-add-reference-widget',
     template: `
     <section [class]="options?.htmlClass || ''" align="end">

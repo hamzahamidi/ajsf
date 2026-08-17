@@ -4,7 +4,6 @@ import { JsonSchemaFormService } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-number-widget',
     template: `
     <mat-form-field [appearance]="options?.appearance || matFormFieldDefaultOptions?.appearance || 'fill'"

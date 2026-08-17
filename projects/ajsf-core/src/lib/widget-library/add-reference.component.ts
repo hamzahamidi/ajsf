@@ -8,7 +8,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'add-reference-widget',
     template: `
     <button *ngIf="showAddButton"

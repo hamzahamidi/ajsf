@@ -5,7 +5,6 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
  * Bootstrap 3 framework for Angular JSON Schema Form.
  */
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'bootstrap-3-framework',
     templateUrl: './bootstrap3-framework.component.html',
     styleUrls: ['./bootstrap3-framework.component.scss'],

@@ -10,7 +10,6 @@ import { JsonPointer } from '@ajsf/core';
 const DARK_MODE_KEY = 'ajsf-demo-dark-mode';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'demo',
     templateUrl: 'demo.component.html',
     animations: [
@@ -256,9 +255,10 @@ export class DemoComponent implements OnInit {
         // If entered content is not valid JSON,
         // parse as JavaScript instead to include functions
         const newFormObject: any = null;
-        /* tslint:disable */
+        // Four bundled examples embed JavaScript functions, so they are not JSON
+        // and cannot be parsed. This is the demo only; the library never evals.
+        // eslint-disable-next-line no-eval
         eval('newFormObject = ' + newFormString);
-        /* tslint:enable */
         this.jsonFormObject = newFormObject;
         this.jsonFormValid = true;
       } catch (javascriptError) {

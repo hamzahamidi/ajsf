@@ -3,7 +3,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-slider-widget',
     template: `
     <mat-slider discrete *ngIf="boundControl"

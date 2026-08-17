@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-tabs-widget',
     template: `
     <nav mat-tab-nav-bar

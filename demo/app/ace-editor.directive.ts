@@ -7,7 +7,6 @@ import 'brace/theme/tomorrow_night';
 
 
 @Directive({
-    // tslint:disable-next-line:directive-selector
     selector: '[ace-editor]',
     standalone: false
 })

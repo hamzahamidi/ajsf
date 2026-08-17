@@ -5,7 +5,6 @@ import { JsonSchemaFormService } from '@ajsf/core';
 // TODO: Add this control
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-stepper-widget',
     template: ``,
     standalone: false

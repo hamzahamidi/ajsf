@@ -5,7 +5,6 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'checkboxes-widget',
     template: `
     <label *ngIf="options?.title"

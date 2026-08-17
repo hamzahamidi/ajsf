@@ -3,7 +3,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-button-widget',
     template: `
     <div class="button-row" [class]="options?.htmlClass || ''">

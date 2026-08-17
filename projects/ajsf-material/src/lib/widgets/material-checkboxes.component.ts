@@ -7,7 +7,6 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
 // https://material.angular.io/components/list/overview
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-checkboxes-widget',
     template: `
     <div>
