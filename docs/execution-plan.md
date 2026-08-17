@@ -103,10 +103,13 @@ revisited alone with a full corpus run.
 
 ## Three decisions
 
-**Does the property level `required: true` collection stay ungated?** It has no
-draft condition today. Ungated, `defaultDraft` flips 10 baseline entries. Behind
-a draft gate it flips 29, and 9 of the 80 corpus schemas stop requiring anything.
-Recommend ungated, which is also the smaller change.
+**Decided 2026-08-17: sniffing goes, `defaultDraft` defaults to draft 7, and the
+`required: true` collection stays ungated.** Draft 7 as a literal rather than "the
+newest supported" is what keeps the 2019-09 and 2020-12 engines additive, and ajv
+6.12.6 already validates draft 7, so this does not wait for ajv 8. The earlier
+figure of 9 corpus schemas carrying property level `required: true` was wrong: a
+raw grep counted the layout node feature and the JSONForm shorthand as well. It
+reaches 3 of the 80.
 
 **Patch findings 9 and 10 now, or wait for phase 10?** Roughly twelve lines that
 phase 10 deletes. Recommend patching, because the specs proving them are the
