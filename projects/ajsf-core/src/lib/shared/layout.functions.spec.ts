@@ -1590,3 +1590,71 @@ describe('buildLayout, array named by key with no items in the layout', () => {
     expect(result[0].items.length).toBeGreaterThan(0);
   });
 });
+
+describe('buildLayout, tuple slots versus list items', () => {
+  // The framework components read arrayItemType === 'list' to decide whether to
+  // render the remove control, so a fixed tuple position used to get one.
+  const tupleSchema = {
+    type: 'object',
+    properties: {
+      pair: {
+        type: 'array',
+        items: [{ type: 'string', title: 'First' }, { type: 'string', title: 'Second' }],
+        additionalItems: { type: 'string', title: 'Extra' },
+      },
+    },
+  };
+
+  const build = () => buildLayout(
+    makeJsf({
+      schema: tupleSchema,
+      layout: [{ key: 'pair', type: 'array', items: ['/pair/0', '/pair/1'] }],
+    }),
+    widgetLibrary
+  );
+
+  it('types a fixed slot as a tuple item, not a list item', () => {
+    const items: any[] = (build() as any)[0].items;
+    const slots = items.filter(item => item.arrayItem && item.type !== '$ref');
+    expect(slots.length).toBeGreaterThan(0);
+    slots.forEach(slot => expect(slot.arrayItemType).toBe('tuple'));
+  });
+
+  it('does not mark a fixed slot removable', () => {
+    const items: any[] = (build() as any)[0].items;
+    const slots = items.filter(item => item.arrayItem && item.type !== '$ref');
+    slots.forEach(slot => expect(slot.removable).toBe(false));
+  });
+
+  it('types a slot past the tuple as a removable list item', () => {
+    const result: any = buildLayout(
+      makeJsf({
+        schema: tupleSchema,
+        // A third slot on a two item tuple sits in the additionalItems range.
+        layout: [{ key: 'pair', type: 'array', items: ['/pair/0', '/pair/1', '/pair/2'] }],
+      }),
+      widgetLibrary
+    );
+    const slots: any[] = result[0].items
+      .filter((item: any) => item.arrayItem && item.type !== '$ref');
+    const past = slots.filter((slot: any) => slot.arrayItemType === 'list');
+    expect(past.length).toBe(1);
+    expect(past[0].removable).toBe(true);
+  });
+
+  it('leaves a slot alone when the array is not removable', () => {
+    const result: any = buildLayout(
+      makeJsf({
+        schema: tupleSchema,
+        layout: [{
+          key: 'pair', type: 'array', removable: false,
+          items: ['/pair/0', '/pair/1', '/pair/2'],
+        }],
+      }),
+      widgetLibrary
+    );
+    const slots: any[] = result[0].items
+      .filter((item: any) => item.arrayItem && item.type !== '$ref');
+    slots.forEach((slot: any) => expect(slot.removable).toBe(false));
+  });
+});
