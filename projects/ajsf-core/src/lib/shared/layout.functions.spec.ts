@@ -1546,3 +1546,47 @@ describe('buildLayout, array layout node with no items', () => {
     expect(result.length).toBeGreaterThan(0);
   });
 });
+
+describe('buildLayout, array named by key with no items in the layout', () => {
+  const arraySchema = {
+    type: 'object',
+    properties: {
+      things: { type: 'array', items: { type: 'string', title: 'Thing' } },
+    },
+  };
+
+  // The array block was gated on the LAYOUT node carrying 'items', so a layout
+  // entry of { key: 'things' } produced no item nodes and no Add button at all.
+  it('builds item nodes from the schema', () => {
+    const result: any = buildLayout(
+      makeJsf({ schema: arraySchema, layout: [{ key: 'things', type: 'array' }] }),
+      widgetLibrary
+    );
+
+    expect(result.length).toBe(1);
+    expect(Array.isArray(result[0].items)).toBe(true);
+    expect(result[0].items.length).toBeGreaterThan(0);
+  });
+
+  it('adds the Add button', () => {
+    const result: any = buildLayout(
+      makeJsf({ schema: arraySchema, layout: [{ key: 'things', type: 'array' }] }),
+      widgetLibrary
+    );
+
+    const types = result[0].items.map((item: any) => item.type);
+    expect(types).toContain('$ref');
+  });
+
+  it('leaves a layout that supplies its own items alone', () => {
+    const result: any = buildLayout(
+      makeJsf({
+        schema: arraySchema,
+        layout: [{ key: 'things', type: 'array', items: ['things/-'] }],
+      }),
+      widgetLibrary
+    );
+
+    expect(result[0].items.length).toBeGreaterThan(0);
+  });
+});
