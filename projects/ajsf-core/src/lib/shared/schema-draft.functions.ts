@@ -128,10 +128,10 @@ function collectRequiredKeys(newSchema: any, draft: number, changed: boolean): D
 function normaliseIdentifiers(newSchema: any, draft: number, changed: boolean): DraftState {
     // Convert id to $id
     if (typeof newSchema.id === 'string' && !newSchema.$id) {
-      if (newSchema.id.slice(-1) === '#') {
-        newSchema.id = newSchema.id.slice(0, -1);
-      }
-      newSchema.$id = newSchema.id + '-CONVERTED-TO-DRAFT-06#';
+      // The identifier is carried across unchanged. It used to gain a
+      // '-CONVERTED-TO-DRAFT-06#' suffix, which every '$ref' written against the
+      // original id then failed to resolve.
+      newSchema.$id = newSchema.id;
       delete newSchema.id;
       changed = true;
     }

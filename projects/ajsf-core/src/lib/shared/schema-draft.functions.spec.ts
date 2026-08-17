@@ -171,17 +171,28 @@ describe('convertSchemaToDraft6', () => {
 
   describe('id to $id', () => {
 
-    it('should convert id to a marked $id and strip a trailing hash', () => {
+    it('should convert id to $id unchanged', () => {
+      // The id used to gain a '-CONVERTED-TO-DRAFT-06#' suffix, so every '$ref'
+      // written against the original failed to resolve.
       expect(convertSchemaToDraft6({ id: 'http://example.com/schema#', type: 'object' }))
         .toEqual({
           type: 'object',
-          $id: 'http://example.com/schema-CONVERTED-TO-DRAFT-06#',
+          $id: 'http://example.com/schema#',
         } as any);
     });
 
     it('should convert an id without a trailing hash', () => {
       expect(convertSchemaToDraft6({ id: 'http://example.com/schema' }))
-        .toEqual({ $id: 'http://example.com/schema-CONVERTED-TO-DRAFT-06#' } as any);
+        .toEqual({ $id: 'http://example.com/schema' } as any);
+    });
+
+    it('resolves a $ref written against the original id', () => {
+      const result: any = convertSchemaToDraft6({
+        id: 'http://example.com/schema#',
+        type: 'object',
+        properties: { a: { $ref: 'http://example.com/schema#' } },
+      });
+      expect(result.properties.a.$ref).toEqual(result.$id);
     });
 
     it('should leave id alone when $id already exists', () => {
