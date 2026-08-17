@@ -7,9 +7,9 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
 // https://material.angular.io/components/list/overview
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-checkboxes-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-checkboxes-widget',
+    template: `
     <div>
       <mat-checkbox type="checkbox"
         [checked]="allChecked"
@@ -43,13 +43,14 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>`,
-  styles: [`
+    styles: [`
     .title { font-weight: bold; }
     .checkbox-list { list-style-type: none; }
     .horizontal-list > li { display: inline-block; margin-right: 10px; zoom: 1; }
     .checkbox-name { white-space: nowrap; }
     mat-error { font-size: 75%; }
   `],
+    standalone: false
 })
 export class MaterialCheckboxesComponent implements OnInit {
   formControl: AbstractControl;

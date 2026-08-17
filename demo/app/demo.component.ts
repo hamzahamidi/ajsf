@@ -10,21 +10,22 @@ import { JsonPointer } from '@ajsf/core';
 const DARK_MODE_KEY = 'ajsf-demo-dark-mode';
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'demo',
-  templateUrl: 'demo.component.html',
-  animations: [
-    trigger('expandSection', [
-      state('in', style({ height: '*' })),
-      transition(':enter', [
-        style({ height: 0 }), animate(100),
-      ]),
-      transition(':leave', [
-        style({ height: '*' }),
-        animate(100, style({ height: 0 })),
-      ]),
-    ]),
-  ],
+    // tslint:disable-next-line:component-selector
+    selector: 'demo',
+    templateUrl: 'demo.component.html',
+    animations: [
+        trigger('expandSection', [
+            state('in', style({ height: '*' })),
+            transition(':enter', [
+                style({ height: 0 }), animate(100),
+            ]),
+            transition(':leave', [
+                style({ height: '*' }),
+                animate(100, style({ height: 0 })),
+            ]),
+        ]),
+    ],
+    standalone: false
 })
 export class DemoComponent implements OnInit {
   examples: any = Examples;

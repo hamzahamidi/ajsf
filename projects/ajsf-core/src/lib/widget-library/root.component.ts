@@ -3,9 +3,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'root-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'root-widget',
+    template: `
     <div *ngFor="let layoutItem of layout; let i = index"
       [class.form-flex-item]="isFlexItem"
       [style.align-self]="(layoutItem.options || {})['align-self']"
@@ -24,7 +24,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [layoutNode]="layoutItem"></select-framework-widget>
       </div>
     </div>`,
-  styles: [`
+    styles: [`
     [draggable=true] {
       transition: all 150ms cubic-bezier(.4, 0, .2, 1);
     }
@@ -46,6 +46,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
       position: relative; z-index: 20;
     }
   `],
+    standalone: false
 })
 export class RootComponent {
   options: any;

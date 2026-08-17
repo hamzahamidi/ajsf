@@ -12,10 +12,11 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
  *
  */
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'bootstrap-4-framework',
-  templateUrl: './bootstrap4-framework.component.html',
-  styleUrls: ['./bootstrap4-framework.component.scss'],
+    // tslint:disable-next-line:component-selector
+    selector: 'bootstrap-4-framework',
+    templateUrl: './bootstrap4-framework.component.html',
+    styleUrls: ['./bootstrap4-framework.component.scss'],
+    standalone: false
 })
 export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
   frameworkInitialized = false;

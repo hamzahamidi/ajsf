@@ -19,12 +19,13 @@ export interface CorpusResult {
 }
 
 @Component({
-  template: `
+    template: `
     <json-schema-form
       [form]="form"
       [framework]="framework"
       (isValid)="valid = $event"
     ></json-schema-form>`,
+    standalone: false
 })
 class CorpusHostComponent {
   form: any;

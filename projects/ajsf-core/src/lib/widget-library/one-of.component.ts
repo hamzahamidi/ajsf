@@ -6,9 +6,10 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 // TODO: Add this control
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'one-of-widget',
-  template: ``,
+    // tslint:disable-next-line:component-selector
+    selector: 'one-of-widget',
+    template: ``,
+    standalone: false
 })
 export class OneOfComponent implements OnInit {
   formControl: AbstractControl;

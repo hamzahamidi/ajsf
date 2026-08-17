@@ -6,9 +6,10 @@ import {
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'select-framework-widget',
-  template: `<div #widgetContainer></div>`,
+    // tslint:disable-next-line:component-selector
+    selector: 'select-framework-widget',
+    template: `<div #widgetContainer></div>`,
+    standalone: false
 })
 export class SelectFrameworkComponent implements OnChanges, OnInit {
   newComponent: ComponentRef<any> = null;

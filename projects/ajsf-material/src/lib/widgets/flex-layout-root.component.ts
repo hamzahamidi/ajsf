@@ -3,9 +3,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'flex-layout-root-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'flex-layout-root-widget',
+    template: `
     <div *ngFor="let layoutNode of layout; let i = index"
       [class.form-flex-item]="isFlexItem"
       [style.flex-grow]="getFlexAttribute(layoutNode, 'flex-grow')"
@@ -20,7 +20,8 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [layoutIndex]="(layoutIndex || []).concat(i)"
         [layoutNode]="layoutNode"></select-framework-widget>
     </div>`,
-  changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class FlexLayoutRootComponent {
   @Input() dataIndex: number[];

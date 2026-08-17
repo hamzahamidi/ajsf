@@ -5,9 +5,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'select-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'select-widget',
+    template: `
     <div
       [class]="options?.htmlClass || ''">
       <label *ngIf="options?.title"
@@ -63,6 +63,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         </ng-template>
       </select>
     </div>`,
+    standalone: false
 })
 export class SelectComponent implements OnInit {
   formControl: AbstractControl;

@@ -5,9 +5,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
 // TODO: Add this control
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-file-widget',
-  template: ``,
+    // tslint:disable-next-line:component-selector
+    selector: 'material-file-widget',
+    template: ``,
+    standalone: false
 })
 export class MaterialFileComponent implements OnInit {
   formControl: AbstractControl;

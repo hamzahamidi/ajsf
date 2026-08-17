@@ -6,7 +6,7 @@ Notes for AI coding agents working in this repository. Humans may find the traps
 
 ## Environment
 
-The repository targets **Angular 18.2 on Node 20.19.0** (`.nvmrc`) with TypeScript 5.4.
+The repository targets **Angular 19.2 on Node 20.19.0** (`.nvmrc`) with TypeScript 5.8.
 Read the version out of `.nvmrc` rather than typing it: it moves with each
 Angular major, and an older Node fails the build with a CLI version check
 rather than anything that points at the real cause.

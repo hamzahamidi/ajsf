@@ -3,9 +3,9 @@ import { JsonSchemaFormService } from '@ajsf/core';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-add-reference-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-add-reference-widget',
+    template: `
     <section [class]="options?.htmlClass || ''" align="end">
       <button mat-raised-button *ngIf="showAddButton"
         [color]="options?.color || 'accent'"
@@ -15,7 +15,8 @@ import { JsonSchemaFormService } from '@ajsf/core';
         <span *ngIf="options?.title" [innerHTML]="buttonText"></span>
       </button>
     </section>`,
-  changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class MaterialAddReferenceComponent implements OnInit {
   options: any;
