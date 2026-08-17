@@ -1416,11 +1416,11 @@ describe('JsonSchemaFormService', () => {
 
   // ---------------------------------------------------------------------------
   describe('buildSchemaFromData and buildSchemaFromLayout', () => {
-    it('infers a draft 6 schema from the internal formValues', () => {
+    it('infers a draft 7 schema from the internal formValues', () => {
       jsf.formValues = { a: 'x', n: 3 };
       jsf.buildSchemaFromData();
       expect(jsf.schema).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: { a: { type: 'string' }, n: { type: 'number' } },
       });
@@ -1463,5 +1463,25 @@ describe('JsonSchemaFormService', () => {
       jsf.setTpldata();
       expect(jsf.tpldata).toEqual({});
     });
+  });
+});
+
+describe('JsonSchemaFormService format validation', () => {
+  // Formats left ajv core in version 8. Without ajv-formats every 'format'
+  // keyword is silently ignored, which weakens validation with nothing failing.
+  let jsf: JsonSchemaFormService;
+
+  beforeEach(() => { jsf = new JsonSchemaFormService(); });
+
+  it('still rejects a value that does not match its format', () => {
+    const validate = jsf.ajv.compile({ type: 'string', format: 'email' });
+    expect(validate('not-an-email')).toBe(false);
+    expect(validate('a@b.com')).toBe(true);
+  });
+
+  it('validates date-time as well', () => {
+    const validate = jsf.ajv.compile({ type: 'string', format: 'date-time' });
+    expect(validate('nope')).toBe(false);
+    expect(validate('2026-08-17T10:00:00Z')).toBe(true);
   });
 });

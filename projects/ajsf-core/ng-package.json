@@ -5,6 +5,7 @@
     "entryFile": "src/public_api.ts"
   },
   "allowedNonPeerDependencies": [
-    "ajv"
+    "ajv",
+    "ajv-formats"
   ]
 }

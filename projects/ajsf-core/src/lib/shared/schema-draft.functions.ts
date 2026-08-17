@@ -18,6 +18,9 @@ import { cloneDeep } from './clone-deep.function';
  */
 export interface OptionObject { changed?: boolean; draft?: number; }
 
+/** Used when a schema declares no '$schema' and the caller names no draft. */
+export const DEFAULT_DRAFT = 7;
+
 /**
  * 'detectDraft' function
  *
@@ -70,11 +73,9 @@ function convertDraft1And2Keywords(newSchema: any, draft: number, changed: boole
       newSchema.exclusiveMinimum = newSchema.minimum;
       delete newSchema.minimum;
       changed = true;
-      if (!draft) { draft = 2; }
     } else if (typeof newSchema.minimumCanEqual === 'boolean') {
       delete newSchema.minimumCanEqual;
       changed = true;
-      if (!draft) { draft = 2; }
     }
 
     // Convert v1-v2 boolean 'maximumCanEqual' to 'exclusiveMaximum'
@@ -82,11 +83,9 @@ function convertDraft1And2Keywords(newSchema: any, draft: number, changed: boole
       newSchema.exclusiveMaximum = newSchema.maximum;
       delete newSchema.maximum;
       changed = true;
-      if (!draft) { draft = 2; }
     } else if (typeof newSchema.maximumCanEqual === 'boolean') {
       delete newSchema.maximumCanEqual;
       changed = true;
-      if (!draft) { draft = 2; }
     }
 
   return { newSchema, draft, changed };
@@ -181,14 +180,15 @@ function collectRequiredKeys(newSchema: any, draft: number, changed: boolean): D
         new Set(newSchema.required) : new Set();
 
       // Convert v1-v2 boolean 'optional' properties to 'required' array
-      if (draft === 1 || draft === 2 ||
-        Object.keys(properties).some(key => properties[key].optional === true)
-      ) {
+      // Draft 1 and 2 mark optional properties rather than required ones. This is
+      // gated on the declared draft alone: inferring it from a single
+      // 'optional: true' made every other property required, which no schema asked
+      // for.
+      if (draft === 1 || draft === 2) {
         Object.keys(properties)
           .filter(key => properties[key].optional !== true)
           .forEach(key => requiredKeys.add(key));
         changed = true;
-        if (!draft) { draft = 2; }
       }
 
       // Convert v3 boolean 'required' properties to 'required' array
@@ -213,7 +213,6 @@ function collectRequiredKeys(newSchema: any, draft: number, changed: boolean): D
           );
         newSchema.dependencies = dependencies;
         changed = true;
-        if (!draft) { draft = 2; }
       }
 
       newSchema.properties = properties;
@@ -223,7 +222,6 @@ function collectRequiredKeys(newSchema: any, draft: number, changed: boolean): D
     if (typeof newSchema.optional === 'boolean') {
       delete newSchema.optional;
       changed = true;
-      if (!draft) { draft = 2; }
     }
 
     // Revove v1-v2 'requires' key
@@ -263,10 +261,10 @@ function normaliseIdentifiers(newSchema: any, draft: number, changed: boolean): 
     if (typeof newSchema.$schema === 'string' &&
       /http\:\/\/json\-schema\.org\/draft\-0[1-4]\/schema\#/.test(newSchema.$schema)
     ) {
-      newSchema.$schema = 'http://json-schema.org/draft-06/schema#';
+      newSchema.$schema = 'http://json-schema.org/draft-07/schema#';
       changed = true;
     } else if (changed && typeof newSchema.$schema === 'string') {
-      const addToDescription = 'Converted to draft 6 from ' + newSchema.$schema;
+      const addToDescription = 'Converted to draft 7 from ' + newSchema.$schema;
       if (typeof newSchema.description === 'string' && newSchema.description.length) {
         newSchema.description += '\n' + addToDescription;
       } else {
@@ -374,7 +372,7 @@ function convertSubSchemas(newSchema: any, draft: number, changed: boolean): any
 }
 
 export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
-  let draft: number = options.draft || null;
+  let draft: number = options.draft || DEFAULT_DRAFT;
   const changed: boolean = options.changed || false;
 
   if (typeof schema !== 'object') { return schema; }

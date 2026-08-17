@@ -16,7 +16,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { convertSchemaToDraft6 } from './shared/schema-draft.functions';
+import { convertSchemaToDraft6, DEFAULT_DRAFT } from './shared/schema-draft.functions';
 import { forEach, hasOwn } from './shared/utility.functions';
 import { FrameworkLibraryService } from './framework-library/framework-library.service';
 import {
@@ -121,6 +121,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   @Input() ngModel: any; // Alternate input for Angular forms
 
   @Input() language: string; // Language
+  // The draft to assume when a schema declares no '$schema'. A declared
+  // '$schema' always wins over this.
+  @Input() defaultDraft: number = DEFAULT_DRAFT;
 
   // Development inputs, for testing and debugging
   @Input() loadExternalAssets: boolean; // Load external framework assets?
@@ -488,7 +491,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
       // If needed, update JSON Schema to draft 6 format, including
       // draft 3 (JSON Form style) and draft 4 (Angular Schema Form style)
-      this.jsf.schema = convertSchemaToDraft6(this.jsf.schema);
+      this.jsf.schema = convertSchemaToDraft6(this.jsf.schema, { draft: this.defaultDraft });
 
       // Initialize ajv and compile schema
       this.jsf.compileAjvSchema();

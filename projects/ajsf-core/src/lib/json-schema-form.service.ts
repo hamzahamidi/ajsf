@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { cloneDeep } from './shared/clone-deep.function';
 import Ajv from 'ajv';
 import jsonDraft6 from 'ajv/dist/refs/json-schema-draft-06.json';
+import addFormats from 'ajv-formats';
 import {
   buildFormGroup,
   buildFormGroupTemplate,
@@ -62,10 +63,11 @@ export class JsonSchemaFormService {
     // ajv 8 removed jsonPointers, whose behaviour is now the default, and
     // unknownFormats, which strict mode subsumes. Strict would reject 58 of the
     // 80 bundled examples, mostly for the keywords this library hoists into
-    // schemas itself, so it stays off.
+    // schemas itself, so it stays off. Formats left ajv core in 8, so without
+    // ajv-formats below every 'format' keyword would be silently ignored.
     strict: false,
   };
-  ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
+  ajv: any = addFormats(new Ajv(this.ajvOptions)); // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
 
   formValues: any = {}; // Internal form data (may not have correct types)

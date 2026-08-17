@@ -97,7 +97,7 @@ describe('convertSchemaToDraft6', () => {
         $schema: 'http://json-schema.org/draft-03/schema#',
         properties: { first: { type: 'string', required: true } },
       });
-      expect(result.$schema).toEqual('http://json-schema.org/draft-06/schema#');
+      expect(result.$schema).toEqual('http://json-schema.org/draft-07/schema#');
     });
 
     it('should upgrade a draft 4 $schema when the schema changed', () => {
@@ -106,7 +106,7 @@ describe('convertSchemaToDraft6', () => {
         type: 'number', minimum: 0, exclusiveMinimum: true,
       });
       expect(result).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'number',
         exclusiveMinimum: 0,
       });
@@ -116,7 +116,7 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({
         $schema: 'http://json-schema.org/draft-04/schema#', type: 'string',
       });
-      expect(result.$schema).toEqual('http://json-schema.org/draft-06/schema#');
+      expect(result.$schema).toEqual('http://json-schema.org/draft-07/schema#');
     });
 
     it('should move an unrecognised $schema into the description when changed', () => {
@@ -125,7 +125,7 @@ describe('convertSchemaToDraft6', () => {
       });
       expect(result).toEqual({
         multipleOf: 5,
-        description: 'Converted to draft 6 from http://json-schema.org/draft-07/schema#',
+        description: 'Converted to draft 7 from http://json-schema.org/draft-07/schema#',
       });
     });
 
@@ -133,7 +133,7 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({
         $schema: 'urn:custom', description: 'Hello', divisibleBy: 2,
       });
-      expect(result.description).toEqual('Hello\nConverted to draft 6 from urn:custom');
+      expect(result.description).toEqual('Hello\nConverted to draft 7 from urn:custom');
       expect(result.$schema).toBeUndefined();
     });
 
@@ -141,7 +141,7 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({
         $schema: 'urn:custom', description: '', divisibleBy: 2,
       });
-      expect(result.description).toEqual('Converted to draft 6 from urn:custom');
+      expect(result.description).toEqual('Converted to draft 7 from urn:custom');
     });
 
     it('should leave an unrecognised $schema alone when nothing changed', () => {
@@ -315,15 +315,23 @@ describe('convertSchemaToDraft6', () => {
     });
 
     it('should convert boolean optional properties into a required array', () => {
-      expect(convertSchemaToDraft6({ properties: { a: { optional: true }, b: {} } }))
-        .toEqual({ properties: { a: {}, b: {} }, required: ['b'] } as any);
+      expect(convertSchemaToDraft6(
+        { properties: { a: { optional: true }, b: {} } }, { draft: 2 }
+      )).toEqual({ properties: { a: {}, b: {} }, required: ['b'] } as any);
     });
 
-    it('should treat every property as required once a v2 key set the draft', () => {
+    it('ignores optional when the draft is not 1 or 2', () => {
+      expect(convertSchemaToDraft6({ properties: { a: { optional: true }, b: {} } }))
+        .toEqual({ properties: { a: {}, b: {} } } as any);
+    });
+
+    it('no longer infers draft 2 from a v2 keyword', () => {
+      // A single legacy keyword used to set the draft, which then made every
+      // other property required. Nothing in the schema asked for that.
       expect(convertSchemaToDraft6({
         minimumCanEqual: true,
         properties: { a: { type: 'string' } },
-      })).toEqual({ properties: { a: { type: 'string' } }, required: ['a'] } as any);
+      })).toEqual({ properties: { a: { type: 'string' } } } as any);
     });
 
     it('should convert a string requires into a dependencies entry', () => {
@@ -645,7 +653,7 @@ describe('convertSchemaToDraft6', () => {
       );
       expect(result).toEqual({
         title: 'T',
-        description: 'Converted to draft 6 from http://example.com/custom#',
+        description: 'Converted to draft 7 from http://example.com/custom#',
       });
     });
 
@@ -679,7 +687,7 @@ describe('convertSchemaToDraft6', () => {
         $schema: 'http://json-schema.org/draft-02/schema#',
         properties: { a: {} },
       })).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         properties: { a: {} },
         required: ['a'],
       } as any);
@@ -763,7 +771,7 @@ describe('convertSchemaToDraft6', () => {
 
     it('should convert every draft 3 construct at once', () => {
       expect(convertSchemaToDraft6(draft3Schema)).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         $id: 'http://example.com/person-CONVERTED-TO-DRAFT-06#',
         type: 'object',
         properties: {
