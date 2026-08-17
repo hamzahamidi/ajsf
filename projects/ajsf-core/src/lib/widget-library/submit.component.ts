@@ -5,9 +5,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'submit-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'submit-widget',
+    template: `
     <div
       [class]="options?.htmlClass || ''">
       <input
@@ -22,6 +22,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [value]="controlValue"
         (click)="updateValue($event)">
     </div>`,
+    standalone: false
 })
 export class SubmitComponent implements OnInit {
   formControl: AbstractControl;

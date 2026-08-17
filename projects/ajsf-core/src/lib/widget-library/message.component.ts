@@ -3,12 +3,13 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'message-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'message-widget',
+    template: `
     <span *ngIf="message"
       [class]="options?.labelHtmlClass || ''"
       [innerHTML]="message"></span>`,
+    standalone: false
 })
 export class MessageComponent implements OnInit {
   options: any;

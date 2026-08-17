@@ -2,10 +2,11 @@ import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/c
 import {cloneDeep, isDefined, JsonSchemaFormService} from '@ajsf/core';
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-design-framework',
-  templateUrl: './material-design-framework.component.html',
-  styleUrls: ['./material-design-framework.component.scss'],
+    // tslint:disable-next-line:component-selector
+    selector: 'material-design-framework',
+    templateUrl: './material-design-framework.component.html',
+    styleUrls: ['./material-design-framework.component.scss'],
+    standalone: false
 })
 export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
   frameworkInitialized = false;

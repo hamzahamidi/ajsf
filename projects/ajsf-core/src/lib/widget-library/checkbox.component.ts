@@ -4,9 +4,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'checkbox-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'checkbox-widget',
+    template: `
     <label
       [attr.for]="'control' + layoutNode?._id"
       [class]="options?.itemLabelHtmlClass || ''">
@@ -37,6 +37,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [style.display]="options?.notitle ? 'none' : ''"
         [innerHTML]="options?.title"></span>
     </label>`,
+    standalone: false
 })
 export class CheckboxComponent implements OnInit {
   formControl: AbstractControl;

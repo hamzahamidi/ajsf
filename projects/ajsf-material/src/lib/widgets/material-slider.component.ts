@@ -3,9 +3,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-slider-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-slider-widget',
+    template: `
     <mat-slider discrete *ngIf="boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [id]="'control' + layoutNode?._id"
@@ -26,6 +26,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
     <mat-error *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></mat-error>`,
     styles: [` mat-error { font-size: 75%; } `],
+    standalone: false
 })
 export class MaterialSliderComponent implements OnInit {
   formControl: AbstractControl;

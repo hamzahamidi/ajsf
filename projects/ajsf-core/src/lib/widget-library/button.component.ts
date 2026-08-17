@@ -4,9 +4,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'button-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'button-widget',
+    template: `
     <div
       [class]="options?.htmlClass || ''">
       <button
@@ -23,6 +23,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [innerHTML]="options?.title"></span>
       </button>
     </div>`,
+    standalone: false
 })
 export class ButtonComponent implements OnInit {
   formControl: AbstractControl;

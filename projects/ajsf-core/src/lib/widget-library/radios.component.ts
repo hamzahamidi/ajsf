@@ -5,9 +5,9 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'radios-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'radios-widget',
+    template: `
     <label *ngIf="options?.title"
       [attr.for]="'control' + layoutNode?._id"
       [class]="options?.labelHtmlClass || ''"
@@ -63,6 +63,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         </label>
       </div>
     </div>`,
+    standalone: false
 })
 export class RadiosComponent implements OnInit {
   formControl: AbstractControl;

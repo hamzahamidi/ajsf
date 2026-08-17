@@ -12,10 +12,11 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
  *
  */
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'bootstrap-5-framework',
-  templateUrl: './bootstrap5-framework.component.html',
-  styleUrls: ['./bootstrap5-framework.component.scss'],
+    // tslint:disable-next-line:component-selector
+    selector: 'bootstrap-5-framework',
+    templateUrl: './bootstrap5-framework.component.html',
+    styleUrls: ['./bootstrap5-framework.component.scss'],
+    standalone: false
 })
 export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   frameworkInitialized = false;

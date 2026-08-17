@@ -4,9 +4,9 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-radios-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-radios-widget',
+    template: `
     <div>
       <div *ngIf="options?.title">
         <label
@@ -47,12 +47,13 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
       <mat-error *ngIf="options?.showErrors && options?.errorMessage"
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>`,
-  styles: [`
+    styles: [`
     /* Element selectors, not internal classes: both still exist under MDC. */
     mat-radio-group { display: inline-flex; }
     mat-radio-button { margin: 2px; }
     mat-error { font-size: 75%; }
-  `]
+  `],
+    standalone: false
 })
 export class MaterialRadiosComponent implements OnInit {
   formControl: AbstractControl;

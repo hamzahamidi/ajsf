@@ -3,9 +3,9 @@ import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-checkbox-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-checkbox-widget',
+    template: `
     <mat-checkbox *ngIf="boundControl && !showSlideToggle"
       [formControl]="formControl"
       align="left"
@@ -64,10 +64,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
     </mat-slide-toggle>
     <mat-error *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></mat-error>`,
-  styles: [`
+    styles: [`
     .checkbox-name { white-space: nowrap; }
     mat-error { font-size: 75%; }
   `],
+    standalone: false
 })
 export class MaterialCheckboxComponent implements OnInit {
   formControl: AbstractControl;

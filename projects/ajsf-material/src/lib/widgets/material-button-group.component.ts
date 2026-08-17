@@ -4,9 +4,9 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 
 @Component({
-  // tslint:disable-next-line:component-selector
-  selector: 'material-button-group-widget',
-  template: `
+    // tslint:disable-next-line:component-selector
+    selector: 'material-button-group-widget',
+    template: `
     <div>
       <div *ngIf="options?.title">
         <label
@@ -34,6 +34,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
         [innerHTML]="options?.errorMessage"></mat-error>
     </div>`,
     styles: [` mat-error { font-size: 75%; } `],
+    standalone: false
 })
 export class MaterialButtonGroupComponent implements OnInit {
   formControl: AbstractControl;
