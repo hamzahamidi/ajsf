@@ -1625,4 +1625,36 @@ describe('buildLayout, tuple slots versus list items', () => {
     const slots = items.filter(item => item.arrayItem && item.type !== '$ref');
     slots.forEach(slot => expect(slot.removable).toBe(false));
   });
+
+  it('types a slot past the tuple as a removable list item', () => {
+    const result: any = buildLayout(
+      makeJsf({
+        schema: tupleSchema,
+        // A third slot on a two item tuple sits in the additionalItems range.
+        layout: [{ key: 'pair', type: 'array', items: ['/pair/0', '/pair/1', '/pair/2'] }],
+      }),
+      widgetLibrary
+    );
+    const slots: any[] = result[0].items
+      .filter((item: any) => item.arrayItem && item.type !== '$ref');
+    const past = slots.filter((slot: any) => slot.arrayItemType === 'list');
+    expect(past.length).toBe(1);
+    expect(past[0].removable).toBe(true);
+  });
+
+  it('leaves a slot alone when the array is not removable', () => {
+    const result: any = buildLayout(
+      makeJsf({
+        schema: tupleSchema,
+        layout: [{
+          key: 'pair', type: 'array', removable: false,
+          items: ['/pair/0', '/pair/1', '/pair/2'],
+        }],
+      }),
+      widgetLibrary
+    );
+    const slots: any[] = result[0].items
+      .filter((item: any) => item.arrayItem && item.type !== '$ref');
+    slots.forEach((slot: any) => expect(slot.removable).toBe(false));
+  });
 });

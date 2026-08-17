@@ -331,10 +331,10 @@ export function buildLayout(jsf, widgetLibrary) {
               // list item once it sits past the tuple, and a tuple position cannot
               // be removed: the framework components read arrayItemType === 'list'
               // to decide whether to render the remove control.
-              const slot = hasOwn(subItem, 'dataPointer') ?
-                Number(subItem.dataPointer.slice(
-                  subItem.dataPointer.lastIndexOf('/') + 1
-                )) : NaN;
+              // String() rather than a guard: a sub item with no dataPointer
+              // reaches this branch too, and 'undefined' gives NaN, which is the
+              // answer a missing pointer should produce.
+              const slot = Number(String(subItem.dataPointer).split('/').pop());
               const tupleSlot = Number.isInteger(slot) &&
                 slot < newNode.options.tupleItems;
               subItem.arrayItemType = tupleSlot ? 'tuple' : 'list';
