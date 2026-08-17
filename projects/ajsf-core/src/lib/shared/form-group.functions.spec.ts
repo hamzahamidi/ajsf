@@ -433,15 +433,26 @@ describe('form-group.functions', () => {
       expect(result.controls.length).toBe(2);
     });
 
-    it('skips filling the array when the list item pointer is recursive', () => {
+    it('fills a recursive array from the supplied data', () => {
+      // The guard here never admitted a recursive array, so every supplied item
+      // was dropped and patchValue could not add them back to an empty FormArray.
       const jsf = makeJsf(
         { type: 'array', items: { type: 'string' } },
         { dataRecursiveRefMap: new Map<string, string>([['/-', '']]) }
       );
       const result: any = buildFormGroupTemplate(jsf, ['a', 'b']);
 
-      expect(result.controls).toEqual([]);
+      expect(result.controls.length).toBe(2);
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['']);
+    });
+
+    it('still creates no controls for a recursive array with no data', () => {
+      const jsf = makeJsf(
+        { type: 'array', items: { type: 'string' } },
+        { dataRecursiveRefMap: new Map<string, string>([['/-', '']]) }
+      );
+
+      expect(buildFormGroupTemplate(jsf, null).controls).toEqual([]);
     });
 
     it('throws when additionalItems is given without items', () => {
