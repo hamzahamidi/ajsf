@@ -1019,20 +1019,20 @@ describe('JSON Schema functions', () => {
       )).toEqual({ pattern: ['^a'], format: ['email'], minLength: [1], maxLength: [5] });
     });
 
-    it('collects the number validators with an exclusive flag and the type itself', () => {
+    it('collects the number validators and the type itself', () => {
       expect(getControlValidators({ type: 'number', minimum: 0, maximum: 10, multipleOf: 2 }))
-        .toEqual({ minimum: [0, false], maximum: [10, false], multipleOf: [2], type: ['number'] });
+        .toEqual({ minimum: [0], maximum: [10], multipleOf: [2], type: ['number'] });
     });
 
     it('marks the limits exclusive when the exclusive keywords are true', () => {
       expect(getControlValidators({
         type: 'number', minimum: 0, exclusiveMinimum: true, maximum: 9, exclusiveMaximum: true,
-      })).toEqual({ minimum: [0, true], maximum: [9, true], type: ['number'] });
+      })).toEqual({ exclusiveMinimum: [0], exclusiveMaximum: [9], type: ['number'] });
     });
 
     it('handles the integer type the same way as number', () => {
       expect(getControlValidators({ type: 'integer', minimum: 1 }))
-        .toEqual({ minimum: [1, false], type: ['integer'] });
+        .toEqual({ minimum: [1], type: ['integer'] });
     });
 
     it('collects the object validators', () => {
@@ -1489,5 +1489,38 @@ describe('JSON Schema functions', () => {
       // BUG: schema.type is read with no guard.
       expect(() => fixRequiredArrayProperties(null)).toThrow();
     });
+  });
+});
+
+describe('getControlValidators, exclusive bounds and nullable types', () => {
+  it('emits an exclusiveMinimum validator for the draft 6 numeric form', () => {
+    expect(getControlValidators({ type: 'number', exclusiveMinimum: 5 }))
+      .toEqual({ exclusiveMinimum: [5], type: ['number'] } as any);
+    expect(getControlValidators({ type: 'number', exclusiveMaximum: 9 }))
+      .toEqual({ exclusiveMaximum: [9], type: ['number'] } as any);
+  });
+
+  it('emits an exclusive validator for the draft 4 boolean form', () => {
+    // The flag used to be passed as a second argument JsonValidators.minimum does
+    // not take, so the bound was enforced inclusively.
+    expect(getControlValidators({ type: 'number', minimum: 5, exclusiveMinimum: true }))
+      .toEqual({ exclusiveMinimum: [5], type: ['number'] } as any);
+  });
+
+  it('still emits an inclusive bound when nothing says otherwise', () => {
+    expect(getControlValidators({ type: 'number', minimum: 5 }))
+      .toEqual({ minimum: [5], type: ['number'] } as any);
+  });
+
+  it('keeps the validators of a nullable type', () => {
+    expect(getControlValidators({ type: ['string', 'null'], minLength: 2 }))
+      .toEqual({ minLength: [2] } as any);
+    expect(getControlValidators({ type: ['number', 'null'], minimum: 1 }))
+      .toEqual({ minimum: [1], type: [['number', 'null']] } as any);
+  });
+
+  it('is unchanged for a plain single type', () => {
+    expect(getControlValidators({ type: 'string', minLength: 2 }))
+      .toEqual({ minLength: [2] } as any);
   });
 });
