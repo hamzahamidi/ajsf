@@ -519,8 +519,12 @@ export function getTitleMapFromOneOf(
 export function getControlValidators(schema) {
   if (!isObject(schema)) { return null; }
   const validators: any = { };
-  if (hasOwn(schema, 'type')) {
-    switch (schema.type) {
+  // A nullable type is an array, for example ['string', 'null'], which matched no
+  // case at all and so produced no validators. Each named type contributes its own.
+  const schemaTypes: any[] = hasOwn(schema, 'type') ?
+    (isArray(schema.type) ? schema.type : [schema.type]) : [];
+  for (const schemaType of schemaTypes) {
+    switch (schemaType) {
       case 'string':
         forEach(['pattern', 'format', 'minLength', 'maxLength'], (prop) => {
           if (hasOwn(schema, prop)) { validators[prop] = [schema[prop]]; }
@@ -530,9 +534,20 @@ export function getControlValidators(schema) {
         forEach(['Minimum', 'Maximum'], (ucLimit) => {
           const eLimit = 'exclusive' + ucLimit;
           const limit = ucLimit.toLowerCase();
+          // The exclusive flag used to be passed as a second argument, which
+          // JsonValidators.minimum does not take, so it was dropped and the bound
+          // was enforced inclusively. Emit the exclusive validator by name instead.
           if (hasOwn(schema, limit)) {
-            const exclusive = hasOwn(schema, eLimit) && schema[eLimit] === true;
-            validators[limit] = [schema[limit], exclusive];
+            if (hasOwn(schema, eLimit) && schema[eLimit] === true) {
+              validators[eLimit] = [schema[limit]];
+            } else {
+              validators[limit] = [schema[limit]];
+            }
+          }
+          // Draft 6 onward writes the bound itself into exclusiveMinimum, and with
+          // no 'minimum' alongside it there was no validator at all.
+          if (isNumber(schema[eLimit], 'strict')) {
+            validators[eLimit] = [schema[eLimit]];
           }
         });
         forEach(['multipleOf', 'type'], (prop) => {
@@ -549,7 +564,7 @@ export function getControlValidators(schema) {
           if (hasOwn(schema, prop)) { validators[prop] = [schema[prop]]; }
         });
       break;
-    }
+      }
   }
   if (hasOwn(schema, 'enum')) { validators.enum = [schema.enum]; }
   return validators;

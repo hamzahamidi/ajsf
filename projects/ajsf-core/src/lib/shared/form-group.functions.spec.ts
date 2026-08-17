@@ -127,14 +127,14 @@ describe('form-group.functions', () => {
       });
     });
 
-    it('collects numeric validators including the exclusive flag', () => {
+    it('collects numeric validators, naming the exclusive bound', () => {
       const result: any = buildFormGroupTemplate(makeJsf({
         type: 'integer', minimum: 1, exclusiveMinimum: true, maximum: 9, multipleOf: 2,
       }));
 
       expect(result.validators).toEqual({
-        minimum: [1, true],
-        maximum: [9, false],
+        exclusiveMinimum: [1],
+        maximum: [9],
         multipleOf: [2],
         type: ['integer'],
       });
