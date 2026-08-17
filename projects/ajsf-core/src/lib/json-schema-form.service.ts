@@ -3,7 +3,7 @@ import { AbstractControl, UntypedFormArray, UntypedFormGroup } from '@angular/fo
 import { Subject } from 'rxjs';
 import { cloneDeep } from './shared/clone-deep.function';
 import Ajv from 'ajv';
-import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
+import jsonDraft6 from 'ajv/dist/refs/json-schema-draft-06.json';
 import {
   buildFormGroup,
   buildFormGroupTemplate,
@@ -59,8 +59,11 @@ export class JsonSchemaFormService {
 
   ajvOptions: any = {
     allErrors: true,
-    jsonPointers: true,
-    unknownFormats: 'ignore'
+    // ajv 8 removed jsonPointers, whose behaviour is now the default, and
+    // unknownFormats, which strict mode subsumes. Strict would reject 58 of the
+    // 80 bundled examples, mostly for the keywords this library hoists into
+    // schemas itself, so it stays off.
+    strict: false,
   };
   ajv: any = new Ajv(this.ajvOptions); // AJV: Another JSON Schema Validator
   validateFormData: any = null; // Compiled AJV function to validate active form's schema
@@ -251,10 +254,10 @@ export class JsonSchemaFormService {
     const compileErrors = errors => {
       const compiledErrors = {};
       (errors || []).forEach(error => {
-        if (!compiledErrors[error.dataPath]) {
-          compiledErrors[error.dataPath] = [];
+        if (!compiledErrors[error.instancePath]) {
+          compiledErrors[error.instancePath] = [];
         }
-        compiledErrors[error.dataPath].push(error.message);
+        compiledErrors[error.instancePath].push(error.message);
       });
       return compiledErrors;
     };

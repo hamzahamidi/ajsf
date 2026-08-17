@@ -411,7 +411,7 @@ describe('JsonSchemaFormService', () => {
       expect(jsf.ajvErrors).toBeNull();
     });
 
-    it('collects ajv errors keyed by dataPath when the data is invalid', () => {
+    it('collects ajv errors keyed by instance path when the data is invalid', () => {
       buildForm(personSchema, null, { name: 'Bob' });
       jsf.validateData({ name: 'x', age: 1, tags: [] });
 
@@ -420,7 +420,10 @@ describe('JsonSchemaFormService', () => {
       expect(Object.keys(jsf.validationErrors)).toEqual(['/name']);
       expect(jsf.validationErrors['/name'].length).toEqual(1);
       expect(Array.isArray(jsf.ajvErrors)).toBe(true);
-      expect(jsf.ajvErrors[0].dataPath).toEqual('/name');
+      // ajv 8 renamed dataPath to instancePath. Both are JSON pointers, so the
+      // validationErrors keys above are unchanged, but the raw error objects
+      // reach consumers through the validationErrors output.
+      expect(jsf.ajvErrors[0].instancePath).toEqual('/name');
       expect(jsf.ajvErrors[0].keyword).toEqual('minLength');
     });
 

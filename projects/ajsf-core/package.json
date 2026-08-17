@@ -27,7 +27,7 @@
   "funding": "https://github.com/sponsors/hamzahamidi",
   "private": false,
   "dependencies": {
-    "ajv": "^6.10.0",
+    "ajv": "^8.20.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
