@@ -73,9 +73,24 @@ it finds. Measured:
 The middle case is the problem. One `optional: true` anywhere makes every other
 property required, and nothing in the schema asked for that.
 
-Replace sniffing with a `defaultDraft` option, defaulting to the newest draft
-supported. `$schema` always wins when present. Sniffing then either goes, or
-survives only behind an explicit opt in for consumers who rely on it today.
+Replace sniffing with a `defaultDraft` option defaulting to **draft 7**, decided
+2026-08-17. `$schema` always wins when present. Sniffing goes entirely rather
+than surviving behind an opt in.
+
+Draft 7 is a literal rather than "the newest draft supported", and that is the
+load bearing part. If the default tracked the newest engine, adding the 2019-09
+and 2020-12 engines would silently reinterpret every schema that declares no
+`$schema`, which is 75 of the 80 examples, and each new engine would become a
+breaking change. Pinned to a literal, adding an engine is additive and can ship
+at a minor.
+
+It also costs nothing to schedule: ajv 6.12.6 already validates draft 7
+natively, so `defaultDraft` does not have to wait for the ajv 8 move.
+
+The `required: true` collection is not inference and stays, ungated. It converts
+a draft 3 property keyword into the array shape the form builder needs, three of
+the 80 examples use it, and removing it would loosen forms silently rather than
+error.
 
 This matches how JSON Schema itself reads an absent `$schema`: the newest
 version the tool supports, not a guess from the contents.
