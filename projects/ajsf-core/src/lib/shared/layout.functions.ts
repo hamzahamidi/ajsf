@@ -328,7 +328,9 @@ export function buildLayout(jsf, widgetLibrary) {
               widget: widgetLibrary.getWidget('section'),
             });
           }
-        } else {
+        // Every statement below reads items[0], so an empty list has nothing to
+        // do here. Falling through threw and took the whole form with it.
+        } else if (newNode.items.length) {
           // TODO: Fix to hndle multiple items
           newNode.items[0].arrayItem = true;
           if (!newNode.items[0].dataPointer) {
