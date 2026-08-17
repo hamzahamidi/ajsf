@@ -21,7 +21,7 @@ describe('corpus loader', () => {
   });
 
   it('covers the schemas the demo can actually load as JSON', () => {
-    // 84 files on disk, 4 of which embed JavaScript and are eval'd by the demo.
-    expect(loadCorpus().length).toEqual(80);
+    // 78 files on disk, 4 of which embed JavaScript and are eval'd by the demo.
+    expect(loadCorpus().length).toEqual(74);
   });
 });

@@ -99,7 +99,7 @@ export function buildSchemaFromData(
   };
   const buildSubSchema = (value) =>
     buildSchemaFromData(value, requireAllFields, false);
-  if (isRoot) { newSchema.$schema = 'http://json-schema.org/draft-06/schema#'; }
+  if (isRoot) { newSchema.$schema = 'http://json-schema.org/draft-07/schema#'; }
   newSchema.type = getFieldType(data);
   if (newSchema.type === 'object') {
     newSchema.properties = {};

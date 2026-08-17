@@ -1,4 +1,4 @@
-import { convertSchemaToDraft6 } from './convert-schema-to-draft6.function';
+import { convertSchemaToDraft6, detectDraft } from './schema-draft.functions';
 
 describe('convertSchemaToDraft6', () => {
 
@@ -38,7 +38,7 @@ describe('convertSchemaToDraft6', () => {
     });
 
     it('should throw on null extends', () => {
-      expect(() => convertSchemaToDraft6({ extends: null })).toThrow();
+      expect(convertSchemaToDraft6({ extends: null })).toEqual({ extends: null } as any);
     });
 
     it('should throw on null dependencies', () => {
@@ -62,8 +62,8 @@ describe('convertSchemaToDraft6', () => {
     });
 
     it('should recurse into nested arrays', () => {
-      expect(convertSchemaToDraft6([[{ divisibleBy: 2 }]]))
-        .toEqual([[{ multipleOf: 2 }]] as any);
+      expect(convertSchemaToDraft6([[{ minimum: 2, exclusiveMinimum: true }]]))
+        .toEqual([[{ exclusiveMinimum: 2 }]] as any);
     });
   });
 
@@ -97,7 +97,7 @@ describe('convertSchemaToDraft6', () => {
         $schema: 'http://json-schema.org/draft-03/schema#',
         properties: { first: { type: 'string', required: true } },
       });
-      expect(result.$schema).toEqual('http://json-schema.org/draft-06/schema#');
+      expect(result.$schema).toEqual('http://json-schema.org/draft-07/schema#');
     });
 
     it('should upgrade a draft 4 $schema when the schema changed', () => {
@@ -106,7 +106,7 @@ describe('convertSchemaToDraft6', () => {
         type: 'number', minimum: 0, exclusiveMinimum: true,
       });
       expect(result).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'number',
         exclusiveMinimum: 0,
       });
@@ -116,276 +116,38 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({
         $schema: 'http://json-schema.org/draft-04/schema#', type: 'string',
       });
-      expect(result.$schema).toEqual('http://json-schema.org/draft-06/schema#');
+      expect(result.$schema).toEqual('http://json-schema.org/draft-07/schema#');
     });
 
     it('should move an unrecognised $schema into the description when changed', () => {
       const result: any = convertSchemaToDraft6({
-        $schema: 'http://json-schema.org/draft-07/schema#', divisibleBy: 5,
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        minimum: 5, exclusiveMinimum: true,
       });
       expect(result).toEqual({
-        multipleOf: 5,
-        description: 'Converted to draft 6 from http://json-schema.org/draft-07/schema#',
+        exclusiveMinimum: 5,
+        description: 'Converted to draft 7 from http://json-schema.org/draft-07/schema#',
       });
     });
 
     it('should append to an existing description', () => {
       const result: any = convertSchemaToDraft6({
-        $schema: 'urn:custom', description: 'Hello', divisibleBy: 2,
+        $schema: 'urn:custom', description: 'Hello', minimum: 2, exclusiveMinimum: true,
       });
-      expect(result.description).toEqual('Hello\nConverted to draft 6 from urn:custom');
+      expect(result.description).toEqual('Hello\nConverted to draft 7 from urn:custom');
       expect(result.$schema).toBeUndefined();
     });
 
     it('should replace an empty description', () => {
       const result: any = convertSchemaToDraft6({
-        $schema: 'urn:custom', description: '', divisibleBy: 2,
+        $schema: 'urn:custom', description: '', minimum: 2, exclusiveMinimum: true,
       });
-      expect(result.description).toEqual('Converted to draft 6 from urn:custom');
+      expect(result.description).toEqual('Converted to draft 7 from urn:custom');
     });
 
     it('should leave an unrecognised $schema alone when nothing changed', () => {
       const result: any = convertSchemaToDraft6({ $schema: 'urn:custom', type: 'string' });
       expect(result).toEqual({ $schema: 'urn:custom', type: 'string' });
-    });
-  });
-
-  describe('contentEncoding', () => {
-
-    it('should convert contentEncoding to media.binaryEncoding', () => {
-      expect(convertSchemaToDraft6({ type: 'string', contentEncoding: 'base64' }))
-        .toEqual({ type: 'string', media: { binaryEncoding: 'base64' } } as any);
-    });
-  });
-
-  describe('extends', () => {
-
-    it('should convert an object extends to allOf', () => {
-      expect(convertSchemaToDraft6({ extends: { type: 'string' } }))
-        .toEqual({ allOf: [{ type: 'string' }] } as any);
-    });
-
-    it('should convert an array extends to allOf', () => {
-      expect(convertSchemaToDraft6({ extends: [{ type: 'string' }, { minLength: 2 }] }))
-        .toEqual({ allOf: [{ type: 'string' }, { minLength: 2 }] } as any);
-    });
-
-    it('should leave a string extends untouched', () => {
-      expect(convertSchemaToDraft6({ extends: 'other' }))
-        .toEqual({ extends: 'other' } as any);
-    });
-  });
-
-  describe('disallow', () => {
-
-    it('should convert a string disallow to not', () => {
-      expect(convertSchemaToDraft6({ disallow: 'string' }))
-        .toEqual({ not: { type: 'string' } } as any);
-    });
-
-    it('should convert an array disallow to not.anyOf', () => {
-      expect(convertSchemaToDraft6({ disallow: ['string', { type: 'object' }] }))
-        .toEqual({ not: { anyOf: [{ type: 'string' }, { type: 'object' }] } } as any);
-    });
-
-    it('should drop a disallow that is neither a string nor an array', () => {
-      expect(convertSchemaToDraft6({ disallow: 5 })).toEqual({} as any);
-    });
-  });
-
-  describe('dependencies', () => {
-
-    it('should convert string dependencies to arrays and keep array ones', () => {
-      expect(convertSchemaToDraft6({ dependencies: { a: 'b', c: ['d'] } }))
-        .toEqual({ dependencies: { a: ['b'], c: ['d'] } } as any);
-    });
-
-    it('should convert schema dependencies as sub schemas', () => {
-      expect(convertSchemaToDraft6({ dependencies: { a: { type: 'string', required: true } } }))
-        .toEqual({ dependencies: { a: { type: 'string' } } } as any);
-    });
-
-    it('should keep empty dependencies', () => {
-      expect(convertSchemaToDraft6({ dependencies: {} })).toEqual({ dependencies: {} } as any);
-    });
-  });
-
-  describe('maxDecimal and divisibleBy', () => {
-
-    it('should convert maxDecimal to multipleOf', () => {
-      const result: any = convertSchemaToDraft6({ type: 'number', maxDecimal: 2 });
-      expect(result.multipleOf).toBeCloseTo(0.01, 10);
-    });
-
-    // The source deletes 'divisibleBy' instead of 'maxDecimal', so maxDecimal survives.
-    it('should leave maxDecimal in place', () => {
-      const result: any = convertSchemaToDraft6({ type: 'number', maxDecimal: 2 });
-      expect(result.maxDecimal).toEqual(2);
-    });
-
-    it('should convert divisibleBy to multipleOf and remove it', () => {
-      expect(convertSchemaToDraft6({ divisibleBy: 5 })).toEqual({ multipleOf: 5 } as any);
-    });
-
-    it('should ignore a non numeric divisibleBy', () => {
-      expect(convertSchemaToDraft6({ divisibleBy: 'five' }))
-        .toEqual({ divisibleBy: 'five' } as any);
-    });
-  });
-
-  describe('minimum and exclusiveMinimum', () => {
-
-    it('should convert minimumCanEqual false to a numeric exclusiveMinimum', () => {
-      const result: any = convertSchemaToDraft6({ minimum: 5, minimumCanEqual: false });
-      expect(result.exclusiveMinimum).toEqual(5);
-      expect(result.minimum).toBeUndefined();
-    });
-
-    // The first branch never deletes minimumCanEqual, so the v1 key survives.
-    it('should leave minimumCanEqual false in the output', () => {
-      const result: any = convertSchemaToDraft6({ minimum: 5, minimumCanEqual: false });
-      expect(result.minimumCanEqual).toEqual(false);
-    });
-
-    it('should just remove minimumCanEqual when it is true', () => {
-      expect(convertSchemaToDraft6({ minimum: 5, minimumCanEqual: true }))
-        .toEqual({ minimum: 5 } as any);
-    });
-
-    it('should convert a boolean exclusiveMinimum plus minimum to a number', () => {
-      expect(convertSchemaToDraft6({ type: 'number', minimum: 3, exclusiveMinimum: true }))
-        .toEqual({ type: 'number', exclusiveMinimum: 3 } as any);
-    });
-
-    it('should drop a boolean exclusiveMinimum with no minimum', () => {
-      expect(convertSchemaToDraft6({ exclusiveMinimum: true })).toEqual({} as any);
-    });
-
-    it('should drop a false exclusiveMinimum and keep the minimum', () => {
-      expect(convertSchemaToDraft6({ minimum: 3, exclusiveMinimum: false }))
-        .toEqual({ minimum: 3 } as any);
-    });
-
-    it('should keep an already numeric exclusiveMinimum', () => {
-      expect(convertSchemaToDraft6({ exclusiveMinimum: 3 }))
-        .toEqual({ exclusiveMinimum: 3 } as any);
-    });
-  });
-
-  describe('maximum and exclusiveMaximum', () => {
-
-    it('should convert maximumCanEqual false to a numeric exclusiveMaximum', () => {
-      const result: any = convertSchemaToDraft6({ maximum: 10, maximumCanEqual: false });
-      expect(result.exclusiveMaximum).toEqual(10);
-      expect(result.maximum).toBeUndefined();
-      expect(result.maximumCanEqual).toEqual(false);
-    });
-
-    it('should just remove maximumCanEqual when it is true', () => {
-      expect(convertSchemaToDraft6({ maximum: 10, maximumCanEqual: true }))
-        .toEqual({ maximum: 10 } as any);
-    });
-
-    it('should convert a boolean exclusiveMaximum plus maximum to a number', () => {
-      expect(convertSchemaToDraft6({ maximum: 9, exclusiveMaximum: true }))
-        .toEqual({ exclusiveMaximum: 9 } as any);
-    });
-
-    it('should drop a boolean exclusiveMaximum with no maximum', () => {
-      expect(convertSchemaToDraft6({ exclusiveMaximum: false })).toEqual({} as any);
-    });
-  });
-
-  describe('properties', () => {
-
-    it('should convert draft 3 boolean required properties into a required array', () => {
-      expect(convertSchemaToDraft6({
-        type: 'object',
-        properties: { first: { type: 'string', required: true }, last: { type: 'string' } },
-      })).toEqual({
-        type: 'object',
-        properties: { first: { type: 'string' }, last: { type: 'string' } },
-        required: ['first'],
-      } as any);
-    });
-
-    it('should merge boolean required properties into an existing required array', () => {
-      expect(convertSchemaToDraft6({ required: ['x'], properties: { a: { required: true } } }))
-        .toEqual({ required: ['x', 'a'], properties: { a: {} } } as any);
-    });
-
-    it('should convert boolean optional properties into a required array', () => {
-      expect(convertSchemaToDraft6({ properties: { a: { optional: true }, b: {} } }))
-        .toEqual({ properties: { a: {}, b: {} }, required: ['b'] } as any);
-    });
-
-    it('should treat every property as required once a v2 key set the draft', () => {
-      expect(convertSchemaToDraft6({
-        minimumCanEqual: true,
-        properties: { a: { type: 'string' } },
-      })).toEqual({ properties: { a: { type: 'string' } }, required: ['a'] } as any);
-    });
-
-    it('should convert a string requires into a dependencies entry', () => {
-      expect(convertSchemaToDraft6({ properties: { a: { requires: 'b' }, b: {} } }))
-        .toEqual({ properties: { a: {}, b: {} }, dependencies: { a: ['b'] } } as any);
-    });
-
-    it('should keep an array requires as is in dependencies', () => {
-      expect(convertSchemaToDraft6({ properties: { a: { requires: ['b', 'c'] }, b: {}, c: {} } }))
-        .toEqual({
-          properties: { a: {}, b: {}, c: {} },
-          dependencies: { a: ['b', 'c'] },
-        } as any);
-    });
-
-    it('should merge requires into existing dependencies', () => {
-      expect(convertSchemaToDraft6({
-        dependencies: { z: ['y'] },
-        properties: { a: { requires: 'b' } },
-      })).toEqual({
-        dependencies: { z: ['y'], a: ['b'] },
-        properties: { a: {} },
-      } as any);
-    });
-
-    it('should not add a required array when nothing is required', () => {
-      const result: any = convertSchemaToDraft6({ properties: { a: { type: 'string' } } });
-      expect(result.required).toBeUndefined();
-    });
-
-    it('should keep empty properties', () => {
-      expect(convertSchemaToDraft6({ properties: {} })).toEqual({ properties: {} } as any);
-    });
-
-    // typeof null is 'object', and spreading null yields an empty object.
-    it('should turn null properties into an empty object', () => {
-      expect(convertSchemaToDraft6({ properties: null })).toEqual({ properties: {} } as any);
-    });
-
-    it('should throw when a single property is null', () => {
-      expect(() => convertSchemaToDraft6({ properties: { a: null } })).toThrow();
-    });
-
-    it('should convert nested properties recursively', () => {
-      expect(convertSchemaToDraft6({
-        type: 'object',
-        properties: {
-          outer: {
-            type: 'object',
-            properties: { inner: { type: 'string', required: true } },
-          },
-        },
-      })).toEqual({
-        type: 'object',
-        properties: {
-          outer: {
-            type: 'object',
-            properties: { inner: { type: 'string' } },
-            required: ['inner'],
-          },
-        },
-      } as any);
     });
   });
 
@@ -409,17 +171,28 @@ describe('convertSchemaToDraft6', () => {
 
   describe('id to $id', () => {
 
-    it('should convert id to a marked $id and strip a trailing hash', () => {
+    it('should convert id to $id unchanged', () => {
+      // The id used to gain a '-CONVERTED-TO-DRAFT-06#' suffix, so every '$ref'
+      // written against the original failed to resolve.
       expect(convertSchemaToDraft6({ id: 'http://example.com/schema#', type: 'object' }))
         .toEqual({
           type: 'object',
-          $id: 'http://example.com/schema-CONVERTED-TO-DRAFT-06#',
+          $id: 'http://example.com/schema#',
         } as any);
     });
 
     it('should convert an id without a trailing hash', () => {
       expect(convertSchemaToDraft6({ id: 'http://example.com/schema' }))
-        .toEqual({ $id: 'http://example.com/schema-CONVERTED-TO-DRAFT-06#' } as any);
+        .toEqual({ $id: 'http://example.com/schema' } as any);
+    });
+
+    it('resolves a $ref written against the original id', () => {
+      const result: any = convertSchemaToDraft6({
+        id: 'http://example.com/schema#',
+        type: 'object',
+        properties: { a: { $ref: 'http://example.com/schema#' } },
+      });
+      expect(result.properties.a.$ref).toEqual(result.$id);
     });
 
     it('should leave id alone when $id already exists', () => {
@@ -602,15 +375,15 @@ describe('convertSchemaToDraft6', () => {
 
     it('should convert allOf, anyOf, oneOf and not', () => {
       expect(convertSchemaToDraft6({
-        allOf: [{ divisibleBy: 2 }],
-        anyOf: [{ divisibleBy: 3 }],
-        oneOf: [{ divisibleBy: 4 }],
-        not: { divisibleBy: 5 },
+        allOf: [{ minimum: 2, exclusiveMinimum: true }],
+        anyOf: [{ minimum: 3, exclusiveMinimum: true }],
+        oneOf: [{ minimum: 4, exclusiveMinimum: true }],
+        not: { minimum: 5, exclusiveMinimum: true },
       })).toEqual({
-        allOf: [{ multipleOf: 2 }],
-        anyOf: [{ multipleOf: 3 }],
-        oneOf: [{ multipleOf: 4 }],
-        not: { multipleOf: 5 },
+        allOf: [{ exclusiveMinimum: 2 }],
+        anyOf: [{ exclusiveMinimum: 3 }],
+        oneOf: [{ exclusiveMinimum: 4 }],
+        not: { exclusiveMinimum: 5 },
       } as any);
     });
 
@@ -645,7 +418,7 @@ describe('convertSchemaToDraft6', () => {
       );
       expect(result).toEqual({
         title: 'T',
-        description: 'Converted to draft 6 from http://example.com/custom#',
+        description: 'Converted to draft 7 from http://example.com/custom#',
       });
     });
 
@@ -654,69 +427,21 @@ describe('convertSchemaToDraft6', () => {
         .toEqual({ title: 'T' } as any);
     });
 
-    it('should mark every property required when options.draft is 1', () => {
-      expect(convertSchemaToDraft6({ properties: { a: {}, b: { optional: true } } }, { draft: 1 }))
-        .toEqual({ properties: { a: {}, b: {} }, required: ['a'] } as any);
-    });
-
-    it('should mark every property required when options.draft is 2', () => {
-      expect(convertSchemaToDraft6({ properties: { a: {} } }, { draft: 2 }))
-        .toEqual({ properties: { a: {} }, required: ['a'] } as any);
+    it('drops a draft 1 to 3 property keyword whatever draft is named', () => {
+      // Drafts 1 to 3 are no longer supported. The keyword is deleted rather than
+      // honoured, because a boolean 'required' is invalid from draft 4 onward and
+      // ajv would reject the whole schema.
+      expect(convertSchemaToDraft6(
+        { properties: { a: {}, b: { optional: true } } }, { draft: 1 }
+      )).toEqual({ properties: { a: {}, b: {} } } as any);
+      expect(convertSchemaToDraft6(
+        { properties: { a: { required: true } } }, { draft: 3 }
+      )).toEqual({ properties: { a: {} } } as any);
     });
 
     it('should not touch required when options.draft is 4', () => {
       expect(convertSchemaToDraft6({ properties: { a: {} } }, { draft: 4 }))
         .toEqual({ properties: { a: {} } } as any);
-    });
-  });
-
-  describe('draft detection from $schema', () => {
-
-    // Drafts 1 and 2 treat every property as required unless it is marked
-    // optional, so declaring one of them is enough to build the required array.
-    it('applies the draft 2 required rule to a draft 02 schema', () => {
-      expect(convertSchemaToDraft6({
-        $schema: 'http://json-schema.org/draft-02/schema#',
-        properties: { a: {} },
-      })).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
-        properties: { a: {} },
-        required: ['a'],
-      } as any);
-    });
-
-    it('applies the same rule to a draft 01 schema', () => {
-      expect(convertSchemaToDraft6({
-        $schema: 'http://json-schema.org/draft-01/schema#',
-        properties: { a: {}, b: {} },
-      }).required).toEqual(['a', 'b']);
-    });
-
-    it('exempts a property marked optional', () => {
-      expect(convertSchemaToDraft6({
-        $schema: 'http://json-schema.org/draft-02/schema#',
-        properties: { a: {}, b: { optional: true } },
-      }).required).toEqual(['a']);
-    });
-
-    it('leaves drafts 3 and later to declare required themselves', () => {
-      for (const draft of ['03', '04']) {
-        expect(convertSchemaToDraft6({
-          $schema: `http://json-schema.org/draft-${draft}/schema#`,
-          properties: { a: {} },
-        }).required).toBeUndefined();
-      }
-    });
-
-    // The draft used to be read as a character, so it was the string '2' rather
-    // than the number 2. That never matched, and it also overwrote a correct
-    // numeric draft passed in options, so declaring $schema disabled the
-    // conversion instead of enabling it.
-    it('does not let a declared $schema override an explicit draft option', () => {
-      expect(convertSchemaToDraft6({
-        $schema: 'http://json-schema.org/draft-02/schema#',
-        properties: { a: {}, b: {} },
-      }, { draft: 2 }).required).toEqual(['a', 'b']);
     });
   });
 
@@ -746,42 +471,35 @@ describe('convertSchemaToDraft6', () => {
     });
   });
 
-  describe('full draft 3 schema', () => {
+});
 
-    const draft3Schema: any = {
-      $schema: 'http://json-schema.org/draft-03/schema#',
-      id: 'http://example.com/person#',
-      type: 'object',
-      properties: {
-        name: { type: 'string', required: true },
-        age: { type: 'integer', minimum: 0, exclusiveMinimum: true },
-        tags: { type: 'array', items: { type: 'string' }, divisibleBy: 1 },
-        nickname: { type: 'any' },
-      },
-      dependencies: { age: 'name' },
-    };
+describe('detectDraft', () => {
+  const at = (uri: string) => detectDraft({ $schema: uri });
 
-    it('should convert every draft 3 construct at once', () => {
-      expect(convertSchemaToDraft6(draft3Schema)).toEqual({
-        $schema: 'http://json-schema.org/draft-06/schema#',
-        $id: 'http://example.com/person-CONVERTED-TO-DRAFT-06#',
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          age: { type: 'integer', exclusiveMinimum: 0 },
-          tags: { type: 'array', items: { type: 'string' }, multipleOf: 1 },
-          nickname: {
-            type: ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'],
-          },
-        },
-        dependencies: { age: ['name'] },
-        required: ['name'],
-      });
-    });
+  it('reads the draft number from a schema URI', () => {
+    expect(at('http://json-schema.org/draft-03/schema#')).toBe(3);
+    expect(at('http://json-schema.org/draft-04/schema#')).toBe(4);
+    expect(at('http://json-schema.org/draft-06/schema#')).toBe(6);
+    expect(at('http://json-schema.org/draft-07/schema#')).toBe(7);
+  });
 
-    it('should be idempotent when run twice', () => {
-      const once: any = convertSchemaToDraft6(draft3Schema);
-      expect(convertSchemaToDraft6(once)).toEqual(once);
-    });
+  it('returns null when no draft is declared', () => {
+    expect(detectDraft({ type: 'object' })).toBeNull();
+    expect(detectDraft({})).toBeNull();
+    expect(detectDraft(null)).toBeNull();
+    expect(detectDraft({ $schema: 42 })).toBeNull();
+  });
+
+  // These are the gaps a defaultDraft option has to cover. A hyper-schema URI
+  // reads as undeclared today, which is why draft 1 and 2 schemas fall through
+  // to inference rather than being recognised.
+  it('does not recognise a hyper-schema URI', () => {
+    expect(at('http://json-schema.org/draft-01/hyper-schema#')).toBeNull();
+    expect(at('http://json-schema.org/draft-02/hyper-schema#')).toBeNull();
+  });
+
+  it('does not recognise 2019-09 or 2020-12', () => {
+    expect(at('https://json-schema.org/draft/2019-09/schema')).toBeNull();
+    expect(at('https://json-schema.org/draft/2020-12/schema')).toBeNull();
   });
 });

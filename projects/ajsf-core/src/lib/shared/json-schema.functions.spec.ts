@@ -34,7 +34,7 @@ describe('JSON Schema functions', () => {
   });
 
   describe('buildSchemaFromData', () => {
-    const draft6 = 'http://json-schema.org/draft-06/schema#';
+    const draft6 = 'http://json-schema.org/draft-07/schema#';
 
     it('builds a string schema from a string, adding $schema at the root', () => {
       expect(buildSchemaFromData('hello')).toEqual({ $schema: draft6, type: 'string' });

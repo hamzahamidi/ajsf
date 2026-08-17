@@ -31,10 +31,8 @@ import s_jsf_fields_imageselect from '../../demo/assets/example-schemas/jsf-fiel
 import s_jsf_fields_password from '../../demo/assets/example-schemas/jsf-fields-password.json';
 import s_jsf_fields_questions from '../../demo/assets/example-schemas/jsf-fields-questions.json';
 import s_jsf_fields_radiobuttons from '../../demo/assets/example-schemas/jsf-fields-radiobuttons.json';
-import s_jsf_fields_radios from '../../demo/assets/example-schemas/jsf-fields-radios.json';
 import s_jsf_fields_range from '../../demo/assets/example-schemas/jsf-fields-range.json';
 import s_jsf_fields_section from '../../demo/assets/example-schemas/jsf-fields-section.json';
-import s_jsf_fields_select from '../../demo/assets/example-schemas/jsf-fields-select.json';
 import s_jsf_fields_selectfieldset_key from '../../demo/assets/example-schemas/jsf-fields-selectfieldset-key.json';
 import s_jsf_fields_selectfieldset from '../../demo/assets/example-schemas/jsf-fields-selectfieldset.json';
 import s_jsf_fields_submit from '../../demo/assets/example-schemas/jsf-fields-submit.json';
@@ -50,14 +48,10 @@ import s_jsf_schema_basic from '../../demo/assets/example-schemas/jsf-schema-bas
 import s_jsf_schema_default from '../../demo/assets/example-schemas/jsf-schema-default.json';
 import s_jsf_schema_inlineref from '../../demo/assets/example-schemas/jsf-schema-inlineref.json';
 import s_jsf_schema_morecomplex from '../../demo/assets/example-schemas/jsf-schema-morecomplex.json';
-import s_jsf_schema_required from '../../demo/assets/example-schemas/jsf-schema-required.json';
 import s_jsf_templating_idx from '../../demo/assets/example-schemas/jsf-templating-idx.json';
 import s_jsf_templating_tpldata from '../../demo/assets/example-schemas/jsf-templating-tpldata.json';
 import s_jsf_templating_value from '../../demo/assets/example-schemas/jsf-templating-value.json';
 import s_jsf_templating_values from '../../demo/assets/example-schemas/jsf-templating-values.json';
-import s_json_schema_draft01 from '../../demo/assets/example-schemas/json-schema-draft01.json';
-import s_json_schema_draft02 from '../../demo/assets/example-schemas/json-schema-draft02.json';
-import s_json_schema_draft03 from '../../demo/assets/example-schemas/json-schema-draft03.json';
 import s_json_schema_draft04 from '../../demo/assets/example-schemas/json-schema-draft04.json';
 import s_json_schema_draft06 from '../../demo/assets/example-schemas/json-schema-draft06.json';
 import s_ng_jsf_data_only from '../../demo/assets/example-schemas/ng-jsf-data-only.json';
@@ -121,10 +115,8 @@ export const CORPUS: { name: string; form: any }[] = [
   { name: 'jsf-fields-password', form: s_jsf_fields_password },
   { name: 'jsf-fields-questions', form: s_jsf_fields_questions },
   { name: 'jsf-fields-radiobuttons', form: s_jsf_fields_radiobuttons },
-  { name: 'jsf-fields-radios', form: s_jsf_fields_radios },
   { name: 'jsf-fields-range', form: s_jsf_fields_range },
   { name: 'jsf-fields-section', form: s_jsf_fields_section },
-  { name: 'jsf-fields-select', form: s_jsf_fields_select },
   { name: 'jsf-fields-selectfieldset-key', form: s_jsf_fields_selectfieldset_key },
   { name: 'jsf-fields-selectfieldset', form: s_jsf_fields_selectfieldset },
   { name: 'jsf-fields-submit', form: s_jsf_fields_submit },
@@ -140,14 +132,10 @@ export const CORPUS: { name: string; form: any }[] = [
   { name: 'jsf-schema-default', form: s_jsf_schema_default },
   { name: 'jsf-schema-inlineref', form: s_jsf_schema_inlineref },
   { name: 'jsf-schema-morecomplex', form: s_jsf_schema_morecomplex },
-  { name: 'jsf-schema-required', form: s_jsf_schema_required },
   { name: 'jsf-templating-idx', form: s_jsf_templating_idx },
   { name: 'jsf-templating-tpldata', form: s_jsf_templating_tpldata },
   { name: 'jsf-templating-value', form: s_jsf_templating_value },
   { name: 'jsf-templating-values', form: s_jsf_templating_values },
-  { name: 'json-schema-draft01', form: s_json_schema_draft01 },
-  { name: 'json-schema-draft02', form: s_json_schema_draft02 },
-  { name: 'json-schema-draft03', form: s_json_schema_draft03 },
   { name: 'json-schema-draft04', form: s_json_schema_draft04 },
   { name: 'json-schema-draft06', form: s_json_schema_draft06 },
   { name: 'ng-jsf-data-only', form: s_ng_jsf_data_only },
