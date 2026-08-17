@@ -327,9 +327,18 @@ export function buildLayout(jsf, widgetLibrary) {
               arrayItemGroup.unshift(arrayItem);
             } else {
               subItem.arrayItem = true;
-              // TODO: Check schema to get arrayItemType and removable
-              subItem.arrayItemType = 'list';
-              subItem.removable = newNode.options.removable !== false;
+              // A slot addressed by index is a fixed tuple position. It is only a
+              // list item once it sits past the tuple, and a tuple position cannot
+              // be removed: the framework components read arrayItemType === 'list'
+              // to decide whether to render the remove control.
+              const slot = hasOwn(subItem, 'dataPointer') ?
+                Number(subItem.dataPointer.slice(
+                  subItem.dataPointer.lastIndexOf('/') + 1
+                )) : NaN;
+              const tupleSlot = Number.isInteger(slot) &&
+                slot < newNode.options.tupleItems;
+              subItem.arrayItemType = tupleSlot ? 'tuple' : 'list';
+              subItem.removable = !tupleSlot && newNode.options.removable !== false;
             }
           }
           if (arrayItemGroup.length) {
