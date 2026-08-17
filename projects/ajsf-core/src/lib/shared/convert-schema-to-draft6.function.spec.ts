@@ -1,4 +1,4 @@
-import { convertSchemaToDraft6 } from './convert-schema-to-draft6.function';
+import { convertSchemaToDraft6, detectDraft } from './convert-schema-to-draft6.function';
 
 describe('convertSchemaToDraft6', () => {
 
@@ -783,5 +783,36 @@ describe('convertSchemaToDraft6', () => {
       const once: any = convertSchemaToDraft6(draft3Schema);
       expect(convertSchemaToDraft6(once)).toEqual(once);
     });
+  });
+});
+
+describe('detectDraft', () => {
+  const at = (uri: string) => detectDraft({ $schema: uri });
+
+  it('reads the draft number from a schema URI', () => {
+    expect(at('http://json-schema.org/draft-03/schema#')).toBe(3);
+    expect(at('http://json-schema.org/draft-04/schema#')).toBe(4);
+    expect(at('http://json-schema.org/draft-06/schema#')).toBe(6);
+    expect(at('http://json-schema.org/draft-07/schema#')).toBe(7);
+  });
+
+  it('returns null when no draft is declared', () => {
+    expect(detectDraft({ type: 'object' })).toBeNull();
+    expect(detectDraft({})).toBeNull();
+    expect(detectDraft(null)).toBeNull();
+    expect(detectDraft({ $schema: 42 })).toBeNull();
+  });
+
+  // These are the gaps a defaultDraft option has to cover. A hyper-schema URI
+  // reads as undeclared today, which is why draft 1 and 2 schemas fall through
+  // to inference rather than being recognised.
+  it('does not recognise a hyper-schema URI', () => {
+    expect(at('http://json-schema.org/draft-01/hyper-schema#')).toBeNull();
+    expect(at('http://json-schema.org/draft-02/hyper-schema#')).toBeNull();
+  });
+
+  it('does not recognise 2019-09 or 2020-12', () => {
+    expect(at('https://json-schema.org/draft/2019-09/schema')).toBeNull();
+    expect(at('https://json-schema.org/draft/2020-12/schema')).toBeNull();
   });
 });

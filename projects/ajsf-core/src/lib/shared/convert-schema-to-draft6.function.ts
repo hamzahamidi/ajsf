@@ -17,6 +17,25 @@ import { cloneDeep } from './clone-deep.function';
  * // { object } - JSON schema (draft 6)
  */
 export interface OptionObject { changed?: boolean; draft?: number; }
+
+/**
+ * 'detectDraft' function
+ *
+ * Reads the draft number a schema declares in its '$schema' keyword.
+ *
+ * Recognises the draft 1 to 7 schema URIs only. A hyper-schema URI, a 2019-09
+ * or 2020-12 URI, and an absent '$schema' all return null, which is why a
+ * schema declaring draft 1 hyper-schema currently falls through to inference.
+ *
+ * // { any } schema - the schema to read
+ * // { number } - the declared draft, or null
+ */
+export function detectDraft(schema): number {
+  if (!schema || typeof schema.$schema !== 'string') { return null; }
+  const declared = /http:\/\/json-schema\.org\/draft-0(\d)\/schema#/.exec(schema.$schema);
+  return declared ? Number(declared[1]) : null;
+}
+
 export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   let draft: number = options.draft || null;
   let changed: boolean = options.changed || false;
@@ -28,13 +47,8 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   let newSchema = { ...schema };
   const simpleTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
 
-  if (typeof newSchema.$schema === 'string') {
-    const declaredDraft = /http\:\/\/json\-schema\.org\/draft\-0(\d)\/schema\#/
-      .exec(newSchema.$schema);
-    if (declaredDraft) {
-      draft = Number(declaredDraft[1]);
-    }
-  }
+  const declaredDraft = detectDraft(newSchema);
+  if (declaredDraft !== null) { draft = declaredDraft; }
 
   // Convert v1-v2 'contentEncoding' to 'media.binaryEncoding'
   // Note: This is only used in JSON hyper-schema (not regular JSON schema)
