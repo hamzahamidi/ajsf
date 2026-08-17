@@ -3,7 +3,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'root-widget',
     template: `
     <div *ngFor="let layoutItem of layout; let i = index"

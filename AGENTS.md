@@ -75,6 +75,26 @@ Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all
 
 ⚠️ **Never give the upload step `continue-on-error` or `fail_ci_if_error: false`.** It carried both from #361 to #370 and reported success on every run while Codecov rejected every upload with `Token required because branch is protected`. Nine pull requests merged before anyone noticed. A step that cannot fail cannot tell you it is broken.
 
+## Linting
+
+⚠️ **Nothing is linted.** `npm run lint` runs `ng lint`, `angular.json` has no `lint`
+target, and the command exits with `Cannot find "lint" target`. tslint 6.1.3 is
+installed and never invoked, and tslint itself was deprecated in 2019.
+
+58 `tslint:disable-next-line` comments were removed in that light: they suppressed
+rules nothing was running, so they read as "linted, with exceptions" when the truth
+was "not linted at all".
+
+Whoever wires up `angular-eslint` should configure two things rather than suppress
+them per file, because both are deliberate:
+
+- **Component and directive selectors have no prefix.** `checkbox-widget`,
+  `material-input-widget`, `[ace-editor]`. They are public API, named in consumer
+  layout schemas, and the freeze forbids renaming them, so the selector rules have
+  to be configured to accept them.
+- **`format-regex.constants.ts` holds six regexes past any line limit.** They cannot
+  be shortened without becoming less readable.
+
 ## Constraints
 
 - **The public API is frozen** while the Angular upgrade is in progress. Do not remove or rename any export from a `public_api.ts`. In particular `@ajsf/material` must keep exporting `FlexLayoutRootComponent` and `FlexLayoutSectionComponent`, and the `flex-layout-root-widget`, `flex-layout-section-widget` selectors and the `ng-jsf-flex-layout` widget name must keep working. They appear in consumer layout schemas.

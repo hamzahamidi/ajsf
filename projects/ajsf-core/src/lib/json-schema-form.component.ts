@@ -71,7 +71,6 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
  *  - brace, Browserified Ace editor       http://thlorenz.github.io/brace
  */
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'json-schema-form',
     templateUrl: './json-schema-form.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,

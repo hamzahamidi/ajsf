@@ -3,7 +3,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'tab-widget',
     template: `
     <div [class]="options?.htmlClass || ''">

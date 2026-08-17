@@ -4,7 +4,6 @@ import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'number-widget',
     template: `
     <div [class]="options?.htmlClass || ''">

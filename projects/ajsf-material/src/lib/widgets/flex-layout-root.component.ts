@@ -3,7 +3,6 @@ import { JsonSchemaFormService } from '@ajsf/core';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'flex-layout-root-widget',
     template: `
     <div *ngFor="let layoutNode of layout; let i = index"

@@ -12,7 +12,6 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
  *
  */
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'bootstrap-5-framework',
     templateUrl: './bootstrap5-framework.component.html',
     styleUrls: ['./bootstrap5-framework.component.scss'],

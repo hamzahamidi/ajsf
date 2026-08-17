@@ -5,7 +5,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'radios-widget',
     template: `
     <label *ngIf="options?.title"

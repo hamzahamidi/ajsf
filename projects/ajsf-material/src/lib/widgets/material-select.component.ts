@@ -4,7 +4,6 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-select-widget',
     template: `
     <mat-form-field

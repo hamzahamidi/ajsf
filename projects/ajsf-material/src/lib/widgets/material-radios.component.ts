@@ -4,7 +4,6 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'material-radios-widget',
     template: `
     <div>

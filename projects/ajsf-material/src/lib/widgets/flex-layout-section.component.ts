@@ -3,7 +3,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'flex-layout-section-widget',
     template: `
     <div *ngIf="containerType === 'div'"

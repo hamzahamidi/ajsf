@@ -6,7 +6,6 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 // TODO: Add this control
 
 @Component({
-    // tslint:disable-next-line:component-selector
     selector: 'file-widget',
     template: ``,
     standalone: false
