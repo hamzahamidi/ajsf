@@ -115,8 +115,8 @@ on Angular 18, so the upgrade comes first:
 
     19.0.0-rc.0   Angular 19 itself, no behaviour change
     19.0.0-rc.1   the converter split, ajv 8, draft 7 default, draft 4 floor
-    19.0.0-rc.2   the tuple and array semantics: findings 3, 15
-    19.0.0-rc.3   the allOf merging: findings 11, 12, 14
+    19.0.0-rc.2   tuple slot semantics: finding 3
+    19.0.0-rc.3   the array item template and allOf merging: findings 15, 11, 12, 14
     19.0.0-rc.4   the widget and submit changes: findings 5, 6, 21
     19.0.0        promoted to latest once the series has been exercised
 
@@ -127,6 +127,25 @@ them: five of the eight breaking findings are invisible to it.
 
 Only the final stable release moves `latest`. A release candidate that turns out
 wrong is abandoned rather than patched, since nothing depends on it by default.
+
+## Finding 15 needs a test the corpus cannot provide
+
+`layout.functions.ts:385` builds the template a new array item is cloned from out
+of `newNode.items[newNode.items.length - 1]`, the last item that already exists.
+On a tuple array that is the last fixed slot, so the Add button hands back a copy
+of it rather than something built from `additionalItems`.
+
+It moved out of rc.2 for reasons worth recording. The corpus harness simulates no
+clicks and calls no `addItem`, so it measures the first render only and is blind to
+this by construction, and the failure mode is a silently wrong shape for every
+added item. The `forEach` immediately after that line also nulls `_id` and rewrites
+`dataPointer` on the assumption the node was cloned from a sibling; one built from
+the schema arrives with correct pointers and fresh ids already, so that post
+processing has to be revisited rather than inherited.
+
+The fix is to build from `schemaPointer + '/additionalItems'`, or `'/items'` when
+that is a single schema, falling back to the clone when neither exists. It needs a
+component test that presses Add, because nothing existing would catch a regression.
 
 ## Three decisions
 
