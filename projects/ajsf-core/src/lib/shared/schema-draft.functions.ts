@@ -41,7 +41,14 @@ interface DraftState { newSchema: any; draft: number; changed: boolean; }
 const simpleTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
 
 /** Rewrites draft 1 to 4 keywords into their draft 6 spellings. */
-function downconvertKeywords(newSchema: any, draft: number, changed: boolean): DraftState {
+/**
+ * Keywords that only drafts 1 and 2 use: 'contentEncoding', 'maxDecimal' and the
+ * 'minimumCanEqual' and 'maximumCanEqual' pair. Delete this to drop drafts 1 and 2.
+ *
+ * Runs before the draft 3 step because 'maxDecimal' clears 'divisibleBy', which
+ * the draft 3 step then reads.
+ */
+function convertDraft1And2Keywords(newSchema: any, draft: number, changed: boolean): DraftState {
     // Convert v1-v2 'contentEncoding' to 'media.binaryEncoding'
     // Note: This is only used in JSON hyper-schema (not regular JSON schema)
     if (newSchema.contentEncoding) {
@@ -50,6 +57,47 @@ function downconvertKeywords(newSchema: any, draft: number, changed: boolean): D
       changed = true;
     }
 
+    // Convert v1 'maxDecimal' to 'multipleOf'
+    if (typeof newSchema.maxDecimal === 'number') {
+      newSchema.multipleOf = 1 / Math.pow(10, newSchema.maxDecimal);
+      delete newSchema.divisibleBy;
+      changed = true;
+      if (!draft || draft === 2) { draft = 1; }
+    }
+
+    // Convert v1-v2 boolean 'minimumCanEqual' to 'exclusiveMinimum'
+    if (typeof newSchema.minimum === 'number' && newSchema.minimumCanEqual === false) {
+      newSchema.exclusiveMinimum = newSchema.minimum;
+      delete newSchema.minimum;
+      changed = true;
+      if (!draft) { draft = 2; }
+    } else if (typeof newSchema.minimumCanEqual === 'boolean') {
+      delete newSchema.minimumCanEqual;
+      changed = true;
+      if (!draft) { draft = 2; }
+    }
+
+    // Convert v1-v2 boolean 'maximumCanEqual' to 'exclusiveMaximum'
+    if (typeof newSchema.maximum === 'number' && newSchema.maximumCanEqual === false) {
+      newSchema.exclusiveMaximum = newSchema.maximum;
+      delete newSchema.maximum;
+      changed = true;
+      if (!draft) { draft = 2; }
+    } else if (typeof newSchema.maximumCanEqual === 'boolean') {
+      delete newSchema.maximumCanEqual;
+      changed = true;
+      if (!draft) { draft = 2; }
+    }
+
+  return { newSchema, draft, changed };
+}
+
+/**
+ * Keywords draft 3 still uses, some of them since draft 1: 'extends', 'disallow',
+ * 'divisibleBy' and the string form of 'dependencies'. Delete this to drop draft 3,
+ * but only after drafts 1 and 2 have gone, since they use these too.
+ */
+function convertDraft3Keywords(newSchema: any, draft: number, changed: boolean): DraftState {
     // Convert v1-v3 'extends' to 'allOf'
     if (typeof newSchema.extends === 'object') {
       newSchema.allOf = typeof newSchema.extends.map === 'function' ?
@@ -73,6 +121,13 @@ function downconvertKeywords(newSchema: any, draft: number, changed: boolean): D
       changed = true;
     }
 
+    // Convert v2-v3 'divisibleBy' to 'multipleOf'
+    if (typeof newSchema.divisibleBy === 'number') {
+      newSchema.multipleOf = newSchema.divisibleBy;
+      delete newSchema.divisibleBy;
+      changed = true;
+    }
+
     // Convert v3 string 'dependencies' properties to arrays
     if (typeof newSchema.dependencies === 'object' &&
       Object.keys(newSchema.dependencies)
@@ -85,33 +140,14 @@ function downconvertKeywords(newSchema: any, draft: number, changed: boolean): D
       changed = true;
     }
 
-    // Convert v1 'maxDecimal' to 'multipleOf'
-    if (typeof newSchema.maxDecimal === 'number') {
-      newSchema.multipleOf = 1 / Math.pow(10, newSchema.maxDecimal);
-      delete newSchema.divisibleBy;
-      changed = true;
-      if (!draft || draft === 2) { draft = 1; }
-    }
+  return { newSchema, draft, changed };
+}
 
-    // Convert v2-v3 'divisibleBy' to 'multipleOf'
-    if (typeof newSchema.divisibleBy === 'number') {
-      newSchema.multipleOf = newSchema.divisibleBy;
-      delete newSchema.divisibleBy;
-      changed = true;
-    }
-
-    // Convert v1-v2 boolean 'minimumCanEqual' to 'exclusiveMinimum'
-    if (typeof newSchema.minimum === 'number' && newSchema.minimumCanEqual === false) {
-      newSchema.exclusiveMinimum = newSchema.minimum;
-      delete newSchema.minimum;
-      changed = true;
-      if (!draft) { draft = 2; }
-    } else if (typeof newSchema.minimumCanEqual === 'boolean') {
-      delete newSchema.minimumCanEqual;
-      changed = true;
-      if (!draft) { draft = 2; }
-    }
-
+/**
+ * Keywords draft 4 still uses: the boolean form of 'exclusiveMinimum' and
+ * 'exclusiveMaximum', which draft 6 made numeric. Delete this to drop draft 4.
+ */
+function convertDraft4Keywords(newSchema: any, draft: number, changed: boolean): DraftState {
     // Convert v3-v4 boolean 'exclusiveMinimum' to numeric
     if (typeof newSchema.minimum === 'number' && newSchema.exclusiveMinimum === true) {
       newSchema.exclusiveMinimum = newSchema.minimum;
@@ -120,18 +156,6 @@ function downconvertKeywords(newSchema: any, draft: number, changed: boolean): D
     } else if (typeof newSchema.exclusiveMinimum === 'boolean') {
       delete newSchema.exclusiveMinimum;
       changed = true;
-    }
-
-    // Convert v1-v2 boolean 'maximumCanEqual' to 'exclusiveMaximum'
-    if (typeof newSchema.maximum === 'number' && newSchema.maximumCanEqual === false) {
-      newSchema.exclusiveMaximum = newSchema.maximum;
-      delete newSchema.maximum;
-      changed = true;
-      if (!draft) { draft = 2; }
-    } else if (typeof newSchema.maximumCanEqual === 'boolean') {
-      delete newSchema.maximumCanEqual;
-      changed = true;
-      if (!draft) { draft = 2; }
     }
 
     // Convert v3-v4 boolean 'exclusiveMaximum' to numeric
@@ -362,7 +386,9 @@ export function convertSchemaToDraft6(schema, options: OptionObject = {}) {
   if (declared !== null) { draft = declared; }
 
   let state: DraftState = { newSchema: { ...schema }, draft, changed };
-  state = downconvertKeywords(state.newSchema, state.draft, state.changed);
+  state = convertDraft1And2Keywords(state.newSchema, state.draft, state.changed);
+  state = convertDraft3Keywords(state.newSchema, state.draft, state.changed);
+  state = convertDraft4Keywords(state.newSchema, state.draft, state.changed);
   state = collectRequiredKeys(state.newSchema, state.draft, state.changed);
   state = normaliseIdentifiers(state.newSchema, state.draft, state.changed);
   state = normaliseTypes(state.newSchema, state.draft, state.changed);
