@@ -25,7 +25,8 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [id]="'control' + layoutNode?._id"
         [name]="controlName"
         [readonly]="options?.readonly ? 'readonly' : null"
-        [type]="layoutNode?.type">
+        [type]="layoutNode?.type"
+        (focusin)="updateValue($event)">
       <input *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
@@ -41,7 +42,8 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [readonly]="options?.readonly ? 'readonly' : null"
         [type]="layoutNode?.type"
         [value]="controlValue"
-        (input)="updateValue($event)">
+        (input)="updateValue($event)"
+        (focusin)="updateValue($event)">
         <datalist *ngIf="options?.typeahead?.source"
           [id]="'control' + layoutNode?._id + 'Autocomplete'">
           <option *ngFor="let word of options?.typeahead?.source" [value]="word">
