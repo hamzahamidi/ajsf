@@ -1730,3 +1730,57 @@ describe('buildLayout, the template a new array item is built from', () => {
     expect(() => templateFor(noAdditional, tupleLayout)).not.toThrow();
   });
 });
+
+describe('buildLayout, the item template of a recursive array', () => {
+  // A recursive array stores its template under the shortened pointer and keeps
+  // item pointers relative to it, so both template branches need the recursive
+  // case as well as the plain one.
+  const listSchema = (additional: any) => ({
+    type: 'object',
+    properties: {
+      list: {
+        type: 'array',
+        items: [{ type: 'string', title: 'First' }],
+        ...(additional ? { additionalItems: additional } : {}),
+      },
+    },
+  });
+
+  /**
+   * Points '/tree/children' back at '/tree' so `recursive` is true, and pins the
+   * schema of the shortened pointer to the array, which is what a self
+   * referencing array resolves to.
+   */
+  const recursiveJsf = (schema: any) => makeJsf({
+    schema,
+    layout: [{ key: 'tree.children', type: 'array', items: ['/tree/children/0'] }],
+    dataRecursiveRefMap: new Map([['/tree/children', '/tree']]),
+    dataMap: new Map([['/tree', new Map([['schemaPointer', '/properties/list']])]]),
+  });
+
+  it('marks a schema built template as a recursive reference', () => {
+    const jsf = recursiveJsf(listSchema({ type: 'string', title: 'Extra' }));
+    buildLayout(jsf, widgetLibrary);
+    const template = jsf.layoutRefLibrary['/tree/-'];
+    expect(template).toBeTruthy();
+    expect(template.recursiveReference).toBe(true);
+  });
+
+  it('marks a cloned template as a recursive reference when there is no additionalItems', () => {
+    const jsf = recursiveJsf(listSchema(null));
+    buildLayout(jsf, widgetLibrary);
+    const template = jsf.layoutRefLibrary['/tree/-'];
+    expect(template).toBeTruthy();
+    expect(template.recursiveReference).toBe(true);
+  });
+
+  // BUG: the clone branch rewrites the pointer of every nested item but never
+  // the template's own, so a recursive array's template keeps an absolute
+  // pointer. Pre-existing, and separate from what this change is about.
+  it('leaves a cloned template pointer absolute', () => {
+    const jsf = recursiveJsf(listSchema(null));
+    buildLayout(jsf, widgetLibrary);
+    const template = jsf.layoutRefLibrary['/tree/-'];
+    expect(template.dataPointer.startsWith('/tree')).toBe(true);
+  });
+});
