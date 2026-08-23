@@ -53,7 +53,7 @@ export function mergeSchemas(...schemas) {
               key === 'additionalProperties' &&
               (combinedValue === false || schemaValue === false)
             ) {
-              combinedSchema.combinedSchema = false;
+              combinedSchema[key] = false;
             } else {
               return { allOf: [ ...schemas ] };
             }
@@ -131,12 +131,29 @@ export function mergeSchemas(...schemas) {
             }
           break;
           case 'items':
-            // If arrays, keep only items that appear in both arrays
+            // If both are arrays, both are tuples, so slot i of one constrains
+            // slot i of the other. Intersecting them by value instead dropped
+            // every slot the two did not already agree on, shortening the tuple.
             if (isArray(combinedValue) && isArray(schemaValue)) {
-              combinedSchema.items = combinedValue.filter(item1 =>
-                schemaValue.findIndex(item2 => deepEqual(item1, item2)) > -1
-              );
-              if (!combinedSchema.items.length) { return { allOf: [ ...schemas ] }; }
+              const tupleLength = Math.max(combinedValue.length, schemaValue.length);
+              const merged = [];
+              for (let slot = 0; slot < tupleLength; slot++) {
+                const inCombined = slot < combinedValue.length;
+                const inSchema = slot < schemaValue.length;
+                if (inCombined && inSchema) {
+                  merged.push(mergeSchemas(combinedValue[slot], schemaValue[slot]));
+                } else {
+                  // A slot only one tuple declares still has to satisfy the
+                  // other's additionalItems, which is what constrains the
+                  // positions past its own items.
+                  const own = inCombined ? combinedValue[slot] : schemaValue[slot];
+                  const otherAdditional = inCombined ?
+                    schema.additionalItems : combinedSchema.additionalItems;
+                  merged.push(isObject(otherAdditional) ?
+                    mergeSchemas(own, otherAdditional) : own);
+                }
+              }
+              combinedSchema.items = merged;
             // If both keys are objects, merge them
             } else if (isObject(combinedValue) && isObject(schemaValue)) {
               combinedSchema.items = mergeSchemas(combinedValue, schemaValue);

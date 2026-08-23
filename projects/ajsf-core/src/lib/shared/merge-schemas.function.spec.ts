@@ -122,21 +122,18 @@ describe('mergeSchemas', () => {
       });
     });
 
-    it('writes a stray combinedSchema key when the new additionalProperties is false', () => {
-      // BUG: the code assigns `combinedSchema.combinedSchema = false` instead of
-      // `combinedSchema[key] = false`, so a literal "combinedSchema" key is added
-      // and the original additionalProperties value is left untouched.
+    it('lets a false additionalProperties in the new schema override', () => {
       expect(mergeSchemas(
         { additionalProperties: { type: 'string' } },
         { additionalProperties: false }
-      )).toEqual({ additionalProperties: { type: 'string' }, combinedSchema: false });
+      )).toEqual({ additionalProperties: false });
     });
 
-    it('writes a stray combinedSchema key when the combined additionalProperties is false', () => {
+    it('lets a false additionalProperties in the combined schema override', () => {
       expect(mergeSchemas(
         { additionalProperties: false },
         { additionalProperties: { type: 'string' } }
-      )).toEqual({ additionalProperties: false, combinedSchema: false });
+      )).toEqual({ additionalProperties: false });
     });
 
     it('returns allOf when additionalItems values conflict and are not objects', () => {
@@ -253,16 +250,38 @@ describe('mergeSchemas', () => {
   });
 
   describe('items', () => {
-    it('keeps only the items entries present in both arrays', () => {
+    // Both arrays means both are tuples, so slot i constrains slot i. These
+    // previously intersected the two arrays by value, which dropped every slot
+    // the tuples did not already agree on and shortened the result.
+    it('merges tuple slots by position and keeps the longer length', () => {
       expect(mergeSchemas(
         { items: [{ type: 'string' }] },
         { items: [{ type: 'string' }, { type: 'number' }] }
-      )).toEqual({ items: [{ type: 'string' }] });
+      )).toEqual({ items: [{ type: 'string' }, { type: 'number' }] });
     });
 
-    it('returns allOf when the two items arrays have nothing in common', () => {
+    it('merges the schemas of a slot both tuples declare', () => {
+      expect(mergeSchemas(
+        { items: [{ type: 'string' }, { minLength: 2 }] },
+        { items: [{ minLength: 1 }, { type: 'string' }] }
+      )).toEqual({ items: [
+        { type: 'string', minLength: 1 }, { minLength: 2, type: 'string' },
+      ] });
+    });
+
+    it('defers a single slot to allOf rather than discarding the whole tuple', () => {
       expect(mergeSchemas({ items: [{ type: 'string' }] }, { items: [{ type: 'number' }] }))
-        .toEqual({ allOf: [{ items: [{ type: 'string' }] }, { items: [{ type: 'number' }] }] });
+        .toEqual({ items: [{ allOf: [{ type: 'string' }, { type: 'number' }] }] });
+    });
+
+    it('constrains a slot past the shorter tuple by its additionalItems', () => {
+      expect(mergeSchemas(
+        { items: [{ type: 'string' }], additionalItems: { maxLength: 4 } },
+        { items: [{ type: 'string' }, { type: 'string' }] }
+      )).toEqual({
+        items: [{ type: 'string' }, { type: 'string', maxLength: 4 }],
+        additionalItems: { maxLength: 4 },
+      });
     });
 
     it('merges two items schema objects', () => {
