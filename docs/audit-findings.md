@@ -13,8 +13,7 @@ Findings 1, 2, 4, 7, 8, 9, 16, 17, 18, 19, 20 shipped in 18.1.0 through 18.3.0.
 Finding 3 shipped at `19.0.0-rc.2`, finding 13 and the draft work at
 `19.0.0-rc.1`, finding 15 at `19.0.0-rc.3`.
 
-Still open: 5, 6, 21, the `properties` level confusion below, the dead `items`
-branches below, and the layout residual of 10.
+Still open: 5, 6, 21, and the layout residual of 10.
 
 The three allOf defects did not ship together. The two that are contained, the
 `additionalProperties` assignment and the positional tuple merge, went first. The
@@ -40,7 +39,7 @@ The branch handling `additionalProperties === false` in either schema assigns
 merged schema carries a junk `combinedSchema: false` entry into form building.
 
 **The `properties` case looks for `additionalProperties` inside `properties`.**
-Still open.
+Fixed.
 In that branch `schemaValue` is `schema.properties`, so
 `hasOwn(schemaValue, 'additionalProperties')` asks whether the schema declares a
 property literally *named* `additionalProperties`, and
@@ -76,5 +75,15 @@ comes back as an object with numeric keys, `{ 0: {...}, minLength: 1 }`, rather
 than the object being applied to each tuple slot. Pinned as a BUG in
 `merge-schemas.function.spec.ts`.
 
-Worth fixing with the `properties` level confusion, since both change how a
-merged schema is shaped rather than correcting a single assignment.
+Fixed with the `properties` level confusion, since both change how a merged
+schema is shaped rather than correcting a single assignment.
+
+## An escape hatch worth revisiting
+
+`mergeSchemas` returns `{ allOf: [ ...schemas ] }` from roughly twenty branches
+whenever it cannot merge, which is a correct answer for a validator and a poor one
+here. Neither `layout.functions.ts` nor `form-group.functions.ts` handles `allOf`,
+so a schema that comes back unmerged from `getSubSchema` has no field building
+path and its fields do not render. ajv still validates the original schema, so
+this costs fields rather than correctness. Not scheduled, and worth measuring
+before it is.
