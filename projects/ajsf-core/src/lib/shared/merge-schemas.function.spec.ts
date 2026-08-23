@@ -289,12 +289,14 @@ describe('mergeSchemas', () => {
         .toEqual({ items: { type: 'string', minLength: 2 } });
     });
 
-    it('flattens an items array into an indexed object when mixed with an items object', () => {
-      // BUG: isArray() implies isObject(), so an array plus an object hits the
-      // "both objects" branch and the array is merged key by key (0, 1, ...)
-      // instead of the object being applied to each array entry.
+    it('applies an items object to each slot of an items tuple', () => {
       expect(mergeSchemas({ items: [{ type: 'string' }] }, { items: { minLength: 1 } }))
-        .toEqual({ items: { 0: { type: 'string' }, minLength: 1 } });
+        .toEqual({ items: [{ type: 'string', minLength: 1 }] });
+    });
+
+    it('applies an items object to each slot in either argument order', () => {
+      expect(mergeSchemas({ items: { minLength: 1 } }, { items: [{ type: 'string' }] }))
+        .toEqual({ items: [{ type: 'string', minLength: 1 }] });
     });
 
     it('returns allOf when an items value is neither an array nor an object', () => {
@@ -466,51 +468,68 @@ describe('mergeSchemas', () => {
         .toEqual({ allOf: [{ properties: { a: 'x' } }, { properties: { a: 'y' } }] });
     });
 
-    it('drops non-matching combined keys when the new properties has additionalProperties false', () => {
-      expect(mergeSchemas(
-        { properties: { a: { type: 'string' } } },
-        { properties: { additionalProperties: false } }
-      )).toEqual({ properties: { additionalProperties: false } });
-    });
-
-    it('merges non-matching combined keys with an additionalProperties schema object', () => {
-      expect(mergeSchemas(
-        { properties: { a: { type: 'string' } } },
-        { properties: { additionalProperties: { minLength: 3 } } }
-      )).toEqual({
-        properties: {
-          a: { type: 'string', minLength: 3 },
-          additionalProperties: { minLength: 3 },
-        },
-      });
-    });
-
-    it('exempts matching keys from the additionalProperties false deletion', () => {
+    // additionalProperties sits beside properties. These previously passed a
+    // property named after the keyword, which is what the code was reading, so
+    // they described the misfire rather than the rule.
+    it('drops a combined key the new schema forbids, keeping the ones it declares', () => {
       expect(mergeSchemas(
         { properties: { a: { type: 'string' }, z: { type: 'number' } } },
-        { properties: { a: { minLength: 1 }, additionalProperties: false } }
+        { properties: { a: { minLength: 1 } }, additionalProperties: false }
       )).toEqual({
-        properties: { a: { type: 'string', minLength: 1 }, additionalProperties: false },
+        properties: { a: { type: 'string', minLength: 1 } },
+        additionalProperties: false,
       });
     });
 
-    it('merges a new property key with the combined additionalProperties schema', () => {
+    it('constrains a combined key the new schema does not declare by its additionalProperties', () => {
       expect(mergeSchemas(
-        { properties: { additionalProperties: { minLength: 2 } } },
+        { properties: { a: { type: 'string' } } },
+        { properties: {}, additionalProperties: { minLength: 3 } }
+      )).toEqual({
+        properties: { a: { type: 'string', minLength: 3 } },
+        additionalProperties: { minLength: 3 },
+      });
+    });
+
+    it('constrains a new key by the additionalProperties already folded in', () => {
+      expect(mergeSchemas(
+        { properties: {}, additionalProperties: { minLength: 2 } },
         { properties: { b: { type: 'string' } } }
+      )).toEqual({
+        properties: { b: { minLength: 2, type: 'string' } },
+        additionalProperties: { minLength: 2 },
+      });
+    });
+
+    it('leaves out a new key when a schema already folded in forbids it', () => {
+      expect(mergeSchemas(
+        { properties: {}, additionalProperties: false },
+        { properties: { b: { type: 'string' } } }
+      )).toEqual({ properties: {}, additionalProperties: false });
+    });
+
+    // The accumulated additionalProperties is read from the input rather than
+    // from the half built result, so neither the order of the schemas nor the
+    // order of the keys inside them changes the answer.
+    it('gives the same answer whichever schema declares additionalProperties first', () => {
+      const forbidding = { properties: { a: { type: 'string' } }, additionalProperties: false };
+      const other = { properties: { b: { type: 'number' } } };
+      const expected = { properties: { a: { type: 'string' } }, additionalProperties: false };
+      expect(mergeSchemas(forbidding, other)).toEqual(expected);
+      expect(mergeSchemas(other, forbidding)).toEqual(expected);
+    });
+
+    it('treats a property named additionalProperties as an ordinary property', () => {
+      expect(mergeSchemas(
+        { properties: { a: { type: 'string' } } },
+        { properties: { additionalProperties: false, b: { type: 'number' } } }
       )).toEqual({
         properties: {
-          additionalProperties: { minLength: 2 },
-          b: { minLength: 2, type: 'string' },
+          a: { type: 'string' },
+          additionalProperties: false,
+          b: { type: 'number' },
         },
       });
-    });
-
-    it('ignores a new property key when the combined additionalProperties is false', () => {
-      expect(mergeSchemas(
-        { properties: { additionalProperties: false } },
-        { properties: { b: { type: 'string' } } }
-      )).toEqual({ properties: { additionalProperties: false } });
     });
 
     it('returns allOf when a properties value is not an object', () => {

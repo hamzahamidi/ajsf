@@ -28,7 +28,14 @@ export function mergeSchemas(...schemas) {
   schemas = schemas.filter(schema => !isEmpty(schema));
   if (schemas.some(schema => !isObject(schema))) { return null; }
   const combinedSchema: any = {};
-  for (const schema of schemas) {
+  for (let schemaIndex = 0; schemaIndex < schemas.length; schemaIndex++) {
+    const schema = schemas[schemaIndex];
+    // What the schemas already folded in say about additionalProperties. Taken
+    // from the input, because combinedSchema only has it once that key has been
+    // reached, which depends on where it sits in each schema's key order.
+    const priorAdditional = schemas.slice(0, schemaIndex)
+      .filter(prior => hasOwn(prior, 'additionalProperties'))
+      .map(prior => prior.additionalProperties);
     for (const key of Object.keys(schema)) {
       const combinedValue = combinedSchema[key];
       const schemaValue = schema[key];
@@ -154,16 +161,19 @@ export function mergeSchemas(...schemas) {
                 }
               }
               combinedSchema.items = merged;
-            // If both keys are objects, merge them
-            } else if (isObject(combinedValue) && isObject(schemaValue)) {
-              combinedSchema.items = mergeSchemas(combinedValue, schemaValue);
-            // If object + array, combine object with each array item
+            // A single items schema constrains every slot, so it merges into each
+            // one. isArray implies isObject here, so these two have to be tested
+            // before the object pair or they can never run: the tuple was being
+            // merged key by key into an object with numeric keys.
             } else if (isArray(combinedValue) && isObject(schemaValue)) {
               combinedSchema.items =
                 combinedValue.map(item => mergeSchemas(item, schemaValue));
             } else if (isObject(combinedValue) && isArray(schemaValue)) {
               combinedSchema.items =
                 schemaValue.map(item => mergeSchemas(item, combinedValue));
+            // If both keys are objects, merge them
+            } else if (isObject(combinedValue) && isObject(schemaValue)) {
+              combinedSchema.items = mergeSchemas(combinedValue, schemaValue);
             } else {
               return { allOf: [ ...schemas ] };
             }
@@ -244,41 +254,45 @@ export function mergeSchemas(...schemas) {
             // and merge schemas on matching keys
             if (isObject(combinedValue) && isObject(schemaValue)) {
               const combinedObject = { ...combinedValue };
-              // If new schema has additionalProperties,
-              // merge or remove non-matching property keys in combined schema
-              if (hasOwn(schemaValue, 'additionalProperties')) {
+              // additionalProperties sits beside properties, not inside it.
+              // Reading it off schemaValue asked whether a property happened to
+              // be named after the keyword, which both skipped this for every
+              // ordinary schema and mangled the rare one that has such a
+              // property.
+              const newAdditional = hasOwn(schema, 'additionalProperties') ?
+                schema.additionalProperties : undefined;
+              const priorForbids = priorAdditional.indexOf(false) > -1;
+              const priorConstraint = priorAdditional.filter(isObject)[0];
+
+              // A key the new schema does not declare is governed by its
+              // additionalProperties: removed outright, or constrained by it.
+              if (newAdditional !== undefined) {
                 Object.keys(combinedValue)
-                  .filter(combinedKey => !Object.keys(schemaValue).includes(combinedKey))
+                  .filter(combinedKey => !hasOwn(schemaValue, combinedKey))
                   .forEach(nonMatchingKey => {
-                    if (schemaValue.additionalProperties === false) {
+                    if (newAdditional === false) {
                       delete combinedObject[nonMatchingKey];
-                    } else if (isObject(schemaValue.additionalProperties)) {
+                    } else if (isObject(newAdditional)) {
                       combinedObject[nonMatchingKey] = mergeSchemas(
-                        combinedObject[nonMatchingKey],
-                        schemaValue.additionalProperties
+                        combinedObject[nonMatchingKey], newAdditional
                       );
                     }
                   });
               }
               for (const subKey of Object.keys(schemaValue)) {
-                if (deepEqual(combinedObject[subKey], schemaValue[subKey]) || (
-                  !hasOwn(combinedObject, subKey) &&
-                  !hasOwn(combinedObject, 'additionalProperties')
-                )) {
-                  combinedObject[subKey] = schemaValue[subKey];
-                // If combined schema has additionalProperties,
-                // merge or ignore non-matching property keys in new schema
-                } else if (
-                  !hasOwn(combinedObject, subKey) &&
-                  hasOwn(combinedObject, 'additionalProperties')
+                const isNewKey = !hasOwn(combinedObject, subKey);
+                if (deepEqual(combinedObject[subKey], schemaValue[subKey]) ||
+                  (isNewKey && !priorAdditional.length)
                 ) {
-                  // If combinedObject.additionalProperties === false,
-                  // do nothing (don't set key)
-                  // If additionalProperties is object, merge with new key
-                  if (isObject(combinedObject.additionalProperties)) {
-                    combinedObject[subKey] = mergeSchemas(
-                      combinedObject.additionalProperties, schemaValue[subKey]
-                    );
+                  combinedObject[subKey] = schemaValue[subKey];
+                // Symmetrically, a key the earlier schemas did not declare is
+                // governed by their additionalProperties.
+                } else if (isNewKey) {
+                  if (priorConstraint) {
+                    combinedObject[subKey] =
+                      mergeSchemas(priorConstraint, schemaValue[subKey]);
+                  } else if (!priorForbids) {
+                    combinedObject[subKey] = schemaValue[subKey];
                   }
                 // If both keys are objects, merge them
                 } else if (
