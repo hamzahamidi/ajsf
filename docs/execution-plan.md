@@ -128,24 +128,37 @@ them: five of the eight breaking findings are invisible to it.
 Only the final stable release moves `latest`. A release candidate that turns out
 wrong is abandoned rather than patched, since nothing depends on it by default.
 
-## Finding 15 needs a test the corpus cannot provide
+## Finding 15, fixed at rc.3
 
-`layout.functions.ts:385` builds the template a new array item is cloned from out
-of `newNode.items[newNode.items.length - 1]`, the last item that already exists.
-On a tuple array that is the last fixed slot, so the Add button hands back a copy
-of it rather than something built from `additionalItems`.
+`buildLayout` built the template a new array item is cloned from out of
+`newNode.items[newNode.items.length - 1]`, the last item that already exists. On a
+tuple array that is the last fixed slot, so the Add button handed back a copy of
+it: the measured template for a two slot tuple with `additionalItems` carried
+`title: 'Second'`, `dataPointer: '/pair/1'`, `arrayItemType: 'tuple'` and no
+`options.removable` at all, so every added item duplicated the last fixed slot and
+could not then be removed.
 
-It moved out of rc.2 for reasons worth recording. The corpus harness simulates no
-clicks and calls no `addItem`, so it measures the first render only and is blind to
-this by construction, and the failure mode is a silently wrong shape for every
-added item. The `forEach` immediately after that line also nulls `_id` and rewrites
-`dataPointer` on the assumption the node was cloned from a sibling; one built from
-the schema arrives with correct pointers and fresh ids already, so that post
-processing has to be revisited rather than inherited.
+`buildLayoutFromSchema` already did this correctly, computing
+`schemaPointer + '/additionalItems'` (or `'/items'` when `items` is a single
+schema) and building the node. The two paths had diverged; the fix points the
+custom layout path at the same source.
 
-The fix is to build from `schemaPointer + '/additionalItems'`, or `'/items'` when
-that is a single schema, falling back to the clone when neither exists. It needs a
-component test that presses Add, because nothing existing would catch a regression.
+The clone is kept where it is right. A list array's last item genuinely is the
+template, and only a tuple slot is the wrong thing to copy, so the guard is the
+last item's `arrayItemType === 'tuple'` rather than the array having tuple items.
+The `forEach` that nulls `_id` and slices `dataPointer` runs on the clone branch
+only: a node from `buildLayoutFromSchema` arrives with no id and a relative
+pointer already, so sharing that post processing would have sliced twice.
+
+Seven specs on `buildLayout`, not the component test this section previously
+called for. The template is readable straight out of `layoutRefLibrary`, so no
+click has to be simulated to assert its shape. Five of the seven fail without the
+fix, naming the defect: `'Second'` for `'Extra'`, `'tuple'` for `'list'`,
+`'/pair/1'` unchanged, and `options.removable` undefined. The other two pin the
+clone path that stays.
+
+Corpus delta was predicted at zero on all 370 and measured at zero. The harness
+presses no buttons, so the template is never materialised.
 
 ## Three decisions
 
