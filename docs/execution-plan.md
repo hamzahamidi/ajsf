@@ -116,8 +116,8 @@ on Angular 18, so the upgrade comes first:
     19.0.0-rc.0   Angular 19 itself, no behaviour change
     19.0.0-rc.1   the converter split, ajv 8, draft 7 default, draft 4 floor
     19.0.0-rc.2   tuple slot semantics: finding 3
-    19.0.0-rc.3   the array item template and allOf merging: findings 15, 11, 12, 14
-    19.0.0-rc.4   the widget and submit changes: findings 5, 6, 21
+    19.0.0-rc.3   the array item template, and the two contained allOf defects
+    19.0.0-rc.4   the allOf shaping defects, then the widget and submit changes
     19.0.0        promoted to latest once the series has been exercised
 
 Numbering is per step rather than per finding, so a step can carry more than one
