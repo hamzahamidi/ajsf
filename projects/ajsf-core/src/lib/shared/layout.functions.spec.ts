@@ -1658,3 +1658,75 @@ describe('buildLayout, tuple slots versus list items', () => {
     slots.forEach((slot: any) => expect(slot.removable).toBe(false));
   });
 });
+
+describe('buildLayout, the template a new array item is built from', () => {
+  // The corpus harness presses no buttons, so nothing else here covers the shape
+  // handed back by the Add button.
+  const tupleSchema = {
+    type: 'object',
+    properties: {
+      pair: {
+        type: 'array',
+        items: [{ type: 'string', title: 'First' }, { type: 'string', title: 'Second' }],
+        additionalItems: { type: 'string', title: 'Extra' },
+      },
+    },
+  };
+
+  const templateFor = (schema: any, layout: any[]) => {
+    const jsf = makeJsf({ schema, layout });
+    buildLayout(jsf, widgetLibrary);
+    return jsf.layoutRefLibrary['/pair/-'];
+  };
+
+  const tupleLayout = [{ key: 'pair', type: 'array', items: ['/pair/0', '/pair/1'] }];
+
+  it('builds a list item from additionalItems, not from the last fixed slot', () => {
+    const template = templateFor(tupleSchema, tupleLayout);
+    expect(template).toBeTruthy();
+    expect(template.options.title).toBe('Extra');
+  });
+
+  it('types the added item as a list item so it renders a remove control', () => {
+    expect(templateFor(tupleSchema, tupleLayout).arrayItemType).toBe('list');
+  });
+
+  // Every framework component reads options.removable to decide whether to
+  // render the remove control, so that is the field that has to carry it.
+  it('makes the added item removable', () => {
+    expect(templateFor(tupleSchema, tupleLayout).options.removable).toBe(true);
+  });
+
+  it('does not point the added item at a fixed slot', () => {
+    expect(templateFor(tupleSchema, tupleLayout).dataPointer).not.toBe('/pair/1');
+  });
+
+  it('honours removable false on the array', () => {
+    const template = templateFor(tupleSchema, [{
+      key: 'pair', type: 'array', removable: false, items: ['/pair/0', '/pair/1'],
+    }]);
+    expect(template.options.removable).toBe(false);
+  });
+
+  // A list array's last item genuinely is the template, so that clone is correct
+  // and stays. Only a tuple slot is the wrong thing to copy.
+  it('still clones the last item for an array with no fixed slots', () => {
+    const listSchema = {
+      type: 'object',
+      properties: { pair: { type: 'array', items: { type: 'string', title: 'Tag' } } },
+    };
+    const template = templateFor(listSchema, [{ key: 'pair', type: 'array' }]);
+    expect(template).toBeTruthy();
+    expect(template.arrayItemType).toBe('list');
+  });
+
+  it('falls back to the clone when a tuple array declares no additionalItems', () => {
+    const noAdditional = {
+      type: 'object',
+      properties: {
+        pair: { type: 'array', items: [{ type: 'string' }, { type: 'string' }] },
+      },
+    };
+    expect(() => templateFor(noAdditional, tupleLayout)).not.toThrow();
+  });
+});

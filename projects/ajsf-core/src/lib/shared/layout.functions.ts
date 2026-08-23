@@ -384,19 +384,48 @@ export function buildLayout(jsf, widgetLibrary) {
         }
 
         if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
-          jsf.layoutRefLibrary[itemRefPointer] =
-            cloneDeep(newNode.items[newNode.items.length - 1]);
-          if (recursive) {
-            jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
-          }
-          forEach(jsf.layoutRefLibrary[itemRefPointer], (item, key) => {
-            if (hasOwn(item, '_id')) { item._id = null; }
-            if (recursive) {
-              if (hasOwn(item, 'dataPointer')) {
-                item.dataPointer = item.dataPointer.slice(itemRefPointer.length);
-              }
+          const lastItem = newNode.items[newNode.items.length - 1];
+          // The last existing item is only a template for a new one when it is
+          // itself a list item. On a tuple array it is a fixed slot, so cloning
+          // it gave every added item that slot's schema, title and pointer.
+          const listItemSchemaPointer = isArray(nodeSchema && nodeSchema.items) ?
+            (isObject(nodeSchema.additionalItems) ?
+              schemaPointer + '/additionalItems' : null) :
+            (isObject(nodeSchema && nodeSchema.items) ?
+              schemaPointer + '/items' : null);
+
+          if (lastItem && lastItem.arrayItemType === 'tuple' && listItemSchemaPointer) {
+            // Set to null first to prevent a recursive reference from looping.
+            jsf.layoutRefLibrary[itemRefPointer] = null;
+            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+              jsf, widgetLibrary, null,
+              removeRecursiveReferences(
+                listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap
+              ),
+              recursive ? '' : newNode.dataPointer + '/-',
+              true, 'list', newNode.options.removable !== false, true,
+              recursive ? newNode.dataPointer + '/-' : ''
+            );
+            if (recursive && jsf.layoutRefLibrary[itemRefPointer]) {
+              jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
             }
-          }, 'top-down');
+          } else {
+            jsf.layoutRefLibrary[itemRefPointer] = cloneDeep(lastItem);
+            if (recursive) {
+              jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
+            }
+            // Only a cloned sibling needs this: it carries the id and the
+            // absolute pointer of the node it was copied from. A node built
+            // from the schema above already has neither.
+            forEach(jsf.layoutRefLibrary[itemRefPointer], (item, key) => {
+              if (hasOwn(item, '_id')) { item._id = null; }
+              if (recursive) {
+                if (hasOwn(item, 'dataPointer')) {
+                  item.dataPointer = item.dataPointer.slice(itemRefPointer.length);
+                }
+              }
+            }, 'top-down');
+          }
         }
 
         // Add any additional default items
