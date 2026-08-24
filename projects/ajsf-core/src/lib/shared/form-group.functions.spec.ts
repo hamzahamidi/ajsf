@@ -812,7 +812,7 @@ describe('form-group.functions', () => {
       });
 
       expect(group.valid).toBe(false);
-      expect(group.errors).toEqual({ minProperties: { minimumProperties: 3, currentProperties: 1 } });
+      expect(group.errors).toEqual({ minProperties: { minimumProperties: 3, currentProperties: 0 } });
     });
 
     it('composes two group-level validators', () => {

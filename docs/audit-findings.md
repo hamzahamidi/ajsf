@@ -13,7 +13,12 @@ Findings 1, 2, 4, 7, 8, 9, 16, 17, 18, 19, 20 shipped in 18.1.0 through 18.3.0.
 Finding 3 shipped at `19.0.0-rc.2`, finding 13 and the draft work at
 `19.0.0-rc.1`, finding 15 at `19.0.0-rc.3`.
 
-Still open: 5, 6, 21, and the layout residual of 10.
+Findings 5 (the select widget storing the string "null" for the None option),
+6 (disableInvalidSubmit dead for a layout-declared submit) and 21
+(minProperties and maxProperties counting declared rather than entered values)
+shipped at 19.0.0-rc.4.
+
+Still open: the layout residual of 10.
 
 The three allOf defects did not ship together. The two that are contained, the
 `additionalProperties` assignment and the positional tuple merge, went first. The

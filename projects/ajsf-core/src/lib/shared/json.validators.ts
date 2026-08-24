@@ -505,7 +505,10 @@ export class JsonValidators {
     if (!hasValue(minimumProperties)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
-      const currentProperties = Object.keys(control.value).length || 0;
+      // A group's value carries every declared key from the start, so count
+      // entered values rather than keys, as the description above promises.
+      const currentProperties = Object.keys(control.value)
+        .filter(key => hasValue(control.value[key])).length;
       const isValid = currentProperties >= minimumProperties;
       return xor(isValid, invert) ?
         null : { 'minProperties': { minimumProperties, currentProperties } };
@@ -528,7 +531,8 @@ export class JsonValidators {
     if (!hasValue(maximumProperties)) { return JsonValidators.nullValidator; }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
       if (isEmpty(control.value)) { return null; }
-      const currentProperties = Object.keys(control.value).length || 0;
+      const currentProperties = Object.keys(control.value)
+        .filter(key => hasValue(control.value[key])).length;
       const isValid = currentProperties <= maximumProperties;
       return xor(isValid, invert) ?
         null : { 'maxProperties': { maximumProperties, currentProperties } };
