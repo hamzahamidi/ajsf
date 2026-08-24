@@ -186,6 +186,14 @@ The corpus baseline pins **current** behaviour including bugs, so a corpus failu
 
 Each of these cost real debugging time. They look like bugs in your code and are not.
 
+- **The framework suites test `dist/@ajsf/core`, not the core source.**
+  `tsconfig.json` maps `@ajsf/core` to `dist/@ajsf/core`, so `test:material` and
+  the three Bootstrap suites run whatever `build:libs` last wrote there, however
+  old. A core fix can pass `test:core` and then appear not to work in a
+  framework suite that is really running a week old build. Run
+  `npm run build:libs` after touching core and before reading a framework
+  suite's verdict. CI is immune: the workflow builds before it tests.
+
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.

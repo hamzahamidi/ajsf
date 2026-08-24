@@ -141,7 +141,10 @@ export class JsonSchemaFormService {
       feedback: false, // Show inline feedback icons?
       feedbackOnRender: false, // Show errorMessage on Render?
       notitle: false, // Hide title?
-      disabled: false, // Set control as disabled? (not editable, and excluded from output)
+      // No 'disabled' default: updateInputOptions copies these defaults into
+      // every layout node, and the submit widgets read hasOwn(options,
+      // 'disabled') as an explicit override, so a default made
+      // disableInvalidSubmit unreachable for any layout-declared submit.
       readonly: false, // Set control as read only? (not editable, but included in output)
       returnEmptyFields: true, // return values for fields that contain no data?
       validationMessages: {} // set by setLanguage()
