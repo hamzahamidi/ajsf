@@ -635,6 +635,30 @@ describe('JsonValidators', () => {
     });
   });
 
+  describe('minProperties and maxProperties count entered values', () => {
+    // A form group's value carries every declared key from the moment the form
+    // is built, nulls included, so counting keys made an untouched group pass
+    // any minProperties and fail a maxProperties below its declared size.
+    it('does not count an untouched control toward the minimum', () => {
+      expect(JsonValidators.minProperties(1)(ctrl({ a: null, b: null })))
+        .toEqual({ minProperties: { minimumProperties: 1, currentProperties: 0 } });
+    });
+
+    it('does not fail a maximum because of untouched controls', () => {
+      expect(JsonValidators.maxProperties(1)(ctrl({ a: 'x', b: null, c: '' })))
+        .toBeNull();
+    });
+
+    it('counts false and zero as entered values', () => {
+      expect(JsonValidators.minProperties(2)(ctrl({ a: false, b: 0 }))).toBeNull();
+    });
+
+    it('reports the entered count in the error', () => {
+      expect(JsonValidators.maxProperties(1)(ctrl({ a: 1, b: 2, c: null })))
+        .toEqual({ maxProperties: { maximumProperties: 1, currentProperties: 2 } });
+    });
+  });
+
   describe('minProperties', () => {
     it('returns the no-op validator when no minimum is given', () => {
       expect(JsonValidators.minProperties(null)(ctrl({ a: 1 }))).toBeNull();
