@@ -23,14 +23,17 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [id]="'control' + layoutNode?._id"
         [name]="controlName">
         <ng-template ngFor let-selectItem [ngForOf]="selectList">
+          <!-- ngValue, not value: the DOM coerces value to a string, so the
+               None option wrote the four-character string "null" into the
+               control and a numeric enum stored strings. -->
           <option *ngIf="!isArray(selectItem?.items)"
-            [value]="selectItem?.value">
+            [ngValue]="selectItem?.value">
             <span [innerHTML]="selectItem?.name"></span>
           </option>
           <optgroup *ngIf="isArray(selectItem?.items)"
             [label]="selectItem?.group">
             <option *ngFor="let subItem of selectItem.items"
-              [value]="subItem?.value">
+              [ngValue]="subItem?.value">
               <span [innerHTML]="subItem?.name"></span>
             </option>
           </optgroup>
@@ -91,6 +94,14 @@ export class SelectComponent implements OnInit {
   }
 
   updateValue(event) {
-    this.jsf.updateValue(this, event.target.value);
+    // The unbound select has no value accessor, so the DOM hands back every
+    // selection as a string. Recover the typed value from the option list.
+    const domValue = event.target.value;
+    const flatItems = [];
+    for (const item of this.selectList) {
+      if (isArray(item.items)) { flatItems.push(...item.items); } else { flatItems.push(item); }
+    }
+    const matched = flatItems.find(item => `${item.value}` === domValue);
+    this.jsf.updateValue(this, matched ? matched.value : domValue);
   }
 }
