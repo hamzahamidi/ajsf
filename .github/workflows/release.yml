@@ -217,10 +217,42 @@ jobs:
             "npm install @ajsf/core@$VERSION" \
             "\`\`\`" \
             "")
+          # --generate-notes starts from the previous tag, which for a stable
+          # release is its own last release candidate: the page would list the
+          # version bump and nothing from the series it completes. A stable
+          # release therefore generates from the last stable tag and carries
+          # the major's upgrade note when one is written.
           PRERELEASE=""
-          case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+          NOTES_START=""
+          case "$VERSION" in
+            *-*)
+              PRERELEASE="--prerelease"
+              ;;
+            *)
+              LAST_STABLE=$(gh release list --exclude-pre-releases --exclude-drafts \
+                --limit 1 --json tagName --jq '.[0].tagName')
+              if [ -n "$LAST_STABLE" ] && [ "$LAST_STABLE" != "null" ]; then
+                NOTES_START="--notes-start-tag $LAST_STABLE"
+                echo "[release] generating notes from $LAST_STABLE"
+              fi
+              # Only a major's first stable release. The file is named by the
+              # major alone, so a plain existence check would repeat the whole
+              # document on every later release of that major.
+              case "$VERSION" in
+                *.0.0)
+                  UPGRADE_NOTE="docs/release-notes/${VERSION%%.*}.md"
+                  if [ -f "$UPGRADE_NOTE" ]; then
+                    NOTES=$(printf '%s\n%s\n' "$NOTES" "$(cat "$UPGRADE_NOTE")")
+                    echo "[release] included $UPGRADE_NOTE"
+                  fi
+                  ;;
+              esac
+              ;;
+          esac
+
           gh release create "v$VERSION" \
             --title "$VERSION" \
             --notes "$NOTES" \
             --generate-notes \
+            $NOTES_START \
             $PRERELEASE

@@ -27,7 +27,6 @@ npm run build:libs           # build all five packages into dist/@ajsf/
 npm run build:demo           # build the libraries and the demo app
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
-npm run changelog            # regenerate CHANGELOG.md from commit messages
 ```
 
 Library tests need the headless launcher flags:
@@ -67,6 +66,10 @@ The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes
 
 A version containing a hyphen goes to the `next` dist-tag, everything else to `latest`. Do not create release tags by hand: the workflow writes them, so a tag always means the version shipped.
 
+**Write `docs/release-notes/<major>.md` before promoting a major.** GitHub generates a release page from the previous tag, which for a stable release is its own last candidate, so the page would show the version bump and nothing from the series it completes. A stable release generates from the last stable tag instead and appends that file on the major's first stable release, `X.0.0`. Later releases of the same major do not repeat it. Prereleases are unaffected and keep listing what landed since the previous candidate.
+
+There is no CHANGELOG.md and no changelog script. The release pages are the record. `conventional-changelog -p angular` was removed because it emits no BREAKING CHANGES section from a `!` subject without a `BREAKING CHANGE:` footer, and no commit in this repository has ever carried one.
+
 ## Coverage
 
 Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all five libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
@@ -103,7 +106,7 @@ them per file, because both are deliberate:
 
 ## Commits and branches
 
-- Angular commit conventions (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `refactor:`, `chore:`). `npm run changelog` parses them.
+- Angular commit conventions (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `refactor:`, `chore:`). A release page lists commit subjects verbatim, so the subject is what a consumer reads. Mark a consumer visible behaviour change `!`, as in `fix(core)!:`.
 - **Never add `Co-Authored-By` or any agent attribution** to a commit message or a branch name.
 - Base branch is `main`.
 - Explain why in the commit body, not what. The diff already says what.
@@ -197,7 +200,7 @@ Each of these cost real debugging time. They look like bugs in your code and are
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.
-- **`jasmine@7` installs on Node 16 and then fails at run time** with `ReferenceError: structuredClone is not defined`, which arrived in Node 17. The repository pins jasmine 4. The same applies to `conventional-changelog-cli`, pinned to v4 because v5 needs Node 18.
+- **`jasmine@7` installs on Node 16 and then fails at run time** with `ReferenceError: structuredClone is not defined`, which arrived in Node 17. The repository pins jasmine 4.
 - **`ng update` on a partial package list resolves inconsistently, and `--force` hides it.** Updating only `@angular/core`, `cli`, `material` and `cdk` leaves every other `@angular/*` package free to resolve on its own, and they land on the *next* major. On the Angular 16 step, with `--force`, that produced a mixed tree: `@angular/core` at `16.2.12` beside `@angular/common` and `@angular/compiler-cli` at `17.3.12`, TypeScript on an Angular 17 range, and `error TS2305: Module '"@angular/core"' has no exported member 'ɵIMAGE_CONFIG'`. Without `--force` the same partial list simply fails, which is the better outcome.
 
   **Name every `@angular/*` package on the command line and `--force` is not needed.** Read them out of `package.json` rather than typing a list from memory:
