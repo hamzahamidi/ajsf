@@ -229,18 +229,24 @@ jobs:
               PRERELEASE="--prerelease"
               ;;
             *)
-              LAST_STABLE=$(gh release list --limit 100 \
-                --json tagName,isPrerelease,isDraft \
-                --jq '[.[] | select(.isPrerelease == false and .isDraft == false) | .tagName] | first')
+              LAST_STABLE=$(gh release list --exclude-pre-releases --exclude-drafts \
+                --limit 1 --json tagName --jq '.[0].tagName')
               if [ -n "$LAST_STABLE" ] && [ "$LAST_STABLE" != "null" ]; then
                 NOTES_START="--notes-start-tag $LAST_STABLE"
                 echo "[release] generating notes from $LAST_STABLE"
               fi
-              UPGRADE_NOTE="docs/release-notes/${VERSION%%.*}.md"
-              if [ -f "$UPGRADE_NOTE" ]; then
-                NOTES=$(printf '%s\n%s\n' "$NOTES" "$(cat "$UPGRADE_NOTE")")
-                echo "[release] included $UPGRADE_NOTE"
-              fi
+              # Only a major's first stable release. The file is named by the
+              # major alone, so a plain existence check would repeat the whole
+              # document on every later release of that major.
+              case "$VERSION" in
+                *.0.0)
+                  UPGRADE_NOTE="docs/release-notes/${VERSION%%.*}.md"
+                  if [ -f "$UPGRADE_NOTE" ]; then
+                    NOTES=$(printf '%s\n%s\n' "$NOTES" "$(cat "$UPGRADE_NOTE")")
+                    echo "[release] included $UPGRADE_NOTE"
+                  fi
+                  ;;
+              esac
               ;;
           esac
 

@@ -66,7 +66,7 @@ The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes
 
 A version containing a hyphen goes to the `next` dist-tag, everything else to `latest`. Do not create release tags by hand: the workflow writes them, so a tag always means the version shipped.
 
-**Write `docs/release-notes/<major>.md` before promoting a major.** GitHub generates a release page from the previous tag, which for a stable release is its own last candidate, so the page would show the version bump and nothing from the series it completes. A stable release generates from the last stable tag instead and appends that file when it exists. Prereleases are unaffected and keep listing what landed since the previous candidate.
+**Write `docs/release-notes/<major>.md` before promoting a major.** GitHub generates a release page from the previous tag, which for a stable release is its own last candidate, so the page would show the version bump and nothing from the series it completes. A stable release generates from the last stable tag instead and appends that file on the major's first stable release, `X.0.0`. Later releases of the same major do not repeat it. Prereleases are unaffected and keep listing what landed since the previous candidate.
 
 There is no CHANGELOG.md and no changelog script. The release pages are the record. `conventional-changelog -p angular` was removed because it emits no BREAKING CHANGES section from a `!` subject without a `BREAKING CHANGE:` footer, and no commit in this repository has ever carried one.
 
