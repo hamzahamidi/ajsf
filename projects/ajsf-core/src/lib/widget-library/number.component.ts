@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 import { JsonSchemaFormService } from '../json-schema-form.service';
+import { effectiveMinimum, effectiveMaximum } from '../shared';
 
 @Component({
     selector: 'number-widget',
@@ -15,8 +16,8 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
       <input *ngIf="boundControl"
         [formControl]="formControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="options?.maximum"
-        [attr.min]="options?.minimum"
+        [attr.max]="maxValue"
+        [attr.min]="minValue"
         [attr.placeholder]="options?.placeholder"
         [attr.required]="options?.required"
         [attr.readonly]="options?.readonly ? 'readonly' : null"
@@ -29,8 +30,8 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [type]="layoutNode?.type === 'range' ? 'range' : 'number'">
       <input *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="options?.maximum"
-        [attr.min]="options?.minimum"
+        [attr.max]="maxValue"
+        [attr.min]="minValue"
         [attr.placeholder]="options?.placeholder"
         [attr.required]="options?.required"
         [attr.readonly]="options?.readonly ? 'readonly' : null"
@@ -59,6 +60,9 @@ export class NumberComponent implements OnInit {
   allowDecimal = true;
   allowExponents = false;
   lastValidNumber = '';
+
+  get minValue() { return effectiveMinimum(this.options?.minimum, this.options?.exclusiveMinimum); }
+  get maxValue() { return effectiveMaximum(this.options?.maximum, this.options?.exclusiveMaximum); }
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];

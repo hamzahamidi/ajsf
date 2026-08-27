@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
-import { JsonSchemaFormService } from '@ajsf/core';
+import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf/core';
 
 @Component({
     selector: 'material-slider-widget',
@@ -8,8 +8,8 @@ import { JsonSchemaFormService } from '@ajsf/core';
     <mat-slider discrete *ngIf="boundControl"
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [id]="'control' + layoutNode?._id"
-      [max]="options?.maximum"
-      [min]="options?.minimum"
+      [max]="maxValue"
+      [min]="minValue"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
       ><input matSliderThumb [formControl]="formControl" (blur)="options.showErrors = true" /></mat-slider>
@@ -17,8 +17,8 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
       [disabled]="controlDisabled || options?.readonly"
       [id]="'control' + layoutNode?._id"
-      [max]="options?.maximum"
-      [min]="options?.minimum"
+      [max]="maxValue"
+      [min]="minValue"
       [step]="options?.multipleOf || options?.step || 'any'"
       [style.width]="'100%'"
       (blur)="options.showErrors = true" #ngSlider><input matSliderThumb [value]="controlValue" (change)="updateValue({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value})" #ngSliderThumb="matSliderThumb" /></mat-slider>
@@ -38,6 +38,9 @@ export class MaterialSliderComponent implements OnInit {
   allowDecimal = true;
   allowExponents = false;
   lastValidNumber = '';
+
+  get minValue() { return effectiveMinimum(this.options?.minimum, this.options?.exclusiveMinimum); }
+  get maxValue() { return effectiveMaximum(this.options?.maximum, this.options?.exclusiveMaximum); }
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
