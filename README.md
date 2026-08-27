@@ -59,7 +59,7 @@ which is deprecated and has no Angular 16 release. You can uninstall it unless s
 else in your project uses it.
 
 No code change is needed. `FlexLayoutRootComponent`, `FlexLayoutSectionComponent`, the
-`ng-jsf-flex-layout` widget and layout options such as `fxFlex`, `fxFlexAlign` and
+`flex` and `section` layout types and options such as `fxFlex`, `fxFlexAlign` and
 `fxLayoutGap` all behave as before. The version jump is the Angular-aligned scheme
 starting, not a rewrite: `14.0.0` targets the same Angular 14 that `0.8.0` did.
 
