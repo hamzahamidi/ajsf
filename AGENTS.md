@@ -54,7 +54,7 @@ It refuses to write anything when the version is malformed or when the two argum
 
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
 
-⚠️ **Release only when the published product changes.** A new version is for things a consumer of `@ajsf/*` can observe: widget behaviour, the public API, dependencies, supported Angular range. CI configuration, workflows, test suites, lint setup, contributor docs and internal refactors do not get a release, however large the diff. They land on `main` without touching the version and the release workflow correctly does nothing.
+⚠️ **Release only when the published product changes.** A new version is for things a consumer of `@ajsf/*` can observe: widget behaviour, the public API, dependencies, supported Angular range. CI configuration, workflows, test suites, lint setup, contributor docs and internal refactors do not get a release, however large the diff. They land on `main` without touching the version and the release workflow correctly does nothing. The repository root README is the exception: `postbuild:core` ships it as the `@ajsf/core` package page (see Traps), so editing it is a product change and a patch release carries it to npm.
 
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
@@ -196,6 +196,14 @@ Each of these cost real debugging time. They look like bugs in your code and are
   framework suite that is really running a week old build. Run
   `npm run build:libs` after touching core and before reading a framework
   suite's verdict. CI is immune: the workflow builds before it tests.
+
+- **The root `README.md` is the published `@ajsf/core` README.** `postbuild:core`
+  copies it into `dist/@ajsf/core`, so a change to the repository root README
+  ships on the `@ajsf/core` npm page from the next publish. `@ajsf/core` has no
+  `projects/ajsf-core/README.md` of its own; the other four packages copy their
+  own `projects/ajsf-*/README.md`. A root README edit is a published-product
+  change, not a contributor-only doc, and it reaches consumers only when a
+  version publishes.
 
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
