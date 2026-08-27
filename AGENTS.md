@@ -100,7 +100,7 @@ them per file, because both are deliberate:
 
 ## Constraints
 
-- **The public API is frozen** while the Angular upgrade is in progress. Do not remove or rename any export from a `public_api.ts`. In particular `@ajsf/material` must keep exporting `FlexLayoutRootComponent` and `FlexLayoutSectionComponent`, and the `flex-layout-root-widget`, `flex-layout-section-widget` selectors and the `ng-jsf-flex-layout` widget name must keep working. They appear in consumer layout schemas.
+- **The public API is frozen** while the Angular upgrade is in progress. Do not remove or rename any export from a `public_api.ts`. In particular `@ajsf/material` must keep exporting `FlexLayoutRootComponent` and `FlexLayoutSectionComponent`, and keep the `flex-layout-root-widget` and `flex-layout-section-widget` selectors those components declare. Consumer layout schemas reach this feature through `type` values such as `flex` and `section`, which must keep resolving. `ng-jsf-flex-layout` is a demo example schema for the feature, not a widget name.
 - **Do not upgrade Angular as a side effect** of another change. Angular majors move one at a time, in their own PR.
 - `@ajsf/core` uses `any` widely by design, because it processes arbitrary JSON Schema. Do not "fix" that.
 
