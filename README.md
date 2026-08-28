@@ -3,7 +3,7 @@
 **N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
 
 <p align="center">
-  <a href="https://github.com/hamzahamidi/ajsf/actions?query=workflow%3ACI+branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/workflows/CI/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI Status"></a>
   <a href="https://codecov.io/gh/hamzahamidi/ajsf"><img src="https://codecov.io/gh/hamzahamidi/ajsf/branch/main/graph/badge.svg" alt="Code coverage"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
   <a href="https://github.com/hamzahamidi/ajsf/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="MIT licence"></a>
