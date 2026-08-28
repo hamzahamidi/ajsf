@@ -20,6 +20,7 @@ import { Bootstrap4FrameworkModule } from '@ajsf/bootstrap4';
 import { Bootstrap3FrameworkModule } from '@ajsf/bootstrap3';
 import { Bootstrap5FrameworkModule } from '@ajsf/bootstrap5';
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
+import { PrimengFrameworkModule } from '@ajsf/primeng';
 
 @NgModule({ declarations: [AceEditorDirective, DemoComponent, DemoRootComponent],
     bootstrap: [DemoRootComponent], imports: [BrowserModule, BrowserAnimationsModule, FormsModule,
@@ -30,6 +31,7 @@ import { MaterialDesignFrameworkModule } from '@ajsf/material';
         Bootstrap3FrameworkModule,
         Bootstrap5FrameworkModule,
         MaterialDesignFrameworkModule,
+        PrimengFrameworkModule,
         JsonSchemaFormModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 
 export class DemoModule { }

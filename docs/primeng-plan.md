@@ -15,13 +15,20 @@ lines. A new package registers in four places before any widget compiles:
 
     angular.json                 a projects entry, build and test targets
     tsconfig.json                @ajsf/primeng -> dist/@ajsf/primeng in paths
-    package.json                 build:primeng, postbuild:primeng, test:primeng,
-                                 and the three wired into build:libs and coverage
-    scripts/set-version.js       the package added to the lockstep version set
+    package.json                 build:primeng, postbuild:primeng, test:primeng
+    .github/workflows/ci.yml     a test:primeng leg beside the others
 
 The framework itself is one module, one framework class carrying the widget map,
 one framework component with its template and styles, and the widgets directory
 with a public_api.ts. corpus.spec.ts and test.ts come across unchanged in shape.
+
+build:libs and scripts/set-version.js are deliberately left alone until the
+package is ready to publish. The release job publishes every directory under
+dist/@ajsf, and build:libs is what fills it, so a package added to build:libs
+before its placeholder publish exists would fail the release at its own publish
+step, the OIDC trap below. So the scaffold builds and is tested through its own
+scripts and the CI leg, and joins build:libs, coverage and the version set in the
+same step that first publishes it.
 
 ## Widget map
 
@@ -86,20 +93,23 @@ app. The consumer sets up PrimeNG once; the package only uses its components.
 
 ## Sequence
 
-1. Scaffold the four registration points and an empty framework that resolves
-   every core widget through core's own components, so the package builds and
-   serves before a single PrimeNG widget exists. Predicted corpus delta is the
-   74 new entries recorded fresh, since the package is a new framework leg.
-2. Port the flex layout root and section and the add-reference component from
+1. Scaffold the package and an empty framework that resolves every core widget
+   through core's own components, so it builds and is tested before a single
+   PrimeNG widget exists. It stays out of build:libs and the version set, so a
+   release in the meantime cannot fail on it.
+2. corpus.spec.ts records the 74 entry baseline for the new leg, a new framework
+   leg, so the predicted delta is the 74 fresh entries and nothing else moves.
+3. Port the flex layout root and section and the add-reference component from
    material, the three that carry no library surface.
-3. The widgets, grouped by how much each borrows from the material equivalent:
+4. The widgets, grouped by how much each borrows from the material equivalent:
    the plain input and textarea, then number, select, one-of and the boolean
    controls, then the composite widgets, date, file, slider, the tag input, stepper and
    tabs. Each widget lands with its unit specs, following the number and slider
    specs added for finding 10.
-4. corpus.spec.ts records the 74 entry baseline for the new leg. A mispredicted
-   delta is a defect in the pull request, not a baseline to re record.
-5. CI gains a test:primeng leg and a coverage leg, matching the existing five.
+   A mispredicted delta on any later widget is a defect in the pull request, not
+   a baseline to re record.
+5. The package joins build:libs, coverage and the version set, which is the step
+   that first publishes it, gated on the manual placeholder below.
 
 ## The first publish is gated on a manual step
 

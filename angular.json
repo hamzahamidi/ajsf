@@ -233,6 +233,34 @@
           }
         }
       }
+    },
+    "@ajsf/primeng": {
+      "projectType": "library",
+      "root": "projects/ajsf-primeng",
+      "sourceRoot": "projects/ajsf-primeng/src",
+      "prefix": "",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/ajsf-primeng/tsconfig.lib.json",
+            "project": "projects/ajsf-primeng/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ajsf-primeng/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ajsf-primeng/src/test.ts",
+            "tsConfig": "projects/ajsf-primeng/tsconfig.spec.json",
+            "karmaConfig": "projects/ajsf-primeng/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "schematics": {

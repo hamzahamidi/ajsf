@@ -54,6 +54,12 @@
       ],
       "@ajsf/material/*": [
         "dist/@ajsf/material/*"
+      ],
+      "@ajsf/primeng": [
+        "dist/@ajsf/primeng"
+      ],
+      "@ajsf/primeng/*": [
+        "dist/@ajsf/primeng/*"
       ]
     },
     "useDefineForClassFields": false
