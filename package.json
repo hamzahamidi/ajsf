@@ -38,7 +38,7 @@
   "homepage": "https://github.com/hamzahamidi/Angular6-json-schema-form#readme",
   "scripts": {
     "ng": "ng",
-    "prestart": "npm run build:libs",
+    "prestart": "npm run build:libs && npm run build:primeng",
     "start": "ng serve",
     "start:demo-only": "ng serve",
     "build:core": "ng build @ajsf/core --configuration production",
@@ -52,7 +52,7 @@
     "build:material": "ng build @ajsf/material --configuration production",
     "postbuild:material": "cp projects/ajsf-material/README.md LICENSE dist/@ajsf/material",
     "build:libs": "npm run build:core && npm run build:bs4 && npm run build:bs3 && npm run build:bs5 && npm run build:material",
-    "build:demo": "npm run build:libs && ng build demo --configuration production --base-href ./",
+    "build:demo": "npm run build:libs && npm run build:primeng && ng build demo --configuration production --base-href ./",
     "build:demo-only": "ng build demo --configuration production --base-href ./",
     "prestats": "ng build demo --configuration production --stats-json",
     "stats": "webpack-bundle-analyzer dist/demo/stats.json",
@@ -67,7 +67,10 @@
     "coverage:clean": "node -e \"require('fs').rmSync('coverage',{recursive:true,force:true})\"",
     "coverage:report": "node scripts/coverage-summary.js --files",
     "coverage": "npm run coverage:clean && npm run test:core -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:bs3 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:bs5 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI && npm run coverage:report",
-    "corpus:index": "node scripts/generate-corpus-index.js"
+    "corpus:index": "node scripts/generate-corpus-index.js",
+    "build:primeng": "ng build @ajsf/primeng --configuration production",
+    "postbuild:primeng": "cp projects/ajsf-primeng/README.md LICENSE dist/@ajsf/primeng/",
+    "test:primeng": "ng test @ajsf/primeng"
   },
   "dependencies": {
     "@angular/animations": "^19.2.25",

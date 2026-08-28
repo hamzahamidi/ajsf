@@ -38,12 +38,13 @@ export class DemoComponent implements OnInit {
     'pt': 'Portuguese',
     'zh': 'Chinese'
   };
-  frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'bootstrap-5', 'no-framework'];
+  frameworkList: any = ['material-design', 'bootstrap-3', 'bootstrap-4', 'bootstrap-5', 'primeng', 'no-framework'];
   frameworks: any = {
     'material-design': 'Material Design',
     'bootstrap-3': 'Bootstrap 3',
     'bootstrap-4': 'Bootstrap 4',
     'bootstrap-5': 'Bootstrap 5',
+    'primeng': 'PrimeNG',
     'no-framework': 'None (plain HTML)',
   };
   selectedSet = 'ng-jsf';

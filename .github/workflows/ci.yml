@@ -39,6 +39,7 @@ jobs:
         npm run test:bs3 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+        npm run test:primeng -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
     # The codecov npm package is deprecated and its uploader now fails against
     # the current API with "result.split is not a function". This action is the
     # supported path.
