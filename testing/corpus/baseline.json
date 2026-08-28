@@ -1850,94 +1850,94 @@
     "valid": true
   },
   "primeng/asf-array": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": false
   },
   "primeng/asf-basic-json-schema-type": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": false
   },
   "primeng/asf-bootstrap-grid": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": false
   },
   "primeng/asf-complex-key-support": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": true
   },
   "primeng/asf-hack-conditional-required": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
-    "valid": false
+    "valid": true
   },
   "primeng/asf-kitchen-sink": {
-    "controls": 11,
+    "controls": 8,
     "error": null,
     "valid": false
   },
   "primeng/asf-simple": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": false
   },
   "primeng/asf-tab-array": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "primeng/asf-titlemap-examples": {
-    "controls": 15,
+    "controls": 14,
     "error": null,
     "valid": true
   },
   "primeng/jsf-factory-sleek": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-ace": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-actions": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-advancedfieldset": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-array": {
-    "controls": 9,
+    "controls": 8,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-array-simple": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-authfieldset": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-autocomplete": {
-    "controls": 6,
+    "controls": 5,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-checkbox": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
-    "valid": true
+    "valid": false
   },
   "primeng/jsf-fields-checkboxbuttons": {
     "controls": 0,
@@ -1945,187 +1945,187 @@
     "valid": null
   },
   "primeng/jsf-fields-checkboxes": {
-    "controls": 15,
+    "controls": 17,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-color": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-common": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-fieldset": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-help": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-hidden": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-iconselect": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-imageselect": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-password": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-questions": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-radiobuttons": {
-    "controls": 9,
+    "controls": 0,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-range": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-section": {
-    "controls": 4,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-selectfieldset": {
-    "controls": 1,
+    "controls": 0,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-selectfieldset-key": {
-    "controls": 1,
+    "controls": 0,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-submit": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-tabarray": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-tabarray-maxitems": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-tabarray-value": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-fields-textarea": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-gettingstarted": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   },
   "primeng/jsf-previousvalues": {
-    "controls": 10,
+    "controls": 9,
     "error": null,
     "valid": true
   },
   "primeng/jsf-previousvalues-multidimensional": {
-    "controls": 6,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-schema-array": {
-    "controls": 4,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-schema-basic": {
-    "controls": 3,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-schema-default": {
-    "controls": 13,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-schema-inlineref": {
-    "controls": 3,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-schema-morecomplex": {
     "controls": 5,
     "error": null,
     "valid": true
   },
-  "primeng/jsf-templating-idx": {
+  "primeng/jsf-schema-array": {
+    "controls": 3,
+    "error": null,
+    "valid": true
+  },
+  "primeng/jsf-schema-basic": {
     "controls": 2,
     "error": null,
     "valid": true
   },
-  "primeng/jsf-templating-tpldata": {
+  "primeng/jsf-schema-default": {
+    "controls": 12,
+    "error": null,
+    "valid": true
+  },
+  "primeng/jsf-schema-inlineref": {
     "controls": 2,
     "error": null,
     "valid": true
   },
-  "primeng/jsf-templating-value": {
-    "controls": 2,
-    "error": null,
-    "valid": true
-  },
-  "primeng/jsf-templating-values": {
+  "primeng/jsf-schema-morecomplex": {
     "controls": 4,
     "error": null,
     "valid": true
   },
+  "primeng/jsf-templating-idx": {
+    "controls": 1,
+    "error": null,
+    "valid": true
+  },
+  "primeng/jsf-templating-tpldata": {
+    "controls": 1,
+    "error": null,
+    "valid": true
+  },
+  "primeng/jsf-templating-value": {
+    "controls": 1,
+    "error": null,
+    "valid": true
+  },
+  "primeng/jsf-templating-values": {
+    "controls": 3,
+    "error": null,
+    "valid": true
+  },
   "primeng/json-schema-draft04": {
-    "controls": 19,
+    "controls": 18,
     "error": null,
     "valid": false
   },
   "primeng/json-schema-draft06": {
-    "controls": 21,
+    "controls": 20,
     "error": null,
     "valid": true
   },
   "primeng/ng-jsf-data-only": {
-    "controls": 15,
+    "controls": 14,
     "error": null,
     "valid": true
   },
   "primeng/ng-jsf-deep-ref": {
-    "controls": 6,
+    "controls": 5,
     "error": null,
     "valid": true
   },
   "primeng/ng-jsf-flex-layout": {
-    "controls": 15,
+    "controls": 14,
     "error": null,
     "valid": true
   },
@@ -2135,27 +2135,27 @@
     "valid": null
   },
   "primeng/ng-jsf-nested-arrays": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": false
   },
   "primeng/ng-jsf-select-list-examples": {
-    "controls": 10,
+    "controls": 9,
     "error": null,
     "valid": true
   },
   "primeng/ng-jsf-select-widget-examples": {
-    "controls": 19,
+    "controls": 12,
     "error": null,
     "valid": true
   },
   "primeng/ng-jsf-simple-array": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": true
   },
   "primeng/rjsf-alternatives": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": true
   },
@@ -2165,12 +2165,12 @@
     "valid": true
   },
   "primeng/rjsf-custom": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/rjsf-date-and-time": {
-    "controls": 5,
+    "controls": 4,
     "error": null,
     "valid": true
   },
@@ -2180,42 +2180,42 @@
     "valid": false
   },
   "primeng/rjsf-files": {
-    "controls": 3,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "primeng/rjsf-large": {
-    "controls": 12,
+    "controls": 11,
     "error": null,
     "valid": true
   },
   "primeng/rjsf-nested": {
-    "controls": 8,
-    "error": null,
-    "valid": true
-  },
-  "primeng/rjsf-numbers": {
-    "controls": 9,
-    "error": null,
-    "valid": true
-  },
-  "primeng/rjsf-ordering": {
-    "controls": 6,
-    "error": null,
-    "valid": true
-  },
-  "primeng/rjsf-references": {
-    "controls": 8,
-    "error": null,
-    "valid": true
-  },
-  "primeng/rjsf-simple": {
     "controls": 7,
     "error": null,
     "valid": true
   },
+  "primeng/rjsf-numbers": {
+    "controls": 8,
+    "error": null,
+    "valid": true
+  },
+  "primeng/rjsf-ordering": {
+    "controls": 5,
+    "error": null,
+    "valid": true
+  },
+  "primeng/rjsf-references": {
+    "controls": 7,
+    "error": null,
+    "valid": true
+  },
+  "primeng/rjsf-simple": {
+    "controls": 6,
+    "error": null,
+    "valid": true
+  },
   "primeng/rjsf-single": {
-    "controls": 2,
+    "controls": 1,
     "error": null,
     "valid": true
   }
