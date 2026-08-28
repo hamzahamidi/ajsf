@@ -106,6 +106,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^19.2.2",
+    "primeng": "^19.1.4",
     "ts-node": "~8.6.2",
     "tslib": "^2.3.1",
     "tslint": "~6.1.0",
