@@ -15,5 +15,7 @@ export class PrimengFramework extends Framework {
     'root': PrimengFlexLayoutRootComponent,
     'section': PrimengFlexLayoutSectionComponent,
     '$ref': PrimengAddReferenceComponent,
+    'card': 'section',
+    'expansion-panel': 'section',
   };
 }
