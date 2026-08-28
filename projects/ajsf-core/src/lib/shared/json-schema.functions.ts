@@ -569,6 +569,21 @@ export function getControlValidators(schema) {
   if (hasOwn(schema, 'enum')) { validators.enum = [schema.enum]; }
   return validators;
 }
+/**
+ * Draft 6 treats minimum and exclusiveMinimum as independent bounds that both
+ * apply, so the strongest lower bound is the larger of the two and the
+ * strongest upper bound the smaller. A non-numeric bound, such as a draft 4
+ * boolean, is ignored.
+ */
+export function effectiveMinimum(minimum, exclusiveMinimum) {
+  const bounds = [minimum, exclusiveMinimum].filter(bound => typeof bound === 'number');
+  return bounds.length ? Math.max(...bounds) : undefined;
+}
+
+export function effectiveMaximum(maximum, exclusiveMaximum) {
+  const bounds = [maximum, exclusiveMaximum].filter(bound => typeof bound === 'number');
+  return bounds.length ? Math.min(...bounds) : undefined;
+}
 
 /**
  * 'resolveSchemaReferences' function

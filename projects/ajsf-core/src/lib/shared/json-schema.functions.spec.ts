@@ -3,6 +3,8 @@ import {
   buildSchemaFromLayout,
   checkInlineType,
   combineAllOf,
+  effectiveMaximum,
+  effectiveMinimum,
   fixRequiredArrayProperties,
   getControlValidators,
   getFromSchema,
@@ -1522,5 +1524,41 @@ describe('getControlValidators, exclusive bounds and nullable types', () => {
   it('is unchanged for a plain single type', () => {
     expect(getControlValidators({ type: 'string', minLength: 2 }))
       .toEqual({ minLength: [2] } as any);
+  });
+});
+
+describe('effectiveMinimum and effectiveMaximum', () => {
+  // Draft 6 lets minimum and exclusiveMinimum coexist as independent bounds,
+  // so the native attribute must carry the strongest of the two.
+  it('takes the larger of minimum and exclusiveMinimum', () => {
+    expect(effectiveMinimum(2, 5)).toBe(5);
+    expect(effectiveMinimum(8, 5)).toBe(8);
+  });
+
+  it('takes the smaller of maximum and exclusiveMaximum', () => {
+    expect(effectiveMaximum(8, 4)).toBe(4);
+    expect(effectiveMaximum(8, 12)).toBe(8);
+  });
+
+  it('uses whichever bound is present alone', () => {
+    expect(effectiveMinimum(3, undefined)).toBe(3);
+    expect(effectiveMinimum(undefined, 5)).toBe(5);
+    expect(effectiveMaximum(9, undefined)).toBe(9);
+    expect(effectiveMaximum(undefined, 6)).toBe(6);
+  });
+
+  it('is undefined when neither bound is numeric', () => {
+    expect(effectiveMinimum(undefined, undefined)).toBeUndefined();
+    expect(effectiveMaximum(null, undefined)).toBeUndefined();
+  });
+
+  it('ignores a non-numeric bound such as a draft 4 boolean', () => {
+    expect(effectiveMinimum(5, true as any)).toBe(5);
+    expect(effectiveMinimum(undefined, true as any)).toBeUndefined();
+  });
+
+  it('keeps a zero bound rather than treating it as absent', () => {
+    expect(effectiveMinimum(0, undefined)).toBe(0);
+    expect(effectiveMaximum(0, undefined)).toBe(0);
   });
 });

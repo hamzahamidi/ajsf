@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { JsonSchemaFormService } from '@ajsf/core';
+import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
@@ -17,8 +17,8 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       <input matInput *ngIf="boundControl"
         [formControl]="formControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="options?.maximum"
-        [attr.min]="options?.minimum"
+        [attr.max]="maxValue"
+        [attr.min]="minValue"
         [attr.step]="options?.multipleOf || options?.step || 'any'"
         [id]="'control' + layoutNode?._id"
         [name]="controlName"
@@ -30,8 +30,8 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         (blur)="options.showErrors = true">
       <input matInput *ngIf="!boundControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="options?.maximum"
-        [attr.min]="options?.minimum"
+        [attr.max]="maxValue"
+        [attr.min]="minValue"
         [attr.step]="options?.multipleOf || options?.step || 'any'"
         [disabled]="controlDisabled"
         [id]="'control' + layoutNode?._id"
@@ -71,6 +71,9 @@ export class MaterialNumberComponent implements OnInit {
   allowDecimal = true;
   allowExponents = false;
   lastValidNumber = '';
+
+  get minValue() { return effectiveMinimum(this.options?.minimum, this.options?.exclusiveMinimum); }
+  get maxValue() { return effectiveMaximum(this.options?.maximum, this.options?.exclusiveMaximum); }
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];

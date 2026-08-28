@@ -18,13 +18,12 @@ Findings 5 (the select widget storing the string "null" for the None option),
 (minProperties and maxProperties counting declared rather than entered values)
 shipped at 19.0.0-rc.4.
 
-Still open: the layout residual of 10.
+The layout residual of 10, the numeric widgets setting no native `min` or `max` for an `exclusiveMinimum` or `exclusiveMaximum` bound, shipped at 19.1.0. Its validator half shipped at 18.3.0. All findings have now shipped.
 
-The three allOf defects did not ship together. The two that are contained, the
-`additionalProperties` assignment and the positional tuple merge, went first. The
-`properties` level confusion is held back because fixing it activates a branch
-that has never run, so a consumer bisecting a regression can land on one change
-rather than three.
+The three allOf defects shipped as separate changes at `19.0.0-rc.3` rather than
+one commit: the `additionalProperties` assignment and the positional tuple merge
+in #428, and the `properties` level confusion in #429, so a consumer bisecting a
+regression lands on one change rather than three.
 
 ## The allOf merging findings, 11, 12 and 14
 

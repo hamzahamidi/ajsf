@@ -25,7 +25,8 @@ export {
   buildSchemaFromLayout, buildSchemaFromData, getFromSchema,
   removeRecursiveReferences, getInputType, checkInlineType, isInputRequired,
   updateInputOptions, getTitleMapFromOneOf, getControlValidators,
-  resolveSchemaReferences, getSubSchema, combineAllOf, fixRequiredArrayProperties
+  resolveSchemaReferences, getSubSchema, combineAllOf, fixRequiredArrayProperties,
+  effectiveMinimum, effectiveMaximum
 } from './json-schema.functions';
 
 export { convertSchemaToDraft6 } from './schema-draft.functions';
