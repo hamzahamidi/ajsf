@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 import {
   Framework,
   JsonSchemaFormService,
@@ -13,11 +15,18 @@ import { PrimengFramework } from './primeng.framework';
 import { PrimengFrameworkComponent } from './primeng-framework.component';
 import { PRIMENG_FRAMEWORK_COMPONENTS } from './widgets/public_api';
 
+export const PRIMENG_MODULES = [
+  InputTextModule,
+  TextareaModule,
+];
+
 @NgModule({
     imports: [
         JsonSchemaFormModule,
         CommonModule,
+        FormsModule,
         ReactiveFormsModule,
+        ...PRIMENG_MODULES,
         WidgetLibraryModule,
     ],
     declarations: [
