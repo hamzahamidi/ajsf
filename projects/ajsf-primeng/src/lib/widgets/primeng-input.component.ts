@@ -46,6 +46,12 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
       <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
         [innerHTML]="options?.description"></small>
+      <datalist *ngIf="options?.typeahead?.source"
+        [id]="'control' + layoutNode?._id + 'Autocomplete'">
+        <option *ngFor="let word of options?.typeahead?.source"
+          [value]="word">
+        </option>
+      </datalist>
     </div>
     <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
       [innerHTML]="options?.errorMessage"></div>`,

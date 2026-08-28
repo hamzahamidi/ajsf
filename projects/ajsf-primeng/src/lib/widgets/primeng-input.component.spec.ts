@@ -1,4 +1,9 @@
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
 import { PrimengInputComponent } from './primeng-input.component';
+import { JsonSchemaFormService } from '@ajsf/core';
 
 describe('PrimengInputComponent', () => {
   const make = (opts: any, layoutType = 'text') => {
@@ -28,5 +33,39 @@ describe('PrimengInputComponent', () => {
     const { component, jsf } = make({});
     component.updateValue({ target: { value: 'hello' } });
     expect(jsf.updateValue).toHaveBeenCalledWith(component, 'hello');
+  });
+
+  describe('typeahead datalist', () => {
+    let fixture: ComponentFixture<PrimengInputComponent>;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CommonModule, ReactiveFormsModule, InputTextModule],
+        declarations: [PrimengInputComponent],
+        providers: [
+          { provide: JsonSchemaFormService, useValue: { initializeControl: () => {} } },
+        ],
+      }).compileComponents();
+    }));
+
+    it('renders a datalist with the configured suggestions', () => {
+      fixture = TestBed.createComponent(PrimengInputComponent);
+      const comp = fixture.componentInstance;
+      comp.layoutNode = {
+        _id: '42',
+        type: 'text',
+        options: { typeahead: { source: ['alpha', 'bravo', 'charlie'] } },
+      };
+      comp.ngOnInit();
+      fixture.detectChanges();
+
+      const datalist = fixture.nativeElement.querySelector('datalist');
+      expect(datalist).toBeTruthy();
+      expect(datalist.id).toBe('control42Autocomplete');
+      const options = datalist.querySelectorAll('option');
+      expect(options.length).toBe(3);
+      expect(options[0].value).toBe('alpha');
+      expect(options[2].value).toBe('charlie');
+    });
   });
 });
