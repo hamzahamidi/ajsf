@@ -49,7 +49,7 @@ export class PrimengChipListComponent implements OnInit {
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};
-    this.jsf.initializeControl(this);
+    this.jsf.initializeControl(this, false);
   }
 
   search(event) {
