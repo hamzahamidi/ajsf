@@ -14,6 +14,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SliderModule } from 'primeng/slider';
 import { TabsModule } from 'primeng/tabs';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { FileUploadModule } from 'primeng/fileupload';
+import { StepperModule } from 'primeng/stepper';
 import {
   Framework,
   JsonSchemaFormService,
@@ -40,6 +43,9 @@ export const PRIMENG_MODULES = [
   DatePickerModule,
   SliderModule,
   TabsModule,
+  AutoCompleteModule,
+  FileUploadModule,
+  StepperModule,
 ];
 
 @NgModule({

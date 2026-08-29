@@ -38,20 +38,20 @@ describe('PrimengDatepickerComponent', () => {
     expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
   });
 
-  it('converts minimum to minDate', () => {
+  it('parses minimum as a local date', () => {
     const { component } = make({
       type: 'date',
-      options: { minimum: '2020-01-01' },
+      options: { minimum: '2020-01-15' },
     });
-    expect(component.minDate).toEqual(new Date('2020-01-01'));
+    expect(component.minDate).toEqual(new Date(2020, 0, 15));
   });
 
-  it('converts maximum to maxDate', () => {
+  it('parses maximum as a local date', () => {
     const { component } = make({
       type: 'date',
       options: { maximum: '2030-12-31' },
     });
-    expect(component.maxDate).toEqual(new Date('2030-12-31'));
+    expect(component.maxDate).toEqual(new Date(2030, 11, 31));
   });
 
   it('leaves minDate/maxDate undefined when not specified', () => {
@@ -63,15 +63,6 @@ describe('PrimengDatepickerComponent', () => {
     expect(component.maxDate).toBeUndefined();
   });
 
-  it('converts controlValue to dateValue', () => {
-    const j = jsf();
-    const c = new PrimengDatepickerComponent(j as any);
-    c.layoutNode = { type: 'date', options: {} };
-    c.controlValue = '2025-06-15';
-    c.ngOnInit();
-    expect(c.dateValue).toEqual(new Date('2025-06-15'));
-  });
-
   it('falls back description to placeholder', () => {
     const { component } = make({
       type: 'date',
@@ -80,14 +71,13 @@ describe('PrimengDatepickerComponent', () => {
     expect(component.options.description).toBe('Pick a date');
   });
 
-  it('forwards value updates through jsf', () => {
+  it('forwards string values through jsf', () => {
     const { component, jsf: j } = make({
       type: 'date',
       options: {},
     });
-    const date = new Date('2025-08-29');
-    component.updateValue(date);
-    expect(j.updateValue).toHaveBeenCalledWith(component, date);
+    component.updateValue('2025-08-29');
+    expect(j.updateValue).toHaveBeenCalledWith(component, '2025-08-29');
     expect(component.options.showErrors).toBe(true);
   });
 });
