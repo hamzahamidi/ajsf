@@ -7,10 +7,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
     <p-tabs [value]="selectedItem" (valueChange)="select($event)"
       [style]="{'width': '100%'}">
       <p-tablist>
-        <p-tab *ngFor="let item of layoutNode?.items; let i = index" [value]="i">
-          <span *ngIf="showAddTab || item.type !== '$ref'"
-            [innerHTML]="setTabTitle(item, i)"></span>
-        </p-tab>
+        <ng-container *ngFor="let item of layoutNode?.items; let i = index">
+          <p-tab *ngIf="showAddTab || item.type !== '$ref'" [value]="i">
+            <span [innerHTML]="setTabTitle(item, i)"></span>
+          </p-tab>
+        </ng-container>
       </p-tablist>
     </p-tabs>
     <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
@@ -41,7 +42,9 @@ export class PrimengTabsComponent implements OnInit {
   }
 
   select(index) {
+    if (index >= this.layoutNode.items.length) { return; }
     if (this.layoutNode.items[index].type === '$ref') {
+      if (!this.showAddTab) { return; }
       this.jsf.addItem({
         layoutNode: this.layoutNode.items[index],
         layoutIndex: this.layoutIndex.concat(index),

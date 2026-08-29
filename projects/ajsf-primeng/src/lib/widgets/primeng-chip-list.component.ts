@@ -62,6 +62,9 @@ export class PrimengChipListComponent implements OnInit {
 
   updateValue(event) {
     this.options.showErrors = true;
-    this.jsf.updateValue(this, event);
+    const tags: string[] = Array.isArray(event) ? event : [];
+    this.jsf.updateArrayCheckboxList(
+      this, tags.map(value => ({checked: true, value}))
+    );
   }
 }
