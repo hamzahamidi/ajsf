@@ -121,7 +121,8 @@ export class PrimengOneOfComponent implements OnInit {
   }
 
   selectChild(event) {
-    this._selectedItem = event.value;
+    this._selectedItem =
+      this.fieldsetValueMap.get(event.value) ?? event.value;
   }
 
   updateValue(event) {
