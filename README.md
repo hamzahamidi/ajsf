@@ -138,6 +138,8 @@ yarn add @ajsf/material
 For an older Angular major, install the matching AJSF major as described in
 [Version compatibility](#version-compatibility).
 
+For PrimeNG setup, including theme configuration, see the [`@ajsf/primeng` getting started guide](./projects/ajsf-primeng/README.md).
+
 Then import `MaterialDesignFrameworkModule` in your main application module like this:
 
 ```typescript

@@ -136,7 +136,7 @@ jobs:
             fi
             COUNT=$((COUNT + 1))
           done
-          if [ "$COUNT" -lt 6 ]; then
+          if [ "$COUNT" -ne 6 ]; then
             echo "[release] expected 6 packages but found $COUNT"
             exit 1
           fi
