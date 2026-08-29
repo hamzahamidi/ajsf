@@ -39,7 +39,7 @@ function fixture() {
   write('ajsf-primeng', {
     name: '@ajsf/primeng', version: '0.8.0',
     dependencies: { '@ajsf/core': '~0.8.0' },
-    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0', primeng: '^19.0.0' },
   });
   return dir;
 }
@@ -84,6 +84,7 @@ describe('setVersion', () => {
     setVersion('18.0.0', 18, dir);
     expect(read(dir, 'ajsf-core').peerDependencies.rxjs).toEqual('^7.0.0');
     expect(read(dir, 'ajsf-core').dependencies.ajv).toEqual('^6.10.0');
+    expect(read(dir, 'ajsf-primeng').peerDependencies.primeng).toEqual('^19.0.0');
   });
 
   it('leaves Angular peers alone when angularMajor is null', () => {
