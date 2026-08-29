@@ -10,7 +10,7 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
       <span *ngIf="options?.prefix || options?.fieldAddonLeft"
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-      <p-select *ngIf="boundControl"
+      <p-select *ngIf="boundControl && !options?.multiple"
         [formControl]="formControl"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [inputId]="'control' + layoutNode?._id"
@@ -24,7 +24,7 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
         [required]="options?.required"
         [fluid]="true"
         (onBlur)="options.showErrors = true"></p-select>
-      <p-select *ngIf="!boundControl"
+      <p-select *ngIf="!boundControl && !options?.multiple"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [inputId]="'control' + layoutNode?._id"
         [options]="selectList"
@@ -40,6 +40,34 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
         [fluid]="true"
         (onChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-select>
+      <p-multiselect *ngIf="boundControl && options?.multiple"
+        [formControl]="formControl"
+        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+        [inputId]="'control' + layoutNode?._id"
+        [options]="selectList"
+        [optionLabel]="'name'"
+        [optionValue]="'value'"
+        [group]="hasGroups"
+        [optionGroupLabel]="'group'"
+        [optionGroupChildren]="'items'"
+        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+        [fluid]="true"
+        (onBlur)="options.showErrors = true"></p-multiselect>
+      <p-multiselect *ngIf="!boundControl && options?.multiple"
+        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+        [inputId]="'control' + layoutNode?._id"
+        [options]="selectList"
+        [optionLabel]="'name'"
+        [optionValue]="'value'"
+        [group]="hasGroups"
+        [optionGroupLabel]="'group'"
+        [optionGroupChildren]="'items'"
+        [disabled]="controlDisabled || options?.readonly"
+        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+        [ngModel]="controlValue"
+        [fluid]="true"
+        (onChange)="updateValue($event)"
+        (onBlur)="options.showErrors = true"></p-multiselect>
       <span *ngIf="options?.suffix || options?.fieldAddonRight"
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
       <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
