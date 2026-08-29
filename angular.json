@@ -20,7 +20,8 @@
             "tsConfig": "demo/tsconfig.app.json",
             "assets": [
               "demo/favicon.ico",
-              "demo/assets"
+              "demo/assets",
+              { "glob": "*.svg", "input": "docs/logo", "output": "/assets/logo" }
             ],
             "styles": [
               "demo/styles.scss"

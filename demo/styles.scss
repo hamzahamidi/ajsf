@@ -11,9 +11,20 @@
 @include mat.all-component-typographies();
 @include mat.elevation-classes();
 @include mat.app-background();
-$demo-app-primary: mat.m2-define-palette(mat.$m2-blue-palette);
+$angular-red: (
+  50: #fce4e8, 100: #f8bcc5, 200: #f08e9f, 300: #e85f79,
+  400: #e33b5c, 500: #dd0031, 600: #c9002d, 700: #b00027,
+  800: #970021, 900: #6d0018,
+  A100: #ff8a98, A200: #ff5168, A400: #ff1840, A700: #e6002d,
+  contrast: (
+    50: rgba(0,0,0,.87), 100: rgba(0,0,0,.87), 200: rgba(0,0,0,.87),
+    300: #fff, 400: #fff, 500: #fff, 600: #fff, 700: #fff, 800: #fff, 900: #fff,
+    A100: rgba(0,0,0,.87), A200: #fff, A400: #fff, A700: #fff,
+  )
+);
+$demo-app-primary: mat.m2-define-palette($angular-red);
 $demo-app-accent:  mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
-$demo-app-warn:    mat.m2-define-palette(mat.$m2-red-palette);
+$demo-app-warn:    mat.m2-define-palette(mat.$m2-deep-orange-palette);
 $demo-app-theme:   mat.m2-define-light-theme($demo-app-primary, $demo-app-accent, $demo-app-warn);
 @include mat.all-component-themes($demo-app-theme);
 
@@ -31,8 +42,9 @@ $demo-app-dark-theme: mat.m2-define-dark-theme($demo-app-primary, $demo-app-acce
   --demo-border: #ccc;
   --demo-data-good: #dfd;
   --demo-data-bad: #fcc;
-  --demo-header-bg: #{mat.m2-get-color-from-palette($demo-app-primary, lighter)};
-  --demo-header-fg: rgba(0, 0, 0, 0.87);
+  --demo-header-bg: #F5EDF0;
+  --demo-header-fg: #241419;
+  --demo-jsf-fill: #241419;
 }
 
 .dark-theme {
@@ -42,8 +54,9 @@ $demo-app-dark-theme: mat.m2-define-dark-theme($demo-app-primary, $demo-app-acce
   --demo-border: #555;
   --demo-data-good: #1b3a1b;
   --demo-data-bad: #4a1f1f;
-  --demo-header-bg: #1a2733;
-  --demo-header-fg: #fff;
+  --demo-header-bg: #241419;
+  --demo-header-fg: #F5EDF0;
+  --demo-jsf-fill: #F5EDF0;
 }
 
 $font-family: 'Roboto', 'Noto', 'Helvetica Neue', sans-serif;
@@ -147,6 +160,25 @@ body {
 .demo-stack {
   display: flex;
   flex-direction: column;
+}
+
+mat-toolbar.demo-toolbar {
+  background: var(--demo-header-bg);
+  color: var(--demo-header-fg);
+}
+
+.toolbar-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  margin-right: 8px;
+}
+
+.toolbar-wordmark {
+  height: 28px;
+  width: auto;
+
+  .wordmark-jsf { fill: var(--demo-jsf-fill); }
 }
 
 mat-toolbar .toolbar-title { flex: 1 1 auto; }
