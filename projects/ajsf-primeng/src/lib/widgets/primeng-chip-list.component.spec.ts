@@ -27,7 +27,7 @@ describe('PrimengChipListComponent', () => {
       type: 'chip-list',
       options: {},
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything());
+    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
   });
 
   it('filters suggestions from typeahead source', () => {

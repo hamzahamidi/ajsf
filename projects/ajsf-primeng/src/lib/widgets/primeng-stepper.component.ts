@@ -16,7 +16,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
       <p-step-panels>
         <p-step-panel *ngFor="let layoutItem of layoutNode?.items; let i = index"
           [value]="i">
-          <ng-template #content let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+          <ng-template #contentTemplate let-activateCallback="activateCallback">
             <select-framework-widget
               [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '')"
               [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
@@ -26,10 +26,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
               <p-button *ngIf="i > 0"
                 label="Back"
                 severity="secondary"
-                (onClick)="prevCallback.emit()"></p-button>
+                (onClick)="activateCallback(i - 1)"></p-button>
               <p-button *ngIf="i < itemCount"
                 label="Next"
-                (onClick)="nextCallback.emit()"></p-button>
+                (onClick)="activateCallback(i + 1)"></p-button>
             </div>
           </ng-template>
         </p-step-panel>
