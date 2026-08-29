@@ -136,6 +136,10 @@ jobs:
             fi
             COUNT=$((COUNT + 1))
           done
+          if [ "$COUNT" -lt 6 ]; then
+            echo "[release] expected 6 packages but found $COUNT"
+            exit 1
+          fi
           echo "[release] all $COUNT packages at $VERSION"
 
       # Publishing the artifact verify built, rather than rebuilding inside the
@@ -160,6 +164,8 @@ jobs:
     environment: npm-publish
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       # NOT .nvmrc. This job publishes prebuilt tarballs and never compiles
       # anything, so it does not need the Angular toolchain's Node 16. It does
@@ -204,7 +210,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "v$VERSION" -m "Release $VERSION"
           git push origin "v$VERSION"
-          echo "[release] tagged v$VERSION on ${GITHUB_SHA}"
+          echo "[release] tagged v$VERSION on $(git rev-parse HEAD)"
 
       # Without this the releases page shows nothing for a real release. It
       # previously listed the demo application's version (15.0.0, 14.0.0),
