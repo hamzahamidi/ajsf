@@ -3,7 +3,7 @@ import { PrimengChipListComponent } from './primeng-chip-list.component';
 describe('PrimengChipListComponent', () => {
   const jsf = () => ({
     initializeControl: jasmine.createSpy('initializeControl'),
-    updateValue: jasmine.createSpy('updateValue'),
+    updateArrayCheckboxList: jasmine.createSpy('updateArrayCheckboxList'),
   });
 
   const make = (node: any) => {
@@ -57,14 +57,17 @@ describe('PrimengChipListComponent', () => {
     expect(component.suggestions).toEqual([]);
   });
 
-  it('forwards array value updates through jsf', () => {
+  it('forwards array value updates through updateArrayCheckboxList', () => {
     const { component, jsf: j } = make({
       type: 'chip-list',
       options: {},
     });
     const tags = ['foo', 'bar'];
     component.updateValue(tags);
-    expect(j.updateValue).toHaveBeenCalledWith(component, tags);
+    expect(j.updateArrayCheckboxList).toHaveBeenCalledWith(component, [
+      { checked: true, value: 'foo' },
+      { checked: true, value: 'bar' },
+    ]);
     expect(component.options.showErrors).toBe(true);
   });
 });
