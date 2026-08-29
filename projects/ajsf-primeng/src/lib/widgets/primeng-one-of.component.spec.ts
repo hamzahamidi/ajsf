@@ -103,6 +103,27 @@ describe('PrimengOneOfComponent', () => {
       expect(j.updateValue).not.toHaveBeenCalled();
     });
 
+    it('maps string titleMap values to item indices via selectChild', () => {
+      const { component } = make({
+        type: 'selectfieldset',
+        options: {
+          titleMap: [
+            { name: 'Search by text', value: 'text' },
+            { name: 'Search by category', value: 'cat' },
+          ],
+        },
+        items: [
+          { type: 'section', options: { legend: 'Search by text' } },
+          { type: 'section', options: { legend: 'Search by category' } },
+        ],
+      });
+      expect(component.isFieldset).toBe(true);
+      component.selectChild({ value: 'cat' });
+      expect(component.selectedItem).toBe(1);
+      component.selectChild({ value: 'text' });
+      expect(component.selectedItem).toBe(0);
+    });
+
     it('falls back to item title when legend is absent', () => {
       const { component } = make({
         type: 'selectfieldset',
