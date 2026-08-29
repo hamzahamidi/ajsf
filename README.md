@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo/ajsf-wordmark.svg" alt="ajsf" width="200">
+</p>
+
 # AJSF (Angular JSON Schema Form)
 
 **N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
