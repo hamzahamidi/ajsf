@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hamzahamidi/ajsf/main/docs/logo/ajsf-wordmark.svg" alt="ajsf" width="200">
+  <img src="docs/logo/ajsf-wordmark.svg" alt="ajsf" width="200">
 </p>
 
 # AJSF (Angular JSON Schema Form)
