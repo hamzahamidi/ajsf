@@ -44,6 +44,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       <mat-select *ngIf="!boundControl && isFieldset"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [id]="'control' + layoutNode?._id"
+        [disabled]="controlDisabled || options?.readonly"
         [style.width]="'100%'"
         [value]="selectedValue"
         (selectionChange)="selectChild($event)">
@@ -91,9 +92,9 @@ export class MaterialOneOfComponent implements OnInit {
   ) { }
 
   get selectedItem(): number {
-    if (this.isFieldset && this.boundControl) {
-      const val = this.formControl?.value ?? this.controlValue;
-      return this.fieldsetValueMap.get(val) ?? 0;
+    if (this.isFieldset && this.formControl) {
+      const val = this.formControl.value ?? this.controlValue;
+      return this.fieldsetValueMap.get(val) ?? this._selectedItem;
     }
     return this._selectedItem;
   }
@@ -128,6 +129,12 @@ export class MaterialOneOfComponent implements OnInit {
 
     if (!this.isFieldset || this.options.titleMap || this.options.enum) {
       this.jsf.initializeControl(this, !this.options.readonly);
+    }
+
+    if (this.isFieldset && this.controlValue != null) {
+      this.selectedValue = this.controlValue;
+      this._selectedItem = this.fieldsetValueMap.get(this.controlValue)
+        ?? (typeof this.controlValue === 'number' ? this.controlValue : 0);
     }
   }
 
