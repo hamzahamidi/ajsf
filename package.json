@@ -91,8 +91,8 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.27",
-    "@angular/cli": "^19.2.27",
+    "@angular-devkit/build-angular": "^21.2.22",
+    "@angular/cli": "^22.1.6",
     "@angular/compiler-cli": "^19.2.25",
     "@angular/language-service": "^19.2.25",
     "@primeng/themes": "^19.1.4",
@@ -106,7 +106,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "ng-packagr": "^19.2.2",
+    "ng-packagr": "^22.1.1",
     "primeng": "^19.1.4",
     "ts-node": "~8.6.2",
     "tslib": "^2.3.1",
