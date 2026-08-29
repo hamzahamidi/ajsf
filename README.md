@@ -10,6 +10,13 @@
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
 </p>
 
+<p align="center">
+  <a href="https://hamidihamza.com/ajsf"><img src="docs/media/ajsf-demo.gif" alt="The playground rendering a JSON Schema as a Material form, submitting it, then rendering the same schema with Bootstrap 5"></a>
+</p>
+<p align="center">
+  <a href="https://hamidihamza.com/ajsf">Try the live playground</a>
+</p>
+
 Note: This project is a continuation of [dschnelldavis/Angular2-json-schema-form](https://github.com/dschnelldavis/angular2-json-schema-form) and is not affiliated with any organization.
 
 A [JSON Schema](http://json-schema.org) Form builder for Angular, similar to, and mostly API compatible with:
