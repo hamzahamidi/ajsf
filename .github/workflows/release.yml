@@ -16,6 +16,12 @@ name: Release
 # needs a PAT or a GitHub App, which reintroduces the long-lived credential
 # OIDC exists to remove. So the tag is an output here, not an input.
 #
+# CI owns testing. This workflow fires after CI succeeds on main via
+# workflow_run, so library tests are not repeated here. The verify job's
+# responsibility is reproducible package construction: build the dist
+# tarballs, confirm every package carries the release version, and upload the
+# exact artifact that the gated publish job will ship.
+#
 # Three jobs, in this order for a reason. An environment protection rule blocks
 # a job before ANY of its steps run, so building inside the gated job would
 # mean approving before knowing whether it compiles. `verify` is therefore
@@ -24,8 +30,10 @@ name: Release
 # and try".
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -35,6 +43,9 @@ permissions:
 jobs:
   decide:
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     outputs:
       version: ${{ steps.check.outputs.version }}
       publish: ${{ steps.check.outputs.publish }}
@@ -42,6 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 2   # need the previous commit to diff the version
 
       - name: Did this push change the version
@@ -95,6 +107,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -109,24 +123,24 @@ jobs:
       - name: Build libraries
         run: npm run build:libs
 
-      - name: Test libraries
-        run: |
-          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-
       - name: Confirm every package carries the release version
         run: |
           VERSION="${{ needs.decide.outputs.version }}"
-          for pkg in core bootstrap3 bootstrap4 material; do
-            BUILT=$(node -p "require('./dist/@ajsf/$pkg/package.json').version")
+          COUNT=0
+          for dir in dist/@ajsf/*/; do
+            pkg=$(basename "$dir")
+            BUILT=$(node -p "require('./$dir/package.json').version")
             if [ "$BUILT" != "$VERSION" ]; then
               echo "[release] dist/@ajsf/$pkg is $BUILT, expected $VERSION"
               exit 1
             fi
+            COUNT=$((COUNT + 1))
           done
-          echo "[release] all four packages at $VERSION"
+          if [ "$COUNT" -ne 6 ]; then
+            echo "[release] expected 6 packages but found $COUNT"
+            exit 1
+          fi
+          echo "[release] all $COUNT packages at $VERSION"
 
       # Publishing the artifact verify built, rather than rebuilding inside the
       # gated job, means what ships is exactly what passed.
@@ -150,6 +164,8 @@ jobs:
     environment: npm-publish
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       # NOT .nvmrc. This job publishes prebuilt tarballs and never compiles
       # anything, so it does not need the Angular toolchain's Node 16. It does
@@ -194,7 +210,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "v$VERSION" -m "Release $VERSION"
           git push origin "v$VERSION"
-          echo "[release] tagged v$VERSION on ${GITHUB_SHA}"
+          echo "[release] tagged v$VERSION on $(git rev-parse HEAD)"
 
       # Without this the releases page shows nothing for a real release. It
       # previously listed the demo application's version (15.0.0, 14.0.0),

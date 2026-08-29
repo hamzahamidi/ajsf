@@ -36,14 +36,19 @@ function fixture() {
     dependencies: { '@ajsf/core': '~0.8.0' },
     peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0' },
   });
+  write('ajsf-primeng', {
+    name: '@ajsf/primeng', version: '0.8.0',
+    dependencies: { '@ajsf/core': '~0.8.0' },
+    peerDependencies: { '@angular/core': '>=14.0.0', '@angular/common': '>=14.0.0', primeng: '^19.0.0' },
+  });
   return dir;
 }
 
 const read = (dir, name) =>
   JSON.parse(fs.readFileSync(path.join(dir, name, 'package.json'), 'utf8'));
 
-const ALL = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5'];
-const FRAMEWORKS = ['ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5'];
+const ALL = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5', 'ajsf-primeng'];
+const FRAMEWORKS = ['ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5', 'ajsf-primeng'];
 
 describe('setVersion', () => {
   it('sets the version on every package', () => {
@@ -79,6 +84,7 @@ describe('setVersion', () => {
     setVersion('18.0.0', 18, dir);
     expect(read(dir, 'ajsf-core').peerDependencies.rxjs).toEqual('^7.0.0');
     expect(read(dir, 'ajsf-core').dependencies.ajv).toEqual('^6.10.0');
+    expect(read(dir, 'ajsf-primeng').peerDependencies.primeng).toEqual('^19.0.0');
   });
 
   it('leaves Angular peers alone when angularMajor is null', () => {

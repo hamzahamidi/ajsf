@@ -1,6 +1,6 @@
 {
   "name": "@ajsf/primeng",
-  "version": "19.1.0",
+  "version": "19.2.0",
   "description": "Angular JSON Schema Form builder using PrimeNG UI",
   "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "keywords": [
@@ -28,7 +28,7 @@
   "funding": "https://github.com/sponsors/hamzahamidi",
   "private": false,
   "dependencies": {
-    "@ajsf/core": "^19.1.0",
+    "@ajsf/core": "^19.2.0",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {

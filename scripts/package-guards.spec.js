@@ -9,6 +9,8 @@ const LIBRARIES = [
   'projects/ajsf-material',
   'projects/ajsf-bootstrap3',
   'projects/ajsf-bootstrap4',
+  'projects/ajsf-bootstrap5',
+  'projects/ajsf-primeng',
 ];
 
 describe('package guards', () => {
@@ -29,7 +31,7 @@ describe('package guards', () => {
     });
   });
 
-  it('holds all four libraries at the same version', () => {
+  it('holds all libraries at the same version', () => {
     const versions = LIBRARIES.map((lib) => readManifest(`${lib}/package.json`).version);
     expect(new Set(versions).size)
       .withContext(`versions drifted: ${JSON.stringify(versions)}`)
