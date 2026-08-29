@@ -18,9 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        # Angular 15 requires ^14.20.0 || ^16.13.0 || >=18.10.0, and the
-        # 16.x runner image is older than 16.13, so it cannot build this.
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v7
