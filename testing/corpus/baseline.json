@@ -1190,7 +1190,7 @@
     "valid": true
   },
   "material-design/jsf-fields-autocomplete": {
-    "controls": 3,
+    "controls": 4,
     "error": null,
     "valid": true
   },
@@ -1270,12 +1270,12 @@
     "valid": true
   },
   "material-design/jsf-fields-selectfieldset": {
-    "controls": 0,
+    "controls": 2,
     "error": null,
     "valid": true
   },
   "material-design/jsf-fields-selectfieldset-key": {
-    "controls": 0,
+    "controls": 2,
     "error": null,
     "valid": true
   },
