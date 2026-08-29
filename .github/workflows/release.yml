@@ -114,19 +114,24 @@ jobs:
           npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
           npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
           npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs5 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
           npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:primeng -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
       - name: Confirm every package carries the release version
         run: |
           VERSION="${{ needs.decide.outputs.version }}"
-          for pkg in core bootstrap3 bootstrap4 material; do
-            BUILT=$(node -p "require('./dist/@ajsf/$pkg/package.json').version")
+          COUNT=0
+          for dir in dist/@ajsf/*/; do
+            pkg=$(basename "$dir")
+            BUILT=$(node -p "require('./$dir/package.json').version")
             if [ "$BUILT" != "$VERSION" ]; then
               echo "[release] dist/@ajsf/$pkg is $BUILT, expected $VERSION"
               exit 1
             fi
+            COUNT=$((COUNT + 1))
           done
-          echo "[release] all four packages at $VERSION"
+          echo "[release] all $COUNT packages at $VERSION"
 
       # Publishing the artifact verify built, rather than rebuilding inside the
       # gated job, means what ships is exactly what passed.
