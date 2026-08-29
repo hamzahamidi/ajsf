@@ -95,6 +95,7 @@
     "@angular/cli": "^19.2.27",
     "@angular/compiler-cli": "^19.2.25",
     "@angular/language-service": "^19.2.25",
+    "@primeng/themes": "^19.1.4",
     "@types/jasmine": "~4.0.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
