@@ -41,7 +41,7 @@ class CorpusHostComponent {
  */
 function countControls(fixture: ComponentFixture<CorpusHostComponent>): number {
   return fixture.nativeElement.querySelectorAll(
-    'input, select, textarea, mat-select, mat-slider, p-select, p-multiselect'
+    'input, select, textarea, mat-select, mat-slider, p-select, p-multiselect, p-slider'
   ).length;
 }
 
