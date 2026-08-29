@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PrimengFrameworkModule } from '../primeng-framework.module';
 
@@ -94,8 +95,12 @@ describe('PrimeNG integration', () => {
       expect(ac).toBeTruthy();
     });
 
-    it('does not throw on render with array data', () => {
-      expect(() => fixture.detectChanges()).not.toThrow();
+    it('updates form data when tags change', () => {
+      const de = fixture.debugElement.query(By.css('primeng-chip-list-widget'));
+      const chipList = de.componentInstance;
+      chipList.updateValue(['a', 'b', 'c']);
+      fixture.detectChanges();
+      expect(host.value.tags).toEqual(['a', 'b', 'c']);
     });
   });
 });
