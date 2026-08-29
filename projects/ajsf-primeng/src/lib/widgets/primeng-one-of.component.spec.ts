@@ -91,10 +91,11 @@ describe('PrimengOneOfComponent', () => {
       expect(component.selectedItem).toBe(0);
     });
 
-    it('switches selectedItem on selectChild', () => {
+    it('switches selectedItem and selectedValue on selectChild', () => {
       const { component } = make(unkeyedNode);
       component.selectChild({ value: 1 });
       expect(component.selectedItem).toBe(1);
+      expect(component.selectedValue).toBe(1);
     });
 
     it('does not write to form data on selectChild', () => {
@@ -118,10 +119,13 @@ describe('PrimengOneOfComponent', () => {
         ],
       });
       expect(component.isFieldset).toBe(true);
+      expect(component.selectedValue).toBe('text');
       component.selectChild({ value: 'cat' });
       expect(component.selectedItem).toBe(1);
+      expect(component.selectedValue).toBe('cat');
       component.selectChild({ value: 'text' });
       expect(component.selectedItem).toBe(0);
+      expect(component.selectedValue).toBe('text');
     });
 
     it('falls back to item title when legend is absent', () => {

@@ -41,7 +41,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
         [options]="selectList"
         [optionLabel]="'name'"
         [optionValue]="'value'"
-        [ngModel]="selectedItem"
+        [ngModel]="selectedValue"
         [fluid]="true"
         (onChange)="selectChild($event)"
         (onBlur)="options.showErrors = true"></p-select>
@@ -72,6 +72,7 @@ export class PrimengOneOfComponent implements OnInit {
   options: any;
   selectList: any[] = [];
   isFieldset = false;
+  selectedValue: any = 0;
   private _selectedItem = 0;
   private fieldsetValueMap: Map<any, number> = new Map();
   @Input() layoutNode: any;
@@ -110,6 +111,7 @@ export class PrimengOneOfComponent implements OnInit {
       let idx = 0;
       for (const entry of this.selectList) {
         if (entry.value != null && entry.value !== '') {
+          if (idx === 0) { this.selectedValue = entry.value; }
           this.fieldsetValueMap.set(entry.value, idx++);
         }
       }
@@ -121,6 +123,7 @@ export class PrimengOneOfComponent implements OnInit {
   }
 
   selectChild(event) {
+    this.selectedValue = event.value;
     this._selectedItem =
       this.fieldsetValueMap.get(event.value) ?? event.value;
   }
