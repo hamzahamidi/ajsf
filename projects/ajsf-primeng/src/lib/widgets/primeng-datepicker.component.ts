@@ -21,6 +21,8 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [showIcon]="true"
         [fluid]="true"
         [showButtonBar]="true"
+        dataType="string"
+        dateFormat="yy-mm-dd"
         (onBlur)="options.showErrors = true"></p-datepicker>
 
       <p-datepicker *ngIf="!boundControl"
@@ -35,8 +37,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [showIcon]="true"
         [fluid]="true"
         [showButtonBar]="true"
-        [ngModel]="dateValue"
-        (onSelect)="updateValue($event)"
+        dataType="string"
+        dateFormat="yy-mm-dd"
+        [ngModel]="controlValue"
+        (ngModelChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-datepicker>
 
       <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
@@ -56,7 +60,6 @@ export class PrimengDatepickerComponent implements OnInit {
   controlDisabled = false;
   boundControl = false;
   options: any;
-  dateValue: Date;
   minDate: Date;
   maxDate: Date;
   @Input() layoutNode: any;
@@ -69,13 +72,10 @@ export class PrimengDatepickerComponent implements OnInit {
     this.options = this.layoutNode.options || {};
     this.jsf.initializeControl(this, !this.options.readonly);
     if (this.options.minimum) {
-      this.minDate = new Date(this.options.minimum);
+      this.minDate = this.parseLocalDate(this.options.minimum);
     }
     if (this.options.maximum) {
-      this.maxDate = new Date(this.options.maximum);
-    }
-    if (this.controlValue) {
-      this.dateValue = new Date(this.controlValue);
+      this.maxDate = this.parseLocalDate(this.options.maximum);
     }
     if (!this.options.notitle && !this.options.description && this.options.placeholder) {
       this.options.description = this.options.placeholder;
@@ -85,5 +85,10 @@ export class PrimengDatepickerComponent implements OnInit {
   updateValue(event) {
     this.options.showErrors = true;
     this.jsf.updateValue(this, event);
+  }
+
+  private parseLocalDate(value: string): Date {
+    const [y, m, d] = value.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
 }
