@@ -110,7 +110,7 @@ export class DemoComponent implements OnInit {
 
   private setDarkMode(on: boolean) {
     this.darkMode = on;
-    document.body.classList.toggle('dark-theme', on);
+    document.documentElement.classList.toggle('dark-theme', on);
   }
 
   constructor(
