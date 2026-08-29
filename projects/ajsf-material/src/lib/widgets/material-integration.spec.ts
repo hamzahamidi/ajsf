@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialDesignFrameworkModule } from '../material-design-framework.module';
 
@@ -79,6 +80,7 @@ describe('Material widget integration', () => {
       const rows = fixture.nativeElement.querySelectorAll('mat-chip-row');
       expect(rows.length).toBe(1);
       expect(rows[0].textContent).toContain('keep');
+      expect(host.value.tags).toEqual(['keep']);
     });
   });
 
@@ -101,6 +103,23 @@ describe('Material widget integration', () => {
       const input = fixture.nativeElement.querySelector('input[type="file"]');
       expect(input).toBeTruthy();
       expect(input.hidden).toBe(true);
+    });
+
+    it('writes data URL to control after file selection', (done) => {
+      create(fileSchema);
+      const de = fixture.debugElement.query(By.css('material-file-widget'));
+      const fileComp = de.componentInstance;
+      const updateSpy = spyOn(fileComp.jsf, 'updateValue');
+      const blob = new Blob(['hello'], { type: 'text/plain' });
+      const file = new File([blob], 'test.txt', { type: 'text/plain' });
+      fileComp.onFileSelect({ target: { files: [file] } });
+      setTimeout(() => {
+        expect(fileComp.fileName).toBe('test.txt');
+        expect(updateSpy).toHaveBeenCalledWith(
+          fileComp, jasmine.stringMatching(/^data:text\/plain;base64,/)
+        );
+        done();
+      }, 50);
     });
   });
 
@@ -136,6 +155,24 @@ describe('Material widget integration', () => {
       const nextBtn = fixture.nativeElement.querySelector('button[matsteppernext]');
       expect(nextBtn).toBeTruthy();
     });
+
+    it('hides $ref step and Next button when maxItems is reached', () => {
+      const layoutAtCapacity = [{
+        type: 'stepper',
+        title: 'Wizard',
+        dataType: 'array',
+        items: [
+          { type: 'section', title: 'Step 1', items: ['name'] },
+          { type: 'section', title: 'Step 2', items: ['age'] },
+          { type: '$ref', options: { maxItems: 2 } }
+        ]
+      }];
+      create(stepperSchema, undefined, layoutAtCapacity);
+      const de = fixture.debugElement.query(By.css('material-stepper-widget'));
+      const stepper = de.componentInstance;
+      expect(stepper.showAddTab).toBe(false);
+      expect(stepper.hasNextVisible(1)).toBe(false);
+    });
   });
 
   describe('one-of (selectfieldset)', () => {
@@ -168,6 +205,36 @@ describe('Material widget integration', () => {
       create(fieldsetSchema, undefined, fieldsetLayout);
       const widgets = fixture.nativeElement.querySelectorAll('select-framework-widget');
       expect(widgets.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('one-of (readonly keyed fieldset)', () => {
+    it('preserves initial value and selects the correct child', () => {
+      create(
+        {
+          type: 'object',
+          properties: { cat_type: { type: 'string' } }
+        },
+        { cat_type: 'cat' },
+        [{
+          type: 'selectfieldset',
+          key: 'cat_type',
+          title: 'Type',
+          readonly: true,
+          titleMap: [
+            { value: 'text', name: 'Text Input' },
+            { value: 'cat', name: 'Category' }
+          ],
+          items: [
+            { type: 'section', title: 'Text', items: [] },
+            { type: 'section', title: 'Category', items: [] }
+          ]
+        }]
+      );
+      const de = fixture.debugElement.query(By.css('material-one-of-widget'));
+      const oneOf = de.componentInstance;
+      expect(oneOf.selectedItem).toBe(1);
+      expect(oneOf.selectedValue).toBe('cat');
     });
   });
 
