@@ -11,6 +11,9 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { ButtonModule } from 'primeng/button';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SliderModule } from 'primeng/slider';
+import { TabsModule } from 'primeng/tabs';
 import {
   Framework,
   JsonSchemaFormService,
@@ -34,6 +37,9 @@ export const PRIMENG_MODULES = [
   ButtonModule,
   SelectButtonModule,
   MultiSelectModule,
+  DatePickerModule,
+  SliderModule,
+  TabsModule,
 ];
 
 @NgModule({

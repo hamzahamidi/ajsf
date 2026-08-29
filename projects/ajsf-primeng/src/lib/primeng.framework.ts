@@ -14,6 +14,12 @@ import { PrimengCheckboxesComponent } from './widgets/primeng-checkboxes.compone
 import { PrimengRadiosComponent } from './widgets/primeng-radios.component';
 import { PrimengButtonComponent } from './widgets/primeng-button.component';
 import { PrimengButtonGroupComponent } from './widgets/primeng-button-group.component';
+import { PrimengDatepickerComponent } from './widgets/primeng-datepicker.component';
+import { PrimengSliderComponent } from './widgets/primeng-slider.component';
+import { PrimengTabsComponent } from './widgets/primeng-tabs.component';
+import { PrimengFileComponent } from './widgets/primeng-file.component';
+import { PrimengChipListComponent } from './widgets/primeng-chip-list.component';
+import { PrimengStepperComponent } from './widgets/primeng-stepper.component';
 
 @Injectable()
 export class PrimengFramework extends Framework {
@@ -35,6 +41,12 @@ export class PrimengFramework extends Framework {
     'radios': PrimengRadiosComponent,
     'button': PrimengButtonComponent,
     'button-group': PrimengButtonGroupComponent,
+    'date': PrimengDatepickerComponent,
+    'slider': PrimengSliderComponent,
+    'tabs': PrimengTabsComponent,
+    'file': PrimengFileComponent,
+    'chip-list': PrimengChipListComponent,
+    'stepper': PrimengStepperComponent,
     'any-of': 'one-of',
     'integer': 'number',
     'radiobuttons': 'button-group',
@@ -44,5 +56,9 @@ export class PrimengFramework extends Framework {
     'expansion-panel': 'section',
     'hidden': 'none',
     'image': 'none',
+    'alt-date': 'date',
+    'range': 'slider',
+    'tagsinput': 'chip-list',
+    'wizard': 'stepper',
   };
 }
