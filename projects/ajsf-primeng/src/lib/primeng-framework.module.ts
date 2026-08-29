@@ -10,6 +10,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ButtonModule } from 'primeng/button';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { MultiSelectModule } from 'primeng/multiselect';
 import {
   Framework,
   JsonSchemaFormService,
@@ -32,6 +33,7 @@ export const PRIMENG_MODULES = [
   RadioButtonModule,
   ButtonModule,
   SelectButtonModule,
+  MultiSelectModule,
 ];
 
 @NgModule({

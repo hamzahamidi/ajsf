@@ -1,20 +1,45 @@
 import { PrimengOneOfComponent } from './primeng-one-of.component';
 
 describe('PrimengOneOfComponent', () => {
-  it('initializes with empty template (stub matching material parity)', () => {
-    const jsf = { initializeControl: jasmine.createSpy('initializeControl'), updateValue: jasmine.createSpy('updateValue') };
+  const make = (opts: any) => {
+    const jsf = {
+      initializeControl: jasmine.createSpy('initializeControl'),
+      updateValue: jasmine.createSpy('updateValue'),
+    };
     const c = new PrimengOneOfComponent(jsf as any);
-    c.layoutNode = { type: 'one-of', options: {} };
+    c.layoutNode = { type: 'one-of', options: opts };
     c.ngOnInit();
-    expect(jsf.initializeControl).toHaveBeenCalledWith(c);
+    return { component: c, jsf };
+  };
+
+  it('builds selectList from titleMap', () => {
+    const { component } = make({
+      titleMap: [{ name: 'Option A', value: 'a' }, { name: 'Option B', value: 'b' }],
+      required: true,
+    });
+    expect(component.selectList.length).toBe(2);
+    expect(component.selectList[0].name).toBe('Option A');
+    expect(component.selectList[0].value).toBe('a');
   });
 
-  it('forwards value updates through jsf', () => {
-    const jsf = { initializeControl: jasmine.createSpy('initializeControl'), updateValue: jasmine.createSpy('updateValue') };
-    const c = new PrimengOneOfComponent(jsf as any);
-    c.layoutNode = { type: 'one-of', options: {} };
-    c.ngOnInit();
-    c.updateValue({ target: { value: 'test' } });
-    expect(jsf.updateValue).toHaveBeenCalledWith(c, 'test');
+  it('builds selectList from enum', () => {
+    const { component } = make({ enum: ['x', 'y'], required: true });
+    expect(component.selectList.length).toBe(2);
+  });
+
+  it('falls back to boolean titleMap when no titleMap or enum exists', () => {
+    const { component } = make({});
+    expect(component.selectList.length).toBeGreaterThan(0);
+  });
+
+  it('passes !readonly to initializeControl', () => {
+    const { jsf } = make({ enum: ['a'], readonly: true });
+    expect(jsf.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+  });
+
+  it('forwards value updates through jsf using event.value', () => {
+    const { component, jsf } = make({ enum: ['a'] });
+    component.updateValue({ value: 'a' });
+    expect(jsf.updateValue).toHaveBeenCalledWith(component, 'a');
   });
 });

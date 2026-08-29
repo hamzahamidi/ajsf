@@ -40,4 +40,9 @@ describe('PrimengSelectComponent', () => {
     const { jsf } = make({ enum: ['a'], readonly: true });
     expect(jsf.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
   });
+
+  it('exposes options.multiple for template branching', () => {
+    const { component } = make({ enum: ['a', 'b'], multiple: true });
+    expect(component.options.multiple).toBe(true);
+  });
 });
