@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const PACKAGES = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5'];
+const PACKAGES = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5', 'ajsf-primeng'];
 const ANGULAR_PEERS = [
   '@angular/core', '@angular/common', '@angular/forms',
   '@angular/platform-browser', '@angular/material', '@angular/cdk',
