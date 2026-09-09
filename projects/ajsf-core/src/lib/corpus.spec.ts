@@ -1,6 +1,23 @@
 import { JsonSchemaFormModule } from './json-schema-form.module';
 import { NoFrameworkModule } from './framework-library/no-framework.module';
-import { runCorpus } from '../../../../testing/corpus/harness';
+import { Component } from '@angular/core';
+import { CorpusHost, runCorpus } from '../../../../testing/corpus/harness';
 
 // Source copies, because this project is @ajsf/core itself.
-runCorpus('no-framework', [JsonSchemaFormModule, NoFrameworkModule]);
+@Component({
+  standalone: true,
+  imports: [JsonSchemaFormModule, NoFrameworkModule],
+  template: `
+    <json-schema-form
+      [form]="form"
+      [framework]="framework"
+      (isValid)="valid = $event"
+    ></json-schema-form>`,
+})
+class CoreCorpusHost implements CorpusHost {
+  form: any;
+  framework: string;
+  valid: boolean | null = null;
+}
+
+runCorpus('no-framework', CoreCorpusHost);
