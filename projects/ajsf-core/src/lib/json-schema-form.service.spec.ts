@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 
@@ -199,7 +200,7 @@ describe('JsonSchemaFormService', () => {
       buildForm(personSchema, null, { name: 'Bob' });
       expect(jsf.getSchema().type).toEqual('object');
       expect(Array.isArray(jsf.getLayout())).toBe(true);
-      expect(jsf.getData()).toEqual(jasmine.objectContaining({ name: 'Bob' }));
+      expect(jsf.getData()).toEqual(expect.objectContaining({ name: 'Bob' }));
     });
   });
 
@@ -396,7 +397,7 @@ describe('JsonSchemaFormService', () => {
   // ---------------------------------------------------------------------------
   describe('validateData', () => {
     it('throws when no schema has been compiled yet', () => {
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       expect(() => jsf.validateData({ a: 1 })).toThrowError(TypeError);
     });
 
@@ -662,7 +663,7 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('returns null from every accessor when the context has no layoutNode', () => {
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       expect(jsf.getFormControl({})).toBeNull();
       expect(jsf.getFormControlValue({})).toBeNull();
       expect(jsf.getFormControlGroup({})).toBeNull();
@@ -705,20 +706,20 @@ describe('JsonSchemaFormService', () => {
       // BUG: getControl falls off the end of its search loop with a bare
       // `return;`, so getFormControl hands back undefined rather than the null
       // its signature and its own guard clauses promise.
-      const consoleError = spyOn(console, 'error');
+      const consoleError = vi.spyOn(console, 'error');
       const ctx: any = { layoutNode: { dataPointer: '/nope' }, dataIndex: [], layoutIndex: [0] };
       expect(jsf.getFormControl(ctx)).toBeUndefined();
       expect(consoleError).toHaveBeenCalled();
     });
 
     it('normalises a missing control to null in getFormControlValue', () => {
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       const ctx: any = { layoutNode: { dataPointer: '/nope' }, dataIndex: [], layoutIndex: [0] };
       expect(jsf.getFormControlValue(ctx)).toBeNull();
     });
 
     it('reports an unbound control as not bound', () => {
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       const ctx: any = { layoutNode: { dataPointer: '/nope' }, dataIndex: [], layoutIndex: [0] };
       expect(jsf.isControlBound(ctx)).toBe(false);
     });
@@ -761,7 +762,7 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('copies formOptions into ctx.options when the layout node has none', () => {
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       const ctx: any = { layoutNode: { name: 'ghost' }, dataIndex: [], layoutIndex: [0] };
       jsf.initializeControl(ctx);
       expect(ctx.options.addSubmit).toEqual('auto');
@@ -779,7 +780,7 @@ describe('JsonSchemaFormService', () => {
         layoutNode: { name: 'ghost', options: { title: 'T' } },
         dataIndex: [], layoutIndex: [0],
       };
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       jsf.initializeControl(ctx, false);
       expect(ctx.options).toBe(ctx.layoutNode.options);
       expect(ctx.options.title).toEqual('T');
@@ -789,7 +790,7 @@ describe('JsonSchemaFormService', () => {
       const ctx: any = {
         layoutNode: { name: 'ghost', value: 'gv' }, dataIndex: [], layoutIndex: [0],
       };
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       expect(jsf.initializeControl(ctx)).toBe(false);
       expect(ctx.controlName).toEqual('ghost');
       expect(ctx.controlValue).toEqual('gv');
@@ -797,13 +798,13 @@ describe('JsonSchemaFormService', () => {
 
     it('uses null when the unbound layoutNode has no value', () => {
       const ctx: any = { layoutNode: { name: 'ghost' }, dataIndex: [], layoutIndex: [0] };
-      spyOn(console, 'error');
+      vi.spyOn(console, 'error');
       jsf.initializeControl(ctx);
       expect(ctx.controlValue).toBeNull();
     });
 
     it('warns on the console when a bound control cannot be found', () => {
-      const consoleError = spyOn(console, 'error');
+      const consoleError = vi.spyOn(console, 'error');
       const ctx: any = {
         layoutNode: { name: 'nope', dataPointer: '/nope' }, dataIndex: [], layoutIndex: [0],
       };
@@ -1119,7 +1120,7 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('calls a function condition with the data', () => {
-      const condition = jasmine.createSpy('condition').and.returnValue(false);
+      const condition = vi.fn().mockReturnValue(false);
       expect(jsf.evaluateCondition({ options: { condition } }, [])).toBe(false);
       expect(condition).toHaveBeenCalledWith(jsf.data);
     });
@@ -1140,7 +1141,7 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('falls back to true and logs when the functionBody throws', () => {
-      const consoleError = spyOn(console, 'error');
+      const consoleError = vi.spyOn(console, 'error');
       expect(jsf.evaluateCondition(
         { options: { condition: { functionBody: 'return nope.nope;' } } }, []
       )).toBe(true);
@@ -1256,7 +1257,7 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('skips a copyValueTo pointer that resolves to nothing', () => {
-      const consoleError = spyOn(console, 'error');
+      const consoleError = vi.spyOn(console, 'error');
       const ctx: any = {
         layoutNode: { name: 'x' }, options: { copyValueTo: ['/nope'] }, boundControl: false,
       };

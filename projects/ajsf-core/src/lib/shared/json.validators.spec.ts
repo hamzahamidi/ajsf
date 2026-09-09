@@ -623,7 +623,7 @@ describe('JsonValidators', () => {
     it('accepts plain two-decimal values against a 0.01 step', () => {
       const validator = JsonValidators.multipleOf(0.01);
       for (const value of [0.03, 0.1, 9, 12.34, 99.99]) {
-        expect(validator(ctrl(value))).withContext(`${value}`).toBeNull();
+        expect(validator(ctrl(value)), `${value}`).toBeNull();
       }
     });
 

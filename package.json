@@ -97,6 +97,7 @@
     "@primeng/themes": "^20.4.0",
     "@types/jasmine": "~4.0.0",
     "@types/node": "^20.19.43",
+    "@vitest/browser": "^3.2.7",
     "codelyzer": "^6.0.0",
     "jasmine": "^4.6.0",
     "jasmine-core": "~4.3.0",
@@ -106,10 +107,12 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^20.3.2",
+    "playwright": "^1.63.0",
     "primeng": "^20.4.0",
     "ts-node": "~8.6.2",
     "tslib": "^2.3.1",
     "tslint": "~6.1.0",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "vitest": "^3.2.7"
   }
 }

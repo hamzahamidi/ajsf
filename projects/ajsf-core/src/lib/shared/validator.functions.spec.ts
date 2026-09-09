@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { Observable, of } from "rxjs";
 import {
   _executeAsyncValidators,
@@ -585,7 +586,7 @@ describe("Validator functions", () => {
     });
 
     it("logs an error and returns null for an unrecognized type", () => {
-      spyOn(console, "error");
+      vi.spyOn(console, "error");
 
       expect(isType("abc", "bogus")).toBeNull();
       expect(console.error).toHaveBeenCalled();
@@ -804,14 +805,14 @@ describe("Validator functions", () => {
     });
 
     it("logs an error and returns an empty observable for other input", () => {
-      spyOn(console, "error");
+      vi.spyOn(console, "error");
 
       expect(toObservable({}) instanceof Observable).toBe(true);
       expect(console.error).toHaveBeenCalled();
     });
 
     it("does not throw for null input", () => {
-      spyOn(console, "error");
+      vi.spyOn(console, "error");
 
       expect(() => toObservable(null)).not.toThrow();
     });

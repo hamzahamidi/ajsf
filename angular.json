@@ -125,6 +125,20 @@
             "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
             "karmaConfig": "projects/ajsf-core/karma.conf.js"
           }
+        },
+        "test-vitest": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "@ajsf/core:build",
+            "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
+            "runner": "vitest",
+            "browsers": [
+              "ChromiumHeadless"
+            ],
+            "setupFiles": [
+              "projects/ajsf-core/src/test-setup.ts"
+            ]
+          }
         }
       }
     },

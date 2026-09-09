@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
   addClasses,
   cleanValueOfQuotes,
@@ -316,21 +317,21 @@ describe('Utility functions', () => {
     });
 
     it('logs both errors when errors is true and input is neither object nor function', () => {
-      const spy = spyOn(console, 'error');
+      const spy = vi.spyOn(console, 'error');
       forEach('abc', null as any, false, undefined, true);
 
       expect(spy).toHaveBeenCalledTimes(4);
     });
 
     it('logs only the iterator error when the object is valid', () => {
-      const spy = spyOn(console, 'error');
+      const spy = vi.spyOn(console, 'error');
       forEach({ a: 1 }, null as any, false, undefined, true);
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
     it('logs only the object error when the iterator is valid', () => {
-      const spy = spyOn(console, 'error');
+      const spy = vi.spyOn(console, 'error');
       forEach('abc', v => v, false, undefined, true);
 
       expect(spy).toHaveBeenCalledTimes(2);
@@ -409,14 +410,14 @@ describe('Utility functions', () => {
     });
 
     it('logs both errors when errors is true and input is neither object nor function', () => {
-      const spy = spyOn(console, 'error');
+      const spy = vi.spyOn(console, 'error');
       forEachCopy('abc', null as any, true);
 
       expect(spy).toHaveBeenCalledTimes(4);
     });
 
     it('logs only the object error when the iterator is valid', () => {
-      const spy = spyOn(console, 'error');
+      const spy = vi.spyOn(console, 'error');
       forEachCopy('abc', v => v, true);
 
       expect(spy).toHaveBeenCalledTimes(2);
