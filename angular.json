@@ -131,6 +131,9 @@
               "text-summary",
               "html",
               "lcov"
+            ],
+            "codeCoverageExclude": [
+              "**/chunk-*.js"
             ]
           }
         }
@@ -183,11 +186,22 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-bootstrap3/src/test.ts",
+            "buildTarget": "@ajsf/bootstrap3:build",
             "tsConfig": "projects/ajsf-bootstrap3/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-bootstrap3/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-bootstrap3/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "html",
+              "lcov"
+            ],
+            "codeCoverageExclude": [
+              "**/chunk-*.js"
+            ]
           }
         }
       }
