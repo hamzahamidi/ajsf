@@ -34,32 +34,13 @@ jobs:
     - name: Build libs and demo
       run: npm run build:demo
     - name: Test libs
-      run: |
-        # The migrated suites run on Vitest and take neither --no-progress nor
-        # --browsers: the unit-test builder's schema has no progress option, and
-        # omitting browsers selects jsdom, which is the only mode that produces
-        # coverage under @angular/build 20.3.36, since browser mode attributes
-        # nothing and writes an empty lcov. The rest keep ChromeHeadlessCI
-        # until they migrate.
-        # Every Vitest suite writes coverage/lcov.info and wipes the coverage
-        # directory before doing so, so each report is staged outside it and
-        # restored at the end. Karma wrote per-project subdirectories and needed
-        # none of this; the unit-test builder exposes no output directory
-        # option, and the istanbul `subdir` reporter option is not honoured.
-        mkdir -p /tmp/vitest-cov
-        for suite in core bs3 bs4 bs5; do
-          npm run test:$suite -- --code-coverage --no-watch
-          cp coverage/lcov.info "/tmp/vitest-cov/$suite.info"
-        done
-        npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
-        npm run test:primeng -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
-        # Karma writes into per-project subdirectories and does not wipe the
-        # directory, so the staged Vitest reports can be put back now.
-        for suite in core bs3 bs4 bs5; do
-          mkdir -p "coverage/vitest-$suite"
-          cp "/tmp/vitest-cov/$suite.info" "coverage/vitest-$suite/lcov.info"
-        done
-        find coverage -name lcov.info | sort
+      # One implementation for CI and `npm run coverage`, because the Vitest
+      # path needs orchestration that cannot be expressed as configuration:
+      # dist/test-out must be cleaned before each suite or stale run
+      # directories distort V8 coverage, and every Vitest suite wipes
+      # coverage/ before writing lcov.info, so reports are staged and restored.
+      # It also picks each suite's flags from its runner, which differ.
+      run: node scripts/run-coverage.js
     # The codecov npm package is deprecated and its uploader now fails against
     # the current API with "result.split is not a function". This action is the
     # supported path.
