@@ -18,7 +18,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        # Angular 20 requires ^20.19.0 || ^22.12.0 || >=24.0.0, so 18.x is gone
+        # rather than dropped by choice: npm ci fails the engine check on it.
+        node-version: [20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v7
