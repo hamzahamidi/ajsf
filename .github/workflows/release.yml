@@ -29,12 +29,19 @@ name: Release
 # built. Approving means "this built and passed, ship it" rather than "go ahead
 # and try".
 
+# There is deliberately no `workflow_dispatch` here. A dispatch can target any
+# branch or tag, and this workflow runs in default-branch context with the
+# capability to publish, so a manual trigger meant checking out an arbitrary
+# ref and executing it on the way to npm. CodeQL flags that as cache poisoning
+# via a poisonable step, and it also made "dispatch the release" a way to skip
+# CI entirely. To re-run a release, re-run the failed run from the Actions UI:
+# that replays the original workflow_run payload, so it stays pinned to the
+# commit CI tested rather than to whatever main looks like now.
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
     branches: [main]
-  workflow_dispatch:
 
 # Least privilege by default. Only the gated `release` job raises this, because
 # `verify` runs repository code (`npm ci`, `npm run build:libs`) before any
@@ -58,11 +65,10 @@ jobs:
   decide:
     runs-on: ubuntu-latest
     # A manually dispatched CI run also satisfies workflow_run, so the event is
-    # pinned to `push`: a release follows a merge, not a re-run.
+    # pinned to `push`: a release follows a merge, not a re-run of CI.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push')
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     outputs:
       version: ${{ steps.check.outputs.version }}
       publish: ${{ steps.check.outputs.publish }}
@@ -70,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 2   # need the previous commit to diff the version
           persist-credentials: false
 
@@ -86,10 +92,7 @@ jobs:
             *)   echo "dist-tag=latest" >> "$GITHUB_OUTPUT" ;;
           esac
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            CHANGED=yes
-            echo "[release] manual dispatch, treating as a release"
-          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
             PREVIOUS=$(git show HEAD^:"$MANIFEST" 2>/dev/null \
               | node -p "try{JSON.parse(require('fs').readFileSync(0,'utf8')).version}catch(e){''}" || true)
             if [ "$PREVIOUS" = "$VERSION" ]; then
@@ -141,7 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
 
       - name: Setup Node
@@ -156,20 +159,6 @@ jobs:
 
       - name: Build libraries
         run: npm run build:libs
-
-      # The workflow_run path already has a green CI run on this exact commit,
-      # which is why the suites are not repeated there. A manual dispatch has
-      # no such run behind it, so it pays for its own coverage rather than
-      # publishing on the strength of test:scripts alone.
-      - name: Test libraries (manual dispatch has no CI run to lean on)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs5 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:primeng -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
       - name: Confirm every package carries the release version
         run: |
@@ -224,7 +213,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       # NOT .nvmrc. This job publishes prebuilt tarballs and never compiles
       # anything, so it does not need the Angular toolchain's Node 16. It does
