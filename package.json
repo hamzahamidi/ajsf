@@ -96,7 +96,7 @@
     "@angular/language-service": "^20.3.30",
     "@primeng/themes": "^20.4.0",
     "@types/jasmine": "~4.0.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^20.19.43",
     "codelyzer": "^6.0.0",
     "jasmine": "^4.6.0",
     "jasmine-core": "~4.3.0",
