@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { PrimengCheckboxComponent } from './primeng-checkbox.component';
 
 describe('PrimengCheckboxComponent', () => {
   const make = (opts: any, layoutType = 'checkbox') => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
-      getFormControlValue: jasmine.createSpy('getFormControlValue').and.returnValue(false),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
+      getFormControlValue: vi.fn().mockReturnValue(false),
     };
     const c = new PrimengCheckboxComponent(jsf as any);
     c.layoutNode = { type: layoutType, options: opts };
@@ -26,9 +27,9 @@ describe('PrimengCheckboxComponent', () => {
 
   it('detects slide-toggle from layoutNode.format', () => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
-      getFormControlValue: jasmine.createSpy('getFormControlValue').and.returnValue(false),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
+      getFormControlValue: vi.fn().mockReturnValue(false),
     };
     const c = new PrimengCheckboxComponent(jsf as any);
     c.layoutNode = { type: 'checkbox', format: 'slide-toggle', options: {} };
@@ -43,26 +44,26 @@ describe('PrimengCheckboxComponent', () => {
 
   it('updates with trueValue on checked', () => {
     const { component, jsf } = make({});
-    jsf.updateValue.calls.reset();
+    jsf.updateValue.mockClear();
     component.updateValue({ checked: true });
     expect(jsf.updateValue).toHaveBeenCalledWith(component, true);
   });
 
   it('updates with falseValue on unchecked', () => {
     const { component, jsf } = make({});
-    jsf.updateValue.calls.reset();
+    jsf.updateValue.mockClear();
     component.updateValue({ checked: false });
     expect(jsf.updateValue).toHaveBeenCalledWith(component, false);
   });
 
   it('isChecked returns true when controlValue equals trueValue', () => {
     const { component, jsf } = make({});
-    jsf.getFormControlValue.and.returnValue(true);
+    jsf.getFormControlValue.mockReturnValue(true);
     expect(component.isChecked).toBe(true);
   });
 
   it('passes !readonly to initializeControl', () => {
     const { jsf } = make({ readonly: true });
-    expect(jsf.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(jsf.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 });

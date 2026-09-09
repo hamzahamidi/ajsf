@@ -294,11 +294,18 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-primeng/src/test.ts",
+            "buildTarget": "@ajsf/primeng:build",
             "tsConfig": "projects/ajsf-primeng/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-primeng/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-primeng/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "lcov"
+            ]
           }
         }
       }

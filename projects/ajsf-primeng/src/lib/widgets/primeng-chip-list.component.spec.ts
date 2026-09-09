@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengChipListComponent } from './primeng-chip-list.component';
 
 describe('PrimengChipListComponent', () => {
   const jsf = () => ({
-    initializeControl: jasmine.createSpy('initializeControl'),
-    updateArrayCheckboxList: jasmine.createSpy('updateArrayCheckboxList'),
+    initializeControl: vi.fn(),
+    updateArrayCheckboxList: vi.fn(),
   });
 
   const make = (node: any) => {
@@ -27,7 +28,7 @@ describe('PrimengChipListComponent', () => {
       type: 'chip-list',
       options: {},
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 
   it('filters suggestions from typeahead source', () => {

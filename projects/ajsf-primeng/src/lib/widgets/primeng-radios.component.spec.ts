@@ -1,10 +1,11 @@
+import { vi } from 'vitest';
 import { PrimengRadiosComponent } from './primeng-radios.component';
 
 describe('PrimengRadiosComponent', () => {
   const make = (opts: any, layoutType = 'radios') => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
     };
     const c = new PrimengRadiosComponent(jsf as any);
     c.layoutNode = { type: layoutType, options: opts };
@@ -36,6 +37,6 @@ describe('PrimengRadiosComponent', () => {
 
   it('passes !readonly to initializeControl', () => {
     const { jsf } = make({ enum: ['a'], readonly: true });
-    expect(jsf.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(jsf.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 });

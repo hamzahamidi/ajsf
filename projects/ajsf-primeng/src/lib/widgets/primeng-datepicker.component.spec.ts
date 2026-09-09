@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengDatepickerComponent } from './primeng-datepicker.component';
 
 describe('PrimengDatepickerComponent', () => {
   const jsf = () => ({
-    initializeControl: jasmine.createSpy('initializeControl'),
-    updateValue: jasmine.createSpy('updateValue'),
+    initializeControl: vi.fn(),
+    updateValue: vi.fn(),
   });
 
   const make = (node: any) => {
@@ -27,7 +28,7 @@ describe('PrimengDatepickerComponent', () => {
       type: 'date',
       options: {},
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), true);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), true);
   });
 
   it('respects readonly option', () => {
@@ -35,7 +36,7 @@ describe('PrimengDatepickerComponent', () => {
       type: 'date',
       options: { readonly: true },
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 
   it('parses minimum as a local date', () => {

@@ -1,10 +1,11 @@
+import { vi } from 'vitest';
 import { PrimengButtonGroupComponent } from './primeng-button-group.component';
 
 describe('PrimengButtonGroupComponent', () => {
   const make = (opts: any) => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
     };
     const c = new PrimengButtonGroupComponent(jsf as any);
     c.layoutNode = { type: 'button-group', options: opts };

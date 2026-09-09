@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { vi } from 'vitest';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -7,7 +8,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
 
 describe('PrimengInputComponent', () => {
   const make = (opts: any, layoutType = 'text') => {
-    const jsf = { initializeControl: jasmine.createSpy('initializeControl'), updateValue: jasmine.createSpy('updateValue') };
+    const jsf = { initializeControl: vi.fn(), updateValue: vi.fn() };
     const c = new PrimengInputComponent(jsf as any);
     c.layoutNode = { type: layoutType, options: opts };
     c.ngOnInit();
@@ -38,15 +39,15 @@ describe('PrimengInputComponent', () => {
   describe('typeahead datalist', () => {
     let fixture: ComponentFixture<PrimengInputComponent>;
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         imports: [CommonModule, ReactiveFormsModule, InputTextModule],
         declarations: [PrimengInputComponent],
         providers: [
           { provide: JsonSchemaFormService, useValue: { initializeControl: () => {} } },
         ],
       }).compileComponents();
-    }));
+    });
 
     it('renders a datalist with the configured suggestions', () => {
       fixture = TestBed.createComponent(PrimengInputComponent);

@@ -1,8 +1,9 @@
+import { vi } from 'vitest';
 import { PrimengNumberComponent } from './primeng-number.component';
 
 describe('PrimengNumberComponent', () => {
   const make = (opts: any, dataType = 'number') => {
-    const jsf = { initializeControl: jasmine.createSpy('initializeControl'), updateValue: jasmine.createSpy('updateValue') };
+    const jsf = { initializeControl: vi.fn(), updateValue: vi.fn() };
     const c = new PrimengNumberComponent(jsf as any);
     c.layoutNode = { type: 'number', dataType, options: opts };
     c.ngOnInit();
