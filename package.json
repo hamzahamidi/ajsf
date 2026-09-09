@@ -69,8 +69,7 @@
     "corpus:index": "node scripts/generate-corpus-index.js",
     "build:primeng": "ng build @ajsf/primeng --configuration production",
     "postbuild:primeng": "cp projects/ajsf-primeng/README.md LICENSE dist/@ajsf/primeng/",
-    "test:primeng": "ng test @ajsf/primeng",
-    "test:core:vitest": "ng run @ajsf/core:test-vitest"
+    "test:primeng": "ng test @ajsf/primeng"
   },
   "dependencies": {
     "@angular/animations": "^20.3.30",
