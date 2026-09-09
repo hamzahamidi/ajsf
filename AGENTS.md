@@ -58,7 +58,7 @@ Publishing is automated through `.github/workflows/release.yml` and npm OIDC Tru
 
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
-3. The `verify` job builds and runs all five suites, ungated, and uploads `dist` as an artifact.
+3. The `verify` job builds, runs all six suites, ungated, and uploads `dist` as an artifact. CI has already run those suites on the same commit, but `verify` keeps them because `workflow_dispatch` reaches it with no CI run behind it.
 4. Approve the `npm-publish` deployment. Nothing reaches npm before this, and by now the build is green.
 5. `release` publishes the artifact `verify` built, `core` first, then the three framework packages, and tags the commit.
 

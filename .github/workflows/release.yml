@@ -16,11 +16,11 @@ name: Release
 # needs a PAT or a GitHub App, which reintroduces the long-lived credential
 # OIDC exists to remove. So the tag is an output here, not an input.
 #
-# CI owns testing. This workflow fires after CI succeeds on main via
-# workflow_run, so library tests are not repeated here. The verify job's
-# responsibility is reproducible package construction: build the dist
-# tarballs, confirm every package carries the release version, and upload the
-# exact artifact that the gated publish job will ship.
+# This workflow fires after CI succeeds on main via workflow_run, so on that
+# path the suites have already run on this exact commit. `verify` runs them
+# again anyway, because `workflow_dispatch` reaches it with no CI run behind
+# it: dropping the step made the manual trigger a way to publish untested.
+# The duplicate run on the automatic path buys the manual path its safety.
 #
 # Three jobs, in this order for a reason. An environment protection rule blocks
 # a job before ANY of its steps run, so building inside the gated job would
@@ -122,6 +122,20 @@ jobs:
 
       - name: Build libraries
         run: npm run build:libs
+
+      # Kept here even though CI runs the same suites on the same commit,
+      # because `workflow_dispatch` reaches this job with no CI run behind it
+      # at all. Removing this step left that path publishing on the strength
+      # of `test:scripts` alone. The duplicate run on the workflow_run path is
+      # the price of the manual trigger staying safe.
+      - name: Test libraries
+        run: |
+          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs5 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:primeng -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
       - name: Confirm every package carries the release version
         run: |
