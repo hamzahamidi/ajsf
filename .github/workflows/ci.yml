@@ -35,7 +35,12 @@ jobs:
       run: npm run build:demo
     - name: Test libs
       run: |
-        npm run test:core -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+        # Core is on the Vitest runner. It takes neither --no-progress nor
+        # --browsers: the unit-test builder's schema has no progress option,
+        # and omitting browsers runs jsdom, which is the only mode that
+        # produces coverage under @angular/build 20.3.36. The other five keep
+        # ChromeHeadlessCI until they migrate.
+        npm run test:core:vitest -- --code-coverage --no-watch
         npm run test:bs3 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:bs5 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI

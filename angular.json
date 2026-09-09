@@ -132,11 +132,13 @@
             "buildTarget": "@ajsf/core:build",
             "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
             "runner": "vitest",
-            "browsers": [
-              "ChromiumHeadless"
-            ],
             "setupFiles": [
               "projects/ajsf-core/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "html",
+              "lcov"
             ]
           }
         }
