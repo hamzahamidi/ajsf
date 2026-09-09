@@ -2,9 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 const PACKAGES = ['ajsf-core', 'ajsf-material', 'ajsf-bootstrap3', 'ajsf-bootstrap4', 'ajsf-bootstrap5', 'ajsf-primeng'];
-const ANGULAR_PEERS = [
-  '@angular/core', '@angular/common', '@angular/forms',
-  '@angular/platform-browser', '@angular/material', '@angular/cdk',
+// Peers whose major is pinned to the Angular major this release targets.
+// Not only @angular/* : PrimeNG's majors have tracked Angular's since v18,
+// which is why @ajsf/primeng's major equals both. Leaving it out published
+// @ajsf/primeng 19.2.0 telling consumers to install PrimeNG 19 alongside
+// whatever Angular the release targeted.
+const MAJOR_PEERS = [
+  '@angular/core',
+  '@angular/common',
+  '@angular/forms',
+  '@angular/platform-browser',
+  '@angular/material',
+  '@angular/cdk',
+  'primeng',
 ];
 
 const VERSION = /^(\d+)\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
@@ -120,7 +130,7 @@ function setVersion(nextVersion, angularMajor, packagesDir) {
     }
 
     if (angularMajor !== null && manifest.peerDependencies) {
-      for (const peer of ANGULAR_PEERS) {
+      for (const peer of MAJOR_PEERS) {
         if (manifest.peerDependencies[peer]) {
           manifest.peerDependencies[peer] = `^${angularMajor}.0.0`;
         }
