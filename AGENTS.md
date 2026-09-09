@@ -2,7 +2,9 @@
 
 Notes for AI coding agents working in this repository. Humans may find the traps section useful too.
 
-`@ajsf/*` is a JSON Schema form builder for Angular, published as five packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4` and `@ajsf/bootstrap5` framework packages. All five version in lockstep.
+`@ajsf/*` is a JSON Schema form builder for Angular, published as six packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4`, `@ajsf/bootstrap5` and `@ajsf/primeng` framework packages. All six version in lockstep.
+
+That count is currently written down in four places: `PACKAGES` in `scripts/set-version.js`, `LIBRARIES` in `scripts/package-guards.spec.js`, `build:libs` in `package.json`, and the expected package count in `release.yml`. Adding a seventh means editing all four, and `@ajsf/primeng` shipped in 19.2.0 having been missed by three of them.
 
 ## Environment
 
@@ -23,7 +25,7 @@ nvm use "$(cat .nvmrc)"
 
 ```bash
 npm ci                       # install
-npm run build:libs           # build all five packages into dist/@ajsf/
+npm run build:libs           # build all six packages into dist/@ajsf/
 npm run build:demo           # build the libraries and the demo app
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
@@ -35,7 +37,7 @@ Library tests need the headless launcher flags:
 npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 ```
 
-Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material` for the others.
+Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material`, `test:primeng` for the others.
 
 ## Versioning
 
@@ -58,9 +60,9 @@ Publishing is automated through `.github/workflows/release.yml` and npm OIDC Tru
 
 1. Open a PR containing only the `npm run version:set` bump.
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
-3. The `verify` job builds and runs all five suites, ungated, and uploads `dist` as an artifact.
+3. CI runs the suites on that merge commit. Release then fires from `workflow_run` once CI is green, so `verify` does not repeat them: it builds, confirms all six packages carry the release version, and uploads `dist` as an artifact, ungated.
 4. Approve the `npm-publish` deployment. Nothing reaches npm before this, and by now the build is green.
-5. `release` publishes the artifact `verify` built, `core` first, then the three framework packages, and tags the commit.
+5. `release` publishes the artifact `verify` built, `core` first, then the five framework packages, and tags the commit. It is the only job holding `contents: write` and `id-token: write`, and it re-reads the registry after approval so a stale approval cannot republish a version or drag `latest` backwards.
 
 The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes prebuilt tarballs and compiles nothing, but it needs an npm recent enough for OIDC, and current npm requires Node 22 or later. Pinning it to `.nvmrc` made `npm i -g npm@latest` fail with `EBADENGINE` before any publish ran.
 
@@ -72,7 +74,7 @@ There is no CHANGELOG.md and no changelog script. The release pages are the reco
 
 ## Coverage
 
-Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all five libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
+Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all six libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
 
 **Codecov authenticates with the `CODECOV_TOKEN` secret, not OIDC**, which is deliberate and differs from the npm publishing flow. `codecov/codecov-action` does accept `use_oidc: true`, but the CLI has a reported failure mode where it ignores the OIDC credential, falls back to tokenless and then fails on a rate limit (`codecov-action#1461`, closed with no stated fix), and fork pull requests receive no `id-token` at all. The token is the predictable option. Do not switch this to OIDC without confirming an upload actually lands.
 
@@ -205,7 +207,7 @@ Each of these cost real debugging time. They look like bugs in your code and are
   change, not a contributor-only doc, and it reaches consumers only when a
   version publishes.
 
-- **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
+- **`npm view pkg@missing-version` signals absence two different ways, depending on the npm version.** Older npm exited 0 with empty stdout, and only a missing *package* exited non-zero. npm 12.0.2 exits 1 with `npm error code E404` for a missing version of an existing package too, verified against the live registry. An "is this published" check has to treat both as absent, and must not collapse that into `|| true`: swallowing every failure makes a registry outage or a DNS error read as "not published yet" and sends a bogus release to the approval gate. Match E404 explicitly and let any other failure stop the release, which is what `release.yml` does in both the `decide` preflight and the post-approval re-check.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.
 - **`jasmine@7` installs on Node 16 and then fails at run time** with `ReferenceError: structuredClone is not defined`, which arrived in Node 17. The repository pins jasmine 4.

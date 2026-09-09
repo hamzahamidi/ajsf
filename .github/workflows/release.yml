@@ -36,16 +36,33 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Least privilege by default. Only the gated `release` job raises this, because
+# `verify` runs repository code (`npm ci`, `npm run build:libs`) before any
+# approval, and a write token or an OIDC credential in that job would be
+# reachable from a postinstall or ng-packagr hook. The environment gate is the
+# approval boundary; it is only a security boundary if the ungated jobs cannot
+# publish or push on their own.
 permissions:
-  contents: write
-  id-token: write
+  contents: read
+
+# npm assigns a dist-tag to whatever version is published and does not enforce
+# that `latest` moves forward, so two releases publishing at once can leave
+# `latest` on the older one. Serializing every run of this workflow keeps the
+# six packages moving as one. GitHub does not promise queue order, so the
+# release job re-checks the registry after approval as well.
+concurrency:
+  group: release-${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   decide:
     runs-on: ubuntu-latest
+    # A manually dispatched CI run also satisfies workflow_run, so the event is
+    # pinned to `push`: a release follows a merge, not a re-run.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
     outputs:
       version: ${{ steps.check.outputs.version }}
       publish: ${{ steps.check.outputs.publish }}
@@ -55,6 +72,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 2   # need the previous commit to diff the version
+          persist-credentials: false
 
       - name: Did this push change the version
         id: check
@@ -87,9 +105,24 @@ jobs:
           fi
 
           # Safety net, not the trigger: never republish an existing version.
-          # Test the output, not the exit code. `npm view pkg@missing-version`
-          # exits 0 with empty stdout; only a missing package exits non-zero.
-          PUBLISHED=$(npm view "@ajsf/core@$VERSION" version 2>/dev/null || true)
+          #
+          # Both npm behaviours have to read as absent, because this changed
+          # under us: npm 12 exits non-zero with E404 for a missing version of
+          # an existing package, where older npm exited 0 with empty stdout.
+          # A blanket `|| true` covers both but fails open, so a registry
+          # outage or a DNS failure reads as "not published yet" and sends a
+          # bogus release to the approval gate. Only an E404 means absent; any
+          # other failure stops the release.
+          ERRFILE=$(mktemp)
+          if OUT=$(npm view "@ajsf/core@$VERSION" version 2>"$ERRFILE"); then
+            PUBLISHED=$(printf '%s' "$OUT" | tr -d '[:space:]')
+          elif grep -q 'E404' "$ERRFILE"; then
+            PUBLISHED=""
+          else
+            echo "[release] npm view failed, refusing to guess:"
+            cat "$ERRFILE"
+            exit 1
+          fi
 
           if [ "$CHANGED" = "no" ]; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
@@ -109,6 +142,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -122,6 +156,20 @@ jobs:
 
       - name: Build libraries
         run: npm run build:libs
+
+      # The workflow_run path already has a green CI run on this exact commit,
+      # which is why the suites are not repeated there. A manual dispatch has
+      # no such run behind it, so it pays for its own coverage rather than
+      # publishing on the strength of test:scripts alone.
+      - name: Test libraries (manual dispatch has no CI run to lean on)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:bs5 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run test:primeng -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
       - name: Confirm every package carries the release version
         run: |
@@ -143,7 +191,10 @@ jobs:
           echo "[release] all $COUNT packages at $VERSION"
 
       # Publishing the artifact verify built, rather than rebuilding inside the
-      # gated job, means what ships is exactly what passed.
+      # gated job, means the gated job compiles nothing. It is not yet a
+      # byte-for-byte guarantee: `npm publish <dir>` packs the directory at
+      # publish time and would run any prepack or prepare script the package
+      # gained. Packing here and publishing the tarballs would close that.
       - name: Upload the verified packages
         uses: actions/upload-artifact@v7
         with:
@@ -162,6 +213,14 @@ jobs:
     # Settings > Environments > npm-publish with yourself as a required
     # reviewer. Free on public repositories.
     environment: npm-publish
+    # The only job that gets these, and only behind the approval gate:
+    # `contents: write` pushes the tag and creates the release, `id-token`
+    # mints the OIDC credential npm trusted publishing exchanges. The npm
+    # trusted publisher for each package must name the `npm-publish`
+    # environment, or this restriction buys nothing.
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -186,6 +245,42 @@ jobs:
         with:
           name: ajsf-dist-${{ needs.decide.outputs.version }}
           path: dist/@ajsf/
+
+      # An approval can sit for hours, so `decide`'s reading of the registry is
+      # stale by the time anyone clicks it. Re-reading here closes two gaps the
+      # concurrency group alone cannot: another run may have published this
+      # version already, and a stable release must never drag `latest`
+      # backwards, which npm permits because a dist-tag points at whatever was
+      # published last rather than at the highest version.
+      - name: Re-check the registry after approval
+        run: |
+          VERSION="${{ needs.decide.outputs.version }}"
+          DIST_TAG="${{ needs.decide.outputs.dist-tag }}"
+
+          ERRFILE=$(mktemp)
+          if OUT=$(npm view "@ajsf/core@$VERSION" version 2>"$ERRFILE"); then
+            if [ -n "$(printf '%s' "$OUT" | tr -d '[:space:]')" ]; then
+              echo "[release] @ajsf/core@$VERSION appeared on npm since approval, refusing"
+              exit 1
+            fi
+          elif ! grep -q 'E404' "$ERRFILE"; then
+            echo "[release] npm view failed, refusing to guess:"
+            cat "$ERRFILE"
+            exit 1
+          fi
+
+          if [ "$DIST_TAG" = "latest" ]; then
+            CURRENT=$(npm view "@ajsf/core" version 2>/dev/null || true)
+            if [ -n "$CURRENT" ] && [ "$CURRENT" != "$VERSION" ]; then
+              HIGHEST=$(printf '%s\n%s\n' "$CURRENT" "$VERSION" \
+                | sort -V | tail -1)
+              if [ "$HIGHEST" != "$VERSION" ]; then
+                echo "[release] latest is $CURRENT, publishing $VERSION would move it backwards"
+                exit 1
+              fi
+            fi
+          fi
+          echo "[release] registry still expects $VERSION on $DIST_TAG"
 
       - name: Publish core
         run: npm publish dist/@ajsf/core --provenance --access public --tag ${{ needs.decide.outputs.dist-tag }}
