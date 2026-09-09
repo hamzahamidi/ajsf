@@ -34,7 +34,7 @@ export class AppModule { }
 ```
 
 PrimeNG is configured by the consuming application, not by this package. Set up
-`providePrimeNG` with a theme preset from `@primeng/themes` once, as PrimeNG's own
+`providePrimeNG` with a theme preset from `@primeuix/themes` once, as PrimeNG's own
 installation guide describes. This package uses PrimeNG components and leaves the
 theme to you.
 

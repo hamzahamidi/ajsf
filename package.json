@@ -94,7 +94,7 @@
     "@angular/cli": "^20.3.36",
     "@angular/compiler-cli": "^20.3.30",
     "@angular/language-service": "^20.3.30",
-    "@primeng/themes": "^20.4.0",
+    "@primeuix/themes": "^3.0.0",
     "@types/node": "^20.19.43",
     "@vitest/coverage-v8": "^3.2.7",
     "codelyzer": "^6.0.0",

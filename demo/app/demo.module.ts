@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeuix/themes/aura';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
