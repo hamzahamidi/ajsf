@@ -13,7 +13,6 @@
     ]
   },
   "files": [
-    "src/test.ts",
     "src/test-setup.ts"
   ],
   "include": [
