@@ -12,6 +12,27 @@ With YARN, run the following:
 yarn add @ajsf/primeng@latest
 ```
 
+### PrimeNG needs @angular/animations at your Angular patch version
+
+Install `@angular/animations` at the same patch version as the rest of your
+Angular framework packages. PrimeNG 20 declares it as a peer dependency, and
+Angular 20 no longer adds it to a new project, so npm resolves it on its own.
+The Angular framework packages peer on each other by exact patch, so a version
+npm picks freely can leave the install unresolvable:
+
+```shell
+# if your @angular/* packages are 20.3.31
+npm install @angular/animations@20.3.31
+```
+
+Without it, installing `@ajsf/primeng` alongside `primeng` can fail with
+`ERESOLVE`, reporting that `@angular/animations` peers `@angular/common` at a
+version other than the one you have.
+
+This is a PrimeNG installation requirement rather than an `@ajsf/primeng` one,
+which is why it is not declared as a peer here: a range such as `^20.0.0` would
+not fix it, because npm could still choose a patch that disagrees with yours.
+
 Then import `PrimengFrameworkModule` in your main application module if you want to use `primeng` UI, like this:
 
 ```javascript
