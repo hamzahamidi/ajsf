@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialDesignFrameworkModule } from '../material-design-framework.module';
 import { FlexLayoutRootComponent } from './flex-layout-root.component';
@@ -15,11 +15,11 @@ import { FlexLayoutRootComponent } from './flex-layout-root.component';
 describe('flex layout options', () => {
   let fixture: ComponentFixture<FlexLayoutRootComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [MaterialDesignFrameworkModule, NoopAnimationsModule],
     }).compileComponents();
-  }));
+  });
 
   /** Renders one layout node and returns the item wrapper the options land on. */
   function itemFor(options: any): HTMLElement {

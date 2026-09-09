@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialDesignFrameworkModule } from '../material-design-framework.module';
@@ -14,7 +15,8 @@ import { MaterialDesignFrameworkModule } from '../material-design-framework.modu
       (onChanges)="value = $event"
       (isValid)="valid = $event"
     ></json-schema-form>`,
-    standalone: false
+    standalone: true,
+    imports: [MaterialDesignFrameworkModule]
 })
 class TestHostComponent {
   schema: any = {};
@@ -28,13 +30,12 @@ describe('Material widget integration', () => {
   let fixture: ComponentFixture<TestHostComponent>;
   let host: TestHostComponent;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MaterialDesignFrameworkModule, NoopAnimationsModule],
-      declarations: [TestHostComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TestHostComponent, NoopAnimationsModule],
       schemas: [],
     }).compileComponents();
-  }));
+  });
 
   function create(schema: any, data?: any, layout?: any) {
     fixture = TestBed.createComponent(TestHostComponent);
@@ -105,21 +106,21 @@ describe('Material widget integration', () => {
       expect(input.hidden).toBe(true);
     });
 
-    it('writes data URL to control after file selection', (done) => {
+    it('writes data URL to control after file selection', async () => {
       create(fileSchema);
       const de = fixture.debugElement.query(By.css('material-file-widget'));
       const fileComp = de.componentInstance;
-      const updateSpy = spyOn(fileComp.jsf, 'updateValue');
+      const updateSpy = vi.spyOn(fileComp.jsf, 'updateValue');
       const blob = new Blob(['hello'], { type: 'text/plain' });
       const file = new File([blob], 'test.txt', { type: 'text/plain' });
       fileComp.onFileSelect({ target: { files: [file] } });
-      setTimeout(() => {
-        expect(fileComp.fileName).toBe('test.txt');
-        expect(updateSpy).toHaveBeenCalledWith(
-          fileComp, jasmine.stringMatching(/^data:text\/plain;base64,/)
-        );
-        done();
-      }, 50);
+      // FileReader resolves on a macrotask, and there is no fixture-level hook
+      // to await it: whenStable does not cover it.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(fileComp.fileName).toBe('test.txt');
+      expect(updateSpy).toHaveBeenCalledWith(
+        fileComp, expect.stringMatching(/^data:text\/plain;base64,/)
+      );
     });
   });
 

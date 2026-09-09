@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { JsonSchemaFormModule } from '@ajsf/core';
 import { MaterialDesignFrameworkModule } from '../material-design-framework.module';
@@ -13,7 +13,8 @@ describe('MaterialButtonComponent as a layout-declared submit', () => {
         [form]="form"
         framework="material-design"
       ></json-schema-form>`,
-      standalone: false
+      standalone: true,
+      imports: [JsonSchemaFormModule, MaterialDesignFrameworkModule]
   })
   class HostComponent {
     form: any;
@@ -21,12 +22,11 @@ describe('MaterialButtonComponent as a layout-declared submit', () => {
 
   let fixture: ComponentFixture<HostComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [HostComponent],
-      imports: [JsonSchemaFormModule, MaterialDesignFrameworkModule, NoopAnimationsModule],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent, NoopAnimationsModule],
     }).compileComponents();
-  }));
+  });
 
   const render = (layout: any[], data: any = {}) => {
     fixture = TestBed.createComponent(HostComponent);
