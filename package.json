@@ -54,8 +54,7 @@
     "build:libs": "npm run build:core && npm run build:bs4 && npm run build:bs3 && npm run build:bs5 && npm run build:material && npm run build:primeng",
     "build:demo": "npm run build:libs && ng build demo --configuration production --base-href ./",
     "build:demo-only": "ng build demo --configuration production --base-href ./",
-    "prestats": "ng build demo --configuration production --stats-json",
-    "stats": "webpack-bundle-analyzer dist/demo/stats.json",
+    "stats": "ng build demo --configuration production --stats-json && echo \"stats.json written to dist/demo. Analyze it at https://esbuild.github.io/analyze/\"",
     "test:core": "ng test @ajsf/core",
     "test:bs3": "ng test @ajsf/bootstrap3",
     "test:bs4": "ng test @ajsf/bootstrap4",
@@ -91,7 +90,7 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.36",
+    "@angular/build": "^20.3.36",
     "@angular/cli": "^20.3.36",
     "@angular/compiler-cli": "^20.3.30",
     "@angular/language-service": "^20.3.30",
@@ -111,7 +110,6 @@
     "ts-node": "~8.6.2",
     "tslib": "^2.3.1",
     "tslint": "~6.1.0",
-    "typescript": "~5.8.3",
-    "webpack-bundle-analyzer": "^4.6.1"
+    "typescript": "~5.8.3"
   }
 }

@@ -11,28 +11,35 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/demo",
+            "outputPath": {
+              "base": "dist/demo",
+              "browser": ""
+            },
             "index": "demo/index.html",
-            "main": "demo/main.ts",
-            "polyfills": "demo/polyfills.ts",
+            "polyfills": [
+              "demo/polyfills.ts"
+            ],
             "tsConfig": "demo/tsconfig.app.json",
             "assets": [
               "demo/favicon.ico",
               "demo/assets",
-              { "glob": "*.svg", "input": "docs/logo", "output": "/assets/logo" }
+              {
+                "glob": "*.svg",
+                "input": "docs/logo",
+                "output": "/assets/logo"
+              }
             ],
             "styles": [
               "demo/styles.scss"
             ],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "demo/main.ts"
           },
           "configurations": {
             "production": {
@@ -52,15 +59,13 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "extractLicenses": true
             }
           },
           "defaultConfiguration": ""
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "demo:build"
           },
@@ -71,13 +76,13 @@
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "demo:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "demo/test.ts",
             "polyfills": "demo/polyfills.ts",
@@ -102,7 +107,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-core/tsconfig.lib.json",
             "project": "projects/ajsf-core/ng-package.json"
@@ -114,7 +119,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-core/src/test.ts",
             "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
@@ -130,7 +135,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-bootstrap4/tsconfig.lib.json",
             "project": "projects/ajsf-bootstrap4/ng-package.json"
@@ -142,7 +147,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-bootstrap4/src/test.ts",
             "tsConfig": "projects/ajsf-bootstrap4/tsconfig.spec.json",
@@ -158,7 +163,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-bootstrap3/tsconfig.lib.json",
             "project": "projects/ajsf-bootstrap3/ng-package.json"
@@ -170,7 +175,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-bootstrap3/src/test.ts",
             "tsConfig": "projects/ajsf-bootstrap3/tsconfig.spec.json",
@@ -186,7 +191,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-material/tsconfig.lib.json",
             "project": "projects/ajsf-material/ng-package.json"
@@ -198,7 +203,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-material/src/test.ts",
             "tsConfig": "projects/ajsf-material/tsconfig.spec.json",
@@ -214,7 +219,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-bootstrap5/tsconfig.lib.json",
             "project": "projects/ajsf-bootstrap5/ng-package.json"
@@ -226,7 +231,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-bootstrap5/src/test.ts",
             "tsConfig": "projects/ajsf-bootstrap5/tsconfig.spec.json",
@@ -242,7 +247,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/ajsf-primeng/tsconfig.lib.json",
             "project": "projects/ajsf-primeng/ng-package.json"
@@ -254,7 +259,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/ajsf-primeng/src/test.ts",
             "tsConfig": "projects/ajsf-primeng/tsconfig.spec.json",
