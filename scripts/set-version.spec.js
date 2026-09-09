@@ -79,12 +79,20 @@ describe('setVersion', () => {
     expect(read(dir, 'ajsf-material').peerDependencies['@angular/cdk']).toEqual('^18.0.0');
   });
 
-  it('leaves non-Angular dependencies alone', () => {
+  it('leaves genuinely unrelated dependencies alone', () => {
     const dir = fixture();
     setVersion('18.0.0', 18, dir);
     expect(read(dir, 'ajsf-core').peerDependencies.rxjs).toEqual('^7.0.0');
     expect(read(dir, 'ajsf-core').dependencies.ajv).toEqual('^6.10.0');
-    expect(read(dir, 'ajsf-primeng').peerDependencies.primeng).toEqual('^19.0.0');
+  });
+
+  // The peer that shipped wrong in 19.2.0. PrimeNG's majors track Angular's,
+  // so it has to move with the release rather than being left behind as an
+  // unrelated dependency.
+  it('moves the primeng peer with the Angular major', () => {
+    const dir = fixture();
+    setVersion('20.0.0-rc.0', 20, dir);
+    expect(read(dir, 'ajsf-primeng').peerDependencies.primeng).toEqual('^20.0.0');
   });
 
   it('leaves Angular peers alone when angularMajor is null', () => {
