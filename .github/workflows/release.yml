@@ -123,19 +123,17 @@ jobs:
       - name: Build libraries
         run: npm run build:libs
 
-      # Kept here even though CI runs the same suites on the same commit,
-      # because `workflow_dispatch` reaches this job with no CI run behind it
-      # at all. Removing this step left that path publishing on the strength
-      # of `test:scripts` alone. The duplicate run on the workflow_run path is
-      # the price of the manual trigger staying safe.
+      # Kept even though CI runs the same suites on the same commit, because
+      # `workflow_dispatch` reaches this job with no CI run behind it, and
+      # dropping it made the manual trigger a way to publish untested.
+      #
+      # It calls the script CI calls rather than restating the suites and their
+      # flags, because that restatement drifted: it still carried the Karma
+      # flags after the suites moved to Vitest, where --no-progress and
+      # --browsers fail schema validation, so this job could not release
+      # anything. The script reads each suite's builder from angular.json.
       - name: Test libraries
-        run: |
-          npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs3 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs4 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:bs5 -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:material -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run test:primeng -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+        run: node scripts/run-coverage.js
 
       - name: Confirm every package carries the release version
         run: |
