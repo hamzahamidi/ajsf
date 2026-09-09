@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { PrimengCheckboxesComponent } from './primeng-checkboxes.component';
 
 describe('PrimengCheckboxesComponent', () => {
   const make = (opts: any, layoutType = 'checkboxes') => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateArrayCheckboxList: jasmine.createSpy('updateArrayCheckboxList'),
-      getFormControl: jasmine.createSpy('getFormControl'),
+      initializeControl: vi.fn(),
+      updateArrayCheckboxList: vi.fn(),
+      getFormControl: vi.fn(),
     };
     const c = new PrimengCheckboxesComponent(jsf as any);
     c.layoutNode = { type: layoutType, options: opts };

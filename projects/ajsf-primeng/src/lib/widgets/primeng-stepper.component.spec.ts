@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengStepperComponent } from './primeng-stepper.component';
 
 describe('PrimengStepperComponent', () => {
   const jsf = () => ({
-    addItem: jasmine.createSpy('addItem'),
-    setArrayItemTitle: jasmine.createSpy('setArrayItemTitle').and.callFake(
+    addItem: vi.fn(),
+    setArrayItemTitle: vi.fn(
       (_self, item, index) => item.options?.title || `Step ${index + 1}`
     ),
   });

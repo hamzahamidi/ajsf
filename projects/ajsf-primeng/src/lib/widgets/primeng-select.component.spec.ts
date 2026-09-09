@@ -1,10 +1,11 @@
+import { vi } from 'vitest';
 import { PrimengSelectComponent } from './primeng-select.component';
 
 describe('PrimengSelectComponent', () => {
   const make = (opts: any) => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
     };
     const c = new PrimengSelectComponent(jsf as any);
     c.layoutNode = { type: 'select', options: opts };
@@ -38,7 +39,7 @@ describe('PrimengSelectComponent', () => {
 
   it('passes !readonly to initializeControl', () => {
     const { jsf } = make({ enum: ['a'], readonly: true });
-    expect(jsf.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(jsf.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 
   it('exposes options.multiple for template branching', () => {

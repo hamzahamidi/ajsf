@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengTabsComponent } from './primeng-tabs.component';
 
 describe('PrimengTabsComponent', () => {
   const jsf = () => ({
-    addItem: jasmine.createSpy('addItem'),
-    setArrayItemTitle: jasmine.createSpy('setArrayItemTitle').and.callFake(
+    addItem: vi.fn(),
+    setArrayItemTitle: vi.fn(
       (_self, item, index) => item.options?.title || `Item ${index + 1}`
     ),
   });

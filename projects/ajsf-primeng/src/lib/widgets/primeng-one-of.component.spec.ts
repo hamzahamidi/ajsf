@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { PrimengFrameworkModule } from '../primeng-framework.module';
@@ -7,8 +8,8 @@ import { PrimengOneOfComponent } from './primeng-one-of.component';
 
 describe('PrimengOneOfComponent', () => {
   const jsf = () => ({
-    initializeControl: jasmine.createSpy('initializeControl'),
-    updateValue: jasmine.createSpy('updateValue'),
+    initializeControl: vi.fn(),
+    updateValue: vi.fn(),
   });
 
   const make = (node: any) => {
@@ -46,7 +47,7 @@ describe('PrimengOneOfComponent', () => {
         type: 'one-of',
         options: { enum: ['a'], readonly: true },
       });
-      expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+      expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
     });
 
     it('forwards value updates through jsf using event.value', () => {
@@ -226,7 +227,8 @@ describe('PrimengOneOfComponent', () => {
       [framework]="'primeng'"
       (isValid)="valid = $event"
     ></json-schema-form>`,
-    standalone: false
+    standalone: true,
+    imports: [PrimengFrameworkModule]
 })
 class OneOfHostComponent {
   form: any;
@@ -236,13 +238,12 @@ class OneOfHostComponent {
 describe('PrimengOneOfComponent (TestBed)', () => {
   let fixture: ComponentFixture<OneOfHostComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [PrimengFrameworkModule, NoopAnimationsModule],
-      declarations: [OneOfHostComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [OneOfHostComponent, NoopAnimationsModule],
       schemas: [],
     }).compileComponents();
-  }));
+  });
 
   describe('unkeyed selectfieldset child rendering', () => {
     beforeEach(() => {
@@ -278,7 +279,7 @@ describe('PrimengOneOfComponent (TestBed)', () => {
       expect(fwWidgets.length).toBe(1);
     });
 
-    it('switches rendered child after selectChild', waitForAsync(() => {
+    it('switches rendered child after selectChild', async () => {
       const oneOf = fixture.debugElement.query(By.directive(PrimengOneOfComponent));
       const comp = oneOf.componentInstance as PrimengOneOfComponent;
       const el = oneOf.nativeElement as HTMLElement;
@@ -286,13 +287,12 @@ describe('PrimengOneOfComponent (TestBed)', () => {
       const selectsBefore = el.querySelectorAll('p-select').length;
       comp.selectChild({ value: 1 });
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(comp.selectedItem).toBe(1);
-        const selectsAfter = el.querySelectorAll('p-select').length;
-        expect(selectsAfter).toBeGreaterThan(selectsBefore);
-      });
-    }));
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(comp.selectedItem).toBe(1);
+      const selectsAfter = el.querySelectorAll('p-select').length;
+      expect(selectsAfter).toBeGreaterThan(selectsBefore);
+    });
   });
 
   describe('keyed selectfieldset child rendering', () => {
@@ -327,7 +327,7 @@ describe('PrimengOneOfComponent (TestBed)', () => {
       expect(comp.selectList.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('renders a child and switches on formControl change', waitForAsync(() => {
+    it('renders a child and switches on formControl change', async () => {
       const oneOf = fixture.debugElement.query(By.directive(PrimengOneOfComponent));
       const comp = oneOf.componentInstance as PrimengOneOfComponent;
       const el = oneOf.nativeElement as HTMLElement;
@@ -336,12 +336,11 @@ describe('PrimengOneOfComponent (TestBed)', () => {
       const selectsBefore = el.querySelectorAll('p-select').length;
       comp.formControl.setValue('cat');
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(comp.selectedItem).toBe(1);
-        const selectsAfter = el.querySelectorAll('p-select').length;
-        expect(selectsAfter).toBeGreaterThan(selectsBefore);
-      });
-    }));
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(comp.selectedItem).toBe(1);
+      const selectsAfter = el.querySelectorAll('p-select').length;
+      expect(selectsAfter).toBeGreaterThan(selectsBefore);
+    });
   });
 });

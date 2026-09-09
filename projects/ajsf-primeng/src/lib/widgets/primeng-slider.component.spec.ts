@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengSliderComponent } from './primeng-slider.component';
 
 describe('PrimengSliderComponent', () => {
   const jsf = () => ({
-    initializeControl: jasmine.createSpy('initializeControl'),
-    updateValue: jasmine.createSpy('updateValue'),
+    initializeControl: vi.fn(),
+    updateValue: vi.fn(),
   });
 
   const make = (node: any) => {
@@ -28,7 +29,7 @@ describe('PrimengSliderComponent', () => {
       type: 'slider',
       options: {},
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), true);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), true);
   });
 
   it('respects readonly option', () => {
@@ -36,7 +37,7 @@ describe('PrimengSliderComponent', () => {
       type: 'slider',
       options: { readonly: true },
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 
   it('computes minValue from options.minimum', () => {

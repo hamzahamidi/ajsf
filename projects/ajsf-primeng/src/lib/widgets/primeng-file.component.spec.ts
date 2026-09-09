@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { PrimengFileComponent } from './primeng-file.component';
 
 describe('PrimengFileComponent', () => {
   const jsf = () => ({
-    initializeControl: jasmine.createSpy('initializeControl'),
-    updateValue: jasmine.createSpy('updateValue'),
+    initializeControl: vi.fn(),
+    updateValue: vi.fn(),
   });
 
   const make = (node: any) => {
@@ -27,7 +28,7 @@ describe('PrimengFileComponent', () => {
       type: 'file',
       options: {},
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), true);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), true);
   });
 
   it('respects readonly option', () => {
@@ -35,10 +36,10 @@ describe('PrimengFileComponent', () => {
       type: 'file',
       options: { readonly: true },
     });
-    expect(j.initializeControl).toHaveBeenCalledWith(jasmine.anything(), false);
+    expect(j.initializeControl).toHaveBeenCalledWith(expect.anything(), false);
   });
 
-  it('reads a file as data URL and updates value', (done) => {
+  it('reads a file as data URL and updates value', async () => {
     const { component, jsf: j } = make({
       type: 'file',
       options: {},
@@ -58,13 +59,13 @@ describe('PrimengFileComponent', () => {
 
     component.onSelect({ files: [file] });
 
-    setTimeout(() => {
-      expect(component.fileName).toBe('test.txt');
-      expect(j.updateValue).toHaveBeenCalledWith(component, 'data:text/plain;base64,aGVsbG8=');
-      expect(component.options.showErrors).toBe(true);
-      (window as any).FileReader = originalFileReader;
-      done();
-    }, 50);
+    // The stubbed FileReader fires onload on a macrotask, so this waits rather
+    // than asserting synchronously.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(component.fileName).toBe('test.txt');
+    expect(j.updateValue).toHaveBeenCalledWith(component, 'data:text/plain;base64,aGVsbG8=');
+    expect(component.options.showErrors).toBe(true);
+    (window as any).FileReader = originalFileReader;
   });
 
   it('does nothing when no file is selected', () => {

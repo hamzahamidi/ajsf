@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PrimengFrameworkModule } from '../primeng-framework.module';
@@ -14,7 +14,8 @@ import { PrimengFrameworkModule } from '../primeng-framework.module';
       (onChanges)="value = $event"
       (isValid)="valid = $event"
     ></json-schema-form>`,
-    standalone: false
+    standalone: true,
+    imports: [PrimengFrameworkModule]
 })
 class IntegrationHostComponent {
   schema: any = {};
@@ -28,13 +29,12 @@ describe('PrimeNG integration', () => {
   let fixture: ComponentFixture<IntegrationHostComponent>;
   let host: IntegrationHostComponent;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [PrimengFrameworkModule, NoopAnimationsModule],
-      declarations: [IntegrationHostComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [IntegrationHostComponent, NoopAnimationsModule],
       schemas: [],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(IntegrationHostComponent);

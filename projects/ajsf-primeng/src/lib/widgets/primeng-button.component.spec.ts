@@ -1,13 +1,14 @@
+import { vi } from 'vitest';
 import { PrimengButtonComponent } from './primeng-button.component';
 
 describe('PrimengButtonComponent', () => {
   const make = (opts: any) => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
       formOptions: {},
       isValid: true,
-      isValidChanges: { subscribe: jasmine.createSpy('subscribe') },
+      isValidChanges: { subscribe: vi.fn() },
     };
     const c = new PrimengButtonComponent(jsf as any);
     c.layoutNode = { type: 'submit', options: opts };
@@ -22,11 +23,11 @@ describe('PrimengButtonComponent', () => {
 
   it('subscribes to isValidChanges when disableInvalidSubmit is set', () => {
     const jsf = {
-      initializeControl: jasmine.createSpy('initializeControl'),
-      updateValue: jasmine.createSpy('updateValue'),
+      initializeControl: vi.fn(),
+      updateValue: vi.fn(),
       formOptions: { disableInvalidSubmit: true },
       isValid: false,
-      isValidChanges: { subscribe: jasmine.createSpy('subscribe') },
+      isValidChanges: { subscribe: vi.fn() },
     };
     const c = new PrimengButtonComponent(jsf as any);
     c.layoutNode = { type: 'submit', options: {} };
@@ -36,7 +37,7 @@ describe('PrimengButtonComponent', () => {
   });
 
   it('calls onClick function when provided', () => {
-    const onClick = jasmine.createSpy('onClick');
+    const onClick = vi.fn();
     const { component, jsf } = make({ onClick });
     const event = { target: { value: 'test' } };
     component.updateValue(event);

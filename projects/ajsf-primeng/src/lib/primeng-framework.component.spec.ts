@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import {
   JsonSchemaFormModule,
@@ -11,8 +11,8 @@ describe('PrimengFrameworkComponent', () => {
   let component: PrimengFrameworkComponent;
   let fixture: ComponentFixture<PrimengFrameworkComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         JsonSchemaFormModule,
         CommonModule,
@@ -22,7 +22,7 @@ describe('PrimengFrameworkComponent', () => {
       providers: [JsonSchemaFormService]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PrimengFrameworkComponent);

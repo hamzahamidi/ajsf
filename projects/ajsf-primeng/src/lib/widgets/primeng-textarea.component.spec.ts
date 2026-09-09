@@ -1,8 +1,9 @@
+import { vi } from 'vitest';
 import { PrimengTextareaComponent } from './primeng-textarea.component';
 
 describe('PrimengTextareaComponent', () => {
   const make = (opts: any) => {
-    const jsf = { initializeControl: jasmine.createSpy('initializeControl'), updateValue: jasmine.createSpy('updateValue') };
+    const jsf = { initializeControl: vi.fn(), updateValue: vi.fn() };
     const c = new PrimengTextareaComponent(jsf as any);
     c.layoutNode = { type: 'textarea', options: opts };
     c.ngOnInit();
