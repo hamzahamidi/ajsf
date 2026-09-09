@@ -2,11 +2,11 @@
 
 Notes for AI coding agents working in this repository. Humans may find the traps section useful too.
 
-`@ajsf/*` is a JSON Schema form builder for Angular, published as five packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4` and `@ajsf/bootstrap5` framework packages. All five version in lockstep.
+`@ajsf/*` is a JSON Schema form builder for Angular, published as six packages from one Angular CLI workspace: `@ajsf/core` plus the `@ajsf/material`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4`, `@ajsf/bootstrap5` and `@ajsf/primeng` framework packages. All six version in lockstep.
 
 ## Environment
 
-The repository targets **Angular 19.2 on Node 20.19.0** (`.nvmrc`) with TypeScript 5.8.
+The repository targets **Angular 20.3 on Node 20.19.0** (`.nvmrc`) with TypeScript 5.8.
 Read the version out of `.nvmrc` rather than typing it: it moves with each
 Angular major, and an older Node fails the build with a CLI version check
 rather than anything that points at the real cause.
@@ -23,19 +23,31 @@ nvm use "$(cat .nvmrc)"
 
 ```bash
 npm ci                       # install
-npm run build:libs           # build all five packages into dist/@ajsf/
+npm run build:libs           # build all six packages into dist/@ajsf/
 npm run build:demo           # build the libraries and the demo app
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
 ```
 
-Library tests need the headless launcher flags:
+All six libraries run on Vitest through `@angular/build:unit-test`:
 
 ```bash
-npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+npm run test:core -- --no-watch
 ```
 
-Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material` for the others.
+Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material`, `test:primeng` for the
+others. Add `--code-coverage` for a report.
+
+⚠️ **The Karma flags are gone and now fail schema validation.** `--no-progress`
+has no equivalent, because the unit-test builder has no `progress` option, and
+`--browsers` must be absent rather than empty: leaving it out selects jsdom,
+which is the only mode that produces coverage in this Angular version. Passing
+either gives `Data path "" must NOT have additional properties`.
+
+Use `npm run coverage` rather than running the suites by hand when you want
+coverage. `scripts/run-coverage.js` reads each suite's builder from
+`angular.json`, removes `dist/test-out` before every suite, and stages the
+reports; see Coverage for why each of those matters.
 
 ## Versioning
 
@@ -60,7 +72,7 @@ Publishing is automated through `.github/workflows/release.yml` and npm OIDC Tru
 2. Merge it. The trigger is the version **changing** in that push, so any merge that leaves it alone is a no-op. A version sitting in the repository ahead of what is on npm is fine and does not start a release.
 3. The `verify` job builds, runs all six suites, ungated, and uploads `dist` as an artifact. CI has already run those suites on the same commit, but `verify` keeps them because `workflow_dispatch` reaches it with no CI run behind it.
 4. Approve the `npm-publish` deployment. Nothing reaches npm before this, and by now the build is green.
-5. `release` publishes the artifact `verify` built, `core` first, then the three framework packages, and tags the commit.
+5. `release` publishes the artifact `verify` built, `core` first, then the five framework packages, and tags the commit.
 
 The `release` job deliberately runs a **newer Node than `.nvmrc`**. It publishes prebuilt tarballs and compiles nothing, but it needs an npm recent enough for OIDC, and current npm requires Node 22 or later. Pinning it to `.nvmrc` made `npm i -g npm@latest` fail with `EBADENGINE` before any publish ran.
 
@@ -72,7 +84,28 @@ There is no CHANGELOG.md and no changelog script. The release pages are the reco
 
 ## Coverage
 
-Karma writes `html`, `lcov` and `text-summary` into `coverage/<project>` for all five libraries. CI uploads them to Codecov from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a second upload is a duplicate.
+Run it with `npm run coverage`, never by invoking the suites yourself. CI runs the
+same `scripts/run-coverage.js`, so there is one implementation. It uploads to Codecov
+from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a
+second upload is a duplicate.
+
+⚠️ **Two things about the Vitest coverage path will mislead you, and the script exists
+to handle both.**
+
+`dist/test-out` is where the unit-test builder puts the bundle it collects V8 coverage
+over, and it never cleans it. Accumulated run directories inflate the report: with 23
+of them present a suite looked healthy while a clean tree produced almost nothing. The
+script removes it before every suite, and `coverage:clean` removes it too.
+
+Every suite writes `coverage/lcov.info` and wipes `coverage/` before doing so, so
+running two suites in a row leaves only the second one's report. There is no output
+directory option on the builder and the istanbul `subdir` reporter option is not
+honoured, so the script stages each report outside `coverage/` and restores them at the
+end, as `coverage/vitest-<suite>/lcov.info`.
+
+Do not add `codeCoverageExclude` for the `chunk-*.js` entry in the lcov. It looks like
+bundling noise and is not: the source entries are remapped from that chunk, so
+excluding it drops the report from 57 source files to 1.
 
 **Codecov authenticates with the `CODECOV_TOKEN` secret, not OIDC**, which is deliberate and differs from the npm publishing flow. `codecov/codecov-action` does accept `use_oidc: true`, but the CLI has a reported failure mode where it ignores the OIDC credential, falls back to tokenless and then fails on a rate limit (`codecov-action#1461`, closed with no stated fix), and fork pull requests receive no `id-token` at all. The token is the predictable option. Do not switch this to OIDC without confirming an upload actually lands.
 
@@ -190,9 +223,9 @@ The corpus baseline pins **current** behaviour including bugs, so a corpus failu
 Each of these cost real debugging time. They look like bugs in your code and are not.
 
 - **The framework suites test `dist/@ajsf/core`, not the core source.**
-  `tsconfig.json` maps `@ajsf/core` to `dist/@ajsf/core`, so `test:material` and
-  the three Bootstrap suites run whatever `build:libs` last wrote there, however
-  old. A core fix can pass `test:core` and then appear not to work in a
+  `tsconfig.json` maps `@ajsf/core` to `dist/@ajsf/core`, so `test:material`,
+  `test:primeng` and the three Bootstrap suites run whatever `build:libs` last
+  wrote there, however old. A core fix can pass `test:core` and then appear not to work in a
   framework suite that is really running a week old build. Run
   `npm run build:libs` after touching core and before reading a framework
   suite's verdict. CI is immune: the workflow builds before it tests.
@@ -200,7 +233,7 @@ Each of these cost real debugging time. They look like bugs in your code and are
 - **The root `README.md` is the published `@ajsf/core` README.** `postbuild:core`
   copies it into `dist/@ajsf/core`, so a change to the repository root README
   ships on the `@ajsf/core` npm page from the next publish. `@ajsf/core` has no
-  `projects/ajsf-core/README.md` of its own; the other four packages copy their
+  `projects/ajsf-core/README.md` of its own; the other five packages copy their
   own `projects/ajsf-*/README.md`. A root README edit is a published-product
   change, not a contributor-only doc, and it reaches consumers only when a
   version publishes.
@@ -208,7 +241,7 @@ Each of these cost real debugging time. They look like bugs in your code and are
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.
-- **`jasmine@7` installs on Node 16 and then fails at run time** with `ReferenceError: structuredClone is not defined`, which arrived in Node 17. The repository pins jasmine 4.
+- **`jasmine` is only the `test:scripts` runner, not a test framework for the libraries.** `npm run test:scripts` runs it directly over `scripts/*.spec.js` as a plain Node runner. The libraries use Vitest, so `jasmine.createSpy`, `spyOn`, `withContext`, `waitForAsync` and `done` callbacks do not work in a `projects/**` spec: use `vi.fn`, `vi.spyOn`, a message argument to `expect`, `async`/`await`, and a returned promise. `jasmine@7` also fails at run time on Node 16 with `ReferenceError: structuredClone is not defined`, which arrived in Node 17, so it stays pinned to 4.
 - **`ng update` on a partial package list resolves inconsistently, and `--force` hides it.** Updating only `@angular/core`, `cli`, `material` and `cdk` leaves every other `@angular/*` package free to resolve on its own, and they land on the *next* major. On the Angular 16 step, with `--force`, that produced a mixed tree: `@angular/core` at `16.2.12` beside `@angular/common` and `@angular/compiler-cli` at `17.3.12`, TypeScript on an Angular 17 range, and `error TS2305: Module '"@angular/core"' has no exported member 'ɵIMAGE_CONFIG'`. Without `--force` the same partial list simply fails, which is the better outcome.
 
   **Name every `@angular/*` package on the command line and `--force` is not needed.** Read them out of `package.json` rather than typing a list from memory:
