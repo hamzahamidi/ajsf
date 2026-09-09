@@ -41,12 +41,25 @@ jobs:
         # coverage under @angular/build 20.3.36, since browser mode attributes
         # nothing and writes an empty lcov. The rest keep ChromeHeadlessCI
         # until they migrate.
-        npm run test:core -- --code-coverage --no-watch
-        npm run test:bs3 -- --code-coverage --no-watch
-        npm run test:bs4 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
-        npm run test:bs5 -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+        # Every Vitest suite writes coverage/lcov.info and wipes the coverage
+        # directory before doing so, so each report is staged outside it and
+        # restored at the end. Karma wrote per-project subdirectories and needed
+        # none of this; the unit-test builder exposes no output directory
+        # option, and the istanbul `subdir` reporter option is not honoured.
+        mkdir -p /tmp/vitest-cov
+        for suite in core bs3 bs4 bs5; do
+          npm run test:$suite -- --code-coverage --no-watch
+          cp coverage/lcov.info "/tmp/vitest-cov/$suite.info"
+        done
         npm run test:material -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
         npm run test:primeng -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+        # Karma writes into per-project subdirectories and does not wipe the
+        # directory, so the staged Vitest reports can be put back now.
+        for suite in core bs3 bs4 bs5; do
+          mkdir -p "coverage/vitest-$suite"
+          cp "/tmp/vitest-cov/$suite.info" "coverage/vitest-$suite/lcov.info"
+        done
+        find coverage -name lcov.info | sort
     # The codecov npm package is deprecated and its uploader now fails against
     # the current API with "result.split is not a function". This action is the
     # supported path.

@@ -129,11 +129,7 @@
             ],
             "codeCoverageReporters": [
               "text-summary",
-              "html",
               "lcov"
-            ],
-            "codeCoverageExclude": [
-              "**/chunk-*.js"
             ]
           }
         }
@@ -158,11 +154,18 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-bootstrap4/src/test.ts",
+            "buildTarget": "@ajsf/bootstrap4:build",
             "tsConfig": "projects/ajsf-bootstrap4/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-bootstrap4/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-bootstrap4/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "lcov"
+            ]
           }
         }
       }
@@ -196,11 +199,7 @@
             ],
             "codeCoverageReporters": [
               "text-summary",
-              "html",
               "lcov"
-            ],
-            "codeCoverageExclude": [
-              "**/chunk-*.js"
             ]
           }
         }
@@ -253,11 +252,18 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-bootstrap5/src/test.ts",
+            "buildTarget": "@ajsf/bootstrap5:build",
             "tsConfig": "projects/ajsf-bootstrap5/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-bootstrap5/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-bootstrap5/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "lcov"
+            ]
           }
         }
       }
