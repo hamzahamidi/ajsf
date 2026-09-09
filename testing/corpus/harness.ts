@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CorpusSchema, loadCorpus } from './schemas';
 import baseline from './baseline.json';
@@ -45,6 +45,22 @@ function countControls(fixture: ComponentFixture<CorpusHost>): number {
 }
 
 /**
+ * Attaches a failure message in a way both runners accept, so this shared file
+ * compiles while the six suites migrate one at a time.
+ *
+ * Jasmine types `expect` as taking one argument and carries `.withContext()`.
+ * Vitest types it as taking an optional message and has no `.withContext()`.
+ * Passing through `any` satisfies whichever `types` setting the consuming
+ * project declares, and the runtime picks whichever mechanism exists.
+ */
+function because<T>(actual: T, message: string): any {
+  const assertion = (expect as any)(actual, message);
+  return typeof assertion.withContext === 'function'
+    ? assertion.withContext(message)
+    : assertion;
+}
+
+/**
  * `host` is the suite's own standalone component, which must render
  * json-schema-form and satisfy CorpusHost.
  *
@@ -62,8 +78,8 @@ export function runCorpus(frameworkName: string, host: Type<CorpusHost>) {
     const corpus: CorpusSchema[] = loadCorpus();
     const recorded: Record<string, CorpusResult> = {};
 
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         // The host is standalone, so it carries json-schema-form and the
         // framework under test in its own imports. Without them the element
         // matches nothing and every schema renders zero controls while the
@@ -73,7 +89,7 @@ export function runCorpus(frameworkName: string, host: Type<CorpusHost>) {
         // actually rejects an unmatched element or binding.
         schemas: [],
       }).compileComponents();
-    }));
+    });
 
     afterAll(() => {
       if (RECORD) {
@@ -109,19 +125,15 @@ export function runCorpus(frameworkName: string, host: Type<CorpusHost>) {
         }
 
         const expected: CorpusResult = (baseline as any)[key];
-        expect(expected)
-          .withContext(`no baseline for ${key}. Re-record with RECORD = true.`)
+        because(expected, `no baseline for ${key}. Re-record with RECORD = true.`)
           .toBeDefined();
         if (!expected) { return; }
 
-        expect(error)
-          .withContext(`${key} threw where the baseline did not`)
+        because(error, `${key} threw where the baseline did not`)
           .toEqual(expected.error);
-        expect(controls)
-          .withContext(`${key} rendered ${controls} controls, baseline has ${expected.controls}`)
+        because(controls, `${key} rendered ${controls} controls, baseline has ${expected.controls}`)
           .toEqual(expected.controls);
-        expect(valid)
-          .withContext(`${key} validates as ${valid}, baseline has ${expected.valid}`)
+        because(valid, `${key} validates as ${valid}, baseline has ${expected.valid}`)
           .toEqual(expected.valid);
       });
     });

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JsonSchemaFormModule } from '../json-schema-form.module';
 import { NoFrameworkModule } from '../framework-library/no-framework.module';
 import { SelectComponent } from './select.component';
@@ -67,7 +67,8 @@ describe('SelectComponent bound to a form control', () => {
         (onChanges)="data = $event"
         (isValid)="valid = $event"
       ></json-schema-form>`,
-      standalone: false
+      standalone: true,
+      imports: [JsonSchemaFormModule, NoFrameworkModule]
   })
   class HostComponent {
     form: any;
@@ -77,12 +78,11 @@ describe('SelectComponent bound to a form control', () => {
 
   let fixture: ComponentFixture<HostComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [HostComponent],
-      imports: [JsonSchemaFormModule, NoFrameworkModule],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
     }).compileComponents();
-  }));
+  });
 
   const render = (schema: any, data: any = {}) => {
     fixture = TestBed.createComponent(HostComponent);

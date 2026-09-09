@@ -119,11 +119,19 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-core/src/test.ts",
+            "buildTarget": "@ajsf/core:build",
             "tsConfig": "projects/ajsf-core/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-core/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-core/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "html",
+              "lcov"
+            ]
           }
         }
       }

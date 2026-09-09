@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { JsonPointer } from './jsonpointer.functions';
 
 /**
@@ -79,7 +80,7 @@ describe('JsonPointer', () => {
 
   // Many branches log to console.error on purpose. Silencing keeps the run readable.
   beforeEach(() => {
-    spyOn(console, 'error');
+    vi.spyOn(console, 'error');
   });
 
   describe('parse', () => {

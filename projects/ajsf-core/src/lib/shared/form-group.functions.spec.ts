@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+import type { MockInstance } from 'vitest';
 import {
   UntypedFormArray,
   UntypedFormControl,
@@ -1066,10 +1068,10 @@ describe('form-group.functions', () => {
 
   describe('formatFormData', () => {
 
-    let errorSpy: jasmine.Spy;
+    let errorSpy: MockInstance;
 
     beforeEach(() => {
-      errorSpy = spyOn(console, 'error');
+      errorSpy = vi.spyOn(console, 'error');
     });
 
     it('returns a non-object input unchanged', () => {
@@ -1279,12 +1281,12 @@ describe('form-group.functions', () => {
 
   describe('getControl', () => {
 
-    let errorSpy: jasmine.Spy;
+    let errorSpy: MockInstance;
     let group: UntypedFormGroup;
     let template: any;
 
     beforeEach(() => {
-      errorSpy = spyOn(console, 'error');
+      errorSpy = vi.spyOn(console, 'error');
       group = new UntypedFormGroup({
         a: new UntypedFormControl('A'),
         g: new UntypedFormGroup({ b: new UntypedFormControl('B') }),
