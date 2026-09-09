@@ -45,22 +45,6 @@ function countControls(fixture: ComponentFixture<CorpusHost>): number {
 }
 
 /**
- * Attaches a failure message in a way both runners accept, so this shared file
- * compiles while the six suites migrate one at a time.
- *
- * Jasmine types `expect` as taking one argument and carries `.withContext()`.
- * Vitest types it as taking an optional message and has no `.withContext()`.
- * Passing through `any` satisfies whichever `types` setting the consuming
- * project declares, and the runtime picks whichever mechanism exists.
- */
-function because<T>(actual: T, message: string): any {
-  const assertion = (expect as any)(actual, message);
-  return typeof assertion.withContext === 'function'
-    ? assertion.withContext(message)
-    : assertion;
-}
-
-/**
  * `host` is the suite's own standalone component, which must render
  * json-schema-form and satisfy CorpusHost.
  *
@@ -125,15 +109,15 @@ export function runCorpus(frameworkName: string, host: Type<CorpusHost>) {
         }
 
         const expected: CorpusResult = (baseline as any)[key];
-        because(expected, `no baseline for ${key}. Re-record with RECORD = true.`)
+        expect(expected, `no baseline for ${key}. Re-record with RECORD = true.`)
           .toBeDefined();
         if (!expected) { return; }
 
-        because(error, `${key} threw where the baseline did not`)
+        expect(error, `${key} threw where the baseline did not`)
           .toEqual(expected.error);
-        because(controls, `${key} rendered ${controls} controls, baseline has ${expected.controls}`)
+        expect(controls, `${key} rendered ${controls} controls, baseline has ${expected.controls}`)
           .toEqual(expected.controls);
-        because(valid, `${key} validates as ${valid}, baseline has ${expected.valid}`)
+        expect(valid, `${key} validates as ${valid}, baseline has ${expected.valid}`)
           .toEqual(expected.valid);
       });
     });
