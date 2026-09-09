@@ -19,9 +19,11 @@
  * coverage/ and restored once every suite has run. Karma writes per-project
  * subdirectories and does not wipe, so its reports need no staging.
  *
- * Flags differ by runner and cannot be shared: the unit-test builder's schema
- * has no `progress` option and rejects `--browsers` when jsdom is wanted,
- * while Karma needs both.
+ * It also refuses to run rather than guessing: every suite must be on
+ * `@angular/build:unit-test`, the suite list must cover every `@ajsf/*` project
+ * angular.json declares, and every suite must leave a report with at least one
+ * source record. The release workflow calls this script and does not upload to
+ * Codecov, so a silently missing report would otherwise reach a publish.
  */
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -41,36 +43,43 @@ const SUITES = [
   ['test:primeng', '@ajsf/primeng'],
 ];
 
-const usesVitest = (project) =>
-  angular.projects[project].architect.test.builder === '@angular/build:unit-test';
-
-const VITEST_FLAGS = ['--code-coverage', '--no-watch'];
-const KARMA_FLAGS = [
-  '--code-coverage', '--no-watch', '--no-progress', '--browsers=ChromeHeadlessCI',
-];
+const UNIT_TEST = '@angular/build:unit-test';
+const FLAGS = ['--code-coverage', '--no-watch'];
 
 const rm = (p) => fs.rmSync(p, { recursive: true, force: true });
 const staging = fs.mkdtempSync(path.join(os.tmpdir(), 'ajsf-cov-'));
 const staged = [];
 
+// A suite on any other builder would need different flags, so fail rather than
+// run it with these. This list is the seventh place the package set is written
+// down, so it also has to match what angular.json actually declares.
+const declared = Object.keys(angular.projects).filter((p) => p.startsWith('@ajsf/'));
+const covered = SUITES.map(([, project]) => project);
+const missing = declared.filter((p) => !covered.includes(p));
+if (missing.length) {
+  throw new Error(`run-coverage: angular.json has ${missing.join(', ')} but SUITES does not`);
+}
+for (const [, project] of SUITES) {
+  const builder = angular.projects[project].architect.test.builder;
+  if (builder !== UNIT_TEST) {
+    throw new Error(`run-coverage: ${project} uses ${builder}, expected ${UNIT_TEST}`);
+  }
+}
+
 for (const [script, project] of SUITES) {
-  const vitest = usesVitest(project);
   const name = script.replace('test:', '');
-  process.stdout.write(`\n[coverage] ${name} (${vitest ? 'vitest' : 'karma'})\n`);
+  process.stdout.write(`\n[coverage] ${name}\n`);
 
   rm(path.join(root, 'dist', 'test-out'));
-  execFileSync('npm', ['run', script, '--', ...(vitest ? VITEST_FLAGS : KARMA_FLAGS)], {
-    cwd: root,
-    stdio: 'inherit',
-  });
+  execFileSync('npm', ['run', script, '--', ...FLAGS], { cwd: root, stdio: 'inherit' });
 
-  // Only the Vitest runner writes to this path, and only it wipes coverage/.
   const report = path.join(root, 'coverage', 'lcov.info');
-  if (vitest && fs.existsSync(report)) {
-    const to = path.join(staging, `${name}.info`);
-    fs.copyFileSync(report, to);
-    staged.push([name, to]);
+  if (!fs.existsSync(report)) {
+    throw new Error(`run-coverage: ${name} produced no coverage/lcov.info`);
   }
+  const to = path.join(staging, `${name}.info`);
+  fs.copyFileSync(report, to);
+  staged.push([name, to]);
 }
 
 for (const [name, from] of staged) {
@@ -90,5 +99,21 @@ const walk = (dir) => {
 walk(path.join(root, 'coverage'));
 process.stdout.write(`\n[coverage] ${reports.length} report(s):\n`);
 for (const r of reports.sort()) {
-  process.stdout.write(`  ${path.relative(root, r)}\n`);
+  const records = fs.readFileSync(r, 'utf8').split('\n').filter((l) => l.startsWith('SF:')).length;
+  process.stdout.write(`  ${path.relative(root, r)}  ${records} source file(s)\n`);
+}
+
+// Listing what was produced is not the same as requiring it. The release
+// workflow runs this script and does not upload to Codecov, so without this a
+// suite whose report went missing or came out empty would release silently.
+if (staged.length !== SUITES.length) {
+  throw new Error(`run-coverage: staged ${staged.length} reports, expected ${SUITES.length}`);
+}
+const empty = staged
+  .map(([name]) => [name, path.join(root, 'coverage', `vitest-${name}`, 'lcov.info')])
+  .filter(([, f]) =>
+    !fs.existsSync(f) ||
+    !fs.readFileSync(f, 'utf8').split('\n').some((l) => l.startsWith('SF:')));
+if (empty.length) {
+  throw new Error(`run-coverage: empty or missing report for ${empty.map(([n]) => n).join(', ')}`);
 }
