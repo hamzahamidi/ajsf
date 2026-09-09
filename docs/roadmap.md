@@ -23,14 +23,6 @@ migrating twice.
 
 `18.0.0` is also where the four merged validation fixes reach `latest`.
 
-### Deprecate the Bootstrap 5 placeholder
-
-`@ajsf/bootstrap5` has `latest` on the empty `0.0.0` stub, because npm claims
-`latest` on a first publish whatever `--tag` says. `npm install @ajsf/bootstrap5`
-returns an empty package until a stable release moves it.
-
-    npm deprecate "@ajsf/bootstrap5@0.0.0" "Placeholder only, not a usable release."
-
 ### Raise the Codecov project target
 
 `codecov.yml` has `project: auto` because coverage was 56 percent when it was
@@ -210,22 +202,28 @@ item on this page and deserves its own design note before any code.
 
 ## Growth
 
-### Four new framework packages, after the 19 release
+### Four new framework packages, one shipped
 
 Decided 2026-08-24, in this order:
 
-    @ajsf/primeng     thick   the largest Angular component library not covered
-    @ajsf/daisyui     thin    the Tailwind ecosystem at Bootstrap package cost
+    @ajsf/primeng     thick   shipped at 19.2.0
+    @ajsf/daisyui     thin    next, after 20.0.0
     @ajsf/ng-zorro    thick   gated on recorded demand
     @ajsf/ionic       thick   gated on recorded demand
 
-They can start once `19.0.0` is promoted to `latest`. A package started there
-is carried through the 20, 21 and 22 walk together with the existing five,
-three extra upgrade legs, and that cost is accepted: the walk crosses those
-majors regardless, so a sixth package rides the same pull requests. The
-architecture items above (the ajv registry, one validator implementation,
-conditional layout) reshape validation internals more than the widget facing
-API, so the rework exposure for a new package is real but bounded.
+`@ajsf/primeng` published with the rest of the lockstep at 19.2.0, so there are
+six packages now rather than five. daisyUI waits for `20.0.0` rather than
+starting next: a package added before the walk crosses 20 gains a Karma
+configuration, a suite and a coverage leg that the Vitest migration in phase 6
+would then have to move again.
+
+A package started after 20.0.0 is carried through the 21 and 22 walk together
+with the existing six, two extra upgrade legs, and that cost is accepted: the
+walk crosses those majors regardless, so a seventh package rides the same pull
+requests. The architecture items above (the ajv registry, one validator
+implementation, conditional layout) reshape validation internals more than the
+widget facing API, so the rework exposure for a new package is real but
+bounded.
 
 Two package models exist and differ by six times. Thin applies classes around
 core's HTML widgets: `@ajsf/bootstrap5` is 5 files, 339 lines. Thick replaces
@@ -234,14 +232,14 @@ widgets with the library's components: `@ajsf/material` is 19 widget components,
 the Bootstrap packages needs no dependency on Tailwind or daisyUI itself, since
 the consumer brings the CSS. There is no version coupling to Tailwind majors.
 
-Why this order. PrimeNG is the largest Angular component library AJSF does not
-cover (roughly 771k weekly downloads against Material's 2.34M), its majors track
-Angular's since v18, which fits the package major equals Angular major rule, and
-ngx-formly, the closest competitor, ships PrimeNG, Ionic, Kendo and NG-ZORRO
-integrations. daisyUI is second on cost rather than demand: Tailwind ecosystem
-reach for thin package effort. Kendo was considered and dropped for commercial
-licensing. Raw Tailwind was dropped because it provides no widgets, so a package
-would amount to a house design system.
+Why this order. PrimeNG went first as the largest Angular component library
+AJSF did not cover (roughly 771k weekly downloads against Material's 2.34M),
+its majors track Angular's since v18, which fits the package major equals
+Angular major rule, and ngx-formly, the closest competitor, ships PrimeNG,
+Ionic, Kendo and NG-ZORRO integrations. daisyUI is second on cost rather than
+demand: Tailwind ecosystem reach for thin package effort. Kendo was considered
+and dropped for commercial licensing. Raw Tailwind was dropped because it
+provides no widgets, so a package would amount to a house design system.
 
 Demand evidence is thin everywhere: the tracker holds two closed PrimeNG
 mentions (#134 and #151, both from the Angular 5 era) and zero for the others.
@@ -251,14 +249,23 @@ before ng-zorro and ionic are scheduled would turn the guess into data, and may
 reorder them. Ionic also versions independently of Angular, which the
 release tooling assumes, so it needs a versioning decision before any code.
 
-Each package pays a permanent tax: 74 corpus entries per framework (370 becomes
-444, then 518, 592 and 666), a suite and coverage leg in CI, the lockstep walk
-through every future Angular major, and the OIDC first publish (npm cannot
-configure a trusted publisher for a package that does not exist, so each needs
-one manual placeholder publish, deprecated on the spot, before the workflow
-takes over; the steps are in the agent notes). Widget selector names become
-public API on first release, named in consumer layout schemas, so they are a
-one shot decision.
+Each package pays a permanent tax: 74 corpus entries per framework, a suite and
+coverage leg in CI, the lockstep walk through every future Angular major, and
+the OIDC first publish. PrimeNG paid all four and the figures held: the baseline
+went from 370 to 444 exactly as predicted, and `@ajsf/primeng@0.0.0` was
+published by hand because npm cannot configure a trusted publisher for a
+package that does not exist. The next three take the baseline to 518, 592 and
+666.
+
+The placeholder step has a second half that is easy to lose. npm claims `latest`
+on a first publish whatever `--tag` says, so the stub owns `latest` until a
+stable release moves it, and `latest` cannot be removed. Deprecate the stub on
+the spot: `@ajsf/bootstrap5@0.0.0` sat undeprecated from 17.2.0-rc.1 until
+19.2.0 had already shipped. Both stubs are deprecated now. The steps are in the
+agent notes.
+
+Widget selector names become public API on first release, named in consumer
+layout schemas, so they are a one shot decision.
 
 ## Size and shape
 
