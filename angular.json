@@ -224,11 +224,18 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "projects/ajsf-material/src/test.ts",
+            "buildTarget": "@ajsf/material:build",
             "tsConfig": "projects/ajsf-material/tsconfig.spec.json",
-            "karmaConfig": "projects/ajsf-material/karma.conf.js"
+            "runner": "vitest",
+            "setupFiles": [
+              "projects/ajsf-material/src/test-setup.ts"
+            ],
+            "codeCoverageReporters": [
+              "text-summary",
+              "lcov"
+            ]
           }
         }
       }
