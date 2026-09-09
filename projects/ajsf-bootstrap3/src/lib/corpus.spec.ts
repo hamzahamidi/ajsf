@@ -1,5 +1,22 @@
 import { Bootstrap3FrameworkModule } from './bootstrap3-framework.module';
-import { runCorpus } from '../../../../testing/corpus/harness';
+import { Component } from '@angular/core';
+import { CorpusHost, runCorpus } from '../../../../testing/corpus/harness';
 
 // The framework module re-exports JsonSchemaFormModule from '@ajsf/core'.
-runCorpus('bootstrap-3', [Bootstrap3FrameworkModule]);
+@Component({
+  standalone: true,
+  imports: [Bootstrap3FrameworkModule],
+  template: `
+    <json-schema-form
+      [form]="form"
+      [framework]="framework"
+      (isValid)="valid = $event"
+    ></json-schema-form>`,
+})
+class Bootstrap3CorpusHost implements CorpusHost {
+  form: any;
+  framework: string;
+  valid: boolean | null = null;
+}
+
+runCorpus('bootstrap-3', Bootstrap3CorpusHost);

@@ -1,4 +1,4 @@
-import { Component, Type } from '@angular/core';
+import { Type } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CorpusSchema, loadCorpus } from './schemas';
@@ -18,19 +18,18 @@ export interface CorpusResult {
   valid: boolean | null;
 }
 
-@Component({
-    template: `
-    <json-schema-form
-      [form]="form"
-      [framework]="framework"
-      (isValid)="valid = $event"
-    ></json-schema-form>`,
-    standalone: false
-})
-class CorpusHostComponent {
+/**
+ * What every suite's host component must expose. The host owns the template
+ * rather than this file, because the template's dependencies have to be known
+ * at compile time and they differ per suite: ajsf-core renders through its
+ * source JsonSchemaFormModule while the framework packages reach the same
+ * component through dist/@ajsf/core. A single shared host cannot import
+ * either without the two copies colliding as NG0300.
+ */
+export interface CorpusHost {
   form: any;
   framework: string;
-  valid: boolean | null = null;
+  valid: boolean | null;
 }
 
 /**
@@ -39,35 +38,39 @@ class CorpusHostComponent {
  * "this schema stopped rendering" across an Angular upgrade, not to assert
  * any particular widget implementation.
  */
-function countControls(fixture: ComponentFixture<CorpusHostComponent>): number {
+function countControls(fixture: ComponentFixture<CorpusHost>): number {
   return fixture.nativeElement.querySelectorAll(
     'input, select, textarea, mat-select, mat-slider, p-select, p-multiselect, p-slider'
   ).length;
 }
 
 /**
- * `modules` must supply both json-schema-form and the framework under test.
+ * `host` is the suite's own standalone component, which must render
+ * json-schema-form and satisfy CorpusHost.
  *
- * Do not import JsonSchemaFormModule here. The framework packages import it
- * from '@ajsf/core', which tsconfig maps to dist/, while ajsf-core's own specs
- * use the source. Importing it in this file puts both copies in the same
- * TestBed and Angular fails with NG0300, "Multiple components match node with
- * tagname json-schema-form". Each spec passes whichever copy is right for it.
+ * The host is passed in rather than declared here so its template
+ * dependencies are statically known. ajsf-core passes a host importing its
+ * source JsonSchemaFormModule; each framework package passes one importing
+ * its own framework module, which reaches JsonSchemaFormModule through
+ * dist/@ajsf/core. Declaring one shared host here and importing
+ * JsonSchemaFormModule into it would put both copies in the same TestBed and
+ * fail with NG0300, "Multiple components match node with tagname
+ * json-schema-form".
  */
-export function runCorpus(frameworkName: string, modules: Type<any>[]) {
+export function runCorpus(frameworkName: string, host: Type<CorpusHost>) {
   describe(`corpus: ${frameworkName}`, () => {
     const corpus: CorpusSchema[] = loadCorpus();
     const recorded: Record<string, CorpusResult> = {};
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        // Whatever declares json-schema-form must be in here. Without it the
-        // element matches nothing and every schema renders zero controls while
-        // the suite still reports success.
-        imports: [...modules, NoopAnimationsModule],
-        declarations: [CorpusHostComponent],
-        // Turn an unmatched element or binding into a failure rather than a
-        // console warning, so this cannot silently regress again.
+        // The host is standalone, so it carries json-schema-form and the
+        // framework under test in its own imports. Without them the element
+        // matches nothing and every schema renders zero controls while the
+        // suite still reports success.
+        imports: [host, NoopAnimationsModule],
+        // Kept for clarity. Compiling the host ahead of time is now what
+        // actually rejects an unmatched element or binding.
         schemas: [],
       }).compileComponents();
     }));
@@ -86,7 +89,7 @@ export function runCorpus(frameworkName: string, modules: Type<any>[]) {
     corpus.forEach((entry) => {
       it(`renders ${entry.name}`, () => {
         const key = `${frameworkName}/${entry.name}`;
-        const fixture = TestBed.createComponent(CorpusHostComponent);
+        const fixture = TestBed.createComponent(host);
         fixture.componentInstance.form = entry.form;
         fixture.componentInstance.framework = frameworkName;
 
