@@ -16,6 +16,11 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    # `if:` cannot read `secrets`, so the token is surfaced here to let the
+    # upload step test whether it actually has one.
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
     strategy:
       matrix:
         # Angular 20 requires ^20.19.0 || ^22.12.0 || >=24.0.0, so 18.x is gone
@@ -48,13 +53,21 @@ jobs:
     # Only one leg uploads. Both produce identical coverage for the same commit,
     # so uploading twice just makes Codecov merge duplicates.
     #
+    # Skipped when there is no token, which is not the same as tolerating a
+    # failure. Dependabot pull requests run without access to Actions secrets,
+    # so the token is empty, the upload goes out tokenless and Codecov rejects
+    # it with "Token required because branch is protected". That failed every
+    # Dependabot pull request on this leg while saying nothing about coverage.
+    # An upload that cannot be attempted is skipped; one that is attempted must
+    # still succeed.
+    #
     # Failures are surfaced rather than swallowed. This step previously ran with
     # continue-on-error and fail_ci_if_error: false, and reported success while
     # every upload was rejected with "Token required because branch is
     # protected". Nine pull requests merged before anyone noticed there was no
     # coverage data. An upload that cannot fail cannot tell you it is broken.
     - name: Publish code coverage
-      if: matrix.node-version == '20.x'
+      if: matrix.node-version == '20.x' && env.CODECOV_TOKEN != ''
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

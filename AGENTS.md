@@ -111,6 +111,8 @@ excluding it drops the report from 57 source files to 1.
 
 ⚠️ **Never give the upload step `continue-on-error` or `fail_ci_if_error: false`.** It carried both from #361 to #370 and reported success on every run while Codecov rejected every upload with `Token required because branch is protected`. Nine pull requests merged before anyone noticed. A step that cannot fail cannot tell you it is broken.
 
+Skipping the step is a different thing and is allowed. Dependabot pull requests run without access to Actions secrets, so `CODECOV_TOKEN` is empty, the upload goes out tokenless and Codecov rejects it with the same message, failing every Dependabot pull request on the `20.x` leg while saying nothing about coverage. The step is therefore guarded by `env.CODECOV_TOKEN != ''`, with the token surfaced as job level `env` because `if:` cannot read `secrets`. An upload that cannot be attempted is skipped; one that is attempted still has to succeed.
+
 ## Linting
 
 ⚠️ **Nothing is linted.** `npm run lint` runs `ng lint`, `angular.json` has no `lint`
