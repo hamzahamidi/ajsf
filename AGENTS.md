@@ -262,6 +262,18 @@ Each of these cost real debugging time. They look like bugs in your code and are
   change, not a contributor-only doc, and it reaches consumers only when a
   version publishes.
 
+- **Every command has a second invocation path, and it is the one that rots.**
+  CI was updated through the whole Vitest migration while `release.yml`,
+  `npm run coverage` and `npm run stats` were not. The release job still
+  restated the six suites with their Karma flags, so `20.0.0-rc.0` reached the
+  release job and failed there, having passed CI on the same commit. Whenever
+  you change how something is run, grep for every other caller before deciding
+  you are finished. `scripts/workflow-guards.spec.js` now asserts the ones that
+  bit: both workflows call `scripts/run-coverage.js` rather than naming suites,
+  no retired Karma flag survives outside a comment, every `npm run` target a
+  workflow or script names exists, every binary a script calls is installed,
+  and the release package count matches what `angular.json` declares.
+
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
 - **A tag pushed with `GITHUB_TOKEN` does not trigger another workflow**, by design, to prevent recursion. Any "create a tag, let the tag start a release" design silently never runs.
