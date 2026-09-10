@@ -10,10 +10,10 @@
     <button mat-icon-button
       class="theme-toggle"
       type="button"
-      [attr.aria-label]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
-      [title]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
-      (click)="toggleDarkMode()">
-      <mat-icon>{{darkMode ? 'light_mode' : 'dark_mode'}}</mat-icon>
+      [attr.aria-label]="themeLabel"
+      [title]="themeLabel"
+      (click)="cycleTheme()">
+      <mat-icon>{{themeIcon}}</mat-icon>
     </button>
   </mat-toolbar>
   <div class="header-content">

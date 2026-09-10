@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,7 +7,15 @@ import { HttpClient } from '@angular/common/http';
 import { Examples } from './example-schemas.model';
 import { JsonPointer } from '@ajsf/core';
 
-const DARK_MODE_KEY = 'ajsf-demo-dark-mode';
+type ThemePreference = 'system' | 'light' | 'dark';
+
+const THEME_KEY = 'ajsf-demo-theme';
+
+// Superseded by THEME_KEY, which also carries 'system'. Still read once so a
+// visitor who picked a theme before this existed keeps it.
+const LEGACY_DARK_MODE_KEY = 'ajsf-demo-dark-mode';
+
+const THEME_CYCLE: ThemePreference[] = ['system', 'light', 'dark'];
 
 @Component({
     selector: 'demo',
@@ -26,7 +34,7 @@ const DARK_MODE_KEY = 'ajsf-demo-dark-mode';
     ],
     standalone: false
 })
-export class DemoComponent implements OnInit {
+export class DemoComponent implements OnInit, OnDestroy {
   examples: any = Examples;
   languageList: any = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh'];
   languages: any = {
@@ -83,7 +91,12 @@ export class DemoComponent implements OnInit {
     printMargin: false,
     autoScrollEditorIntoView: true,
   };
+  themePreference: ThemePreference = 'system';
   darkMode = false;
+  private readonly prefersDark = matchMedia('(prefers-color-scheme: dark)');
+  private readonly onSystemThemeChange = () => {
+    if (this.themePreference === 'system') { this.applyTheme(); }
+  };
   @ViewChild(MatMenuTrigger, { static: true }) menuTrigger: MatMenuTrigger;
 
   // Bootstrap 5 opts a subtree into its dark palette with this attribute.
@@ -103,14 +116,39 @@ export class DemoComponent implements OnInit {
     return this.darkMode ? 'tomorrow_night' : 'sqlserver';
   }
 
-  toggleDarkMode() {
-    this.setDarkMode(!this.darkMode);
-    localStorage.setItem(DARK_MODE_KEY, String(this.darkMode));
+  get themeIcon(): string {
+    return ({ system: 'brightness_auto', light: 'light_mode', dark: 'dark_mode' })[this.themePreference];
   }
 
-  private setDarkMode(on: boolean) {
-    this.darkMode = on;
-    document.documentElement.classList.toggle('dark-theme', on);
+  // Names the state it is in as well as the one it moves to, because a single
+  // button cycling three states cannot show the third any other way.
+  get themeLabel(): string {
+    return `Theme: ${this.themePreference}. Switch to ${this.nextThemePreference()}.`;
+  }
+
+  cycleTheme() {
+    this.themePreference = this.nextThemePreference();
+    localStorage.setItem(THEME_KEY, this.themePreference);
+    this.applyTheme();
+  }
+
+  private nextThemePreference(): ThemePreference {
+    return THEME_CYCLE[(THEME_CYCLE.indexOf(this.themePreference) + 1) % THEME_CYCLE.length];
+  }
+
+  private applyTheme() {
+    this.darkMode = this.themePreference === 'system' ?
+      this.prefersDark.matches : this.themePreference === 'dark';
+    document.documentElement.classList.toggle('dark-theme', this.darkMode);
+  }
+
+  private storedThemePreference(): ThemePreference {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === 'system' || stored === 'light' || stored === 'dark') { return stored; }
+    const legacy = localStorage.getItem(LEGACY_DARK_MODE_KEY);
+    if (legacy === 'true') { return 'dark'; }
+    if (legacy === 'false') { return 'light'; }
+    return 'system';
   }
 
   constructor(
@@ -119,10 +157,14 @@ export class DemoComponent implements OnInit {
     private router: Router
   ) { }
 
+  ngOnDestroy() {
+    this.prefersDark.removeEventListener('change', this.onSystemThemeChange);
+  }
+
   ngOnInit() {
-    const stored = localStorage.getItem(DARK_MODE_KEY);
-    this.setDarkMode(stored === null ?
-      matchMedia('(prefers-color-scheme: dark)').matches : stored === 'true');
+    this.themePreference = this.storedThemePreference();
+    this.applyTheme();
+    this.prefersDark.addEventListener('change', this.onSystemThemeChange);
 
     // Subscribe to query string to detect schema to load
     this.route.queryParams.subscribe(
