@@ -154,6 +154,17 @@ jobs:
           fi
           echo "[release] all $COUNT packages at $VERSION"
 
+      # Gates the publish on the packages being installable, which nothing
+      # else here can see: the suites compile @ajsf/core through a tsconfig
+      # path mapping and the workspace pins every Angular package in one
+      # lockfile, so peer resolution in a consumer's tree is invisible to them.
+      # 20.0.0 shipped needing an @angular/animations install at the exact
+      # Angular patch, found by installing it into a new project after the
+      # fact. This packs dist rather than installing from npm, so it runs
+      # before the publish rather than after it.
+      - name: Smoke test a consumer install
+        run: npm run smoke:consumer
+
       # Publishing the artifact verify built, rather than rebuilding inside the
       # gated job, means what ships is exactly what passed.
       - name: Upload the verified packages

@@ -69,7 +69,8 @@
     "corpus:index": "node scripts/generate-corpus-index.js",
     "build:primeng": "ng build @ajsf/primeng --configuration production",
     "postbuild:primeng": "cp projects/ajsf-primeng/README.md LICENSE dist/@ajsf/primeng/",
-    "test:primeng": "ng test @ajsf/primeng"
+    "test:primeng": "ng test @ajsf/primeng",
+    "smoke:consumer": "node scripts/smoke-consumer.js"
   },
   "dependencies": {
     "@angular/animations": "^20.3.30",
