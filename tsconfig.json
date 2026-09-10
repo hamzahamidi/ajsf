@@ -21,9 +21,6 @@
       "dom"
     ],
     "paths": {
-      "@angular/*": [
-        "./node_modules/@angular/*"
-      ],
       "@ajsf/core": [
         "dist/@ajsf/core"
       ],

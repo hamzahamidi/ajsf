@@ -276,4 +276,18 @@ Each of these cost real debugging time. They look like bugs in your code and are
 
   Check whether a package still needs this with `npm view @ajsf/<name> version --prefer-online`. Do not trust a plain registry fetch straight after publishing: it returns 404 for several minutes while the package propagates, which looks exactly like a failed publish.
 
+- **Do not add an `@angular/*` entry to `tsconfig.json` paths.** One sat there
+  from 2020 (`"@angular/*": ["./node_modules/@angular/*"]`) doing nothing under
+  webpack, and broke `ng serve` the moment the application builder brought the
+  Vite dev server in. A path mapping resolves Angular to an absolute file,
+  which bypasses dependency prebundling, so `main.js` carried a second copy of
+  the core runtime beside the prebundled one: 9.4 MB served instead of 2.4 MB.
+  Two runtimes have separate instruction state, so the compiled template ran
+  against an empty one and the demo failed to bootstrap with `ASSERTION ERROR:
+  Array must be defined`, a blank page and no other clue. Only the dev server
+  is affected, because the production build has nothing to prebundle and
+  dedupes to one copy, which is why it went unnoticed. `scripts/package-guards.spec.js`
+  asserts the mapping stays gone. The `@ajsf/*` mappings are fine: those point
+  at `dist`, which is the intended source for them.
+
 - **`@angular/flex-layout` is deprecated and stops at `15.0.0-beta.42`.** It has no Angular 16 or later release and never will. Removing it is tracked work, not an incidental cleanup.
