@@ -27,7 +27,15 @@ npm run build:libs           # build all six packages into dist/@ajsf/
 npm run build:demo           # build the libraries and the demo app
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
+npm run smoke:consumer       # install the built packages into a throwaway app
 ```
+
+`smoke:consumer` needs `dist/@ajsf` (run `build:libs` first) and refuses with
+the packages it is missing rather than failing inside npm. It scaffolds a new
+Angular project with the CLI, packs `dist/@ajsf/*`, installs the tarballs
+following the release notes for that major, and runs a production build. Pass
+`--keep` to leave the project behind for inspection. The release workflow runs
+it in `verify`, so a publish is gated on the packages being installable.
 
 All six libraries run on Vitest through `@angular/build:unit-test`:
 
@@ -48,6 +56,20 @@ Use `npm run coverage` rather than running the suites by hand when you want
 coverage. `scripts/run-coverage.js` reads each suite's builder from
 `angular.json`, removes `dist/test-out` before every suite, and stages the
 reports; see Coverage for why each of those matters.
+
+⚠️ **The suites cannot tell you whether a consumer can install the packages.**
+They compile `@ajsf/core` through a tsconfig path mapping, and the workspace
+pins every Angular package in one lockfile, so npm's resolution in someone
+else's tree is invisible to them. 20.0.0 published needing
+`npm install @angular/animations` at the exact Angular patch, which was found by
+installing it into a new project. `smoke:consumer` is that check, and it packs
+`dist` rather than installing from npm so it can run before a publish.
+
+⚠️ **A `ng new` bundle budget failure is not a size regression.** The smoke
+component imports all six framework packages into one bundle, which no real
+consumer does, and that alone is 2.29 MB against the scaffold's 1 MB error
+threshold. The script deletes the budgets for that reason. Do not chase the
+number.
 
 ## Versioning
 
