@@ -13,6 +13,27 @@ const LIBRARIES = [
   'projects/ajsf-primeng',
 ];
 
+describe('tsconfig guards', () => {
+  const tsconfig = JSON.parse(
+    fs.readFileSync(path.join(root, 'tsconfig.json'), 'utf8').replace(/^\s*\/\/.*$/gm, '')
+  );
+
+  // A "@angular/*": ["./node_modules/@angular/*"] mapping sat here from 2020
+  // until it met the Vite dev server. It resolves Angular to an absolute path,
+  // which bypasses dependency prebundling, so main.js carried a second copy of
+  // the core runtime beside the prebundled one. Two runtimes meant the
+  // compiled template ran against empty instruction state and the demo failed
+  // to bootstrap with "ASSERTION ERROR: Array must be defined", in `ng serve`
+  // only: the production build has nothing to prebundle and dedupes to one.
+  it('maps no @angular package, which would give the dev server two runtimes', () => {
+    const mapped = Object.keys(tsconfig.compilerOptions.paths || {})
+      .filter((p) => p.startsWith('@angular'));
+    expect(mapped)
+      .withContext(`these bypass Vite prebundling: ${mapped.join(', ')}`)
+      .toEqual([]);
+  });
+});
+
 describe('package guards', () => {
   it('keeps the root package private so it can never be published', () => {
     expect(readManifest('package.json').private).toBe(true);
