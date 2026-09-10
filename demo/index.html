@@ -9,6 +9,25 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
     <link rel="icon" type="image/svg+xml" href="assets/logo/ajsf-mark.svg">
     <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
+    <!-- Sets the theme before the bundle loads, so a visitor whose system is
+         dark does not get a light first paint. It has to duplicate the key
+         names and the preference rules from DemoComponent, which reapplies
+         them and owns them from then on. -->
+    <script>
+      (function () {
+        try {
+          var p = localStorage.getItem('ajsf-demo-theme');
+          if (p !== 'system' && p !== 'light' && p !== 'dark') {
+            var legacy = localStorage.getItem('ajsf-demo-dark-mode');
+            p = legacy === 'true' ? 'dark' : legacy === 'false' ? 'light' : 'system';
+          }
+          var dark = p === 'system'
+            ? matchMedia('(prefers-color-scheme: dark)').matches
+            : p === 'dark';
+          document.documentElement.classList.toggle('dark-theme', dark);
+        } catch (e) { /* private mode blocks localStorage; light is the default */ }
+      })();
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TH8GG8HPH6"></script>
     <script>
       window.dataLayer=window.dataLayer||[];
