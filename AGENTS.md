@@ -268,11 +268,15 @@ Each of these cost real debugging time. They look like bugs in your code and are
   restated the six suites with their Karma flags, so `20.0.0-rc.0` reached the
   release job and failed there, having passed CI on the same commit. Whenever
   you change how something is run, grep for every other caller before deciding
-  you are finished. `scripts/workflow-guards.spec.js` now asserts the ones that
-  bit: both workflows call `scripts/run-coverage.js` rather than naming suites,
-  no retired Karma flag survives outside a comment, every `npm run` target a
-  workflow or script names exists, every binary a script calls is installed,
-  and the release package count matches what `angular.json` declares.
+  you are finished. `scripts/workflow-guards.spec.js` asserts the ones that
+  bit. It parses the workflows with js-yaml and reads only what the steps run:
+  CI and release must run `node scripts/run-coverage.js` exactly, with no extra
+  argument, since the divergence that caused the failure was arguments; no
+  other path may reach the suites; no retired Karma flag survives; every
+  `npm run` target exists; every binary a script calls comes from a declared
+  dependency rather than merely being present in `node_modules/.bin`; and the
+  release package count matches `angular.json`. Local composite actions under
+  `.github/actions` are read too, and both `.yml` and `.yaml` count.
 
 - **`npm view pkg@missing-version` exits 0** with empty stdout. Only a missing *package* exits non-zero. Any "is this published" check must test the output, not the exit code, or it reports "already published" forever.
 - **`private: true` cannot be verified locally.** npm authenticates before it checks the flag, so an unauthenticated `npm publish` reports `ENEEDAUTH` whether or not the package is private, and `--dry-run` packs and exits 0 regardless. `scripts/package-guards.spec.js` asserts it instead.
