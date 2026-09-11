@@ -37,6 +37,76 @@ describe('FwBootstrap5Component', () => {
     expect(component).toBeTruthy();
   });
 
+  // The migration dropped the paragraph that rendered options.helpBlock below
+  // the field, keeping only the copy guarded by messageLocation === 'top'.
+  // Nothing sets messageLocation on this path, so that branch never runs and
+  // help text rendered nowhere, while updateHelpBlock went on computing it.
+  describe('help text', () => {
+    const render = (options: any) => {
+      component.layoutNode = { type: 'text', options };
+      component.initializeFramework();
+      fixture.detectChanges();
+      return fixture.nativeElement.textContent;
+    };
+
+    it('renders help text when the field has no error', () => {
+      expect(render({ help: 'Use your work address' })).toContain('Use your work address');
+    });
+
+    it('renders a description when the field has no error', () => {
+      expect(render({ description: 'Two letters' })).toContain('Two letters');
+    });
+
+    it('prefers the description over help, as updateHelpBlock does', () => {
+      const text = render({ description: 'Two letters', help: 'Use your work address' });
+      expect(text).toContain('Two letters');
+      expect(text).not.toContain('Use your work address');
+    });
+
+    it('renders the description once, not once per block', () => {
+      const text = render({ description: 'Two letters' });
+      expect(text.split('Two letters').length - 1).toEqual(1);
+    });
+
+    // Containers set messageLocation to 'top'. updateHelpBlock only runs when
+    // there is a formControl, which a container has not got and this fixture
+    // never provides, so asserting through the component would pass without
+    // the upper paragraph ever rendering. These set helpBlock directly, which
+    // is the state the template has to cope with.
+    const containerOptions = (extra: any) =>
+      ({ messageLocation: 'top', helpBlock: 'Container help', ...extra });
+
+    it('renders help once when the layout asks for it at the top', () => {
+      const text = render(containerOptions({ help: 'Container help' }));
+      expect(text.split('Container help').length - 1).toEqual(1);
+    });
+
+    it('renders a description once when the layout asks for it at the top', () => {
+      const text = render(containerOptions({ description: 'Container help' }));
+      expect(text.split('Container help').length - 1).toEqual(1);
+    });
+
+    it('puts it above the field, where the layout asked for it', () => {
+      component.layoutNode = { type: 'text', options: containerOptions({ help: 'Container help' }) };
+      component.initializeFramework();
+      fixture.detectChanges();
+      const html = fixture.nativeElement.innerHTML;
+      expect(html.indexOf('Container help')).toBeLessThan(html.indexOf('select-widget-widget'));
+    });
+
+    const CONTAINERS = ['array', 'fieldset', 'section', 'conditional',
+      'advancedfieldset', 'authfieldset', 'selectfieldset', 'optionfieldset'];
+
+    it('sets messageLocation to top for every container type', () => {
+      CONTAINERS.forEach((type) => {
+        component.layoutNode = { type, options: {} };
+        component.initializeFramework();
+        expect(component.options.messageLocation, `${type} should ask for its message at the top`)
+          .toEqual('top');
+      });
+    });
+  });
+
   // Bootstrap 5 defines neither .form-group nor .control-label, so emitting
   // them costs the field its spacing with nothing to show that it happened.
   describe('emitted classes', () => {
