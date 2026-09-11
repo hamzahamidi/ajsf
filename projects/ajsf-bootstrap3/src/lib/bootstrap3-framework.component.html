@@ -1,11 +1,11 @@
 <div
   [class]="options?.htmlClass || ''"
   [class.has-feedback]="options?.feedback && options?.isInputWidget &&
-        (formControl?.dirty || options?.feedbackOnRender)"
+        (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)"
   [class.has-error]="options?.enableErrorState && formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)"
+        (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)"
   [class.has-success]="options?.enableSuccessState && !formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)">
+        (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
 
   <button *ngIf="showRemoveButton"
           class="close pull-right"
@@ -45,7 +45,7 @@
 
   <span *ngIf="options?.feedback && options?.isInputWidget &&
           !options?.fieldAddonRight && !layoutNode.arrayItem &&
-          (formControl?.dirty || options?.feedbackOnRender)"
+          (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)"
         [class.glyphicon-ok]="options?.enableSuccessState && !formControl?.errors"
         [class.glyphicon-remove]="options?.enableErrorState && formControl?.errors"
         aria-hidden="true"
