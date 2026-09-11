@@ -50,9 +50,15 @@
     class="invalid-feedback"
     [innerHTML]="options?.errorMessage"></div>
 
-    <div *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+    <!--
+      description || help is the order updateHelpBlock uses for options.helpBlock,
+      which this block replaced. Reading description alone lost help entirely,
+      because the only remaining helpBlock paragraph is guarded by
+      messageLocation === 'top' and nothing sets messageLocation here.
+    -->
+    <div *ngIf="(options?.description || options?.help) && (!options?.showErrors || !options?.errorMessage)"
     class="form-text text-muted"
-    [innerHTML]="options?.description"></div>
+    [innerHTML]="options?.description || options?.help"></div>
 </div>
 
 <div *ngIf="debug && debugOutput">debug:

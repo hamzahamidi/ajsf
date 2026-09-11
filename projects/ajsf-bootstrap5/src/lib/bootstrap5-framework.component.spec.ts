@@ -37,6 +37,38 @@ describe('FwBootstrap5Component', () => {
     expect(component).toBeTruthy();
   });
 
+  // The migration dropped the paragraph that rendered options.helpBlock below
+  // the field, keeping only the copy guarded by messageLocation === 'top'.
+  // Nothing sets messageLocation on this path, so that branch never runs and
+  // help text rendered nowhere, while updateHelpBlock went on computing it.
+  describe('help text', () => {
+    const render = (options: any) => {
+      component.layoutNode = { type: 'text', options };
+      component.initializeFramework();
+      fixture.detectChanges();
+      return fixture.nativeElement.textContent;
+    };
+
+    it('renders help text when the field has no error', () => {
+      expect(render({ help: 'Use your work address' })).toContain('Use your work address');
+    });
+
+    it('renders a description when the field has no error', () => {
+      expect(render({ description: 'Two letters' })).toContain('Two letters');
+    });
+
+    it('prefers the description over help, as updateHelpBlock does', () => {
+      const text = render({ description: 'Two letters', help: 'Use your work address' });
+      expect(text).toContain('Two letters');
+      expect(text).not.toContain('Use your work address');
+    });
+
+    it('renders the description once, not once per block', () => {
+      const text = render({ description: 'Two letters' });
+      expect(text.split('Two letters').length - 1).toEqual(1);
+    });
+  });
+
   // Bootstrap 5 defines neither .form-group nor .control-label, so emitting
   // them costs the field its spacing with nothing to show that it happened.
   describe('emitted classes', () => {
