@@ -52,11 +52,13 @@
 
     <!--
       description || help is the order updateHelpBlock uses for options.helpBlock,
-      which this block replaced. Reading description alone lost help entirely,
-      because the only remaining helpBlock paragraph is guarded by
-      messageLocation === 'top' and nothing sets messageLocation here.
+      which this block replaced. Reading description alone lost help entirely.
+      The messageLocation guard mirrors the paragraph above: containers set it
+      to 'top', and without it the same text renders in both places.
     -->
-    <div *ngIf="(options?.description || options?.help) && (!options?.showErrors || !options?.errorMessage)"
+    <div *ngIf="(options?.description || options?.help) &&
+          options?.messageLocation !== 'top' &&
+          (!options?.showErrors || !options?.errorMessage)"
     class="form-text text-muted"
     [innerHTML]="options?.description || options?.help"></div>
 </div>
