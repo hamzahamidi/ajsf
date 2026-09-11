@@ -53,6 +53,39 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `bootstrap-4` for 'Bootstrap 4.
 * `no-framework` for (plain HTML).
 
+## Bootstrap 4 markup, corrected in 20.1.0
+
+This package previously emitted Bootstrap 3 class names. It was created as a
+copy of `@ajsf/bootstrap3` with the CDN URL changed, so classes Bootstrap 4
+had dropped kept being rendered and silently did nothing. If you have written
+CSS against the old output, these are the names that changed.
+
+| Was | Is now | Why |
+| --- | --- | --- |
+| `has-error`, `has-success`, `has-feedback` | `is-invalid` on the field wrapper | Bootstrap 4 marks the field, not the container |
+| `help-block` | `form-text text-muted` | Bootstrap 4's help text class |
+| `form-control-feedback`, `glyphicon` | removed | Bootstrap 4 ships no glyphicons |
+| `input-group-addon` | `input-group-prepend` or `input-group-append` wrapping `input-group-text` | Bootstrap 4's addon structure |
+| `pull-right` | `float-right` | renamed in Bootstrap 4 |
+| `control-label` | no class | Bootstrap 4 styles a plain label in a stacked form |
+| `btn-default` | `btn-secondary` | Bootstrap 4's neutral button |
+
+`form-group` and `sr-only` are unchanged, because Bootstrap 4 still defines
+both.
+
+Validation messages also behave differently, and this part applies to
+`@ajsf/bootstrap3` and `@ajsf/bootstrap5` too. A message used to appear only
+once the value had changed, so focusing a required field and leaving it empty
+showed nothing. It now appears once the field has been touched or changed.
+Error text and help text are also separate elements now, so you can style one
+without the other.
+
+Checkbox and radio inputs still carry the Bootstrap 3 `checkbox` and `radio`
+classes. Bootstrap 4 wants `form-check-input` and `form-check-label` on
+sibling elements, and this library nests the input inside the label, so those
+names would be rendered without effect. That is tracked separately rather than
+shipped as a cosmetic change.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project @ajsf/bootstrap4` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project @ajsf/bootstrap4`.

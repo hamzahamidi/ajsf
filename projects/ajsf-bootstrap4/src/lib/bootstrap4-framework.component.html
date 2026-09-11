@@ -1,14 +1,7 @@
-<div
-  [class]="options?.htmlClass || ''"
-  [class.has-feedback]="options?.feedback && options?.isInputWidget &&
-        (formControl?.dirty || options?.feedbackOnRender)"
-  [class.has-error]="options?.enableErrorState && formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)"
-  [class.has-success]="options?.enableSuccessState && !formControl?.errors &&
-        (formControl?.dirty || options?.feedbackOnRender)">
+<div [class]="options?.htmlClass || ''">
 
   <button *ngIf="showRemoveButton"
-          class="close pull-right"
+          class="close float-right"
           type="button"
           (click)="removeItem()">
     <span aria-hidden="true">&times;</span>
@@ -16,7 +9,7 @@
   </button>
   <div *ngIf="options?.messageLocation === 'top'">
     <p *ngIf="options?.helpBlock"
-       class="help-block"
+       class="form-text text-muted"
        [innerHTML]="options?.helpBlock"></p>
   </div>
 
@@ -28,33 +21,44 @@
   <p *ngIf="layoutNode?.type === 'submit' && jsf?.formOptions?.fieldsRequired">
     <strong class="text-danger">*</strong> = required fields
   </p>
-  <div [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight">
-        <span *ngIf="options?.fieldAddonLeft"
-              class="input-group-addon"
-              [innerHTML]="options?.fieldAddonLeft"></span>
+
+  <!--
+    is-invalid sits on this wrapper, not on the control. Bootstrap reveals
+    .invalid-feedback only as a following sibling of the element carrying
+    .is-invalid, and select-widget-widget renders its own host element and a
+    container div between here and the real input, so the input and the
+    message can never be siblings.
+  -->
+  <div [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
+       [class.is-invalid]="options?.enableErrorState && formControl?.errors &&
+             (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
+    <div class="input-group-prepend" *ngIf="options?.fieldAddonLeft">
+      <span class="input-group-text" [innerHTML]="options?.fieldAddonLeft"></span>
+    </div>
 
     <select-widget-widget
       [layoutNode]="widgetLayoutNode"
       [dataIndex]="dataIndex"
       [layoutIndex]="layoutIndex"></select-widget-widget>
 
-    <span *ngIf="options?.fieldAddonRight"
-          class="input-group-addon"
-          [innerHTML]="options?.fieldAddonRight"></span>
+    <div class="input-group-append" *ngIf="options?.fieldAddonRight">
+      <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
+    </div>
   </div>
 
-  <span *ngIf="options?.feedback && options?.isInputWidget &&
-          !options?.fieldAddonRight && !layoutNode.arrayItem &&
-          (formControl?.dirty || options?.feedbackOnRender)"
-        [class.glyphicon-ok]="options?.enableSuccessState && !formControl?.errors"
-        [class.glyphicon-remove]="options?.enableErrorState && formControl?.errors"
-        aria-hidden="true"
-        class="form-control-feedback glyphicon"></span>
-  <div *ngIf="options?.messageLocation !== 'top'">
-    <p *ngIf="options?.helpBlock"
-       class="help-block"
-       [innerHTML]="options?.helpBlock"></p>
-  </div>
+  <div *ngIf="(formControl?.touched || formControl?.dirty || options?.feedbackOnRender) && options?.errorMessage"
+       class="invalid-feedback"
+       [innerHTML]="options?.errorMessage"></div>
+
+  <!--
+    helpBlock carries the formatted errors when the control is invalid and
+    description || help otherwise, so it is suppressed while the error element
+    above is showing rather than repeating the same failure in muted text.
+  -->
+  <p *ngIf="options?.helpBlock && options?.messageLocation !== 'top' &&
+        !(options?.enableErrorState && formControl?.errors)"
+     class="form-text text-muted"
+     [innerHTML]="options?.helpBlock"></p>
 </div>
 
 <div *ngIf="debug && debugOutput">debug:

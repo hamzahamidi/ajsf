@@ -103,8 +103,9 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
             addClasses(this.options.htmlClass, 'list-group-item') :
             addClasses(this.options.htmlClass, 'form-group');
       this.widgetOptions.htmlClass = '';
-      this.options.labelHtmlClass =
-        addClasses(this.options.labelHtmlClass, 'control-label');
+      // No label class. Bootstrap 4 styles a plain <label> in a stacked form,
+      // and col-form-label, which the migration table offers as the rename,
+      // is for horizontal grid forms only. This framework has no such mode.
       this.widgetOptions.activeClass =
         addClasses(this.widgetOptions.activeClass, 'active');
       this.options.fieldAddonLeft =
@@ -153,7 +154,9 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass, 'btn');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, this.options.style || 'btn-default');
+            // btn-default was Bootstrap 3's neutral button; btn-secondary is its
+            // Bootstrap 4 counterpart. btn-outline-primary would add emphasis.
+            this.widgetOptions.itemLabelHtmlClass, this.options.style || 'btn-secondary');
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'sr-only');
           break;
@@ -216,7 +219,7 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
   updateHelpBlock(status) {
     this.options.helpBlock = status === 'INVALID' &&
     this.options.enableErrorState && this.formControl.errors &&
-    (this.formControl.dirty || this.options.feedbackOnRender) ?
+    (this.formControl.touched || this.formControl.dirty || this.options.feedbackOnRender) ?
       this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages) :
       this.options.description || this.options.help || null;
   }
