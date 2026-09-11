@@ -84,6 +84,14 @@ npm run version:set -- 16.0.0-rc.1 16 # prerelease, publishes to the next dist-t
 
 It refuses to write anything when the version is malformed or when the two arguments disagree.
 
+**A consumer visible break cannot have its own major.** The major is spent on
+Angular, and `version:set` refuses a version whose major disagrees with the
+Angular major it is given, so there is no `21.0.0` to put a breaking change in
+while the release targets Angular 20. Such a change either ships in a minor
+marked `!`, or waits for the next Angular major. The four `fix(core)!:`
+changes before 19.0.0 waited; the Bootstrap 4 class corrections in 20.1.0 did
+not, because the classes they replaced were not a contract (see Constraints).
+
 ## Releasing
 
 Publishing is automated through `.github/workflows/release.yml` and npm OIDC Trusted Publishing. There is no npm token.
@@ -158,6 +166,18 @@ them per file, because both are deliberate:
 ## Constraints
 
 - **The public API is frozen** while the Angular upgrade is in progress. Do not remove or rename any export from a `public_api.ts`. In particular `@ajsf/material` must keep exporting `FlexLayoutRootComponent` and `FlexLayoutSectionComponent`, and keep the `flex-layout-root-widget` and `flex-layout-section-widget` selectors those components declare. Consumer layout schemas reach this feature through `type` values such as `flex` and `section`, which must keep resolving. `ng-jsf-flex-layout` is a demo example schema for the feature, not a widget name.
+- **Framework-emitted CSS class names are not a compatibility surface.** The
+  classes a framework component appends to `htmlClass`, `labelHtmlClass` and
+  `fieldHtmlClass` exist so that CSS library's own styling applies. When the
+  library renames or deletes one, the correct class changes with it, and that
+  is a fix rather than a break, however much consumer CSS was written against
+  the old name. Decided for 20.1.0, which replaced seven Bootstrap 3 class
+  names in `@ajsf/bootstrap4` in a minor. Mark such a change `!` so the
+  release page says so, and table the replaced names in that package's
+  README, which ships as its npm page. What is frozen is the item above:
+  exports, the component selectors, and the layout `type` values that resolve
+  to them.
+
 - **Do not upgrade Angular as a side effect** of another change. Angular majors move one at a time, in their own PR.
 - `@ajsf/core` uses `any` widely by design, because it processes arbitrary JSON Schema. Do not "fix" that.
 
