@@ -19,15 +19,16 @@ function definitionFiles() {
       .filter((f) => /\.ya?ml$/.test(f))
       .forEach((f) => files.push(path.posix.join('.github/workflows', f)));
   }
-  const actions = path.join(root, '.github/actions');
-  if (fs.existsSync(actions)) {
-    fs.readdirSync(actions).forEach((entry) => {
-      ['action.yml', 'action.yaml'].forEach((name) => {
-        const file = path.posix.join('.github/actions', entry, name);
-        if (fs.existsSync(path.join(root, file))) { files.push(file); }
-      });
+  // Recursively: a local action is not required to sit one directory deep.
+  const walk = (dir) => {
+    if (!fs.existsSync(path.join(root, dir))) { return; }
+    fs.readdirSync(path.join(root, dir), { withFileTypes: true }).forEach((entry) => {
+      const child = path.posix.join(dir, entry.name);
+      if (entry.isDirectory()) { walk(child); }
+      else if (/^action\.ya?ml$/.test(entry.name)) { files.push(child); }
     });
-  }
+  };
+  walk('.github/actions');
   return files;
 }
 
@@ -72,6 +73,17 @@ describe('suite invocation', () => {
     });
   });
 
+  // Exactness has to be global, not a property of those two files. A third
+  // workflow invoking the runner with a reporter flag of its own recreates the
+  // divergence without restating a suite or naming a retired flag.
+  it('invokes the runner canonically wherever it is invoked', () => {
+    everyRun.filter(([, run]) => run.includes('scripts/run-coverage.js')).forEach(([file, run]) => {
+      expect(run.trim())
+        .withContext(`${file} invokes the runner as something other than "${CANONICAL}"`)
+        .toEqual(CANONICAL);
+    });
+  });
+
   const ALTERNATE = [
     [/\bng test\b/, 'invokes the CLI test target instead of the runner'],
     [/npm run test:(core|bs3|bs4|bs5|material|primeng)\b/, 'names a single suite'],
@@ -89,8 +101,13 @@ describe('suite invocation', () => {
     });
   });
 
+  // Containment rather than equality, deliberately: this one wraps the runner
+  // in the clean and report steps, so it is the one caller that does more.
   it('keeps npm run coverage on the same runner', () => {
     expect(manifest.scripts.coverage).toContain(CANONICAL);
+    expect(manifest.scripts.coverage.split('&&').map((part) => part.trim()))
+      .withContext('coverage should reach the runner directly, not through another wrapper')
+      .toContain(CANONICAL);
   });
 });
 
