@@ -115,5 +115,28 @@ describe('Bootstrap 4 check and radio markup', () => {
       const label = input.closest('label');
       expect(label, 'a Bootstrap 4 toggle button wraps its input').toBeTruthy();
     });
+
+    it('renders inline checkboxes as siblings, as Bootstrap 4 documents', () => {
+      const el = renderForm({
+        ...form,
+        form: [{ key: 'colours', type: 'checkboxes-inline' }],
+      });
+      const inputs = [...el.querySelectorAll('input[type=checkbox]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+
+        const wrapper = input.closest('.form-check-inline');
+        expect(wrapper, 'the input must sit inside a form-check-inline element').toBeTruthy();
+        expect(label.closest('.form-check-inline')).toBe(wrapper);
+        expect(wrapper.parentElement.closest('.form-check-inline'),
+          'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(input.className).toContain('form-check-input');
+        expect(label.className).toContain('form-check-label');
+      });
+    });
   });
 });

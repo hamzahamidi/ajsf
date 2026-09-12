@@ -5,10 +5,12 @@ import { CheckboxesComponent } from '@ajsf/core';
  * Bootstrap 4 splits these two ways, so this template does too.
  *
  * Vertical checkboxes take the sibling form, which is what Bootstrap 4
- * documents for .form-check. The horizontal branch serves checkboxes-inline
- * and checkboxbuttons, and keeps the input inside the label: Bootstrap 4's
- * toggle buttons are .btn-group-toggle with a nested input, and it has no
- * .btn-check. That is deliberate, not a widget that was missed.
+ * documents for .form-check. The horizontal branch splits again on
+ * layoutNode.type: checkboxes-inline is .form-check.form-check-inline, the
+ * same sibling shape as vertical, while checkboxbuttons keeps the input
+ * inside the label, because Bootstrap 4's toggle buttons are
+ * .btn-group-toggle with a nested input and it has no .btn-check. That is
+ * deliberate, not a widget that was missed.
  *
  * Template only. No constructor.
  */
@@ -25,27 +27,52 @@ import { CheckboxesComponent } from '@ajsf/core';
     }
 
     @if (layoutOrientation === 'horizontal') {
-      <div [class]="options?.htmlClass || ''">
-        @for (checkboxItem of checkboxList; track checkboxItem) {
-          <label
-            [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-            [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
-              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
-              (' ' + (options?.style?.unselected || '')))">
-            <input type="checkbox"
-              [attr.required]="options?.required"
-              [checked]="checkboxItem.checked"
-              [class]="options?.fieldHtmlClass || ''"
-              [disabled]="controlDisabled"
-              [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-              [name]="checkboxItem?.name"
-              [readonly]="options?.readonly ? 'readonly' : null"
-              [value]="checkboxItem.value"
-              (change)="updateValue($event, checkboxItem)">
-            <span [innerHTML]="checkboxItem.name"></span>
-          </label>
-        }
-      </div>
+      @if (layoutNode?.type === 'checkboxbuttons') {
+        <div [class]="options?.htmlClass || ''">
+          @for (checkboxItem of checkboxList; track checkboxItem) {
+            <label
+              [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+              [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
+                (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
+                (' ' + (options?.style?.unselected || '')))">
+              <input type="checkbox"
+                [attr.required]="options?.required"
+                [checked]="checkboxItem.checked"
+                [class]="options?.fieldHtmlClass || ''"
+                [disabled]="controlDisabled"
+                [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+                [name]="checkboxItem?.name"
+                [readonly]="options?.readonly ? 'readonly' : null"
+                [value]="checkboxItem.value"
+                (change)="updateValue($event, checkboxItem)">
+              <span [innerHTML]="checkboxItem.name"></span>
+            </label>
+          }
+        </div>
+      } @else {
+        <div>
+          @for (checkboxItem of checkboxList; track checkboxItem) {
+            <div [class]="options?.htmlClass || ''">
+              <input type="checkbox"
+                [attr.required]="options?.required"
+                [checked]="checkboxItem.checked"
+                [class]="options?.fieldHtmlClass || ''"
+                [disabled]="controlDisabled"
+                [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+                [name]="checkboxItem?.name"
+                [readonly]="options?.readonly ? 'readonly' : null"
+                [value]="checkboxItem.value"
+                (change)="updateValue($event, checkboxItem)">
+              <label
+                [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+                [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
+                  (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
+                  (' ' + (options?.style?.unselected || '')))"
+                [innerHTML]="checkboxItem.name"></label>
+            </div>
+          }
+        </div>
+      }
     }
 
     @if (layoutOrientation === 'vertical') {

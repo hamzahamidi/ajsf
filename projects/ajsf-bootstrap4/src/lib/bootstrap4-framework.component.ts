@@ -143,9 +143,11 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
           break;
         case 'checkboxes-inline':
           this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
+            this.widgetOptions.htmlClass, 'form-check form-check-inline');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'checkbox-inline');
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         // Radio controls
         case 'radio':
