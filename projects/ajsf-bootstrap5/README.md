@@ -53,6 +53,26 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `bootstrap-5` for 'Bootstrap 5.
 * `no-framework` for (plain HTML).
 
+## Checkbox and radio structure, changed in 22.1.0
+
+Checkboxes and radios previously rendered the `<input>` inside its `<label>`,
+which is the Bootstrap 3 shape this package was copied from. They now render
+as siblings inside a `.form-check` wrapper, which is what Bootstrap 5
+documents and what its state styling requires:
+
+    <div class="form-check">
+      <input class="form-check-input" id="control1" type="checkbox">
+      <label class="form-check-label" for="control1">Accept</label>
+    </div>
+
+Every variant takes this sibling shape, including toggle buttons
+(`checkboxbuttons`, `radiobuttons`) and the inline forms (`checkboxes-inline`,
+`radios-inline`), because Bootstrap 5 styles its `.btn-check` toggle buttons
+through a sibling input too, unlike Bootstrap 4's nested `.btn-group-toggle`.
+
+If you wrote CSS selecting `label > input` or styling the label as the
+control's ancestor, that is where the difference is.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project @ajsf/bootstrap5` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project @ajsf/bootstrap5`.

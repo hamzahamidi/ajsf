@@ -187,6 +187,14 @@ them per file, because both are deliberate:
   exports, the component selectors, and the layout `type` values that resolve
   to them.
 
+- **`activeClass` and `style.selected` apply to the label, not the control.**
+  That is what makes the toggle-button idiom work, where the label is the
+  button. Since the Bootstrap 4 and 5 checkbox and radio widgets moved to
+  sibling markup, the label no longer wraps the input for plain checks, so
+  those two options style a label that does not contain the control.
+  Redefining what they target is a consumer visible option change and needs
+  its own decision, not a quiet fix.
+
 - **Do not upgrade Angular as a side effect** of another change. Angular majors move one at a time, in their own PR.
 - `@ajsf/core` uses `any` widely by design, because it processes arbitrary JSON Schema. Do not "fix" that.
 

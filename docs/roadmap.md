@@ -33,11 +33,13 @@ anything in this library: one extra control per `range` field, which is what
 identified it. Everything else rendered identically through a template rewrite
 that touched every widget.
 
-### Checkbox and radio markup, and the array layout defects
+### The array layout defects
 
-The two pieces of user visible work that the Bootstrap pass in 20.1.0
-deliberately stopped short of, now the next thing rather than the thing after
-the upgrade. Both are described below under Correctness, and both need a design
+The checkbox and radio half of the work the Bootstrap pass in 20.1.0
+deliberately stopped short of is done: Bootstrap 4 and 5 render checkboxes and
+radios as siblings through their own widget components, described below under
+Correctness. What is left is the array remove button and the duplicated array
+title, described further down under Correctness, which still need a design
 pass before code because they change shared widget structure rather than one
 package's class list.
 
@@ -147,9 +149,14 @@ Measured class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
 
 ### Checkbox and radio markup, and what shares what
 
-Bootstrap 3 documents the input nested inside the label; 4 and 5 document them
-as siblings and style state through sibling selectors. No class mapping
-reconciles those, which is the limit `20.1.0` stopped at.
+Bootstrap 4 and 5 now render checkboxes and radios as siblings through their
+own widget components, each subclassing the corresponding `@ajsf/core` widget
+and overriding template metadata only. Bootstrap 3, `@ajsf/core`'s plain HTML
+output, `@ajsf/material` and `@ajsf/primeng` are unchanged: they keep the
+nested form deliberately. Bootstrap 4's toggle buttons (`checkboxbuttons`,
+`radiobuttons`) stay nested too, because Bootstrap 4 documents
+`.btn-group-toggle` with the input inside the label and has no `.btn-check`.
+Bootstrap 5's button sets render as siblings because it does.
 
 The same shape blocks validation. Bootstrap reveals `.invalid-feedback` only as
 a following sibling of the element carrying `.is-invalid`, and
@@ -157,13 +164,6 @@ a following sibling of the element carrying `.is-invalid`, and
 between the field wrapper and the real input, so the control and its message
 can never be siblings. Bootstrap 4 and 5 therefore both put `is-invalid` on the
 wrapper, which shows the message but does not mark the control.
-
-Fixing it properly means the framework packages specialising a rendering recipe
-(classes, element relationships, placement) rather than a class list, with the
-AJSF concerns shared: roughly three quarters of the Bootstrap 4 template's 62
-lines are structure and Angular bindings with no Bootstrap content at all. The
-recipe boundary is worth extracting from one correct implementation rather than
-designed up front.
 
 ### The array remove button and the duplicated array title
 

@@ -80,11 +80,28 @@ showed nothing. It now appears once the field has been touched or changed.
 Error text and help text are also separate elements now, so you can style one
 without the other.
 
-Checkbox and radio inputs still carry the Bootstrap 3 `checkbox` and `radio`
-classes. Bootstrap 4 wants `form-check-input` and `form-check-label` on
-sibling elements, and this library nests the input inside the label, so those
-names would be rendered without effect. That is tracked separately rather than
-shipped as a cosmetic change.
+## Checkbox and radio structure, changed in 22.1.0
+
+Checkboxes and radios previously rendered the `<input>` inside its `<label>`,
+which is the Bootstrap 3 shape this package was copied from. They now render
+as siblings inside a `.form-check` wrapper, which is what Bootstrap 4
+documents and what its state styling requires:
+
+    <div class="form-check">
+      <input class="form-check-input" id="control1" type="checkbox">
+      <label class="form-check-label" for="control1">Accept</label>
+    </div>
+
+The inline variants (`checkboxes-inline`, `radios-inline`) moved the same way,
+from the deleted Bootstrap 3 `checkbox-inline` and `radio-inline` classes to
+`form-check form-check-inline` on the same sibling shape.
+
+Toggle buttons (`checkboxbuttons`, `radiobuttons`) are unchanged. Bootstrap 4
+documents those as `.btn-group-toggle` with the input inside the label, and
+has no `.btn-check`.
+
+If you wrote CSS selecting `label > input` or styling the label as the
+control's ancestor, that is where the difference is.
 
 ## Code scaffolding
 
