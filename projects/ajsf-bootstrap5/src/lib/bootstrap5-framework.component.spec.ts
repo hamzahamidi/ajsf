@@ -196,8 +196,8 @@ describe('FwBootstrap5Component', () => {
     });
   });
 
-  // The single checkbox has no element of its own carrying htmlClass, so
-  // .form-check has to come from the framework's own wrapper div.
+  // The switch below never puts .form-check on htmlClass for a single
+  // checkbox, so it has to come from the framework's own wrapper div.
   describe('single checkbox wrapper', () => {
     const render = (node: any) => {
       component.layoutNode = node;

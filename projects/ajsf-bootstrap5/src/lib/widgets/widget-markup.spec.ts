@@ -123,6 +123,8 @@ describe('Bootstrap 5 check and radio markup', () => {
         expect(label.closest('.form-check-inline')).toBe(wrapper);
         expect(wrapper.parentElement.closest('.form-check-inline'),
           'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(wrapper.querySelectorAll('input').length,
+          'a shared wrapper would hold every input').toEqual(1);
         expect(input.className).toContain('form-check-input');
         expect(label.className).toContain('form-check-label');
       });
@@ -172,11 +174,8 @@ describe('Bootstrap 5 check and radio markup', () => {
       expect(label.className).toContain('form-check-label');
     });
 
-    // The 'radios' control is a plain FormControl, so a layout-level
-    // disabled flag reaches formControl.disabled and, through it, every
-    // rendered input. The 'checkboxes' control is a FormArray instead, which
-    // core never disables from that same flag, so there is no equivalent
-    // assertion for the checkbox list.
+    // A checkbox list is a FormArray, which core never disables from this
+    // flag, so only the radio list can assert it.
     it('disables every rendered input when the control is disabled', () => {
       const el = renderForm({
         ...form,
@@ -204,6 +203,8 @@ describe('Bootstrap 5 check and radio markup', () => {
         expect(label.closest('.form-check-inline')).toBe(wrapper);
         expect(wrapper.parentElement.closest('.form-check-inline'),
           'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(wrapper.querySelectorAll('input').length,
+          'a shared wrapper would hold every input').toEqual(1);
         expect(input.className).toContain('form-check-input');
         expect(label.className).toContain('form-check-label');
       });

@@ -65,10 +65,10 @@ The first reading of this said it needed a core widget change, because
 around the widget, so the class reaches the input from there. Measured against
 canonical Bootstrap markup the geometry is identical, and no core file changed.
 
-The one type that needs the framework div is the single `checkbox`, since
-`checkbox-widget` reads no `htmlClass` at all. The vertical `checkboxes` and
-`radios` widgets already bind `htmlClass` per item, and the inline variants take
-`form-check form-check-inline` on a per-item wrapper.
+The one type that needs the framework div is the single `checkbox` on
+Bootstrap 5, whose switch case adds nothing to `htmlClass`. The vertical
+`checkboxes` and `radios` widgets bind `htmlClass` per item, and the inline
+variants take `form-check form-check-inline` on a per-item wrapper.
 
 ## Closed in 22.1.0
 
