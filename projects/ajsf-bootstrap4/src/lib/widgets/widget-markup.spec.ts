@@ -1,15 +1,41 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { JsonSchemaFormService } from '@ajsf/core';
 import { Bootstrap4FrameworkModule } from '../bootstrap4-framework.module';
 
 @Component({
   standalone: true,
   imports: [Bootstrap4FrameworkModule],
   changeDetection: ChangeDetectionStrategy.Eager,
-  template: `<json-schema-form [form]="form" framework="bootstrap-4"></json-schema-form>`,
+  template: `<json-schema-form
+    [form]="form"
+    framework="bootstrap-4"
+    (onChanges)="value = $event"></json-schema-form>`,
 })
 class MarkupHost {
   form: any;
+  value: any;
+}
+
+@Component({
+  standalone: true,
+  imports: [Bootstrap4FrameworkModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  template: `<bootstrap4-checkboxes-widget
+      [layoutNode]="checkboxes" [dataIndex]="[]" [layoutIndex]="[]"></bootstrap4-checkboxes-widget>
+    <bootstrap4-radios-widget
+      [layoutNode]="radios" [dataIndex]="[]" [layoutIndex]="[]"></bootstrap4-radios-widget>`,
+  providers: [JsonSchemaFormService],
+})
+class StandaloneHost {
+  checkboxes: any = {
+    _id: 1, type: 'checkboxes', dataPointer: '/colours',
+    options: { title: 'Colours', enum: ['red', 'green'] },
+  };
+  radios: any = {
+    _id: 2, type: 'radios', dataPointer: '/size',
+    options: { title: 'Size', enum: ['small', 'large'] },
+  };
 }
 
 describe('Bootstrap 4 check and radio markup', () => {
@@ -69,6 +95,23 @@ describe('Bootstrap 4 check and radio markup', () => {
       (el.querySelector('label') as HTMLLabelElement).click();
       fixture.detectChanges();
       expect(input.checked, 'clicking the label should toggle the input').toEqual(!before);
+    });
+
+    // A layout item with no key gets no form control, and the widget renders
+    // its unbound input instead, which is a second copy of the markup.
+    it('renders the unbound input as a sibling too', () => {
+      const el = renderForm({
+        schema: { accept: { type: 'boolean', title: 'Accept' } },
+        form: [{ type: 'checkbox', title: 'Accept' }],
+      });
+      const input = el.querySelector('input[type=checkbox]') as HTMLInputElement;
+      const label = input.parentElement.querySelector('label');
+      expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+      expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+      expect(input.className).toContain('form-check-input');
+      (label as HTMLLabelElement).click();
+      fixture.detectChanges();
+      expect(input.checked, 'clicking the label should still reach the input').toBe(true);
     });
   });
 
@@ -138,6 +181,17 @@ describe('Bootstrap 4 check and radio markup', () => {
           'a shared wrapper would hold every input').toEqual(1);
         expect(input.className).toContain('form-check-input');
         expect(label.className).toContain('form-check-label');
+      });
+    });
+
+    it('reports the clicked value from every layout variant', () => {
+      ['checkboxes', 'checkboxes-inline', 'checkboxbuttons'].forEach((type) => {
+        const el = renderForm({ ...form, form: [{ key: 'colours', type }] });
+        const red = el.querySelector('input[type=checkbox]') as HTMLInputElement;
+        (el.querySelector(`label[for="${red.id}"]`) as HTMLLabelElement).click();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.value.colours,
+          `${type} should report the item the label points at`).toEqual(['red']);
       });
     });
   });
@@ -212,6 +266,47 @@ describe('Bootstrap 4 check and radio markup', () => {
         expect(input.className).toContain('form-check-input');
         expect(label.className).toContain('form-check-label');
       });
+    });
+
+    it('reports the clicked value from every layout variant', () => {
+      ['radios', 'radios-inline', 'radiobuttons'].forEach((type) => {
+        const el = renderForm({ ...form, form: [{ key: 'size', type }] });
+        const large = [...el.querySelectorAll('input[type=radio]')].pop() as HTMLInputElement;
+        (el.querySelector(`label[for="${large.id}"]`) as HTMLLabelElement).click();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.value.size,
+          `${type} should report the item the label points at`).toEqual('large');
+      });
+    });
+  });
+
+  // The framework component renders the group title itself and blanks the one
+  // it passes on, so this title only appears when the widget is used directly,
+  // which the package's public API allows.
+  describe('a widget used without the framework', () => {
+    const render = (): HTMLElement => {
+      const standalone = TestBed.createComponent(StandaloneHost);
+      standalone.detectChanges();
+      return standalone.nativeElement;
+    };
+
+    it('renders its own group title', () => {
+      const el = render();
+      const checkboxes = el.querySelector('bootstrap4-checkboxes-widget');
+      const radios = el.querySelector('bootstrap4-radios-widget');
+      expect(checkboxes.querySelector('label').textContent).toEqual('Colours');
+      expect(radios.querySelector('label').textContent).toEqual('Size');
+      expect(checkboxes.querySelectorAll('input').length,
+        'the items should render beneath the title').toEqual(2);
+    });
+
+    it('hides the group title when notitle is set', () => {
+      const standalone = TestBed.createComponent(StandaloneHost);
+      standalone.componentInstance.checkboxes.options.notitle = true;
+      standalone.detectChanges();
+      const title = standalone.nativeElement
+        .querySelector('bootstrap4-checkboxes-widget label') as HTMLElement;
+      expect(title.style.display, 'notitle should hide the title, not drop it').toEqual('none');
     });
   });
 });
