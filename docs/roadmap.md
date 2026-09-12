@@ -10,31 +10,43 @@ summarised below.
 
 ## Now
 
-### Finish the Angular walk: 21, 22
+### The Angular walk is finished
 
-18, 19 and 20 are done. Angular's `latest` is 22.1.6, so the repository is two
-majors behind on `^20.3.30`, with all fourteen `@angular/*` packages in step
-and no drift between declared and installed.
+18, 19, 20, 21 and 22 are done, ending at 22.0.0 on 2026-09-12. The repository
+is level with `@angular/core@latest` rather than behind it, so the next Angular
+release is ordinary maintenance rather than catch-up.
 
-The corpus covers this well (control counts move when rendering breaks), so it
-is still the safest large change available. Majors move one at a time in their
-own pull request, so 21 first.
+What it cost, recorded because the next major will ask the same questions. The
+Angular packages peer on each other by exact patch, so `ng update` on anything
+but a frozen version set fails; read the real numbers off the `vNN-lts`
+dist-tag. At 21 that was not enough on its own: PrimeNG pinned the previous
+`@angular/cdk` and ships no `ng-update` metadata, so neither could move first
+and the whole graph had to be declared and resolved in one install, with the
+migrations run afterwards through `--migrate-only`. Each major also brought its
+own toolchain: Vitest at 20, Vitest 4 and per project coverage output at 21,
+TypeScript 6 at 22, which turns `strict` on by default and deprecates
+`baseUrl`. The traps are written up in the agent notes.
 
-What 20 cost, and is likely to recur. The Angular packages peer on each other
-by exact patch, so `ng update` on anything but a frozen version set fails until
-you read the real numbers off the `vNN-lts` dist-tag. `@angular/build:unit-test`
-was experimental at 20 and warns on every run, so its options may move and take
-`scripts/run-coverage.js` with them. PrimeNG's majors track Angular's, and
-`version:set` already moves that peer with the Angular major.
+The corpus paid for itself. It moved exactly once in five majors, at 22, and
+the cause was PrimeNG's slider rendering an internal `<input>` rather than
+anything in this library: one extra control per `range` field, which is what
+identified it. Everything else rendered identically through a template rewrite
+that touched every widget.
 
-Vitest arrived at 20 as planned, which was the reason for switching there
-rather than at 18.
+### Checkbox and radio markup, and the array layout defects
+
+The two pieces of user visible work that the Bootstrap pass in 20.1.0
+deliberately stopped short of, now the next thing rather than the thing after
+the upgrade. Both are described below under Correctness, and both need a design
+pass before code because they change shared widget structure rather than one
+package's class list.
 
 ### Raise the Codecov project target
 
 `codecov.yml` has `project: auto` because coverage was 56 percent when it was
-written. It is 87 percent now, so the target can become a real number without
-failing anything.
+written. `@ajsf/core` measured 91.14 percent of statements on 2026-09-12, so
+the target can become a real number. Measure the combined figure before
+choosing one, and only pick a number already met.
 
 ## Security
 
@@ -152,6 +164,18 @@ AJSF concerns shared: roughly three quarters of the Bootstrap 4 template's 62
 lines are structure and Angular bindings with no Bootstrap content at all. The
 recipe boundary is worth extracting from one correct implementation rather than
 designed up front.
+
+### The array remove button and the duplicated array title
+
+Two defects shared by all three Bootstrap packages, measured in
+[Bootstrap class drift](./bootstrap-class-drift.md) and untouched by the 20.1.0
+pass because neither is class drift. The remove button floats, so it leaves
+normal flow and pins to the top of its row rather than aligning with the input
+beside it: 44px against the input's centre on Bootstrap 5, 39px on Bootstrap 4.
+Fixing it means making that row a flex container, which is a change to shared
+framework templates. An array also renders its title twice, once as the field
+label and again as a heading taken raw from the property name, so
+`phone_numbers` shows "Phone Numbers" followed by "Phone_numbers".
 
 ### fxLayout has never worked
 
