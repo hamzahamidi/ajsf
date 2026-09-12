@@ -20,7 +20,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hamzahamidi/ajsf"
+    "url": "git+https://github.com/hamzahamidi/ajsf.git"
   },
   "bugs": {
     "url": "https://github.com/hamzahamidi/ajsf/issues"

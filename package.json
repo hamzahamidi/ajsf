@@ -2,7 +2,7 @@
   "name": "ajsf-workspace",
   "private": true,
   "version": "0.0.0",
-  "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
+  "author": "https://github.com/hamzahamidi/ajsf/graphs/contributors",
   "description": "Angular JSON Schema Form workspace: builds the @ajsf packages and the demo",
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
@@ -30,12 +30,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hamzahamidi/angular6-json-schema-form"
+    "url": "git+https://github.com/hamzahamidi/ajsf.git"
   },
   "bugs": {
-    "url": "https://github.com/hamzahamidi/angular6-json-schema-form/issues"
+    "url": "https://github.com/hamzahamidi/ajsf/issues"
   },
-  "homepage": "https://github.com/hamzahamidi/Angular6-json-schema-form#readme",
+  "homepage": "https://github.com/hamzahamidi/ajsf#readme",
   "scripts": {
     "ng": "ng",
     "prestart": "npm run build:libs",
