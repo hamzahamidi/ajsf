@@ -170,6 +170,23 @@ describe('Bootstrap 4 check and radio markup', () => {
       expect(label.className).toContain('form-check-label');
     });
 
+    // The 'radios' control is a plain FormControl, so a layout-level
+    // disabled flag reaches formControl.disabled and, through it, every
+    // rendered input. The 'checkboxes' control is a FormArray instead, which
+    // core never disables from that same flag, so there is no equivalent
+    // assertion for the checkbox list.
+    it('disables every rendered input when the control is disabled', () => {
+      const el = renderForm({
+        ...form,
+        form: [{ key: 'size', type: 'radios', disabled: true }],
+      });
+      const inputs = [...el.querySelectorAll('input[type=radio]')] as HTMLInputElement[];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        expect(input.disabled, 'the disabled attribute belongs on the input').toBe(true);
+      });
+    });
+
     it('keeps the input inside the label for button sets, as Bootstrap 4 documents', () => {
       const el = renderForm({ ...form, form: [{ key: 'size', type: 'radiobuttons' }] });
       const input = el.querySelector('input[type=radio]');
