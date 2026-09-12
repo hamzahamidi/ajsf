@@ -5,67 +5,87 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 @Component({
     selector: 'section-widget',
     template: `
-    <div *ngIf="containerType === 'div'"
-      [class]="options?.htmlClass || ''"
-      [class.expandable]="options?.expandable && !expanded"
-      [class.expanded]="options?.expandable && expanded">
-      <label *ngIf="sectionTitle"
-        class="legend"
-        [class]="options?.labelHtmlClass || ''"
-        [innerHTML]="sectionTitle"
-        (click)="toggleExpanded()"></label>
-      <root-widget *ngIf="expanded"
-        [dataIndex]="dataIndex"
-        [layout]="layoutNode.items"
-        [layoutIndex]="layoutIndex"
-        [isFlexItem]="getFlexAttribute('is-flex')"
-        [isOrderable]="options?.orderable"
-        [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
-        [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
-        [style.align-content]="getFlexAttribute('align-content')"
-        [style.align-items]="getFlexAttribute('align-items')"
-        [style.display]="getFlexAttribute('display')"
-        [style.flex-direction]="getFlexAttribute('flex-direction')"
-        [style.flex-wrap]="getFlexAttribute('flex-wrap')"
-        [style.justify-content]="getFlexAttribute('justify-content')"></root-widget>
-    </div>
-    <fieldset *ngIf="containerType === 'fieldset'"
-      [class]="options?.htmlClass || ''"
-      [class.expandable]="options?.expandable && !expanded"
-      [class.expanded]="options?.expandable && expanded"
-      [disabled]="options?.readonly">
-      <legend *ngIf="sectionTitle"
-        class="legend"
-        [class]="options?.labelHtmlClass || ''"
-        [innerHTML]="sectionTitle"
-        (click)="toggleExpanded()"></legend>
-      <div *ngIf="options?.messageLocation !== 'bottom'">
-        <p *ngIf="options?.description"
-        class="help-block"
-        [class]="options?.labelHelpBlockClass || ''"
-        [innerHTML]="options?.description"></p>
+    @if (containerType === 'div') {
+      <div
+        [class]="options?.htmlClass || ''"
+        [class.expandable]="options?.expandable && !expanded"
+        [class.expanded]="options?.expandable && expanded">
+        @if (sectionTitle) {
+          <label
+            class="legend"
+            [class]="options?.labelHtmlClass || ''"
+            [innerHTML]="sectionTitle"
+          (click)="toggleExpanded()"></label>
+        }
+        @if (expanded) {
+          <root-widget
+            [dataIndex]="dataIndex"
+            [layout]="layoutNode.items"
+            [layoutIndex]="layoutIndex"
+            [isFlexItem]="getFlexAttribute('is-flex')"
+            [isOrderable]="options?.orderable"
+            [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
+            [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
+            [style.align-content]="getFlexAttribute('align-content')"
+            [style.align-items]="getFlexAttribute('align-items')"
+            [style.display]="getFlexAttribute('display')"
+            [style.flex-direction]="getFlexAttribute('flex-direction')"
+            [style.flex-wrap]="getFlexAttribute('flex-wrap')"
+          [style.justify-content]="getFlexAttribute('justify-content')"></root-widget>
+        }
       </div>
-      <root-widget *ngIf="expanded"
-        [dataIndex]="dataIndex"
-        [layout]="layoutNode.items"
-        [layoutIndex]="layoutIndex"
-        [isFlexItem]="getFlexAttribute('is-flex')"
-        [isOrderable]="options?.orderable"
-        [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
-        [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
-        [style.align-content]="getFlexAttribute('align-content')"
-        [style.align-items]="getFlexAttribute('align-items')"
-        [style.display]="getFlexAttribute('display')"
-        [style.flex-direction]="getFlexAttribute('flex-direction')"
-        [style.flex-wrap]="getFlexAttribute('flex-wrap')"
-        [style.justify-content]="getFlexAttribute('justify-content')"></root-widget>
-      <div *ngIf="options?.messageLocation === 'bottom'">
-        <p *ngIf="options?.description"
-        class="help-block"
-        [class]="options?.labelHelpBlockClass || ''"
-        [innerHTML]="options?.description"></p>
-      </div>
-    </fieldset>`,
+    }
+    @if (containerType === 'fieldset') {
+      <fieldset
+        [class]="options?.htmlClass || ''"
+        [class.expandable]="options?.expandable && !expanded"
+        [class.expanded]="options?.expandable && expanded"
+        [disabled]="options?.readonly">
+        @if (sectionTitle) {
+          <legend
+            class="legend"
+            [class]="options?.labelHtmlClass || ''"
+            [innerHTML]="sectionTitle"
+          (click)="toggleExpanded()"></legend>
+        }
+        @if (options?.messageLocation !== 'bottom') {
+          <div>
+            @if (options?.description) {
+              <p
+                class="help-block"
+                [class]="options?.labelHelpBlockClass || ''"
+              [innerHTML]="options?.description"></p>
+            }
+          </div>
+        }
+        @if (expanded) {
+          <root-widget
+            [dataIndex]="dataIndex"
+            [layout]="layoutNode.items"
+            [layoutIndex]="layoutIndex"
+            [isFlexItem]="getFlexAttribute('is-flex')"
+            [isOrderable]="options?.orderable"
+            [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
+            [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
+            [style.align-content]="getFlexAttribute('align-content')"
+            [style.align-items]="getFlexAttribute('align-items')"
+            [style.display]="getFlexAttribute('display')"
+            [style.flex-direction]="getFlexAttribute('flex-direction')"
+            [style.flex-wrap]="getFlexAttribute('flex-wrap')"
+          [style.justify-content]="getFlexAttribute('justify-content')"></root-widget>
+        }
+        @if (options?.messageLocation === 'bottom') {
+          <div>
+            @if (options?.description) {
+              <p
+                class="help-block"
+                [class]="options?.labelHelpBlockClass || ''"
+              [innerHTML]="options?.description"></p>
+            }
+          </div>
+        }
+      </fieldset>
+    }`,
     styles: [`
     .legend { font-weight: bold; }
     .expandable > legend:before, .expandable > label:before  { content: '▶'; padding-right: .3em; }

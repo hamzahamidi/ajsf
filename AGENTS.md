@@ -6,7 +6,7 @@ Notes for AI coding agents working in this repository. Humans may find the traps
 
 ## Environment
 
-The repository targets **Angular 20.3 on Node 20.19.0** (`.nvmrc`) with TypeScript 5.8.
+The repository targets **Angular 21.2 on Node 24.21.0** (`.nvmrc`) with TypeScript 5.9.
 Read the version out of `.nvmrc` rather than typing it: it moves with each
 Angular major, and an older Node fails the build with a CLI version check
 rather than anything that points at the real cause.
@@ -46,11 +46,14 @@ npm run test:core -- --no-watch
 Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material`, `test:primeng` for the
 others. Add `--code-coverage` for a report.
 
-⚠️ **The Karma flags are gone and now fail schema validation.** `--no-progress`
-has no equivalent, because the unit-test builder has no `progress` option, and
-`--browsers` must be absent rather than empty: leaving it out selects jsdom,
-which is the only mode that produces coverage in this Angular version. Passing
-either gives `Data path "" must NOT have additional properties`.
+⚠️ **Read the builder's own schema before passing a flag.** It has moved twice.
+`--browsers` must be absent rather than empty: leaving it out selects jsdom.
+`--no-progress` was rejected outright under Angular 20 and is accepted under
+21, which added a `progress` option. Angular 21 also renamed every coverage
+option, dropping the `code` prefix: `codeCoverage` became `coverage` and
+`codeCoverageReporters` became `coverageReporters`. The old names do not warn,
+they fail with `Data path "" must NOT have additional properties`. The schema
+is at `node_modules/@angular/build/src/builders/unit-test/schema.json`.
 
 Use `npm run coverage` rather than running the suites by hand when you want
 coverage. `scripts/run-coverage.js` reads each suite's builder from
@@ -127,13 +130,19 @@ over, and it never cleans it. Accumulated run directories inflate the report: wi
 of them present a suite looked healthy while a clean tree produced almost nothing. The
 script removes it before every suite, and `coverage:clean` removes it too.
 
-Every suite writes `coverage/lcov.info` and wipes `coverage/` before doing so, so
-running two suites in a row leaves only the second one's report. There is no output
-directory option on the builder and the istanbul `subdir` reporter option is not
-honoured, so the script stages each report outside `coverage/` and restores them at the
-end, as `coverage/vitest-<suite>/lcov.info`.
+Angular 21 writes one report per project, at `coverage/<project>/lcov.info`, so the
+suites no longer overwrite each other. Until 20 they all wrote `coverage/lcov.info` and
+wiped `coverage/` first, and the script staged each report outside `coverage/` to
+survive that. The staging is gone; do not reintroduce it.
 
-Do not add `codeCoverageExclude` for the `chunk-*.js` entry in the lcov. It looks like
+A `vitest.config.ts` at the root is loaded through the builder's `runnerConfig`
+option. It sets `restoreMocks`, because Vitest leaves a `vi.spyOn` in place between
+tests and spying on an already spied method returns the same spy, so call counts
+accumulate. Four `console.error` assertions in `utility.functions.spec.ts` saw 6, 8,
+12 and 14 calls where they expected 2, 2, 4 and 2. An `afterEach` in a setup file did
+not hold once coverage was enabled; the runner config does.
+
+Do not add `coverageExclude` for the `chunk-*.js` entry in the lcov. It looks like
 bundling noise and is not: the source entries are remapped from that chunk, so
 excluding it drops the report from 57 source files to 1.
 

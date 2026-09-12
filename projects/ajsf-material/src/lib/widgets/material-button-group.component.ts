@@ -7,13 +7,15 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     selector: 'material-button-group-widget',
     template: `
     <div>
-      <div *ngIf="options?.title">
-        <label
-          [attr.for]="'control' + layoutNode?._id"
-          [class]="options?.labelHtmlClass || ''"
-          [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <div>
+          <label
+            [attr.for]="'control' + layoutNode?._id"
+            [class]="options?.labelHtmlClass || ''"
+            [style.display]="options?.notitle ? 'none' : ''"
           [innerHTML]="options?.title"></label>
-      </div>
+        </div>
+      }
       <mat-button-toggle-group
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [attr.readonly]="options?.readonly ? 'readonly' : null"
@@ -22,15 +24,19 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
         [name]="controlName"
         [value]="controlValue"
         [vertical]="!!options.vertical">
-        <mat-button-toggle *ngFor="let radioItem of radiosList"
-          [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
-          [value]="radioItem?.value"
-          (click)="updateValue(radioItem?.value)">
-          <span [innerHTML]="radioItem?.name"></span>
-        </mat-button-toggle>
+        @for (radioItem of radiosList; track radioItem) {
+          <mat-button-toggle
+            [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
+            [value]="radioItem?.value"
+            (click)="updateValue(radioItem?.value)">
+            <span [innerHTML]="radioItem?.name"></span>
+          </mat-button-toggle>
+        }
       </mat-button-toggle-group>
-      <mat-error *ngIf="options?.showErrors && options?.errorMessage"
+      @if (options?.showErrors && options?.errorMessage) {
+        <mat-error
         [innerHTML]="options?.errorMessage"></mat-error>
+      }
     </div>`,
     styles: [` mat-error { font-size: 75%; } `],
     standalone: false

@@ -6,34 +6,44 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
     selector: 'primeng-slider-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-
-      <p-slider *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [min]="minValue"
-        [max]="maxValue"
-        [step]="options?.multipleOf || options?.step || 1"
-        [style]="{'width': '100%'}"
+      }
+    
+      @if (boundControl) {
+        <p-slider
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [min]="minValue"
+          [max]="maxValue"
+          [step]="options?.multipleOf || options?.step || 1"
+          [style]="{'width': '100%'}"
         (onSlideEnd)="options.showErrors = true"></p-slider>
-
-      <p-slider *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [disabled]="controlDisabled || options?.readonly"
-        [min]="minValue"
-        [max]="maxValue"
-        [step]="options?.multipleOf || options?.step || 1"
-        [style]="{'width': '100%'}"
-        [ngModel]="controlValue"
-        (onChange)="updateValue($event)"
+      }
+    
+      @if (!boundControl) {
+        <p-slider
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [disabled]="controlDisabled || options?.readonly"
+          [min]="minValue"
+          [max]="maxValue"
+          [step]="options?.multipleOf || options?.step || 1"
+          [style]="{'width': '100%'}"
+          [ngModel]="controlValue"
+          (onChange)="updateValue($event)"
         (onSlideEnd)="options.showErrors = true"></p-slider>
-
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

@@ -8,34 +8,42 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [linear]="options?.linear || false"
       [style]="{'width': '100%'}">
       <p-step-list>
-        <ng-container *ngFor="let item of layoutNode?.items; let i = index">
-          <p-step *ngIf="showAddTab || item.type !== '$ref'" [value]="i">
-            <span [innerHTML]="setStepTitle(item, i)"></span>
-          </p-step>
-        </ng-container>
+        @for (item of layoutNode?.items; track item; let i = $index) {
+          @if (showAddTab || item.type !== '$ref') {
+            <p-step [value]="i">
+              <span [innerHTML]="setStepTitle(item, i)"></span>
+            </p-step>
+          }
+        }
       </p-step-list>
       <p-step-panels>
-        <ng-container *ngFor="let layoutItem of layoutNode?.items; let i = index">
-          <p-step-panel *ngIf="showAddTab || layoutItem.type !== '$ref'"
-            [value]="i">
-            <ng-template #contentTemplate let-activateCallback="activateCallback">
-              <select-framework-widget
-                [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '')"
-                [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-                [layoutIndex]="(layoutIndex || []).concat(i)"
+        @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
+          @if (showAddTab || layoutItem.type !== '$ref') {
+            <p-step-panel
+              [value]="i">
+              <ng-template #contentTemplate let-activateCallback="activateCallback">
+                <select-framework-widget
+                  [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '')"
+                  [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+                  [layoutIndex]="(layoutIndex || []).concat(i)"
                 [layoutNode]="layoutItem"></select-framework-widget>
-              <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                <p-button *ngIf="i > 0"
-                  label="Back"
-                  severity="secondary"
-                  (onClick)="activateCallback(i - 1)"></p-button>
-                <p-button *ngIf="hasNextVisible(i)"
-                  label="Next"
-                  (onClick)="activateCallback(i + 1)"></p-button>
-              </div>
-            </ng-template>
-          </p-step-panel>
-        </ng-container>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                  @if (i > 0) {
+                    <p-button
+                      label="Back"
+                      severity="secondary"
+                    (onClick)="activateCallback(i - 1)"></p-button>
+                  }
+                  @if (hasNextVisible(i)) {
+                    <p-button
+                      label="Next"
+                    (onClick)="activateCallback(i + 1)"></p-button>
+                  }
+                </div>
+              </ng-template>
+            </p-step-panel>
+          }
+        }
       </p-step-panels>
     </p-stepper>`,
     standalone: false

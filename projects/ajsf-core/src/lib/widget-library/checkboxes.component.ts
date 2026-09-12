@@ -7,54 +7,64 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
 @Component({
     selector: 'checkboxes-widget',
     template: `
-    <label *ngIf="options?.title"
-      [class]="options?.labelHtmlClass || ''"
-      [style.display]="options?.notitle ? 'none' : ''"
+    @if (options?.title) {
+      <label
+        [class]="options?.labelHtmlClass || ''"
+        [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"></label>
-
+    }
+    
     <!-- 'horizontal' = checkboxes-inline or checkboxbuttons -->
-    <div *ngIf="layoutOrientation === 'horizontal'" [class]="options?.htmlClass || ''">
-      <label *ngFor="let checkboxItem of checkboxList"
-        [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+    @if (layoutOrientation === 'horizontal') {
+      <div [class]="options?.htmlClass || ''">
+        @for (checkboxItem of checkboxList; track checkboxItem) {
+          <label
+            [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
         [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
           (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
           (' ' + (options?.style?.unselected || '')))">
-        <input type="checkbox"
-          [attr.required]="options?.required"
-          [checked]="checkboxItem.checked"
-          [class]="options?.fieldHtmlClass || ''"
-          [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-          [name]="checkboxItem?.name"
-          [readonly]="options?.readonly ? 'readonly' : null"
-          [value]="checkboxItem.value"
-          (change)="updateValue($event, checkboxItem)">
-        <span [innerHTML]="checkboxItem.name"></span>
-      </label>
-    </div>
-
+            <input type="checkbox"
+              [attr.required]="options?.required"
+              [checked]="checkboxItem.checked"
+              [class]="options?.fieldHtmlClass || ''"
+              [disabled]="controlDisabled"
+              [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+              [name]="checkboxItem?.name"
+              [readonly]="options?.readonly ? 'readonly' : null"
+              [value]="checkboxItem.value"
+              (change)="updateValue($event, checkboxItem)">
+            <span [innerHTML]="checkboxItem.name"></span>
+          </label>
+        }
+      </div>
+    }
+    
     <!-- 'vertical' = regular checkboxes -->
-    <div *ngIf="layoutOrientation === 'vertical'">
-      <div *ngFor="let checkboxItem of checkboxList" [class]="options?.htmlClass || ''">
-        <label
-          [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
+    @if (layoutOrientation === 'vertical') {
+      <div>
+        @for (checkboxItem of checkboxList; track checkboxItem) {
+          <div [class]="options?.htmlClass || ''">
+            <label
+              [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
           [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
             (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
             (' ' + (options?.style?.unselected || '')))">
-          <input type="checkbox"
-            [attr.required]="options?.required"
-            [checked]="checkboxItem.checked"
-            [class]="options?.fieldHtmlClass || ''"
-            [disabled]="controlDisabled"
-            [id]="options?.name + '/' + checkboxItem.value"
-            [name]="checkboxItem?.name"
-            [readonly]="options?.readonly ? 'readonly' : null"
-            [value]="checkboxItem.value"
-            (change)="updateValue($event, checkboxItem)">
-          <span [innerHTML]="checkboxItem?.name"></span>
-        </label>
+              <input type="checkbox"
+                [attr.required]="options?.required"
+                [checked]="checkboxItem.checked"
+                [class]="options?.fieldHtmlClass || ''"
+                [disabled]="controlDisabled"
+                [id]="options?.name + '/' + checkboxItem.value"
+                [name]="checkboxItem?.name"
+                [readonly]="options?.readonly ? 'readonly' : null"
+                [value]="checkboxItem.value"
+                (change)="updateValue($event, checkboxItem)">
+              <span [innerHTML]="checkboxItem?.name"></span>
+            </label>
+          </div>
+        }
       </div>
-    </div>`,
+    }`,
     standalone: false
 })
 export class CheckboxesComponent implements OnInit {

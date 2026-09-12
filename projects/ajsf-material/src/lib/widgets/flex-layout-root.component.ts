@@ -5,20 +5,24 @@ import { JsonSchemaFormService } from '@ajsf/core';
 @Component({
     selector: 'flex-layout-root-widget',
     template: `
-    <div *ngFor="let layoutNode of layout; let i = index"
-      [class.form-flex-item]="isFlexItem"
-      [style.flex-grow]="getFlexAttribute(layoutNode, 'flex-grow')"
-      [style.flex-shrink]="getFlexAttribute(layoutNode, 'flex-shrink')"
-      [style.flex-basis]="getFlexBasis(layoutNode)"
-      [style.align-self]="getAlignSelf(layoutNode)"
-      [style.order]="getOrder(layoutNode)"
-      [style.max-width]="getMaxWidth(layoutNode)"
-      [style.margin-left]="getOffset(layoutNode)">
-      <select-framework-widget *ngIf="showWidget(layoutNode)"
-        [dataIndex]="layoutNode?.arrayItem ? (dataIndex || []).concat(i) : (dataIndex || [])"
-        [layoutIndex]="(layoutIndex || []).concat(i)"
-        [layoutNode]="layoutNode"></select-framework-widget>
-    </div>`,
+    @for (layoutNode of layout; track layoutNode; let i = $index) {
+      <div
+        [class.form-flex-item]="isFlexItem"
+        [style.flex-grow]="getFlexAttribute(layoutNode, 'flex-grow')"
+        [style.flex-shrink]="getFlexAttribute(layoutNode, 'flex-shrink')"
+        [style.flex-basis]="getFlexBasis(layoutNode)"
+        [style.align-self]="getAlignSelf(layoutNode)"
+        [style.order]="getOrder(layoutNode)"
+        [style.max-width]="getMaxWidth(layoutNode)"
+        [style.margin-left]="getOffset(layoutNode)">
+        @if (showWidget(layoutNode)) {
+          <select-framework-widget
+            [dataIndex]="layoutNode?.arrayItem ? (dataIndex || []).concat(i) : (dataIndex || [])"
+            [layoutIndex]="(layoutIndex || []).concat(i)"
+          [layoutNode]="layoutNode"></select-framework-widget>
+        }
+      </div>
+    }`,
     changeDetection: ChangeDetectionStrategy.Default,
     standalone: false
 })

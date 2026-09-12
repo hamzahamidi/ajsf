@@ -6,58 +6,74 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     selector: 'primeng-one-of-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-
-      <p-select *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [fluid]="true"
+      }
+    
+      @if (boundControl) {
+        <p-select
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [fluid]="true"
         (onBlur)="options.showErrors = true"></p-select>
-
-      <p-select *ngIf="!boundControl && !isFieldset"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [disabled]="controlDisabled || options?.readonly"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [ngModel]="controlValue"
-        [fluid]="true"
-        (onChange)="updateValue($event)"
+      }
+    
+      @if (!boundControl && !isFieldset) {
+        <p-select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [disabled]="controlDisabled || options?.readonly"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [ngModel]="controlValue"
+          [fluid]="true"
+          (onChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-select>
-
-      <p-select *ngIf="!boundControl && isFieldset"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [ngModel]="selectedValue"
-        [fluid]="true"
-        (onChange)="selectChild($event)"
+      }
+    
+      @if (!boundControl && isFieldset) {
+        <p-select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [ngModel]="selectedValue"
+          [fluid]="true"
+          (onChange)="selectChild($event)"
         (onBlur)="options.showErrors = true"></p-select>
-
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
-
-      <div *ngFor="let layoutItem of layoutNode?.items; let i = index">
-        <select-framework-widget *ngIf="isFieldset && selectedItem === i"
-          [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-          [layoutIndex]="(layoutIndex || []).concat(i)"
-          [layoutNode]="layoutItem"></select-framework-widget>
-      </div>
+      }
+    
+      @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
+        <div>
+          @if (isFieldset && selectedItem === i) {
+            <select-framework-widget
+              [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+              [layoutIndex]="(layoutIndex || []).concat(i)"
+            [layoutNode]="layoutItem"></select-framework-widget>
+          }
+        </div>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

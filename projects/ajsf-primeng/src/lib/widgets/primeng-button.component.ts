@@ -14,8 +14,12 @@ import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
         [name]="controlName"
         [type]="layoutNode?.type"
         (click)="updateValue($event)">
-        <i *ngIf="options?.icon" [class]="options?.icon"></i>
-        <span *ngIf="options?.title" [innerHTML]="options?.title"></span>
+        @if (options?.icon) {
+          <i [class]="options?.icon"></i>
+        }
+        @if (options?.title) {
+          <span [innerHTML]="options?.title"></span>
+        }
       </button>
     </div>`,
     styles: [` button { margin-top: 10px; } `],

@@ -6,75 +6,93 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
     selector: 'primeng-select-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-      <span *ngIf="options?.prefix || options?.fieldAddonLeft"
+      }
+      @if (options?.prefix || options?.fieldAddonLeft) {
+        <span
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-      <p-select *ngIf="boundControl && !options?.multiple"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [group]="hasGroups"
-        [optionGroupLabel]="'group'"
-        [optionGroupChildren]="'items'"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [fluid]="true"
+      }
+      @if (boundControl && !options?.multiple) {
+        <p-select
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [group]="hasGroups"
+          [optionGroupLabel]="'group'"
+          [optionGroupChildren]="'items'"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [fluid]="true"
         (onBlur)="options.showErrors = true"></p-select>
-      <p-select *ngIf="!boundControl && !options?.multiple"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [group]="hasGroups"
-        [optionGroupLabel]="'group'"
-        [optionGroupChildren]="'items'"
-        [disabled]="controlDisabled || options?.readonly"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [ngModel]="controlValue"
-        [fluid]="true"
-        (onChange)="updateValue($event)"
+      }
+      @if (!boundControl && !options?.multiple) {
+        <p-select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [group]="hasGroups"
+          [optionGroupLabel]="'group'"
+          [optionGroupChildren]="'items'"
+          [disabled]="controlDisabled || options?.readonly"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [ngModel]="controlValue"
+          [fluid]="true"
+          (onChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-select>
-      <p-multiselect *ngIf="boundControl && options?.multiple"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [group]="hasGroups"
-        [optionGroupLabel]="'group'"
-        [optionGroupChildren]="'items'"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [fluid]="true"
+      }
+      @if (boundControl && options?.multiple) {
+        <p-multiselect
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [group]="hasGroups"
+          [optionGroupLabel]="'group'"
+          [optionGroupChildren]="'items'"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [fluid]="true"
         (onBlur)="options.showErrors = true"></p-multiselect>
-      <p-multiselect *ngIf="!boundControl && options?.multiple"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [options]="selectList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [group]="hasGroups"
-        [optionGroupLabel]="'group'"
-        [optionGroupChildren]="'items'"
-        [disabled]="controlDisabled || options?.readonly"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [ngModel]="controlValue"
-        [fluid]="true"
-        (onChange)="updateValue($event)"
+      }
+      @if (!boundControl && options?.multiple) {
+        <p-multiselect
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [options]="selectList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [group]="hasGroups"
+          [optionGroupLabel]="'group'"
+          [optionGroupChildren]="'items'"
+          [disabled]="controlDisabled || options?.readonly"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [ngModel]="controlValue"
+          [fluid]="true"
+          (onChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-multiselect>
-      <span *ngIf="options?.suffix || options?.fieldAddonRight"
+      }
+      @if (options?.suffix || options?.fieldAddonRight) {
+        <span
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

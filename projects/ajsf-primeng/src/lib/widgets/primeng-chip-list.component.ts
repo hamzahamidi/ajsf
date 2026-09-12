@@ -6,9 +6,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
     selector: 'primeng-chip-list-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-
+      }
+    
       <p-autocomplete
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [inputId]="'control' + layoutNode?._id"
@@ -21,13 +23,17 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [ngModel]="controlValue"
         (ngModelChange)="updateValue($event)"
         (completeMethod)="search($event)"
-        (onBlur)="options.showErrors = true"></p-autocomplete>
-
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      (onBlur)="options.showErrors = true"></p-autocomplete>
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

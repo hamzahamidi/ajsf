@@ -9,24 +9,30 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [selectedIndex]="selectedItem"
       [linear]="options?.linear || false"
       (selectionChange)="select($event.selectedIndex)">
-      <ng-container *ngFor="let item of layoutNode?.items; let i = index">
-        <mat-step *ngIf="showAddTab || item.type !== '$ref'">
-          <ng-template matStepLabel>
-            <span [innerHTML]="setStepTitle(item, i)"></span>
-          </ng-template>
-          <ng-template matStepContent>
-            <select-framework-widget
-              [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '')"
-              [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-              [layoutIndex]="(layoutIndex || []).concat(i)"
+      @for (item of layoutNode?.items; track item; let i = $index) {
+        @if (showAddTab || item.type !== '$ref') {
+          <mat-step>
+            <ng-template matStepLabel>
+              <span [innerHTML]="setStepTitle(item, i)"></span>
+            </ng-template>
+            <ng-template matStepContent>
+              <select-framework-widget
+                [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '')"
+                [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+                [layoutIndex]="(layoutIndex || []).concat(i)"
               [layoutNode]="item"></select-framework-widget>
-            <div style="margin-top: 16px">
-              <button mat-button matStepperPrevious *ngIf="i > 0" type="button">Back</button>
-              <button mat-button matStepperNext *ngIf="hasNextVisible(i)" type="button">Next</button>
-            </div>
-          </ng-template>
-        </mat-step>
-      </ng-container>
+              <div style="margin-top: 16px">
+                @if (i > 0) {
+                  <button mat-button matStepperPrevious type="button">Back</button>
+                }
+                @if (hasNextVisible(i)) {
+                  <button mat-button matStepperNext type="button">Next</button>
+                }
+              </div>
+            </ng-template>
+          </mat-step>
+        }
+      }
     </mat-stepper>`,
     standalone: false
 })

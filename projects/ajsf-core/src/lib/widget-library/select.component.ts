@@ -9,61 +9,79 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     template: `
     <div
       [class]="options?.htmlClass || ''">
-      <label *ngIf="options?.title"
-        [attr.for]="'control' + layoutNode?._id"
-        [class]="options?.labelHtmlClass || ''"
-        [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <label
+          [attr.for]="'control' + layoutNode?._id"
+          [class]="options?.labelHtmlClass || ''"
+          [style.display]="options?.notitle ? 'none' : ''"
         [innerHTML]="options?.title"></label>
-      <select *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.required]="options?.required"
-        [class]="options?.fieldHtmlClass || ''"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName">
-        <ng-template ngFor let-selectItem [ngForOf]="selectList">
-          <!-- ngValue, not value: the DOM coerces value to a string, so the
-               None option wrote the four-character string "null" into the
-               control and a numeric enum stored strings. -->
-          <option *ngIf="!isArray(selectItem?.items)"
-            [ngValue]="selectItem?.value">
-            <span [innerHTML]="selectItem?.name"></span>
-          </option>
-          <optgroup *ngIf="isArray(selectItem?.items)"
-            [label]="selectItem?.group">
-            <option *ngFor="let subItem of selectItem.items"
-              [ngValue]="subItem?.value">
-              <span [innerHTML]="subItem?.name"></span>
-            </option>
-          </optgroup>
-        </ng-template>
-      </select>
-      <select *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.required]="options?.required"
-        [class]="options?.fieldHtmlClass || ''"
-        [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        (change)="updateValue($event)">
-        <ng-template ngFor let-selectItem [ngForOf]="selectList">
-          <option *ngIf="!isArray(selectItem?.items)"
-            [selected]="selectItem?.value === controlValue"
-            [value]="selectItem?.value">
-            <span [innerHTML]="selectItem?.name"></span>
-          </option>
-          <optgroup *ngIf="isArray(selectItem?.items)"
-            [label]="selectItem?.group">
-            <option *ngFor="let subItem of selectItem.items"
-              [attr.selected]="subItem?.value === controlValue"
-              [value]="subItem?.value">
-              <span [innerHTML]="subItem?.name"></span>
-            </option>
-          </optgroup>
-        </ng-template>
-      </select>
+      }
+      @if (boundControl) {
+        <select
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.required]="options?.required"
+          [class]="options?.fieldHtmlClass || ''"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName">
+          @for (selectItem of selectList; track selectItem) {
+            <!-- ngValue, not value: the DOM coerces value to a string, so the
+            None option wrote the four-character string "null" into the
+            control and a numeric enum stored strings. -->
+            @if (!isArray(selectItem?.items)) {
+              <option
+                [ngValue]="selectItem?.value">
+                <span [innerHTML]="selectItem?.name"></span>
+              </option>
+            }
+            @if (isArray(selectItem?.items)) {
+              <optgroup
+                [label]="selectItem?.group">
+                @for (subItem of selectItem.items; track subItem) {
+                  <option
+                    [ngValue]="subItem?.value">
+                    <span [innerHTML]="subItem?.name"></span>
+                  </option>
+                }
+              </optgroup>
+            }
+          }
+        </select>
+      }
+      @if (!boundControl) {
+        <select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.required]="options?.required"
+          [class]="options?.fieldHtmlClass || ''"
+          [disabled]="controlDisabled"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          (change)="updateValue($event)">
+          @for (selectItem of selectList; track selectItem) {
+            @if (!isArray(selectItem?.items)) {
+              <option
+                [selected]="selectItem?.value === controlValue"
+                [value]="selectItem?.value">
+                <span [innerHTML]="selectItem?.name"></span>
+              </option>
+            }
+            @if (isArray(selectItem?.items)) {
+              <optgroup
+                [label]="selectItem?.group">
+                @for (subItem of selectItem.items; track subItem) {
+                  <option
+                    [attr.selected]="subItem?.value === controlValue"
+                    [value]="subItem?.value">
+                    <span [innerHTML]="subItem?.name"></span>
+                  </option>
+                }
+              </optgroup>
+            }
+          }
+        </select>
+      }
     </div>`,
     standalone: false
 })

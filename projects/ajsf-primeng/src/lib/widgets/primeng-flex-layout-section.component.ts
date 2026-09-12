@@ -5,117 +5,18 @@ import { JsonSchemaFormService } from '@ajsf/core';
 @Component({
     selector: 'primeng-flex-layout-section-widget',
     template: `
-    <div *ngIf="containerType === 'div'"
-      [class]="options?.htmlClass || ''"
-      [class.expandable]="options?.expandable && !expanded"
-      [class.expanded]="options?.expandable && expanded">
-      <label *ngIf="sectionTitle"
-        [class]="'legend ' + (options?.labelHtmlClass || '')"
-        [innerHTML]="sectionTitle"
-        (click)="toggleExpanded()"></label>
-      <primeng-flex-layout-root-widget *ngIf="expanded"
-        [layout]="layoutNode.items"
-        [dataIndex]="dataIndex"
-        [layoutIndex]="layoutIndex"
-        [isFlexItem]="getFlexAttribute('is-flex')"
-        [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
-        [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
-        [style.display]="getFlexAttribute('display')"
-        [style.flex-direction]="getFlexAttribute('flex-direction')"
-        [style.flex-wrap]="getFlexAttribute('flex-wrap')"
-        [style.justify-content]="getFlexAttribute('justify-content')"
-        [style.align-items]="getFlexAttribute('align-items')"
-        [style.align-content]="getFlexAttribute('align-content')"
-        [style.gap]="options?.fxLayoutGap"
-        [style.justify-content]="getJustifyContent()"
-        [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
-      <div *ngIf="options?.showErrors && options?.errorMessage"
-        class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
-    </div>
-
-    <fieldset *ngIf="containerType === 'fieldset'"
-      [class]="options?.htmlClass || ''"
-      [class.expandable]="options?.expandable && !expanded"
-      [class.expanded]="options?.expandable && expanded"
-      [disabled]="options?.readonly">
-      <legend *ngIf="sectionTitle"
-        [class]="'legend ' + (options?.labelHtmlClass || '')"
-        [innerHTML]="sectionTitle"
-        (click)="toggleExpanded()"></legend>
-      <primeng-flex-layout-root-widget *ngIf="expanded"
-        [layout]="layoutNode.items"
-        [dataIndex]="dataIndex"
-        [layoutIndex]="layoutIndex"
-        [isFlexItem]="getFlexAttribute('is-flex')"
-        [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
-        [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
-        [style.display]="getFlexAttribute('display')"
-        [style.flex-direction]="getFlexAttribute('flex-direction')"
-        [style.flex-wrap]="getFlexAttribute('flex-wrap')"
-        [style.justify-content]="getFlexAttribute('justify-content')"
-        [style.align-items]="getFlexAttribute('align-items')"
-        [style.align-content]="getFlexAttribute('align-content')"
-        [style.gap]="options?.fxLayoutGap"
-        [style.justify-content]="getJustifyContent()"
-        [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
-      <div *ngIf="options?.showErrors && options?.errorMessage"
-        class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
-    </fieldset>
-
-    <div *ngIf="containerType === 'card'"
-      class="p-card"
-      [ngClass]="options?.htmlClass || ''"
-      [class.expandable]="options?.expandable && !expanded"
-      [class.expanded]="options?.expandable && expanded">
-      <div *ngIf="sectionTitle" class="p-card-header">
-        <legend
-          [class]="'legend ' + (options?.labelHtmlClass || '')"
-          [innerHTML]="sectionTitle"
-          (click)="toggleExpanded()"></legend>
-      </div>
-      <div *ngIf="expanded" class="p-card-content">
-        <fieldset [disabled]="options?.readonly">
-          <primeng-flex-layout-root-widget *ngIf="expanded"
-            [layout]="layoutNode.items"
-            [dataIndex]="dataIndex"
-            [layoutIndex]="layoutIndex"
-            [isFlexItem]="getFlexAttribute('is-flex')"
-            [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
-            [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
-            [style.display]="getFlexAttribute('display')"
-            [style.flex-direction]="getFlexAttribute('flex-direction')"
-            [style.flex-wrap]="getFlexAttribute('flex-wrap')"
-            [style.justify-content]="getFlexAttribute('justify-content')"
-            [style.align-items]="getFlexAttribute('align-items')"
-            [style.align-content]="getFlexAttribute('align-content')"
-            [style.gap]="options?.fxLayoutGap"
-            [style.justify-content]="getJustifyContent()"
-            [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
-          </fieldset>
-      </div>
-      <div class="p-card-footer">
-        <div *ngIf="options?.showErrors && options?.errorMessage"
-          class="p-error"
-          [innerHTML]="options?.errorMessage"></div>
-      </div>
-    </div>
-
-    <div *ngIf="containerType === 'expansion-panel'"
-      class="p-panel"
-      [class.expanded]="expanded"
-      [class.collapsed]="!expanded">
-      <div class="p-panel-header" (click)="toggleExpanded()">
-        <span *ngIf="sectionTitle"
-          [class]="options?.labelHtmlClass"
-          [innerHTML]="sectionTitle"></span>
-        <span *ngIf="options?.expandable" class="p-panel-toggler">
-          {{ expanded ? '&#x25BC;' : '&#x25B6;' }}
-        </span>
-      </div>
-      <div *ngIf="expanded" class="p-panel-content">
-        <fieldset [disabled]="options?.readonly">
+    @if (containerType === 'div') {
+      <div
+        [class]="options?.htmlClass || ''"
+        [class.expandable]="options?.expandable && !expanded"
+        [class.expanded]="options?.expandable && expanded">
+        @if (sectionTitle) {
+          <label
+            [class]="'legend ' + (options?.labelHtmlClass || '')"
+            [innerHTML]="sectionTitle"
+          (click)="toggleExpanded()"></label>
+        }
+        @if (expanded) {
           <primeng-flex-layout-root-widget
             [layout]="layoutNode.items"
             [dataIndex]="dataIndex"
@@ -131,13 +32,148 @@ import { JsonSchemaFormService } from '@ajsf/core';
             [style.align-content]="getFlexAttribute('align-content')"
             [style.gap]="options?.fxLayoutGap"
             [style.justify-content]="getJustifyContent()"
-            [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
-        </fieldset>
+          [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
+        }
+        @if (options?.showErrors && options?.errorMessage) {
+          <div
+            class="p-error"
+          [innerHTML]="options?.errorMessage"></div>
+        }
       </div>
-      <div *ngIf="options?.showErrors && options?.errorMessage"
-        class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
-    </div>`,
+    }
+    
+    @if (containerType === 'fieldset') {
+      <fieldset
+        [class]="options?.htmlClass || ''"
+        [class.expandable]="options?.expandable && !expanded"
+        [class.expanded]="options?.expandable && expanded"
+        [disabled]="options?.readonly">
+        @if (sectionTitle) {
+          <legend
+            [class]="'legend ' + (options?.labelHtmlClass || '')"
+            [innerHTML]="sectionTitle"
+          (click)="toggleExpanded()"></legend>
+        }
+        @if (expanded) {
+          <primeng-flex-layout-root-widget
+            [layout]="layoutNode.items"
+            [dataIndex]="dataIndex"
+            [layoutIndex]="layoutIndex"
+            [isFlexItem]="getFlexAttribute('is-flex')"
+            [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
+            [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
+            [style.display]="getFlexAttribute('display')"
+            [style.flex-direction]="getFlexAttribute('flex-direction')"
+            [style.flex-wrap]="getFlexAttribute('flex-wrap')"
+            [style.justify-content]="getFlexAttribute('justify-content')"
+            [style.align-items]="getFlexAttribute('align-items')"
+            [style.align-content]="getFlexAttribute('align-content')"
+            [style.gap]="options?.fxLayoutGap"
+            [style.justify-content]="getJustifyContent()"
+          [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
+        }
+        @if (options?.showErrors && options?.errorMessage) {
+          <div
+            class="p-error"
+          [innerHTML]="options?.errorMessage"></div>
+        }
+      </fieldset>
+    }
+    
+    @if (containerType === 'card') {
+      <div
+        class="p-card"
+        [ngClass]="options?.htmlClass || ''"
+        [class.expandable]="options?.expandable && !expanded"
+        [class.expanded]="options?.expandable && expanded">
+        @if (sectionTitle) {
+          <div class="p-card-header">
+            <legend
+              [class]="'legend ' + (options?.labelHtmlClass || '')"
+              [innerHTML]="sectionTitle"
+            (click)="toggleExpanded()"></legend>
+          </div>
+        }
+        @if (expanded) {
+          <div class="p-card-content">
+            <fieldset [disabled]="options?.readonly">
+              @if (expanded) {
+                <primeng-flex-layout-root-widget
+                  [layout]="layoutNode.items"
+                  [dataIndex]="dataIndex"
+                  [layoutIndex]="layoutIndex"
+                  [isFlexItem]="getFlexAttribute('is-flex')"
+                  [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
+                  [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
+                  [style.display]="getFlexAttribute('display')"
+                  [style.flex-direction]="getFlexAttribute('flex-direction')"
+                  [style.flex-wrap]="getFlexAttribute('flex-wrap')"
+                  [style.justify-content]="getFlexAttribute('justify-content')"
+                  [style.align-items]="getFlexAttribute('align-items')"
+                  [style.align-content]="getFlexAttribute('align-content')"
+                  [style.gap]="options?.fxLayoutGap"
+                  [style.justify-content]="getJustifyContent()"
+                [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
+              }
+            </fieldset>
+          </div>
+        }
+        <div class="p-card-footer">
+          @if (options?.showErrors && options?.errorMessage) {
+            <div
+              class="p-error"
+            [innerHTML]="options?.errorMessage"></div>
+          }
+        </div>
+      </div>
+    }
+    
+    @if (containerType === 'expansion-panel') {
+      <div
+        class="p-panel"
+        [class.expanded]="expanded"
+        [class.collapsed]="!expanded">
+        <div class="p-panel-header" (click)="toggleExpanded()">
+          @if (sectionTitle) {
+            <span
+              [class]="options?.labelHtmlClass"
+            [innerHTML]="sectionTitle"></span>
+          }
+          @if (options?.expandable) {
+            <span class="p-panel-toggler">
+              {{ expanded ? '&#x25BC;' : '&#x25B6;' }}
+            </span>
+          }
+        </div>
+        @if (expanded) {
+          <div class="p-panel-content">
+            <fieldset [disabled]="options?.readonly">
+              <primeng-flex-layout-root-widget
+                [layout]="layoutNode.items"
+                [dataIndex]="dataIndex"
+                [layoutIndex]="layoutIndex"
+                [isFlexItem]="getFlexAttribute('is-flex')"
+                [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
+                [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
+                [style.display]="getFlexAttribute('display')"
+                [style.flex-direction]="getFlexAttribute('flex-direction')"
+                [style.flex-wrap]="getFlexAttribute('flex-wrap')"
+                [style.justify-content]="getFlexAttribute('justify-content')"
+                [style.align-items]="getFlexAttribute('align-items')"
+                [style.align-content]="getFlexAttribute('align-content')"
+                [style.gap]="options?.fxLayoutGap"
+                [style.justify-content]="getJustifyContent()"
+              [style.align-items]="getAlignItems()"></primeng-flex-layout-root-widget>
+            </fieldset>
+          </div>
+        }
+        @if (options?.showErrors && options?.errorMessage) {
+          <div
+            class="p-error"
+          [innerHTML]="options?.errorMessage"></div>
+        }
+      </div>
+    }`,
     styles: [`
     fieldset { border: 0; margin: 0; padding: 0; }
     .legend { font-weight: bold; }

@@ -6,8 +6,10 @@ import { JsonSchemaFormService } from '@ajsf/core';
     selector: 'material-file-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [class]="options?.labelHtmlClass || ''">{{options?.title}}</label>
+      }
       <div>
         <button mat-raised-button type="button"
           [disabled]="controlDisabled || options?.readonly"
@@ -21,12 +23,16 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [hidden]="true"
           (change)="onFileSelect($event)">
       </div>
-      <mat-hint *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
-        [innerHTML]="options?.description"
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <mat-hint
+          [innerHTML]="options?.description"
         style="display:block; font-size:75%; color:rgba(0,0,0,.6); margin-top:4px;"></mat-hint>
+      }
     </div>
-    <mat-error *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></mat-error>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <mat-error
+      [innerHTML]="options?.errorMessage"></mat-error>
+    }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],

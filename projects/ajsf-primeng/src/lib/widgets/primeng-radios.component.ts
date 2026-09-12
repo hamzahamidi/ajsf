@@ -6,37 +6,47 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     selector: 'primeng-radios-widget',
     template: `
     <div>
-      <div *ngIf="options?.title">
-        <label
-          [attr.for]="'control' + layoutNode?._id"
-          [class]="options?.labelHtmlClass || ''"
-          [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <div>
+          <label
+            [attr.for]="'control' + layoutNode?._id"
+            [class]="options?.labelHtmlClass || ''"
+            [style.display]="options?.notitle ? 'none' : ''"
           [innerHTML]="options?.title"></label>
-      </div>
-      <div [style.flex-direction]="flexDirection" style="display: inline-flex">
-        <div *ngFor="let radioItem of radiosList" style="margin: 2px">
-          <p-radiobutton *ngIf="boundControl"
-            [formControl]="formControl"
-            [value]="radioItem?.value"
-            [name]="controlName"
-            [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
-            (onBlur)="options.showErrors = true">
-          </p-radiobutton>
-          <p-radiobutton *ngIf="!boundControl"
-            [name]="controlName"
-            [value]="radioItem?.value"
-            [disabled]="controlDisabled || options?.readonly"
-            [ngModel]="controlValue"
-            [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
-            (onClick)="updateValue(radioItem?.value)">
-          </p-radiobutton>
-          <label [for]="'control' + layoutNode?._id + '/' + radioItem?.name">
-            <span [innerHTML]="radioItem?.name"></span>
-          </label>
         </div>
+      }
+      <div [style.flex-direction]="flexDirection" style="display: inline-flex">
+        @for (radioItem of radiosList; track radioItem) {
+          <div style="margin: 2px">
+            @if (boundControl) {
+              <p-radiobutton
+                [formControl]="formControl"
+                [value]="radioItem?.value"
+                [name]="controlName"
+                [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
+                (onBlur)="options.showErrors = true">
+              </p-radiobutton>
+            }
+            @if (!boundControl) {
+              <p-radiobutton
+                [name]="controlName"
+                [value]="radioItem?.value"
+                [disabled]="controlDisabled || options?.readonly"
+                [ngModel]="controlValue"
+                [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
+                (onClick)="updateValue(radioItem?.value)">
+              </p-radiobutton>
+            }
+            <label [for]="'control' + layoutNode?._id + '/' + radioItem?.name">
+              <span [innerHTML]="radioItem?.name"></span>
+            </label>
+          </div>
+        }
       </div>
-      <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
+      @if (options?.showErrors && options?.errorMessage) {
+        <div class="p-error"
         [innerHTML]="options?.errorMessage"></div>
+      }
     </div>`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }

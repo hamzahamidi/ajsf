@@ -42,40 +42,44 @@
       <mat-icon>menu</mat-icon> {{selectedSetName}} {{selectedExampleName}}
     </button>
     <mat-menu #exampleMenu="matMenu" class="example-menu">
-      <button mat-menu-item class="mat-medium"
-        *ngFor="let example of examples['ng-jsf'].schemas"
-        (click)="loadSelectedExample('ng-jsf', '', example.file, example.name)">
-        {{example.name}}
-      </button>
+      @for (example of examples['ng-jsf'].schemas; track example) {
+        <button mat-menu-item class="mat-medium"
+          (click)="loadSelectedExample('ng-jsf', '', example.file, example.name)">
+          {{example.name}}
+        </button>
+      }
       <button mat-menu-item class="mat-medium" [matMenuTriggerFor]="asfMenu">
         <span>Angular Schema Form (AngularJS) examples</span>
       </button>
       <mat-menu #asfMenu="matMenu" class="example-menu">
-        <button mat-menu-item class="mat-medium"
-          *ngFor="let example of examples.asf.schemas"
-          (click)="loadSelectedExample('asf', 'Angular Schema Form:', example.file, example.name)">
-          {{example.name}}
-        </button>
+        @for (example of examples.asf.schemas; track example) {
+          <button mat-menu-item class="mat-medium"
+            (click)="loadSelectedExample('asf', 'Angular Schema Form:', example.file, example.name)">
+            {{example.name}}
+          </button>
+        }
       </mat-menu>
       <button mat-menu-item class="mat-medium" [matMenuTriggerFor]="rjsfMenu">
         <span>React JSON Schema Form examples</span>
       </button>
       <mat-menu #rjsfMenu="matMenu" class="example-menu">
-        <button mat-menu-item class="mat-medium"
-          *ngFor="let example of examples.rjsf.schemas"
-          (click)="loadSelectedExample('rjsf', 'React JSON Schema Form:', example.file, example.name)">
-          {{example.name}}
-        </button>
+        @for (example of examples.rjsf.schemas; track example) {
+          <button mat-menu-item class="mat-medium"
+            (click)="loadSelectedExample('rjsf', 'React JSON Schema Form:', example.file, example.name)">
+            {{example.name}}
+          </button>
+        }
       </mat-menu>
       <button mat-menu-item class="mat-medium" [matMenuTriggerFor]="jsfMenu">
         <span>JSONForm (jQuery) examples</span>
       </button>
       <mat-menu #jsfMenu="matMenu" class="example-menu">
-        <button mat-menu-item class="mat-medium"
-          *ngFor="let example of examples.jsf.schemas"
-          (click)="loadSelectedExample('jsf', 'JSONForm:', example.file, example.name)">
-          {{example.name}}
-        </button>
+        @for (example of examples.jsf.schemas; track example) {
+          <button mat-menu-item class="mat-medium"
+            (click)="loadSelectedExample('jsf', 'JSONForm:', example.file, example.name)">
+            {{example.name}}
+          </button>
+        }
       </mat-menu>
     </mat-menu>
   </div>
@@ -86,127 +90,146 @@
     <h4 class="default-cursor" (click)="toggleVisible('options')">
       {{visible.options ? '▼' : '▶'}} Selected Framework and Options
     </h4>
-    <div *ngIf="visible.options" class="demo-stack" [@expandSection]="true">
-      <mat-form-field>
-        <mat-select
-          [(ngModel)]="selectedFramework"
-          name="framework"
-          placeholder="Framework">
-          <mat-option
-            *ngFor="let framework of frameworkList"
-            [value]="framework">
-            {{frameworks[framework]}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-select
-          [(ngModel)]="selectedLanguage"
-          (selectionChange)="loadSelectedLanguage()"
-          name="language"
-          placeholder="Language">
-          <mat-option
-            *ngFor="let language of languageList"
-            [value]="language">
-            {{languages[language]}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="check-row">
-        <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.returnEmptyFields">
-          Return empty fields?
-        </mat-checkbox>
-        (default = true)
+    @if (visible.options) {
+      <div class="demo-stack" [@expandSection]="true">
+        <mat-form-field>
+          <mat-select
+            [(ngModel)]="selectedFramework"
+            name="framework"
+            placeholder="Framework">
+            @for (framework of frameworkList; track framework) {
+              <mat-option
+                [value]="framework">
+                {{frameworks[framework]}}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select
+            [(ngModel)]="selectedLanguage"
+            (selectionChange)="loadSelectedLanguage()"
+            name="language"
+            placeholder="Language">
+            @for (language of languageList; track language) {
+              <mat-option
+                [value]="language">
+                {{languages[language]}}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <div class="check-row">
+          <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.returnEmptyFields">
+            Return empty fields?
+          </mat-checkbox>
+          (default = true)
+        </div>
+        <div class="check-row">
+          <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.addSubmit">
+            Add submit button?
+          </mat-checkbox>
+          (default = only add if no layout is defined)
+        </div>
+        <div class="check-row">
+          <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.defautWidgetOptions.feedback">
+            Show inline fedback?
+          </mat-checkbox>
+          (default = false)
+        </div>
+        <div class="check-row">
+          <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.debug">
+            Show debuging information?
+          </mat-checkbox>
+          (default = false)
+        </div>
       </div>
-      <div class="check-row">
-        <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.addSubmit">
-          Add submit button?
-        </mat-checkbox>
-        (default = only add if no layout is defined)
-      </div>
-      <div class="check-row">
-        <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.defautWidgetOptions.feedback">
-          Show inline fedback?
-        </mat-checkbox>
-        (default = false)
-      </div>
-      <div class="check-row">
-        <mat-checkbox color="primary" [(ngModel)]="jsonFormOptions.debug">
-          Show debuging information?
-        </mat-checkbox>
-        (default = false)
-      </div>
-    </div>
+    }
     <hr>
-    <h4 class="default-cursor" (click)="toggleVisible('schema')">
-      {{visible.schema ? '▼' : '▶'}} Input JSON Schema and Form Layout
-    </h4>
-    <div *ngIf="visible.schema" [@expandSection]="true"
-      ace-editor
-      [text]="jsonFormSchema"
-      [options]="aceEditorOptions"
-      [theme]="aceTheme"
-      [readOnly]="false"
-      [autoUpdateContent]="true"
-      (textChanged)="generateForm($event)"
-      style="width:100%; overflow: auto; border: 1px solid black;">
-      (loading form specification...)
+      <h4 class="default-cursor" (click)="toggleVisible('schema')">
+        {{visible.schema ? '▼' : '▶'}} Input JSON Schema and Form Layout
+      </h4>
+      @if (visible.schema) {
+        <div [@expandSection]="true"
+          ace-editor
+          [text]="jsonFormSchema"
+          [options]="aceEditorOptions"
+          [theme]="aceTheme"
+          [readOnly]="false"
+          [autoUpdateContent]="true"
+          (textChanged)="generateForm($event)"
+          style="width:100%; overflow: auto; border: 1px solid black;">
+          (loading form specification...)
+        </div>
+      }
+    </mat-card>
+
+    <mat-card appearance="outlined" class="demo-column">
+      <h4 class="default-cursor" (click)="toggleVisible('form')">
+        {{visible.form ? '▼' : '▶'}} Generated Form
+      </h4>
+      @if (visible.form) {
+        <div class="json-schema-form" [@expandSection]="true"
+          [attr.data-bs-theme]="formPaneTheme"
+          [class.light-form-pane]="lightFormPane">
+          @if (!formActive) {
+            <div>{{jsonFormStatusMessage}}</div>
+          }
+          <!-- This is the form! -->
+          @if (formActive) {
+            <json-schema-form
+              loadExternalAssets="true"
+              [form]="jsonFormObject"
+              [options]="jsonFormOptions"
+              [framework]="selectedFramework"
+              [language]="selectedLanguage"
+              (onChanges)="onChanges($event)"
+              (onSubmit)="onSubmit($event)"
+              (isValid)="isValid($event)"
+              (validationErrors)="validationErrors($event)">
+            </json-schema-form>
+          }
+        </div>
+      }
+      <hr>
+        <h4 class="default-cursor" (click)="toggleVisible('output')">
+          {{visible.output ? '▼' : '▶'}} Form Output
+        </h4>
+        @if (visible.output) {
+          <div class="demo-stack" [@expandSection]="true">
+            <div>
+              Valid?:
+              @if (formIsValid || prettyValidationErrors) {
+                <strong
+                  [class.text-success]="formIsValid"
+                  [class.text-danger]="!formIsValid">
+                  {{formIsValid ? 'Yes' : 'No'}}
+                </strong>
+              }
+              @if (!formIsValid && !prettyValidationErrors) {
+                <span>n/a</span>
+              }
+              @if (prettyValidationErrors) {
+                <span>— errors from validationErrors():</span>
+              }
+              @if (prettyValidationErrors) {
+                <div
+                  class="data-bad"
+                [innerHTML]="prettyValidationErrors"></div>
+              }
+            </div><br>
+            <div>
+              Live data — from onChanges():
+              <pre
+                [class.data-good]="!prettyValidationErrors && prettyLiveFormData !== '{}'"
+              [class.data-bad]="prettyValidationErrors">{{prettyLiveFormData}}</pre>
+            </div><br>
+            <div>
+              Submitted data — from onSubmit():
+              <pre [class.data-good]="prettySubmittedFormData !== 'null'">{{prettySubmittedFormData}}</pre>
+            </div>
+          </div>
+        }
+      </mat-card>
+
     </div>
-  </mat-card>
-
-  <mat-card appearance="outlined" class="demo-column">
-    <h4 class="default-cursor" (click)="toggleVisible('form')">
-      {{visible.form ? '▼' : '▶'}} Generated Form
-    </h4>
-    <div *ngIf="visible.form" class="json-schema-form" [@expandSection]="true"
-      [attr.data-bs-theme]="formPaneTheme"
-      [class.light-form-pane]="lightFormPane">
-      <div *ngIf="!formActive">{{jsonFormStatusMessage}}</div>
-
-      <!-- This is the form! -->
-      <json-schema-form
-        *ngIf="formActive"
-        loadExternalAssets="true"
-        [form]="jsonFormObject"
-        [options]="jsonFormOptions"
-        [framework]="selectedFramework"
-        [language]="selectedLanguage"
-        (onChanges)="onChanges($event)"
-        (onSubmit)="onSubmit($event)"
-        (isValid)="isValid($event)"
-        (validationErrors)="validationErrors($event)">
-      </json-schema-form>
-
-    </div>
-    <hr>
-    <h4 class="default-cursor" (click)="toggleVisible('output')">
-      {{visible.output ? '▼' : '▶'}} Form Output
-    </h4>
-    <div *ngIf="visible.output" class="demo-stack" [@expandSection]="true">
-      <div>
-        Valid?:
-        <strong *ngIf="formIsValid || prettyValidationErrors"
-          [class.text-success]="formIsValid"
-          [class.text-danger]="!formIsValid">
-          {{formIsValid ? 'Yes' : 'No'}}
-        </strong>
-        <span *ngIf="!formIsValid && !prettyValidationErrors">n/a</span>
-        <span *ngIf="prettyValidationErrors">— errors from validationErrors():</span>
-        <div *ngIf="prettyValidationErrors"
-          class="data-bad"
-          [innerHTML]="prettyValidationErrors"></div>
-      </div><br>
-      <div>
-        Live data — from onChanges():
-        <pre
-          [class.data-good]="!prettyValidationErrors && prettyLiveFormData !== '{}'"
-          [class.data-bad]="prettyValidationErrors">{{prettyLiveFormData}}</pre>
-      </div><br>
-      <div>
-        Submitted data — from onSubmit():
-        <pre [class.data-good]="prettySubmittedFormData !== 'null'">{{prettySubmittedFormData}}</pre>
-      </div>
-    </div>
-  </mat-card>
-
-</div>

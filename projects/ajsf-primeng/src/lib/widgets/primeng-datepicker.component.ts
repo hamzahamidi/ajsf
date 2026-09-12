@@ -6,48 +6,58 @@ import { JsonSchemaFormService } from '@ajsf/core';
     selector: 'primeng-datepicker-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-
-      <p-datepicker *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [readonlyInput]="options?.readonly"
-        [required]="options?.required"
-        [minDate]="minDate"
-        [maxDate]="maxDate"
-        [showIcon]="true"
-        [fluid]="true"
-        [showButtonBar]="true"
-        dataType="string"
-        dateFormat="yy-mm-dd"
+      }
+    
+      @if (boundControl) {
+        <p-datepicker
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [readonlyInput]="options?.readonly"
+          [required]="options?.required"
+          [minDate]="minDate"
+          [maxDate]="maxDate"
+          [showIcon]="true"
+          [fluid]="true"
+          [showButtonBar]="true"
+          dataType="string"
+          dateFormat="yy-mm-dd"
         (onBlur)="options.showErrors = true"></p-datepicker>
-
-      <p-datepicker *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [disabled]="controlDisabled || options?.readonly"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [readonlyInput]="options?.readonly"
-        [required]="options?.required"
-        [minDate]="minDate"
-        [maxDate]="maxDate"
-        [showIcon]="true"
-        [fluid]="true"
-        [showButtonBar]="true"
-        dataType="string"
-        dateFormat="yy-mm-dd"
-        [ngModel]="controlValue"
-        (ngModelChange)="updateValue($event)"
+      }
+    
+      @if (!boundControl) {
+        <p-datepicker
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [disabled]="controlDisabled || options?.readonly"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [readonlyInput]="options?.readonly"
+          [required]="options?.required"
+          [minDate]="minDate"
+          [maxDate]="maxDate"
+          [showIcon]="true"
+          [fluid]="true"
+          [showButtonBar]="true"
+          dataType="string"
+          dateFormat="yy-mm-dd"
+          [ngModel]="controlValue"
+          (ngModelChange)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-datepicker>
-
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

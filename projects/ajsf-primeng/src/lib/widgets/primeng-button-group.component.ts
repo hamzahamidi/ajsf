@@ -6,30 +6,38 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     selector: 'primeng-button-group-widget',
     template: `
     <div>
-      <div *ngIf="options?.title">
-        <label
-          [attr.for]="'control' + layoutNode?._id"
-          [class]="options?.labelHtmlClass || ''"
-          [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <div>
+          <label
+            [attr.for]="'control' + layoutNode?._id"
+            [class]="options?.labelHtmlClass || ''"
+            [style.display]="options?.notitle ? 'none' : ''"
           [innerHTML]="options?.title"></label>
-      </div>
-      <p-selectbutton *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [options]="radiosList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
+        </div>
+      }
+      @if (boundControl) {
+        <p-selectbutton
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [options]="radiosList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
         [disabled]="controlDisabled || options?.readonly"></p-selectbutton>
-      <p-selectbutton *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [options]="radiosList"
-        [optionLabel]="'name'"
-        [optionValue]="'value'"
-        [disabled]="controlDisabled || options?.readonly"
-        [ngModel]="controlValue"
+      }
+      @if (!boundControl) {
+        <p-selectbutton
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [options]="radiosList"
+          [optionLabel]="'name'"
+          [optionValue]="'value'"
+          [disabled]="controlDisabled || options?.readonly"
+          [ngModel]="controlValue"
         (onChange)="updateValue($event)"></p-selectbutton>
-      <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
+      }
+      @if (options?.showErrors && options?.errorMessage) {
+        <div class="p-error"
         [innerHTML]="options?.errorMessage"></div>
+      }
     </div>`,
     styles: [` .p-error { font-size: 75%; margin-top: 0.25rem; } `],
     standalone: false

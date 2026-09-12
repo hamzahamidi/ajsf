@@ -8,24 +8,32 @@ import { JsonSchemaFormService } from '@ajsf/core';
       [attr.aria-label]="options?.label || options?.title || ''"
       [tabPanel]="tabPanel"
       [style.width]="'100%'">
-        <a mat-tab-link *ngFor="let item of layoutNode?.items; let i = index"
+      @for (item of layoutNode?.items; track item; let i = $index) {
+        <a mat-tab-link
           [active]="selectedItem === i"
           (click)="select(i)">
-          <span *ngIf="showAddTab || item.type !== '$ref'"
+          @if (showAddTab || item.type !== '$ref') {
+            <span
             [innerHTML]="setTabTitle(item, i)"></span>
+          }
         </a>
+      }
     </nav>
     <!-- MDC requires mat-tab-nav-bar to reference a mat-tab-nav-panel, which
-         did not exist before v15. It wraps the content the nav switches. -->
+    did not exist before v15. It wraps the content the nav switches. -->
     <div mat-tab-nav-panel #tabPanel>
-    <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
-      [class]="options?.htmlClass || ''">
-      <select-framework-widget *ngIf="selectedItem === i"
-        [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
-        [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-        [layoutIndex]="(layoutIndex || []).concat(i)"
-        [layoutNode]="layoutItem"></select-framework-widget>
-    </div>
+      @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
+        <div
+          [class]="options?.htmlClass || ''">
+          @if (selectedItem === i) {
+            <select-framework-widget
+              [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
+              [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+              [layoutIndex]="(layoutIndex || []).concat(i)"
+            [layoutNode]="layoutItem"></select-framework-widget>
+          }
+        </div>
+      }
     </div>`,
     styles: [` a { cursor: pointer; } `],
     standalone: false

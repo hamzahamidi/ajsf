@@ -8,44 +8,52 @@ import { effectiveMinimum, effectiveMaximum } from '../shared';
     selector: 'number-widget',
     template: `
     <div [class]="options?.htmlClass || ''">
-      <label *ngIf="options?.title"
-        [attr.for]="'control' + layoutNode?._id"
-        [class]="options?.labelHtmlClass || ''"
-        [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <label
+          [attr.for]="'control' + layoutNode?._id"
+          [class]="options?.labelHtmlClass || ''"
+          [style.display]="options?.notitle ? 'none' : ''"
         [innerHTML]="options?.title"></label>
-      <input *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="maxValue"
-        [attr.min]="minValue"
-        [attr.placeholder]="options?.placeholder"
-        [attr.required]="options?.required"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.step]="options?.multipleOf || options?.step || 'any'"
-        [class]="options?.fieldHtmlClass || ''"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [title]="lastValidNumber"
-        [type]="layoutNode?.type === 'range' ? 'range' : 'number'">
-      <input *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.max]="maxValue"
-        [attr.min]="minValue"
-        [attr.placeholder]="options?.placeholder"
-        [attr.required]="options?.required"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.step]="options?.multipleOf || options?.step || 'any'"
-        [class]="options?.fieldHtmlClass || ''"
-        [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [title]="lastValidNumber"
-        [type]="layoutNode?.type === 'range' ? 'range' : 'number'"
-        [value]="controlValue"
-        (input)="updateValue($event)">
-      <span *ngIf="layoutNode?.type === 'range'" [innerHTML]="controlValue"></span>
+      }
+      @if (boundControl) {
+        <input
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.max]="maxValue"
+          [attr.min]="minValue"
+          [attr.placeholder]="options?.placeholder"
+          [attr.required]="options?.required"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.step]="options?.multipleOf || options?.step || 'any'"
+          [class]="options?.fieldHtmlClass || ''"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          [title]="lastValidNumber"
+          [type]="layoutNode?.type === 'range' ? 'range' : 'number'">
+      }
+      @if (!boundControl) {
+        <input
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.max]="maxValue"
+          [attr.min]="minValue"
+          [attr.placeholder]="options?.placeholder"
+          [attr.required]="options?.required"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.step]="options?.multipleOf || options?.step || 'any'"
+          [class]="options?.fieldHtmlClass || ''"
+          [disabled]="controlDisabled"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          [title]="lastValidNumber"
+          [type]="layoutNode?.type === 'range' ? 'range' : 'number'"
+          [value]="controlValue"
+          (input)="updateValue($event)">
+      }
+      @if (layoutNode?.type === 'range') {
+        <span [innerHTML]="controlValue"></span>
+      }
     </div>`,
     standalone: false
 })
