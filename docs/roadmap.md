@@ -140,10 +140,11 @@ that issue #315 was two defects rather than one: the message was gated on
 class change addresses. That is `touched || dirty` now, in all three Bootstrap
 packages.
 
-Checkbox and radio inputs still carry `checkbox` and `radio`. Bootstrap 4 and 5
-both want `form-check-input` and `form-check-label` on sibling elements, and
-the core widgets nest the input inside the label, so emitting those names would
-look conformant and do nothing. That is the restructure below, not class drift.
+Checkboxes and radios were left alone. Bootstrap 4 and 5 both want
+`form-check-input` and `form-check-label` on sibling elements, the core widgets
+nested the input inside the label, and emitting those names against the nested
+shape would have looked conformant and done nothing. That was a restructure
+rather than class drift, and it shipped separately in 22.1.0: see below.
 
 Measured class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
 
