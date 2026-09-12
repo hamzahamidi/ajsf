@@ -10,18 +10,25 @@ summarised below.
 
 ## Now
 
-### Finish the Angular walk: 18, 19, 20, 21, 22
+### Finish the Angular walk: 21, 22
 
-Five majors. The corpus covers this well (control counts move when rendering
-breaks), so it is the safest large change available.
+18, 19 and 20 are done. Angular's `latest` is 22.1.6, so the repository is two
+majors behind on `^20.3.30`, with all fourteen `@angular/*` packages in step
+and no drift between declared and installed.
 
-Known ahead of time: Angular 18 raises the Node floor above the current
-`.nvmrc` of 18.17.1, and `version:set` already syncs `engines` from the
-installed CLI. Vitest arrives at 20, where Angular ships its own builder, and
-the decision was to switch there rather than at 18, since before 20 it means
-migrating twice.
+The corpus covers this well (control counts move when rendering breaks), so it
+is still the safest large change available. Majors move one at a time in their
+own pull request, so 21 first.
 
-`18.0.0` is also where the four merged validation fixes reach `latest`.
+What 20 cost, and is likely to recur. The Angular packages peer on each other
+by exact patch, so `ng update` on anything but a frozen version set fails until
+you read the real numbers off the `vNN-lts` dist-tag. `@angular/build:unit-test`
+was experimental at 20 and warns on every run, so its options may move and take
+`scripts/run-coverage.js` with them. PrimeNG's majors track Angular's, and
+`version:set` already moves that peer with the Angular major.
+
+Vitest arrived at 20 as planned, which was the reason for switching there
+rather than at 18.
 
 ### Raise the Codecov project target
 
@@ -31,21 +38,19 @@ failing anything.
 
 ## Security
 
-94 open Dependabot alerts sounds worse than it is, and the split matters:
+16 open Dependabot alerts, every one of them development scope. Nothing in
+runtime scope is left, so nothing an alert names reaches a consumer of
+`@ajsf/*`.
 
-    72  development scope   never reach a consumer of @ajsf/*
-    22  runtime scope       19 Angular, 3 lodash-es
+It was 94 when this was written, 22 of those in runtime scope: 19 Angular and 3
+`lodash-es`. Reaching Angular 20 closed the Angular ones, since they were
+against versions the upgrade replaced, and lodash is gone from every package.
+`@ajsf/core` depends on `ajv` and `tslib` only, and the five framework packages
+on `@ajsf/core` and `tslib`.
 
-The 19 Angular alerts are fixed by the walk above, since they are all against
-versions the upgrade replaces. That is the strongest practical argument for
-finishing it.
-
-The 3 `lodash-es` alerts are closed: lodash is gone from all five packages.
-`@ajsf/core` now depends on `ajv` and `tslib` only, and the four framework
-packages on `@ajsf/core` and `tslib`.
-
-The 72 development alerts are worth one pass to confirm none of them affect the
-published artifacts, then triaging in bulk.
+So the remaining walk is no longer a security argument. The 16 development
+alerts are worth one pass to confirm none affect the published artifacts, then
+triaging in bulk.
 
 ## Correctness
 
@@ -111,13 +116,42 @@ bugs pinned so that a regression is visible. Anyone fixing one must update the
 baseline in the same commit, and should not read a red corpus as their own
 mistake.
 
-### Bootstrap 4 is Bootstrap 3 markup
+### Bootstrap 4 markup, corrected in 20.1.0
 
-The Bootstrap 4 package emits a class list identical to the Bootstrap 3 one, so
-checkboxes, radios, labels, help text and validation states all render
-unstyled. Bootstrap 5 had the same drift and is now migrated, spacing and
-checks alike, without touching core. The same approach applies here. Measured
-class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
+The Bootstrap 4 package emitted a class list identical to the Bootstrap 3 one,
+because it was created as a copy with the CDN URL changed. Labels, help text
+and validation states all rendered unstyled. Fixed in 20.1.0, which also found
+that issue #315 was two defects rather than one: the message was gated on
+`dirty`, so a required field touched and left empty reported nothing, which no
+class change addresses. That is `touched || dirty` now, in all three Bootstrap
+packages.
+
+Checkbox and radio inputs still carry `checkbox` and `radio`. Bootstrap 4 and 5
+both want `form-check-input` and `form-check-label` on sibling elements, and
+the core widgets nest the input inside the label, so emitting those names would
+look conformant and do nothing. That is the restructure below, not class drift.
+
+Measured class by class in [Bootstrap class drift](./bootstrap-class-drift.md).
+
+### Checkbox and radio markup, and what shares what
+
+Bootstrap 3 documents the input nested inside the label; 4 and 5 document them
+as siblings and style state through sibling selectors. No class mapping
+reconciles those, which is the limit `20.1.0` stopped at.
+
+The same shape blocks validation. Bootstrap reveals `.invalid-feedback` only as
+a following sibling of the element carrying `.is-invalid`, and
+`select-widget-widget` renders its own host element plus a container div
+between the field wrapper and the real input, so the control and its message
+can never be siblings. Bootstrap 4 and 5 therefore both put `is-invalid` on the
+wrapper, which shows the message but does not mark the control.
+
+Fixing it properly means the framework packages specialising a rendering recipe
+(classes, element relationships, placement) rather than a class list, with the
+AJSF concerns shared: roughly three quarters of the Bootstrap 4 template's 62
+lines are structure and Angular bindings with no Bootstrap content at all. The
+recipe boundary is worth extracting from one correct implementation rather than
+designed up front.
 
 ### fxLayout has never worked
 
@@ -212,10 +246,10 @@ Decided 2026-08-24, in this order:
     @ajsf/ionic       thick   gated on recorded demand
 
 `@ajsf/primeng` published with the rest of the lockstep at 19.2.0, so there are
-six packages now rather than five. daisyUI waits for `20.0.0` rather than
-starting next: a package added before the walk crosses 20 gains a Karma
-configuration, a suite and a coverage leg that the Vitest migration in phase 6
-would then have to move again.
+six packages now rather than five. daisyUI was gated on `20.0.0`, which shipped,
+so it is unblocked: the reason for waiting was that a package added before the
+walk crossed 20 would gain a Karma configuration, a suite and a coverage leg
+that the Vitest migration would then have to move again.
 
 A package started after 20.0.0 is carried through the 21 and 22 walk together
 with the existing six, two extra upgrade legs, and that cost is accepted: the
