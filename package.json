@@ -5,15 +5,15 @@
   "author": "https://github.com/hamzahamidi/Angular6-json-schema-form/graphs/contributors",
   "description": "Angular JSON Schema Form workspace: builds the @ajsf packages and the demo",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=24.0.0",
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
     "npm": ">=8.5.0"
   },
   "keywords": [
     "Angular",
     "ng",
-    "Angular21",
-    "Angular 21",
-    "ng21",
+    "Angular22",
+    "Angular 22",
+    "ng22",
     "JSON Schema",
     "form",
     "forms",
