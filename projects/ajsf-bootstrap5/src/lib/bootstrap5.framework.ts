@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Framework} from '@ajsf/core';
 import {Bootstrap5FrameworkComponent} from './bootstrap5-framework.component';
 import {Bootstrap5CheckboxComponent} from './widgets/bootstrap5-checkbox.component';
+import {Bootstrap5CheckboxesComponent} from './widgets/bootstrap5-checkboxes.component';
 
 // Bootstrap 5 Framework
 // https://github.com/ng-bootstrap/ng-bootstrap
@@ -14,6 +15,7 @@ export class Bootstrap5Framework extends Framework {
 
   widgets = {
     'checkbox': Bootstrap5CheckboxComponent,
+    'checkboxes': Bootstrap5CheckboxesComponent,
   };
 
   stylesheets = [

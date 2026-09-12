@@ -147,11 +147,12 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'checkboxes-inline':
+          this.widgetOptions.htmlClass = addClasses(
+            this.widgetOptions.htmlClass, 'form-check form-check-inline');
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'form-check-input');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            'form-check form-check-inline form-check-label');
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         // Radio controls
         case 'radio':
@@ -182,6 +183,8 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
             this.options.style || 'btn-outline-primary');
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'visually-hidden');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'btn-check');
           break;
         // Single button controls
         case 'button':

@@ -11,6 +11,7 @@ import {
 import {Bootstrap5Framework} from './bootstrap5.framework';
 import {Bootstrap5FrameworkComponent} from './bootstrap5-framework.component';
 import {Bootstrap5CheckboxComponent} from './widgets/bootstrap5-checkbox.component';
+import {Bootstrap5CheckboxesComponent} from './widgets/bootstrap5-checkboxes.component';
 
 @NgModule({
     imports: [
@@ -21,11 +22,13 @@ import {Bootstrap5CheckboxComponent} from './widgets/bootstrap5-checkbox.compone
     declarations: [
         Bootstrap5FrameworkComponent,
         Bootstrap5CheckboxComponent,
+        Bootstrap5CheckboxesComponent,
     ],
     exports: [
         JsonSchemaFormModule,
         Bootstrap5FrameworkComponent,
         Bootstrap5CheckboxComponent,
+        Bootstrap5CheckboxesComponent,
     ],
     providers: [
         JsonSchemaFormService,
