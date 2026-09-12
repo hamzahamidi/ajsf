@@ -9,32 +9,38 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     <label
       [attr.for]="'control' + layoutNode?._id"
       [class]="options?.itemLabelHtmlClass || ''">
-      <input *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+      @if (boundControl) {
+        <input
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [class]="(options?.fieldHtmlClass || '') + (isChecked ?
           (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
           (' ' + (options?.style?.unselected || '')))"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        type="checkbox">
-      <input *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [checked]="isChecked ? 'checked' : null"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          type="checkbox">
+      }
+      @if (!boundControl) {
+        <input
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [checked]="isChecked ? 'checked' : null"
         [class]="(options?.fieldHtmlClass || '') + (isChecked ?
           (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
           (' ' + (options?.style?.unselected || '')))"
-        [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [value]="controlValue"
-        type="checkbox"
-        (change)="updateValue($event)">
-      <span *ngIf="options?.title"
-        [style.display]="options?.notitle ? 'none' : ''"
+          [disabled]="controlDisabled"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          [value]="controlValue"
+          type="checkbox"
+          (change)="updateValue($event)">
+      }
+      @if (options?.title) {
+        <span
+          [style.display]="options?.notitle ? 'none' : ''"
         [innerHTML]="options?.title"></span>
+      }
     </label>`,
     standalone: false
 })

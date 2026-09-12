@@ -5,62 +5,80 @@ import { JsonSchemaFormService } from '@ajsf/core';
 @Component({
     selector: 'primeng-checkbox-widget',
     template: `
-    <p-checkbox *ngIf="boundControl && !showToggleSwitch"
-      [formControl]="formControl"
-      [binary]="true"
-      [inputId]="'control' + layoutNode?._id"
-      [name]="controlName"
-      (onBlur)="options.showErrors = true">
-    </p-checkbox>
-    <label *ngIf="boundControl && !showToggleSwitch && options?.title"
-      class="checkbox-name"
-      [attr.for]="'control' + layoutNode?._id"
-      [style.display]="options?.notitle ? 'none' : ''"
+    @if (boundControl && !showToggleSwitch) {
+      <p-checkbox
+        [formControl]="formControl"
+        [binary]="true"
+        [inputId]="'control' + layoutNode?._id"
+        [name]="controlName"
+        (onBlur)="options.showErrors = true">
+      </p-checkbox>
+    }
+    @if (boundControl && !showToggleSwitch && options?.title) {
+      <label
+        class="checkbox-name"
+        [attr.for]="'control' + layoutNode?._id"
+        [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"></label>
-
-    <p-checkbox *ngIf="!boundControl && !showToggleSwitch"
-      [binary]="true"
-      [disabled]="controlDisabled || options?.readonly"
-      [inputId]="'control' + layoutNode?._id"
-      [name]="controlName"
-      [ngModel]="isChecked"
-      (onChange)="updateValue($event)"
-      (onBlur)="options.showErrors = true">
-    </p-checkbox>
-    <label *ngIf="!boundControl && !showToggleSwitch && options?.title"
-      class="checkbox-name"
-      [attr.for]="'control' + layoutNode?._id"
-      [style.display]="options?.notitle ? 'none' : ''"
+    }
+    
+    @if (!boundControl && !showToggleSwitch) {
+      <p-checkbox
+        [binary]="true"
+        [disabled]="controlDisabled || options?.readonly"
+        [inputId]="'control' + layoutNode?._id"
+        [name]="controlName"
+        [ngModel]="isChecked"
+        (onChange)="updateValue($event)"
+        (onBlur)="options.showErrors = true">
+      </p-checkbox>
+    }
+    @if (!boundControl && !showToggleSwitch && options?.title) {
+      <label
+        class="checkbox-name"
+        [attr.for]="'control' + layoutNode?._id"
+        [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"></label>
-
-    <p-toggleswitch *ngIf="boundControl && showToggleSwitch"
-      [formControl]="formControl"
-      [inputId]="'control' + layoutNode?._id"
-      [name]="controlName"
-      (onBlur)="options.showErrors = true">
-    </p-toggleswitch>
-    <label *ngIf="boundControl && showToggleSwitch && options?.title"
-      class="checkbox-name"
-      [attr.for]="'control' + layoutNode?._id"
-      [style.display]="options?.notitle ? 'none' : ''"
+    }
+    
+    @if (boundControl && showToggleSwitch) {
+      <p-toggleswitch
+        [formControl]="formControl"
+        [inputId]="'control' + layoutNode?._id"
+        [name]="controlName"
+        (onBlur)="options.showErrors = true">
+      </p-toggleswitch>
+    }
+    @if (boundControl && showToggleSwitch && options?.title) {
+      <label
+        class="checkbox-name"
+        [attr.for]="'control' + layoutNode?._id"
+        [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"></label>
-
-    <p-toggleswitch *ngIf="!boundControl && showToggleSwitch"
-      [disabled]="controlDisabled || options?.readonly"
-      [inputId]="'control' + layoutNode?._id"
-      [name]="controlName"
-      [ngModel]="isChecked"
-      (onChange)="updateValue($event)"
-      (onBlur)="options.showErrors = true">
-    </p-toggleswitch>
-    <label *ngIf="!boundControl && showToggleSwitch && options?.title"
-      class="checkbox-name"
-      [attr.for]="'control' + layoutNode?._id"
-      [style.display]="options?.notitle ? 'none' : ''"
+    }
+    
+    @if (!boundControl && showToggleSwitch) {
+      <p-toggleswitch
+        [disabled]="controlDisabled || options?.readonly"
+        [inputId]="'control' + layoutNode?._id"
+        [name]="controlName"
+        [ngModel]="isChecked"
+        (onChange)="updateValue($event)"
+        (onBlur)="options.showErrors = true">
+      </p-toggleswitch>
+    }
+    @if (!boundControl && showToggleSwitch && options?.title) {
+      <label
+        class="checkbox-name"
+        [attr.for]="'control' + layoutNode?._id"
+        [style.display]="options?.notitle ? 'none' : ''"
       [innerHTML]="options?.title"></label>
-
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    }
+    
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .checkbox-name { white-space: nowrap; }
     .p-error { font-size: 75%; margin-top: 0.25rem; }

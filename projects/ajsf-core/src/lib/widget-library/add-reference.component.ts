@@ -10,13 +10,19 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 @Component({
     selector: 'add-reference-widget',
     template: `
-    <button *ngIf="showAddButton"
-      [class]="options?.fieldHtmlClass || ''"
-      [disabled]="options?.readonly"
-      (click)="addItem($event)">
-      <span *ngIf="options?.icon" [class]="options?.icon"></span>
-      <span *ngIf="options?.title" [innerHTML]="buttonText"></span>
-    </button>`,
+    @if (showAddButton) {
+      <button
+        [class]="options?.fieldHtmlClass || ''"
+        [disabled]="options?.readonly"
+        (click)="addItem($event)">
+        @if (options?.icon) {
+          <span [class]="options?.icon"></span>
+        }
+        @if (options?.title) {
+          <span [innerHTML]="buttonText"></span>
+        }
+      </button>
+    }`,
     changeDetection: ChangeDetectionStrategy.Default,
     standalone: false
 })

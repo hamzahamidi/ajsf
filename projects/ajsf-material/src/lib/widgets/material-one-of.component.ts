@@ -11,60 +11,82 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       [class]="options?.htmlClass || ''"
       [floatLabel]="options?.floatLabel || matFormFieldDefaultOptions?.floatLabel || 'auto'"
       [style.width]="'100%'">
-      <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
-
-      <mat-select *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [id]="'control' + layoutNode?._id"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [style.width]="'100%'"
-        (blur)="options.showErrors = true">
-        <mat-option *ngFor="let item of selectList" [value]="item?.value">
-          <span [innerHTML]="item?.name"></span>
-        </mat-option>
-      </mat-select>
-
-      <mat-select *ngIf="!boundControl && !isFieldset"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [id]="'control' + layoutNode?._id"
-        [disabled]="controlDisabled || options?.readonly"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [style.width]="'100%'"
-        [value]="controlValue"
-        (selectionChange)="updateValue($event)"
-        (blur)="options.showErrors = true">
-        <mat-option *ngFor="let item of selectList" [value]="item?.value">
-          <span [innerHTML]="item?.name"></span>
-        </mat-option>
-      </mat-select>
-
-      <mat-select *ngIf="!boundControl && isFieldset"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [id]="'control' + layoutNode?._id"
-        [disabled]="controlDisabled || options?.readonly"
-        [style.width]="'100%'"
-        [value]="selectedValue"
-        (selectionChange)="selectChild($event)">
-        <mat-option *ngFor="let item of selectList" [value]="item?.value">
-          <span [innerHTML]="item?.name"></span>
-        </mat-option>
-      </mat-select>
-
-      <mat-hint *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      @if (!options?.notitle) {
+        <mat-label>{{options?.title}}</mat-label>
+      }
+    
+      @if (boundControl) {
+        <mat-select
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [id]="'control' + layoutNode?._id"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [style.width]="'100%'"
+          (blur)="options.showErrors = true">
+          @for (item of selectList; track item) {
+            <mat-option [value]="item?.value">
+              <span [innerHTML]="item?.name"></span>
+            </mat-option>
+          }
+        </mat-select>
+      }
+    
+      @if (!boundControl && !isFieldset) {
+        <mat-select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [id]="'control' + layoutNode?._id"
+          [disabled]="controlDisabled || options?.readonly"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [style.width]="'100%'"
+          [value]="controlValue"
+          (selectionChange)="updateValue($event)"
+          (blur)="options.showErrors = true">
+          @for (item of selectList; track item) {
+            <mat-option [value]="item?.value">
+              <span [innerHTML]="item?.name"></span>
+            </mat-option>
+          }
+        </mat-select>
+      }
+    
+      @if (!boundControl && isFieldset) {
+        <mat-select
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [id]="'control' + layoutNode?._id"
+          [disabled]="controlDisabled || options?.readonly"
+          [style.width]="'100%'"
+          [value]="selectedValue"
+          (selectionChange)="selectChild($event)">
+          @for (item of selectList; track item) {
+            <mat-option [value]="item?.value">
+              <span [innerHTML]="item?.name"></span>
+            </mat-option>
+          }
+        </mat-select>
+      }
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <mat-hint
         align="end" [innerHTML]="options?.description"></mat-hint>
+      }
     </mat-form-field>
-    <mat-error *ngIf="options?.showErrors && options?.errorMessage"
+    @if (options?.showErrors && options?.errorMessage) {
+      <mat-error
       [innerHTML]="options?.errorMessage"></mat-error>
-
-    <div *ngFor="let layoutItem of layoutNode?.items; let i = index">
-      <select-framework-widget *ngIf="isFieldset && selectedItem === i"
-        [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-        [layoutIndex]="(layoutIndex || []).concat(i)"
-        [layoutNode]="layoutItem"></select-framework-widget>
-    </div>`,
+    }
+    
+    @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
+      <div>
+        @if (isFieldset && selectedItem === i) {
+          <select-framework-widget
+            [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+            [layoutIndex]="(layoutIndex || []).concat(i)"
+          [layoutNode]="layoutItem"></select-framework-widget>
+        }
+      </div>
+    }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],

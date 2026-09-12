@@ -110,10 +110,11 @@
             "setupFiles": [
               "projects/ajsf-core/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }
@@ -145,10 +146,11 @@
             "setupFiles": [
               "projects/ajsf-bootstrap4/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }
@@ -180,10 +182,11 @@
             "setupFiles": [
               "projects/ajsf-bootstrap3/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }
@@ -215,10 +218,11 @@
             "setupFiles": [
               "projects/ajsf-material/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }
@@ -250,10 +254,11 @@
             "setupFiles": [
               "projects/ajsf-bootstrap5/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }
@@ -285,10 +290,11 @@
             "setupFiles": [
               "projects/ajsf-primeng/src/test-setup.ts"
             ],
-            "codeCoverageReporters": [
+            "coverageReporters": [
               "text-summary",
               "lcov"
-            ]
+            ],
+            "runnerConfig": "vitest.config.ts"
           }
         }
       }

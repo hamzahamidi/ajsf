@@ -7,44 +7,56 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     selector: 'material-radios-widget',
     template: `
     <div>
-      <div *ngIf="options?.title">
-        <label
-          [attr.for]="'control' + layoutNode?._id"
-          [class]="options?.labelHtmlClass || ''"
-          [style.display]="options?.notitle ? 'none' : ''"
+      @if (options?.title) {
+        <div>
+          <label
+            [attr.for]="'control' + layoutNode?._id"
+            [class]="options?.labelHtmlClass || ''"
+            [style.display]="options?.notitle ? 'none' : ''"
           [innerHTML]="options?.title"></label>
-      </div>
-      <mat-radio-group *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.required]="options?.required"
-        [style.flex-direction]="flexDirection"
-        [name]="controlName"
-        (blur)="options.showErrors = true">
-        <mat-radio-button *ngFor="let radioItem of radiosList"
-          [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
-          [value]="radioItem?.value">
-          <span [innerHTML]="radioItem?.name"></span>
-        </mat-radio-button>
-      </mat-radio-group>
-      <mat-radio-group *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.readonly]="options?.readonly ? 'readonly' : null"
-        [attr.required]="options?.required"
-        [style.flex-direction]="flexDirection"
-        [disabled]="controlDisabled || options?.readonly"
-        [name]="controlName"
-        [value]="controlValue">
-        <mat-radio-button *ngFor="let radioItem of radiosList"
-          [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
-          [value]="radioItem?.value"
-          (click)="updateValue(radioItem?.value)">
-          <span [innerHTML]="radioItem?.name"></span>
-        </mat-radio-button>
-      </mat-radio-group>
-      <mat-error *ngIf="options?.showErrors && options?.errorMessage"
+        </div>
+      }
+      @if (boundControl) {
+        <mat-radio-group
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.required]="options?.required"
+          [style.flex-direction]="flexDirection"
+          [name]="controlName"
+          (blur)="options.showErrors = true">
+          @for (radioItem of radiosList; track radioItem) {
+            <mat-radio-button
+              [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
+              [value]="radioItem?.value">
+              <span [innerHTML]="radioItem?.name"></span>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+      }
+      @if (!boundControl) {
+        <mat-radio-group
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.readonly]="options?.readonly ? 'readonly' : null"
+          [attr.required]="options?.required"
+          [style.flex-direction]="flexDirection"
+          [disabled]="controlDisabled || options?.readonly"
+          [name]="controlName"
+          [value]="controlValue">
+          @for (radioItem of radiosList; track radioItem) {
+            <mat-radio-button
+              [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
+              [value]="radioItem?.value"
+              (click)="updateValue(radioItem?.value)">
+              <span [innerHTML]="radioItem?.name"></span>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+      }
+      @if (options?.showErrors && options?.errorMessage) {
+        <mat-error
         [innerHTML]="options?.errorMessage"></mat-error>
+      }
     </div>`,
     styles: [`
     /* Element selectors, not internal classes: both still exist under MDC. */

@@ -6,55 +6,73 @@ import { JsonSchemaFormService } from '@ajsf/core';
     selector: 'primeng-input-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-      <span *ngIf="options?.prefix || options?.fieldAddonLeft"
+      }
+      @if (options?.prefix || options?.fieldAddonLeft) {
+        <span
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-      <input pInputText *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
-        [attr.maxlength]="options?.maxLength"
-        [attr.minlength]="options?.minLength"
-        [attr.pattern]="options?.pattern"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [required]="options?.required"
-        [style.width]="'100%'"
-        [type]="layoutNode?.type"
-        (blur)="options.showErrors = true">
-      <input pInputText *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
-        [attr.maxlength]="options?.maxLength"
-        [attr.minlength]="options?.minLength"
-        [attr.pattern]="options?.pattern"
-        [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [readonly]="options?.readonly ? 'readonly' : null"
-        [required]="options?.required"
-        [style.width]="'100%'"
-        [type]="layoutNode?.type"
-        [value]="controlValue"
-        (input)="updateValue($event)"
-        (blur)="options.showErrors = true">
-      <span *ngIf="options?.suffix || options?.fieldAddonRight"
+      }
+      @if (boundControl) {
+        <input pInputText
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
+          [attr.maxlength]="options?.maxLength"
+          [attr.minlength]="options?.minLength"
+          [attr.pattern]="options?.pattern"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [required]="options?.required"
+          [style.width]="'100%'"
+          [type]="layoutNode?.type"
+          (blur)="options.showErrors = true">
+      }
+      @if (!boundControl) {
+        <input pInputText
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [attr.list]="'control' + layoutNode?._id + 'Autocomplete'"
+          [attr.maxlength]="options?.maxLength"
+          [attr.minlength]="options?.minLength"
+          [attr.pattern]="options?.pattern"
+          [disabled]="controlDisabled"
+          [id]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [readonly]="options?.readonly ? 'readonly' : null"
+          [required]="options?.required"
+          [style.width]="'100%'"
+          [type]="layoutNode?.type"
+          [value]="controlValue"
+          (input)="updateValue($event)"
+          (blur)="options.showErrors = true">
+      }
+      @if (options?.suffix || options?.fieldAddonRight) {
+        <span
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
-      <datalist *ngIf="options?.typeahead?.source"
-        [id]="'control' + layoutNode?._id + 'Autocomplete'">
-        <option *ngFor="let word of options?.typeahead?.source"
-          [value]="word">
-        </option>
-      </datalist>
+      }
+      @if (options?.typeahead?.source) {
+        <datalist
+          [id]="'control' + layoutNode?._id + 'Autocomplete'">
+          @for (word of options?.typeahead?.source; track word) {
+            <option
+              [value]="word">
+            </option>
+          }
+        </datalist>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

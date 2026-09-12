@@ -30,7 +30,10 @@ describe('FwBootstrap5Component', () => {
     component.layoutNode = { options: {} };
     component.layoutIndex = [];
     component.dataIndex = [];
-    fixture.detectChanges();
+    // No initial detectChanges. Each test sets its own layoutNode and renders,
+    // and rendering a placeholder node first makes the second pass see the
+    // class binding change from schema-form-undefined, which Angular 21
+    // reports as NG0100.
   });
 
   it('should create', () => {

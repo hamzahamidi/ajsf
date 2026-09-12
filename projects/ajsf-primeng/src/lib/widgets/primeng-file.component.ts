@@ -6,9 +6,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
     selector: 'primeng-file-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-
+      }
+    
       <p-fileupload
         mode="basic"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
@@ -17,16 +19,22 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [chooseLabel]="options?.placeholder || 'Choose'"
         [auto]="true"
         [customUpload]="true"
-        (uploadHandler)="onSelect($event)"></p-fileupload>
-
-      <span *ngIf="fileName" class="p-text-secondary" style="margin-left: 0.5rem">
+      (uploadHandler)="onSelect($event)"></p-fileupload>
+    
+      @if (fileName) {
+        <span class="p-text-secondary" style="margin-left: 0.5rem">
         {{fileName}}</span>
-
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+    
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

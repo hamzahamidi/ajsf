@@ -10,6 +10,7 @@ import { Bootstrap4FrameworkComponent } from './bootstrap4-framework.component';
 describe('FwBootstrap4Component', () => {
   let component: Bootstrap4FrameworkComponent;
   let fixture: ComponentFixture<Bootstrap4FrameworkComponent>;
+  let jsf: JsonSchemaFormService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -25,24 +26,34 @@ describe('FwBootstrap4Component', () => {
   });
 
   beforeEach(() => {
+    jsf = TestBed.inject(JsonSchemaFormService);
     fixture = TestBed.createComponent(Bootstrap4FrameworkComponent);
     component = fixture.componentInstance;
     component.layoutNode = { options: {} };
     component.layoutIndex = [];
     component.dataIndex = [];
-    fixture.detectChanges();
+    // No initial detectChanges. Each test sets its own layoutNode and renders,
+    // and rendering a placeholder node first makes the second pass see the
+    // class binding change from schema-form-undefined, which Angular 21
+    // reports as NG0100.
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  /** A control in the state issue #315 describes: blurred, still empty. */
+  /**
+   * A control in the state issue #315 describes: blurred, still empty.
+   *
+   * statusChanges is part of the shape because initializeFramework subscribes
+   * to it, so a stub without one throws before any assertion runs.
+   */
   const touchedButUnchanged = (extra: any = {}) => ({
     status: 'INVALID',
     errors: { required: true },
     touched: true,
     dirty: false,
+    statusChanges: { subscribe: () => ({ unsubscribe: () => undefined }) },
     ...extra,
   });
 
@@ -50,12 +61,14 @@ describe('FwBootstrap4Component', () => {
   // The message was gated on dirty, which means the value changed, so a focus
   // and blur with nothing typed produced nothing.
   describe('when the message appears', () => {
-    // formControl is assigned after initializeFramework, which overwrites it
-    // with whatever the service has, and options is a clone of layoutNode's.
+    // The control comes from the service, because initializeFramework assigns
+    // this.formControl from it. Setting the field afterwards is overwritten on
+    // the next initialize, and mutating it between change detection passes is
+    // what NG0100 reports.
     const helpBlockFor = (control: any, options: any = {}) => {
+      vi.spyOn(jsf, 'getFormControl').mockReturnValue(control);
       component.layoutNode = { type: 'text', options: { enableErrorState: true, ...options } };
       component.initializeFramework();
-      component.formControl = control as any;
       component.updateHelpBlock(control.status);
       return component.options.helpBlock;
     };
@@ -75,7 +88,7 @@ describe('FwBootstrap4Component', () => {
     });
 
     it('reports nothing while the field is valid', () => {
-      expect(helpBlockFor({ status: 'VALID', errors: null, touched: true, dirty: true }))
+      expect(helpBlockFor(touchedButUnchanged({ status: 'VALID', errors: null, dirty: true })))
         .toBeNull();
     });
   });
@@ -112,10 +125,12 @@ describe('FwBootstrap4Component', () => {
   });
 
   describe('rendered markup', () => {
+    // One render, with the control already in place. Two passes with the
+    // control appearing between them changes the is-invalid binding after
+    // Angular has checked it, which is NG0100.
     const render = (options: any, control: any = null) => {
+      vi.spyOn(jsf, 'getFormControl').mockReturnValue(control);
       component.layoutNode = { type: 'text', options };
-      component.initializeFramework();
-      component.formControl = control as any;
       fixture.detectChanges();
       return fixture.nativeElement;
     };

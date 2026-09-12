@@ -11,28 +11,36 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
       [class]="options?.htmlClass || ''"
       [floatLabel]="options?.floatLabel || 'auto'"
       [style.width]="'100%'">
-      <mat-label *ngIf="!options?.notitle">{{options?.title}}</mat-label>
+      @if (!options?.notitle) {
+        <mat-label>{{options?.title}}</mat-label>
+      }
       <mat-chip-grid #chipGrid
         [attr.aria-label]="options?.title"
         [disabled]="controlDisabled || options?.readonly">
-        <mat-chip-row *ngFor="let tag of tags; let i = index"
-          (removed)="remove(i)">
-          {{tag}}
-          <button matChipRemove aria-label="Remove">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip-row>
+        @for (tag of tags; track tag; let i = $index) {
+          <mat-chip-row
+            (removed)="remove(i)">
+            {{tag}}
+            <button matChipRemove aria-label="Remove">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        }
       </mat-chip-grid>
       <input [matChipInputFor]="chipGrid"
         [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
         [matChipInputAddOnBlur]="true"
         [placeholder]="options?.placeholder || ''"
         (matChipInputTokenEnd)="add($event)">
-      <mat-hint *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <mat-hint
         align="end" [innerHTML]="options?.description"></mat-hint>
+      }
     </mat-form-field>
-    <mat-error *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></mat-error>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <mat-error
+      [innerHTML]="options?.errorMessage"></mat-error>
+    }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],

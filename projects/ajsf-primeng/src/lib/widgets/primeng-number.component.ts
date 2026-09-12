@@ -6,49 +6,63 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
     selector: 'primeng-number-widget',
     template: `
     <div [class]="options?.htmlClass || ''" [style.width]="'100%'">
-      <label *ngIf="!options?.notitle"
+      @if (!options?.notitle) {
+        <label
         [attr.for]="'control' + layoutNode?._id">{{options?.title}}</label>
-      <span *ngIf="options?.prefix || options?.fieldAddonLeft"
+      }
+      @if (options?.prefix || options?.fieldAddonLeft) {
+        <span
         [innerHTML]="options?.prefix || options?.fieldAddonLeft"></span>
-      <p-inputnumber *ngIf="boundControl"
-        [formControl]="formControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [readonly]="options?.readonly"
-        [required]="options?.required"
-        [min]="minValue"
-        [max]="maxValue"
-        [step]="options?.multipleOf || options?.step || 1"
-        [useGrouping]="false"
-        [maxFractionDigits]="allowDecimal ? 20 : 0"
-        [fluid]="true"
+      }
+      @if (boundControl) {
+        <p-inputnumber
+          [formControl]="formControl"
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [readonly]="options?.readonly"
+          [required]="options?.required"
+          [min]="minValue"
+          [max]="maxValue"
+          [step]="options?.multipleOf || options?.step || 1"
+          [useGrouping]="false"
+          [maxFractionDigits]="allowDecimal ? 20 : 0"
+          [fluid]="true"
         (onBlur)="options.showErrors = true"></p-inputnumber>
-      <p-inputnumber *ngIf="!boundControl"
-        [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [inputId]="'control' + layoutNode?._id"
-        [name]="controlName"
-        [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-        [readonly]="options?.readonly"
-        [required]="options?.required"
-        [disabled]="controlDisabled"
-        [min]="minValue"
-        [max]="maxValue"
-        [step]="options?.multipleOf || options?.step || 1"
-        [useGrouping]="false"
-        [maxFractionDigits]="allowDecimal ? 20 : 0"
-        [ngModel]="controlValue"
-        [fluid]="true"
-        (onInput)="updateValue($event)"
+      }
+      @if (!boundControl) {
+        <p-inputnumber
+          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [inputId]="'control' + layoutNode?._id"
+          [name]="controlName"
+          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [readonly]="options?.readonly"
+          [required]="options?.required"
+          [disabled]="controlDisabled"
+          [min]="minValue"
+          [max]="maxValue"
+          [step]="options?.multipleOf || options?.step || 1"
+          [useGrouping]="false"
+          [maxFractionDigits]="allowDecimal ? 20 : 0"
+          [ngModel]="controlValue"
+          [fluid]="true"
+          (onInput)="updateValue($event)"
         (onBlur)="options.showErrors = true"></p-inputnumber>
-      <span *ngIf="options?.suffix || options?.fieldAddonRight"
+      }
+      @if (options?.suffix || options?.fieldAddonRight) {
+        <span
         [innerHTML]="options?.suffix || options?.fieldAddonRight"></span>
-      <small *ngIf="options?.description && (!options?.showErrors || !options?.errorMessage)"
+      }
+      @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
+        <small
         [innerHTML]="options?.description"></small>
+      }
     </div>
-    <div class="p-error" *ngIf="options?.showErrors && options?.errorMessage"
-      [innerHTML]="options?.errorMessage"></div>`,
+    @if (options?.showErrors && options?.errorMessage) {
+      <div class="p-error"
+      [innerHTML]="options?.errorMessage"></div>
+    }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],

@@ -7,21 +7,27 @@ import { JsonSchemaFormService } from '@ajsf/core';
     <p-tabs [value]="selectedItem" (valueChange)="select($event)"
       [style]="{'width': '100%'}">
       <p-tablist>
-        <ng-container *ngFor="let item of layoutNode?.items; let i = index">
-          <p-tab *ngIf="showAddTab || item.type !== '$ref'" [value]="i">
-            <span [innerHTML]="setTabTitle(item, i)"></span>
-          </p-tab>
-        </ng-container>
+        @for (item of layoutNode?.items; track item; let i = $index) {
+          @if (showAddTab || item.type !== '$ref') {
+            <p-tab [value]="i">
+              <span [innerHTML]="setTabTitle(item, i)"></span>
+            </p-tab>
+          }
+        }
       </p-tablist>
     </p-tabs>
-    <div *ngFor="let layoutItem of layoutNode?.items; let i = index"
-      [class]="options?.htmlClass || ''">
-      <select-framework-widget *ngIf="selectedItem === i"
-        [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
-        [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
-        [layoutIndex]="(layoutIndex || []).concat(i)"
-        [layoutNode]="layoutItem"></select-framework-widget>
-    </div>`,
+    @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
+      <div
+        [class]="options?.htmlClass || ''">
+        @if (selectedItem === i) {
+          <select-framework-widget
+            [class]="(options?.fieldHtmlClass || '') + ' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')"
+            [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
+            [layoutIndex]="(layoutIndex || []).concat(i)"
+          [layoutNode]="layoutItem"></select-framework-widget>
+        }
+      </div>
+    }`,
     standalone: false
 })
 export class PrimengTabsComponent implements OnInit {
