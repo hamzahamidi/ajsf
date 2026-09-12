@@ -134,12 +134,12 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'checkboxes':
-          // Keeps the Bootstrap 3 class: this type still renders core's
-          // CheckboxesComponent, which nests the input inside the label, and
-          // .form-check is written for sibling markup. Move to the
-          // form-check trio once 'checkboxes' has its own sibling widget.
           this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
+            this.widgetOptions.htmlClass, 'form-check');
+          this.widgetOptions.fieldHtmlClass = addClasses(
+            this.widgetOptions.fieldHtmlClass, 'form-check-input');
+          this.widgetOptions.itemLabelHtmlClass = addClasses(
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'checkboxes-inline':
           this.widgetOptions.htmlClass = addClasses(

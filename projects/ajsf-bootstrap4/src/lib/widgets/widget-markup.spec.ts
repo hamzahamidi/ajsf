@@ -71,4 +71,49 @@ describe('Bootstrap 4 check and radio markup', () => {
       expect(input.checked, 'clicking the label should toggle the input').toEqual(!before);
     });
   });
+
+  describe('checkbox list', () => {
+    const form = {
+      schema: {
+        colours: { type: 'array', title: 'Colours', items: { type: 'string', enum: ['red', 'green'] } },
+      },
+      form: [{ key: 'colours', type: 'checkboxes' }],
+    };
+
+    it('renders every item as an input beside its own label', () => {
+      const el = renderForm(form);
+      const inputs = [...el.querySelectorAll('input[type=checkbox]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+      });
+    });
+
+    it('classes each item as Bootstrap 4 documents', () => {
+      const input = renderForm(form).querySelector('input[type=checkbox]');
+      const label = input.parentElement.querySelector('label');
+      const wrapper = input.closest('.form-check');
+      expect(wrapper, 'the input must sit inside a .form-check').toBeTruthy();
+      expect(label.closest('.form-check')).toBe(wrapper);
+      expect(wrapper.parentElement.closest('.form-check'),
+        'nesting two .form-check elements doubles Bootstrap padding').toBeNull();
+      expect(input.className).toContain('form-check-input');
+      expect(label.className).toContain('form-check-label');
+    });
+
+    // Bootstrap 4 has no btn-check. Its toggle buttons keep the input inside
+    // the label, so this exception is asserted rather than assumed.
+    it('keeps the input inside the label for button sets, as Bootstrap 4 documents', () => {
+      const el = renderForm({
+        ...form,
+        form: [{ key: 'colours', type: 'checkboxbuttons' }],
+      });
+      const input = el.querySelector('input[type=checkbox]');
+      const label = input.closest('label');
+      expect(label, 'a Bootstrap 4 toggle button wraps its input').toBeTruthy();
+    });
+  });
 });
