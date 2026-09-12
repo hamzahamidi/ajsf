@@ -190,11 +190,11 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      # NOT .nvmrc. This job publishes prebuilt tarballs and never compiles
-      # anything, so it does not need the Angular toolchain's Node 16. It does
-      # need an npm new enough for OIDC trusted publishing, and current npm
-      # requires Node 22 or newer, so pinning Node 16 here made
-      # `npm i -g npm@latest` fail with EBADENGINE before any publish ran.
+      # Pinned rather than read from .nvmrc. This job publishes prebuilt
+      # tarballs and compiles nothing, but it needs an npm new enough for OIDC
+      # trusted publishing. The two agree today, since .nvmrc is also 24; the
+      # pin stays so a future .nvmrc that moves down cannot break publishing,
+      # which is how `npm i -g npm@latest` once failed with EBADENGINE.
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
