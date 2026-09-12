@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '@ajsf/core';
 
@@ -9,7 +9,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
       <p-checkbox
         [formControl]="formControl"
         [binary]="true"
-        [inputId]="'control' + layoutNode?._id"
+        [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
         (onBlur)="options.showErrors = true">
       </p-checkbox>
@@ -19,14 +19,14 @@ import { JsonSchemaFormService } from '@ajsf/core';
         class="checkbox-name"
         [attr.for]="'control' + layoutNode?._id"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     @if (!boundControl && !showToggleSwitch) {
       <p-checkbox
         [binary]="true"
         [disabled]="controlDisabled || options?.readonly"
-        [inputId]="'control' + layoutNode?._id"
+        [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
         [ngModel]="isChecked"
         (onChange)="updateValue($event)"
@@ -38,13 +38,13 @@ import { JsonSchemaFormService } from '@ajsf/core';
         class="checkbox-name"
         [attr.for]="'control' + layoutNode?._id"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     @if (boundControl && showToggleSwitch) {
       <p-toggleswitch
         [formControl]="formControl"
-        [inputId]="'control' + layoutNode?._id"
+        [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
         (onBlur)="options.showErrors = true">
       </p-toggleswitch>
@@ -54,13 +54,13 @@ import { JsonSchemaFormService } from '@ajsf/core';
         class="checkbox-name"
         [attr.for]="'control' + layoutNode?._id"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     @if (!boundControl && showToggleSwitch) {
       <p-toggleswitch
         [disabled]="controlDisabled || options?.readonly"
-        [inputId]="'control' + layoutNode?._id"
+        [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
         [ngModel]="isChecked"
         (onChange)="updateValue($event)"
@@ -72,17 +72,18 @@ import { JsonSchemaFormService } from '@ajsf/core';
         class="checkbox-name"
         [attr.for]="'control' + layoutNode?._id"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .checkbox-name { white-space: nowrap; }
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengCheckboxComponent implements OnInit {

@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "strict": false,
     "sourceMap": true,
     "declaration": false,
     "esModuleInterop": true,
@@ -18,40 +18,40 @@
     ],
     "paths": {
       "@ajsf/core": [
-        "dist/@ajsf/core"
+        "./dist/@ajsf/core"
       ],
       "@ajsf/core/*": [
-        "dist/@ajsf/core/*"
+        "./dist/@ajsf/core/*"
       ],
       "@ajsf/bootstrap3": [
-        "dist/@ajsf/bootstrap3"
+        "./dist/@ajsf/bootstrap3"
       ],
       "@ajsf/bootstrap3/*": [
-        "dist/@ajsf/bootstrap3/*"
+        "./dist/@ajsf/bootstrap3/*"
       ],
       "@ajsf/bootstrap4": [
-        "dist/@ajsf/bootstrap4"
+        "./dist/@ajsf/bootstrap4"
       ],
       "@ajsf/bootstrap4/*": [
-        "dist/@ajsf/bootstrap4/*"
+        "./dist/@ajsf/bootstrap4/*"
       ],
       "@ajsf/bootstrap5": [
-        "dist/@ajsf/bootstrap5"
+        "./dist/@ajsf/bootstrap5"
       ],
       "@ajsf/bootstrap5/*": [
-        "dist/@ajsf/bootstrap5/*"
+        "./dist/@ajsf/bootstrap5/*"
       ],
       "@ajsf/material": [
-        "dist/@ajsf/material"
+        "./dist/@ajsf/material"
       ],
       "@ajsf/material/*": [
-        "dist/@ajsf/material/*"
+        "./dist/@ajsf/material/*"
       ],
       "@ajsf/primeng": [
-        "dist/@ajsf/primeng"
+        "./dist/@ajsf/primeng"
       ],
       "@ajsf/primeng/*": [
-        "dist/@ajsf/primeng/*"
+        "./dist/@ajsf/primeng/*"
       ]
     },
     "useDefineForClassFields": false

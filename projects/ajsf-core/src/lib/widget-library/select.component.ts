@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { buildTitleMap, isArray } from '../shared';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -14,7 +14,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [attr.for]="'control' + layoutNode?._id"
           [class]="options?.labelHtmlClass || ''"
           [style.display]="options?.notitle ? 'none' : ''"
-        [innerHTML]="options?.title"></label>
+        [innerHTML]="$safeNavigationMigration(options?.title)"></label>
       }
       @if (boundControl) {
         <select
@@ -23,25 +23,25 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [attr.readonly]="options?.readonly ? 'readonly' : null"
           [attr.required]="options?.required"
           [class]="options?.fieldHtmlClass || ''"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName">
           @for (selectItem of selectList; track selectItem) {
             <!-- ngValue, not value: the DOM coerces value to a string, so the
             None option wrote the four-character string "null" into the
             control and a numeric enum stored strings. -->
-            @if (!isArray(selectItem?.items)) {
+            @if (!isArray($safeNavigationMigration(selectItem?.items))) {
               <option
-                [ngValue]="selectItem?.value">
-                <span [innerHTML]="selectItem?.name"></span>
+                [ngValue]="$safeNavigationMigration(selectItem?.value)">
+                <span [innerHTML]="$safeNavigationMigration(selectItem?.name)"></span>
               </option>
             }
-            @if (isArray(selectItem?.items)) {
+            @if (isArray($safeNavigationMigration(selectItem?.items))) {
               <optgroup
-                [label]="selectItem?.group">
+                [label]="$safeNavigationMigration(selectItem?.group)">
                 @for (subItem of selectItem.items; track subItem) {
                   <option
-                    [ngValue]="subItem?.value">
-                    <span [innerHTML]="subItem?.name"></span>
+                    [ngValue]="$safeNavigationMigration(subItem?.value)">
+                    <span [innerHTML]="$safeNavigationMigration(subItem?.name)"></span>
                   </option>
                 }
               </optgroup>
@@ -56,25 +56,25 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [attr.required]="options?.required"
           [class]="options?.fieldHtmlClass || ''"
           [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
           (change)="updateValue($event)">
           @for (selectItem of selectList; track selectItem) {
-            @if (!isArray(selectItem?.items)) {
+            @if (!isArray($safeNavigationMigration(selectItem?.items))) {
               <option
                 [selected]="selectItem?.value === controlValue"
-                [value]="selectItem?.value">
-                <span [innerHTML]="selectItem?.name"></span>
+                [value]="$safeNavigationMigration(selectItem?.value)">
+                <span [innerHTML]="$safeNavigationMigration(selectItem?.name)"></span>
               </option>
             }
-            @if (isArray(selectItem?.items)) {
+            @if (isArray($safeNavigationMigration(selectItem?.items))) {
               <optgroup
-                [label]="selectItem?.group">
+                [label]="$safeNavigationMigration(selectItem?.group)">
                 @for (subItem of selectItem.items; track subItem) {
                   <option
                     [attr.selected]="subItem?.value === controlValue"
-                    [value]="subItem?.value">
-                    <span [innerHTML]="subItem?.name"></span>
+                    [value]="$safeNavigationMigration(subItem?.value)">
+                    <span [innerHTML]="$safeNavigationMigration(subItem?.name)"></span>
                   </option>
                 }
               </optgroup>
@@ -83,6 +83,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         </select>
       }
     </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SelectComponent implements OnInit {

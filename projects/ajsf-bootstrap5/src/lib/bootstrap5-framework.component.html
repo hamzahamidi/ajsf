@@ -18,7 +18,7 @@ to the field rather than to this container.
       @if (options?.helpBlock) {
         <p
           class="form-text"
-        [innerHTML]="options?.helpBlock"></p>
+        [innerHTML]="$safeNavigationMigration(options?.helpBlock)"></p>
       }
     </div>
   }
@@ -28,7 +28,7 @@ to the field rather than to this container.
       [attr.for]="'control' + layoutNode?._id"
       [class]="options?.labelHtmlClass || ''"
       [class.visually-hidden]="options?.notitle"
-    [innerHTML]="options?.title"></label>
+    [innerHTML]="$safeNavigationMigration(options?.title)"></label>
   }
   @if (layoutNode?.type === 'submit' && jsf?.formOptions?.fieldsRequired) {
     <p>
@@ -44,7 +44,7 @@ to the field rather than to this container.
     >
     @if (options?.fieldAddonLeft) {
       <div class="input-group-prepend">
-        <span class="input-group-text" [innerHTML]="options?.fieldAddonLeft"></span>
+        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonLeft)"></span>
       </div>
     }
 
@@ -55,7 +55,7 @@ to the field rather than to this container.
 
     @if (options?.fieldAddonRight) {
       <div class="input-group-append">
-        <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
+        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonRight)"></span>
       </div>
     }
   </div>
@@ -63,7 +63,7 @@ to the field rather than to this container.
   @if (formControl?.touched && options?.errorMessage) {
     <div
       class="invalid-feedback"
-    [innerHTML]="options?.errorMessage"></div>
+    [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
   }
 
   <!--

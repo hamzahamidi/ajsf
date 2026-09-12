@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '@ajsf/core';
 
@@ -10,7 +10,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [formControl]="formControl"
         align="left"
         [color]="options?.color || 'primary'"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         labelPosition="after"
         [name]="controlName"
         (blur)="options.showErrors = true">
@@ -18,7 +18,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
           <span
             class="checkbox-name"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></span>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </mat-checkbox>
     }
@@ -27,7 +27,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         align="left"
         [color]="options?.color || 'primary'"
         [disabled]="controlDisabled || options?.readonly"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         labelPosition="after"
         [name]="controlName"
         [checked]="isChecked"
@@ -37,7 +37,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
           <span
             class="checkbox-name"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></span>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </mat-checkbox>
     }
@@ -46,7 +46,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [formControl]="formControl"
         align="left"
         [color]="options?.color || 'primary'"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         labelPosition="after"
         [name]="controlName"
         (blur)="options.showErrors = true">
@@ -54,7 +54,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
           <span
             class="checkbox-name"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></span>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </mat-slide-toggle>
     }
@@ -63,7 +63,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         align="left"
         [color]="options?.color || 'primary'"
         [disabled]="controlDisabled || options?.readonly"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         labelPosition="after"
         [name]="controlName"
         [checked]="isChecked"
@@ -73,18 +73,19 @@ import { JsonSchemaFormService } from '@ajsf/core';
           <span
             class="checkbox-name"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></span>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </mat-slide-toggle>
     }
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [`
     .checkbox-name { white-space: nowrap; }
     mat-error { font-size: 75%; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialCheckboxComponent implements OnInit {

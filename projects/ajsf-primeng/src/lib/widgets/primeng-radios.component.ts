@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 @Component({
@@ -12,7 +12,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
             [attr.for]="'control' + layoutNode?._id"
             [class]="options?.labelHtmlClass || ''"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></label>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></label>
         </div>
       }
       <div [style.flex-direction]="flexDirection" style="display: inline-flex">
@@ -21,36 +21,37 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
             @if (boundControl) {
               <p-radiobutton
                 [formControl]="formControl"
-                [value]="radioItem?.value"
+                [value]="$safeNavigationMigration(radioItem?.value)"
                 [name]="controlName"
-                [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
+                [inputId]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.name)"
                 (onBlur)="options.showErrors = true">
               </p-radiobutton>
             }
             @if (!boundControl) {
               <p-radiobutton
                 [name]="controlName"
-                [value]="radioItem?.value"
+                [value]="$safeNavigationMigration(radioItem?.value)"
                 [disabled]="controlDisabled || options?.readonly"
                 [ngModel]="controlValue"
-                [inputId]="'control' + layoutNode?._id + '/' + radioItem?.name"
-                (onClick)="updateValue(radioItem?.value)">
+                [inputId]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.name)"
+                (onClick)="updateValue($safeNavigationMigration(radioItem?.value))">
               </p-radiobutton>
             }
-            <label [for]="'control' + layoutNode?._id + '/' + radioItem?.name">
-              <span [innerHTML]="radioItem?.name"></span>
+            <label [for]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.name)">
+              <span [innerHTML]="$safeNavigationMigration(radioItem?.name)"></span>
             </label>
           </div>
         }
       </div>
       @if (options?.showErrors && options?.errorMessage) {
         <div class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
+        [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
       }
     </div>`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengRadiosComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -23,7 +23,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
             [layout]="layoutNode.items"
             [layoutIndex]="layoutIndex"
             [isFlexItem]="getFlexAttribute('is-flex')"
-            [isOrderable]="options?.orderable"
+            [isOrderable]="$safeNavigationMigration(options?.orderable)"
             [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
             [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
             [style.align-content]="getFlexAttribute('align-content')"
@@ -40,7 +40,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [class]="options?.htmlClass || ''"
         [class.expandable]="options?.expandable && !expanded"
         [class.expanded]="options?.expandable && expanded"
-        [disabled]="options?.readonly">
+        [disabled]="$safeNavigationMigration(options?.readonly)">
         @if (sectionTitle) {
           <legend
             class="legend"
@@ -54,7 +54,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
               <p
                 class="help-block"
                 [class]="options?.labelHelpBlockClass || ''"
-              [innerHTML]="options?.description"></p>
+              [innerHTML]="$safeNavigationMigration(options?.description)"></p>
             }
           </div>
         }
@@ -64,7 +64,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
             [layout]="layoutNode.items"
             [layoutIndex]="layoutIndex"
             [isFlexItem]="getFlexAttribute('is-flex')"
-            [isOrderable]="options?.orderable"
+            [isOrderable]="$safeNavigationMigration(options?.orderable)"
             [class.form-flex-column]="getFlexAttribute('flex-direction') === 'column'"
             [class.form-flex-row]="getFlexAttribute('flex-direction') === 'row'"
             [style.align-content]="getFlexAttribute('align-content')"
@@ -80,7 +80,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
               <p
                 class="help-block"
                 [class]="options?.labelHelpBlockClass || ''"
-              [innerHTML]="options?.description"></p>
+              [innerHTML]="$safeNavigationMigration(options?.description)"></p>
             }
           </div>
         }
@@ -91,6 +91,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     .expandable > legend:before, .expandable > label:before  { content: '▶'; padding-right: .3em; }
     .expanded > legend:before, .expanded > label:before  { content: '▼'; padding-right: .2em; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SectionComponent implements OnInit {

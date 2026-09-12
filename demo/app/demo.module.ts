@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { RouterModule } from '@angular/router';
@@ -35,7 +35,7 @@ import { PrimengFrameworkModule } from '@ajsf/primeng';
         MaterialDesignFrameworkModule,
         PrimengFrameworkModule,
         JsonSchemaFormModule], providers: [
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         providePrimeNG({
             theme: {
                 preset: Aura,

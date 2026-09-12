@@ -3,7 +3,8 @@ import {
   Component,
   Input,
   OnChanges,
-  OnInit
+  OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core';
 
@@ -15,6 +16,7 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
     selector: 'bootstrap-5-framework',
     templateUrl: './bootstrap5-framework.component.html',
     styleUrls: ['./bootstrap5-framework.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {

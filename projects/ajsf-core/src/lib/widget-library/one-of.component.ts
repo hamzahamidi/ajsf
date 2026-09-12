@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 import { JsonSchemaFormService } from '../json-schema-form.service';
@@ -8,6 +8,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 @Component({
     selector: 'one-of-widget',
     template: ``,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OneOfComponent implements OnInit {

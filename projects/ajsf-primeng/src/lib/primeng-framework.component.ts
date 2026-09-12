@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * PrimeNG framework for Angular JSON Schema Form.
@@ -10,6 +10,7 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'primeng-framework',
     templateUrl: './primeng-framework.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengFrameworkComponent {

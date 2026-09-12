@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -21,13 +21,13 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [attr.maxlength]="options?.maxLength"
           [attr.minlength]="options?.minLength"
           [attr.pattern]="options?.pattern"
-          [required]="options?.required"
-          [id]="'control' + layoutNode?._id"
+          [required]="$safeNavigationMigration(options?.required)"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [readonly]="options?.readonly ? 'readonly' : null"
           [style.width]="'100%'"
-          [autoResize]="options?.autosize"
+          [autoResize]="$safeNavigationMigration(options?.autosize)"
         (blur)="options.showErrors = true"></textarea>
       }
       @if (!boundControl) {
@@ -36,15 +36,15 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [attr.maxlength]="options?.maxLength"
           [attr.minlength]="options?.minLength"
           [attr.pattern]="options?.pattern"
-          [required]="options?.required"
+          [required]="$safeNavigationMigration(options?.required)"
           [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [readonly]="options?.readonly ? 'readonly' : null"
           [style.width]="'100%'"
           [value]="controlValue"
-          [autoResize]="options?.autosize"
+          [autoResize]="$safeNavigationMigration(options?.autosize)"
           (input)="updateValue($event)"
         (blur)="options.showErrors = true"></textarea>
       }
@@ -54,16 +54,17 @@ import { JsonSchemaFormService } from '@ajsf/core';
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <small
-        [innerHTML]="options?.description"></small>
+        [innerHTML]="$safeNavigationMigration(options?.description)"></small>
       }
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengTextareaComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +32,7 @@ const THEME_CYCLE: ThemePreference[] = ['system', 'light', 'dark'];
             ]),
         ]),
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DemoComponent implements OnInit, OnDestroy {

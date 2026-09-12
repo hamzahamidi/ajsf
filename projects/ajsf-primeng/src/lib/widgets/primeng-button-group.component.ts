@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 @Component({
@@ -12,7 +12,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
             [attr.for]="'control' + layoutNode?._id"
             [class]="options?.labelHtmlClass || ''"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></label>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></label>
         </div>
       }
       @if (boundControl) {
@@ -36,10 +36,11 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
       }
       @if (options?.showErrors && options?.errorMessage) {
         <div class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
+        [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
       }
     </div>`,
     styles: [` .p-error { font-size: 75%; margin-top: 0.25rem; } `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengButtonGroupComponent implements OnInit {

@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf/core';
 
 @Component({
@@ -8,7 +8,7 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
     @if (boundControl) {
       <mat-slider discrete
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [max]="maxValue"
         [min]="minValue"
         [step]="options?.multipleOf || options?.step || 'any'"
@@ -19,7 +19,7 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
       <mat-slider discrete
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [disabled]="controlDisabled || options?.readonly"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [max]="maxValue"
         [min]="minValue"
         [step]="options?.multipleOf || options?.step || 'any'"
@@ -28,9 +28,10 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
     }
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [` mat-error { font-size: 75%; } `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialSliderComponent implements OnInit {

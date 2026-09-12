@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -46,6 +46,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
       </p-step-panels>
     </p-stepper>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengStepperComponent implements OnInit {

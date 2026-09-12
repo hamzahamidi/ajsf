@@ -6,7 +6,7 @@ Notes for AI coding agents working in this repository. Humans may find the traps
 
 ## Environment
 
-The repository targets **Angular 21.2 on Node 24.21.0** (`.nvmrc`) with TypeScript 5.9.
+The repository targets **Angular 22.1 on Node 24.21.0** (`.nvmrc`) with TypeScript 6.0.
 Read the version out of `.nvmrc` rather than typing it: it moves with each
 Angular major, and an older Node fails the build with a CLI version check
 rather than anything that points at the real cause.
@@ -271,6 +271,15 @@ A difference between your change and what was there before is not automatically 
 
 The corpus baseline pins **current** behaviour including bugs, so a corpus failure can mean either. Read the diff before deciding, and never re-record a baseline just to make a suite green.
 
+There is a third case, and Angular 22 produced it: the rendered output changed
+because a dependency changed its own markup. PrimeNG 22's slider renders an
+internal `<input>` that PrimeNG 21's did not, and `countControls` matches both
+`p-slider` and `input`, so `primeng/jsf-fields-range` went from 1 control to 2
+and `primeng/rjsf-numbers` from 8 to 10. The arithmetic is what proves it:
+exactly one extra control per `range` field, one in the first schema and two in
+the second. Re-recording is right there, but only with that evidence and only
+for the entries that moved, never by regenerating the file.
+
 ## Traps
 
 Each of these cost real debugging time. They look like bugs in your code and are not.
@@ -356,5 +365,35 @@ Each of these cost real debugging time. They look like bugs in your code and are
   dedupes to one copy, which is why it went unnoticed. `scripts/package-guards.spec.js`
   asserts the mapping stays gone. The `@ajsf/*` mappings are fine: those point
   at `dist`, which is the intended source for them.
+
+- **TypeScript 6 turns strict on by default, and this codebase is not strict.**
+  `tsconfig.json` never set `strict` or `noImplicitAny`, which was fine while
+  the default was off. Under TypeScript 6 the same file produces `TS7006:
+  Parameter implicitly has an 'any' type` across `validator.functions.ts` and
+  others. `@ajsf/core` uses `any` widely by design, so `tsconfig.json` now sets
+  `strict: false` explicitly rather than annotating the codebase. Verify the
+  default before assuming: `tsc --noEmit` on a one line file with no tsconfig
+  strictness reports TS7006 under 6 and nothing under 5.9.
+
+- **TypeScript 6 deprecates `baseUrl`, and removing it breaks `paths`.**
+  `TS5101` says it stops working in 7. Dropping it then gives `TS5090:
+  Non-relative paths are not allowed when 'baseUrl' is not set`, because every
+  `paths` target needs a leading `./`. Both are in `tsconfig.json`, already
+  fixed; the point is that the second error only appears once you fix the
+  first.
+
+- **The Angular 22 migration writes two options that contradict each other.**
+  It adds an `extendedDiagnostics` block suppressing
+  `nullishCoalescingNotNullable` and `optionalChainNotNullable`, and separately
+  sets `strictTemplates: false`, and the compiler rejects the pair with
+  `NG4003`. The suppressions only apply under strict templates, so they are the
+  half to delete. It writes them into every tsconfig it touches, which is the
+  six `tsconfig.lib.json`, the six `tsconfig.spec.json` and `demo/tsconfig.app.json`:
+  fixing only the lib ones builds the libraries and then fails every suite.
+
+- **`$safeNavigationMigration(...)` in a template is not a mistake.** The
+  Angular 22 `safe-optional-chaining` migration wraps optional chaining
+  expressions in it, 339 times across 48 files here. The compiler resolves it;
+  it does not appear in built output. Do not unwrap it by hand.
 
 - **`@angular/flex-layout` is deprecated and stops at `15.0.0-beta.42`.** It has no Angular 16 or later release and never will. Removing it is tracked work, not an incidental cleanup.

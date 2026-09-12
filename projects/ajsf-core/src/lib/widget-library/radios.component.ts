@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { buildTitleMap } from '../shared';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -12,7 +12,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [attr.for]="'control' + layoutNode?._id"
         [class]="options?.labelHtmlClass || ''"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     <!-- 'horizontal' = radios-inline or radiobuttons -->
@@ -33,11 +33,11 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
               [checked]="radioItem?.value === controlValue"
               [class]="options?.fieldHtmlClass || ''"
               [disabled]="controlDisabled"
-              [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
+              [id]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.value)"
               [name]="controlName"
-              [value]="radioItem?.value"
+              [value]="$safeNavigationMigration(radioItem?.value)"
               (change)="updateValue($event)">
-            <span [innerHTML]="radioItem?.name"></span>
+            <span [innerHTML]="$safeNavigationMigration(radioItem?.name)"></span>
           </label>
         }
       </div>
@@ -62,16 +62,17 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
                 [checked]="radioItem?.value === controlValue"
                 [class]="options?.fieldHtmlClass || ''"
                 [disabled]="controlDisabled"
-                [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
+                [id]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.value)"
                 [name]="controlName"
-                [value]="radioItem?.value"
+                [value]="$safeNavigationMigration(radioItem?.value)"
                 (change)="updateValue($event)">
-              <span [innerHTML]="radioItem?.name"></span>
+              <span [innerHTML]="$safeNavigationMigration(radioItem?.name)"></span>
             </label>
           </div>
         }
       </div>
     }`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class RadiosComponent implements OnInit {

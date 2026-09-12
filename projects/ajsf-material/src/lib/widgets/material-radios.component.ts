@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 
 
@@ -13,7 +13,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
             [attr.for]="'control' + layoutNode?._id"
             [class]="options?.labelHtmlClass || ''"
             [style.display]="options?.notitle ? 'none' : ''"
-          [innerHTML]="options?.title"></label>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></label>
         </div>
       }
       @if (boundControl) {
@@ -27,9 +27,9 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
           (blur)="options.showErrors = true">
           @for (radioItem of radiosList; track radioItem) {
             <mat-radio-button
-              [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
-              [value]="radioItem?.value">
-              <span [innerHTML]="radioItem?.name"></span>
+              [id]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.name)"
+              [value]="$safeNavigationMigration(radioItem?.value)">
+              <span [innerHTML]="$safeNavigationMigration(radioItem?.name)"></span>
             </mat-radio-button>
           }
         </mat-radio-group>
@@ -45,17 +45,17 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
           [value]="controlValue">
           @for (radioItem of radiosList; track radioItem) {
             <mat-radio-button
-              [id]="'control' + layoutNode?._id + '/' + radioItem?.name"
-              [value]="radioItem?.value"
-              (click)="updateValue(radioItem?.value)">
-              <span [innerHTML]="radioItem?.name"></span>
+              [id]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + $safeNavigationMigration(radioItem?.name)"
+              [value]="$safeNavigationMigration(radioItem?.value)"
+              (click)="updateValue($safeNavigationMigration(radioItem?.value))">
+              <span [innerHTML]="$safeNavigationMigration(radioItem?.name)"></span>
             </mat-radio-button>
           }
         </mat-radio-group>
       }
       @if (options?.showErrors && options?.errorMessage) {
         <mat-error
-        [innerHTML]="options?.errorMessage"></mat-error>
+        [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
       }
     </div>`,
     styles: [`
@@ -64,6 +64,7 @@ import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
     mat-radio-button { margin: 2px; }
     mat-error { font-size: 75%; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialRadiosComponent implements OnInit {

@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -23,12 +23,12 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [attr.minlength]="options?.minLength"
           [attr.pattern]="options?.pattern"
           [readonly]="options?.readonly ? 'readonly' : null"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
-          [type]="layoutNode?.type"
+          [type]="$safeNavigationMigration(layoutNode?.type)"
           (blur)="options.showErrors = true">
       }
       @if (!boundControl) {
@@ -39,13 +39,13 @@ import { JsonSchemaFormService } from '@ajsf/core';
           [attr.minlength]="options?.minLength"
           [attr.pattern]="options?.pattern"
           [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [readonly]="options?.readonly ? 'readonly' : null"
-          [required]="options?.required"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
-          [type]="layoutNode?.type"
+          [type]="$safeNavigationMigration(layoutNode?.type)"
           [value]="controlValue"
           (input)="updateValue($event)"
           (blur)="options.showErrors = true">
@@ -56,11 +56,11 @@ import { JsonSchemaFormService } from '@ajsf/core';
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <small
-        [innerHTML]="options?.description"></small>
+        [innerHTML]="$safeNavigationMigration(options?.description)"></small>
       }
       @if (options?.typeahead?.source) {
         <datalist
-          [id]="'control' + layoutNode?._id + 'Autocomplete'">
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id) + 'Autocomplete'">
           @for (word of options?.typeahead?.source; track word) {
             <option
               [value]="word">
@@ -71,11 +71,12 @@ import { JsonSchemaFormService } from '@ajsf/core';
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengInputComponent implements OnInit {

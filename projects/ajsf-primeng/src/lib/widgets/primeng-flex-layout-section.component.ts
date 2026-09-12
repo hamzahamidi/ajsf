@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -37,7 +37,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         @if (options?.showErrors && options?.errorMessage) {
           <div
             class="p-error"
-          [innerHTML]="options?.errorMessage"></div>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
         }
       </div>
     }
@@ -47,7 +47,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [class]="options?.htmlClass || ''"
         [class.expandable]="options?.expandable && !expanded"
         [class.expanded]="options?.expandable && expanded"
-        [disabled]="options?.readonly">
+        [disabled]="$safeNavigationMigration(options?.readonly)">
         @if (sectionTitle) {
           <legend
             [class]="'legend ' + (options?.labelHtmlClass || '')"
@@ -75,7 +75,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         @if (options?.showErrors && options?.errorMessage) {
           <div
             class="p-error"
-          [innerHTML]="options?.errorMessage"></div>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
         }
       </fieldset>
     }
@@ -96,7 +96,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
         @if (expanded) {
           <div class="p-card-content">
-            <fieldset [disabled]="options?.readonly">
+            <fieldset [disabled]="$safeNavigationMigration(options?.readonly)">
               @if (expanded) {
                 <primeng-flex-layout-root-widget
                   [layout]="layoutNode.items"
@@ -122,7 +122,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
           @if (options?.showErrors && options?.errorMessage) {
             <div
               class="p-error"
-            [innerHTML]="options?.errorMessage"></div>
+            [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
           }
         </div>
       </div>
@@ -147,7 +147,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         </div>
         @if (expanded) {
           <div class="p-panel-content">
-            <fieldset [disabled]="options?.readonly">
+            <fieldset [disabled]="$safeNavigationMigration(options?.readonly)">
               <primeng-flex-layout-root-widget
                 [layout]="layoutNode.items"
                 [dataIndex]="dataIndex"
@@ -170,7 +170,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         @if (options?.showErrors && options?.errorMessage) {
           <div
             class="p-error"
-          [innerHTML]="options?.errorMessage"></div>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
         }
       </div>
     }`,
@@ -180,6 +180,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
     .expandable > .legend:before { content: '▶'; padding-right: .3em; }
     .expanded > .legend:before { content: '▼'; padding-right: .2em; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengFlexLayoutSectionComponent implements OnInit {

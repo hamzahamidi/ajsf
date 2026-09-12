@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -8,6 +8,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 @Component({
     selector: 'file-widget',
     template: ``,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FileComponent implements OnInit {

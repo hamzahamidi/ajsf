@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -25,17 +25,18 @@ import { JsonSchemaFormService } from '@ajsf/core';
       </div>
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <mat-hint
-          [innerHTML]="options?.description"
+          [innerHTML]="$safeNavigationMigration(options?.description)"
         style="display:block; font-size:75%; color:rgba(0,0,0,.6); margin-top:4px;"></mat-hint>
       }
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialFileComponent implements OnInit {

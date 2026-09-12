@@ -5,14 +5,16 @@ import {
   OnChanges,
   OnInit,
   ViewChild,
-  ViewContainerRef
-  } from '@angular/core';
+  ViewContainerRef,
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
 @Component({
     selector: 'template-widget',
     template: `<div #widgetContainer></div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TemplateComponent implements OnInit, OnChanges {

@@ -1,11 +1,12 @@
 import { PrimengFrameworkModule } from './primeng-framework.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CorpusHost, runCorpus } from '../../../../testing/corpus/harness';
 
 // The framework module re-exports JsonSchemaFormModule from '@ajsf/core'.
 @Component({
   standalone: true,
   imports: [PrimengFrameworkModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <json-schema-form
       [form]="form"
