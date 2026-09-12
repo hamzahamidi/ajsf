@@ -10,6 +10,7 @@ import {
 } from '@ajsf/core';
 import {Bootstrap4Framework} from './bootstrap4.framework';
 import {Bootstrap4FrameworkComponent} from './bootstrap4-framework.component';
+import {BOOTSTRAP4_FRAMEWORK_COMPONENTS} from './widgets/public_api';
 
 @NgModule({
     imports: [
@@ -19,10 +20,12 @@ import {Bootstrap4FrameworkComponent} from './bootstrap4-framework.component';
     ],
     declarations: [
         Bootstrap4FrameworkComponent,
+        ...BOOTSTRAP4_FRAMEWORK_COMPONENTS,
     ],
     exports: [
         JsonSchemaFormModule,
         Bootstrap4FrameworkComponent,
+        ...BOOTSTRAP4_FRAMEWORK_COMPONENTS,
     ],
     providers: [
         JsonSchemaFormService,

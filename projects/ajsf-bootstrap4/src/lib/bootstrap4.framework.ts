@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Framework} from '@ajsf/core';
 import {Bootstrap4FrameworkComponent} from './bootstrap4-framework.component';
+import {Bootstrap4CheckboxComponent} from './widgets/bootstrap4-checkbox.component';
 
 // Bootstrap 4 Framework
 // https://github.com/ng-bootstrap/ng-bootstrap
@@ -10,6 +11,10 @@ export class Bootstrap4Framework extends Framework {
   name = 'bootstrap-4';
 
   framework = Bootstrap4FrameworkComponent;
+
+  widgets = {
+    'checkbox': Bootstrap4CheckboxComponent,
+  };
 
   stylesheets = [
     '//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
