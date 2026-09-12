@@ -65,23 +65,26 @@ The first reading of this said it needed a core widget change, because
 around the widget, so the class reaches the input from there. Measured against
 canonical Bootstrap markup the geometry is identical, and no core file changed.
 
-The one type that needs the framework div is the single `checkbox`, since
-`checkbox-widget` reads no `htmlClass` at all. The vertical `checkboxes` and
-`radios` widgets already bind `htmlClass` per item, and the inline variants take
-`form-check form-check-inline` on the item label.
+The one type that needs the framework div is the single `checkbox` on
+Bootstrap 5, whose switch case adds nothing to `htmlClass`. The vertical
+`checkboxes` and `radios` widgets bind `htmlClass` per item, and the inline
+variants take `form-check form-check-inline` on a per-item wrapper.
 
-## Still open
+## Closed in 22.1.0
 
-`form-check-label` emits no declarations in this DOM shape. Bootstrap defines it
-only through sibling selectors such as `.form-check-input:disabled ~
-.form-check-label`, and the widgets nest the input inside the label. So the
-class is emitted as the contract, but disabled and validation label states stay
-inert until the input becomes a sibling. That is a core restructure across
-`checkbox`, `checkboxes` and `radios`, affecting four packages.
+`form-check-label` emitted no declarations while the input sat inside the label,
+because Bootstrap defines the class only through sibling selectors such as
+`.form-check-input:disabled ~ .form-check-label`. 22.1.0 moved the input out:
+`@ajsf/bootstrap4` and `@ajsf/bootstrap5` each supply their own `checkbox`,
+`checkboxes` and `radios` components, subclassing the `@ajsf/core` widget and
+overriding the template only, so no core file changed and the other four
+packages render as they did.
 
-The button set path (`checkboxbuttons`, `radiobuttons`) is migrated off the dead
-`btn-default` and `sr-only` but not measured. Bootstrap 5's own idiom there is
-`btn-check`, which also wants the input as a sibling of the label.
+The button set path is where the two majors part. Bootstrap 5 uses `btn-check`
+on a sibling input, so its button sets took the sibling shape with everything
+else. Bootstrap 4 has no `btn-check` and documents `.btn-group-toggle` with the
+input inside the label, so its `checkboxbuttons` and `radiobuttons` stay nested
+deliberately.
 
 ## Two layout defects, shared by all three
 

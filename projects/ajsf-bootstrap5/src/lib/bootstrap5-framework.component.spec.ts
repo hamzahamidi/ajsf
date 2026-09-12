@@ -156,13 +156,24 @@ describe('FwBootstrap5Component', () => {
       expect(radios.widgetOptions.fieldHtmlClass).toContain('form-check-input');
     });
 
-    it('marks inline checks and radios with form-check-inline', () => {
-      for (const type of ['checkboxes-inline', 'radios-inline']) {
-        const { widgetOptions } = initialize(type);
-        expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-inline');
-        expect(widgetOptions.itemLabelHtmlClass).not.toContain('checkbox-inline');
-        expect(widgetOptions.itemLabelHtmlClass).not.toContain('radio-inline');
-      }
+    it('marks the inline checkbox list with form-check-inline on its wrapper', () => {
+      // Sibling markup: the wrapper div is the input's ancestor, the label is
+      // not, so the class has to live on htmlClass rather than on the label.
+      const { widgetOptions } = initialize('checkboxes-inline');
+      expect(widgetOptions.htmlClass).toContain('form-check-inline');
+      expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-label');
+      expect(widgetOptions.itemLabelHtmlClass).not.toContain('form-check-inline');
+      expect(widgetOptions.htmlClass).not.toContain('checkbox-inline');
+    });
+
+    it('marks inline radios with form-check-inline on its wrapper', () => {
+      // Sibling markup: the wrapper div is the input's ancestor, the label is
+      // not, so the class has to live on htmlClass rather than on the label.
+      const { widgetOptions } = initialize('radios-inline');
+      expect(widgetOptions.htmlClass).toContain('form-check-inline');
+      expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-label');
+      expect(widgetOptions.itemLabelHtmlClass).not.toContain('form-check-inline');
+      expect(widgetOptions.htmlClass).not.toContain('radio-inline');
     });
 
     it('stops emitting the Bootstrap 3 checkbox and radio classes', () => {
@@ -179,13 +190,14 @@ describe('FwBootstrap5Component', () => {
     it('uses a live Bootstrap 5 button class for button sets', () => {
       const { widgetOptions } = initialize('radiobuttons');
       expect(widgetOptions.itemLabelHtmlClass).toContain('btn-outline-primary');
-      expect(widgetOptions.fieldHtmlClass).toContain('visually-hidden');
+      expect(widgetOptions.fieldHtmlClass).toContain('btn-check');
+      expect(widgetOptions.fieldHtmlClass).not.toContain('visually-hidden');
       expect(widgetOptions.fieldHtmlClass).not.toContain('sr-only');
     });
   });
 
-  // The single checkbox has no element of its own carrying htmlClass, so
-  // .form-check has to come from the framework's own wrapper div.
+  // The switch below never puts .form-check on htmlClass for a single
+  // checkbox, so it has to come from the framework's own wrapper div.
   describe('single checkbox wrapper', () => {
     const render = (node: any) => {
       component.layoutNode = node;
