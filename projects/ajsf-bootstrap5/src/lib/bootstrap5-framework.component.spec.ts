@@ -190,7 +190,8 @@ describe('FwBootstrap5Component', () => {
     it('uses a live Bootstrap 5 button class for button sets', () => {
       const { widgetOptions } = initialize('radiobuttons');
       expect(widgetOptions.itemLabelHtmlClass).toContain('btn-outline-primary');
-      expect(widgetOptions.fieldHtmlClass).toContain('visually-hidden');
+      expect(widgetOptions.fieldHtmlClass).toContain('btn-check');
+      expect(widgetOptions.fieldHtmlClass).not.toContain('visually-hidden');
       expect(widgetOptions.fieldHtmlClass).not.toContain('sr-only');
     });
   });

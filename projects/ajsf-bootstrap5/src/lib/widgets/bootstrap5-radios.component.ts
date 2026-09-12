@@ -3,8 +3,12 @@ import { RadiosComponent } from '@ajsf/core';
 
 /**
  * Sibling input and label per item, for radios, radios-inline and
- * radiobuttons alike. Bootstrap 5's btn-check idiom is a sibling input too,
- * so all three variants take the same shape.
+ * radiobuttons alike. The horizontal branch splits on layoutNode.type:
+ * radiobuttons keeps the one shared wrapper, because btn-group belongs on a
+ * single element around the whole set and Bootstrap 5's btn-check idiom is a
+ * sibling input there too. radios-inline gives each item its own wrapper,
+ * because Bootstrap 5 documents one .form-check.form-check-inline per item,
+ * not one around the whole set.
  *
  * Template only. No constructor.
  */
@@ -22,28 +26,55 @@ import { RadiosComponent } from '@ajsf/core';
     }
 
     @if (layoutOrientation === 'horizontal') {
-      <div [class]="options?.htmlClass || ''">
-        @for (radioItem of radiosList; track radioItem) {
-          <input type="radio"
-            [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-            [attr.readonly]="options?.readonly ? 'readonly' : null"
-            [attr.required]="options?.required"
-            [checked]="radioItem?.value === controlValue"
-            [class]="options?.fieldHtmlClass || ''"
-            [disabled]="controlDisabled"
-            [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
-            [name]="controlName"
-            [value]="radioItem?.value"
-            (change)="updateValue($event)">
-          <label
-            [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
-            [class]="(options?.itemLabelHtmlClass || '') +
-              ((controlValue + '' === radioItem?.value + '') ?
-              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
-              (' ' + (options?.style?.unselected || '')))"
-            [innerHTML]="radioItem?.name"></label>
-        }
-      </div>
+      @if (layoutNode?.type === 'radiobuttons') {
+        <div [class]="options?.htmlClass || ''">
+          @for (radioItem of radiosList; track radioItem) {
+            <input type="radio"
+              [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+              [attr.readonly]="options?.readonly ? 'readonly' : null"
+              [attr.required]="options?.required"
+              [checked]="radioItem?.value === controlValue"
+              [class]="options?.fieldHtmlClass || ''"
+              [disabled]="controlDisabled"
+              [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
+              [name]="controlName"
+              [value]="radioItem?.value"
+              (change)="updateValue($event)">
+            <label
+              [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
+              [class]="(options?.itemLabelHtmlClass || '') +
+                ((controlValue + '' === radioItem?.value + '') ?
+                (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
+                (' ' + (options?.style?.unselected || '')))"
+              [innerHTML]="radioItem?.name"></label>
+          }
+        </div>
+      } @else {
+        <div>
+          @for (radioItem of radiosList; track radioItem) {
+            <div [class]="options?.htmlClass || ''">
+              <input type="radio"
+                [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+                [attr.readonly]="options?.readonly ? 'readonly' : null"
+                [attr.required]="options?.required"
+                [checked]="radioItem?.value === controlValue"
+                [class]="options?.fieldHtmlClass || ''"
+                [disabled]="controlDisabled"
+                [id]="'control' + layoutNode?._id + '/' + radioItem?.value"
+                [name]="controlName"
+                [value]="radioItem?.value"
+                (change)="updateValue($event)">
+              <label
+                [attr.for]="'control' + layoutNode?._id + '/' + radioItem?.value"
+                [class]="(options?.itemLabelHtmlClass || '') +
+                  ((controlValue + '' === radioItem?.value + '') ?
+                  (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
+                  (' ' + (options?.style?.unselected || '')))"
+                [innerHTML]="radioItem?.name"></label>
+            </div>
+          }
+        </div>
+      }
     }
 
     @if (layoutOrientation !== 'horizontal') {

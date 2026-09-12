@@ -105,14 +105,27 @@ describe('Bootstrap 5 check and radio markup', () => {
       expect(label.className).toContain('form-check-label');
     });
 
-    it('marks the inline variant with form-check-inline', () => {
+    it('renders inline checkboxes as siblings, each in its own wrapper', () => {
       const el = renderForm({
         ...form,
         form: [{ key: 'colours', type: 'checkboxes-inline' }],
       });
-      const input = el.querySelector('input[type=checkbox]');
-      expect(input.closest('.form-check-inline'),
-        'the inline variant wraps items in .form-check-inline').toBeTruthy();
+      const inputs = [...el.querySelectorAll('input[type=checkbox]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+
+        const wrapper = input.closest('.form-check-inline');
+        expect(wrapper, 'the input must sit inside a form-check-inline element').toBeTruthy();
+        expect(label.closest('.form-check-inline')).toBe(wrapper);
+        expect(wrapper.parentElement.closest('.form-check-inline'),
+          'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(input.className).toContain('form-check-input');
+        expect(label.className).toContain('form-check-label');
+      });
     });
 
     // Bootstrap 5 replaced the nested toggle-button idiom with btn-check on a
@@ -159,10 +172,51 @@ describe('Bootstrap 5 check and radio markup', () => {
       expect(label.className).toContain('form-check-label');
     });
 
-    it('marks the inline variant with form-check-inline', () => {
+    // The 'radios' control is a plain FormControl, so a layout-level
+    // disabled flag reaches formControl.disabled and, through it, every
+    // rendered input. The 'checkboxes' control is a FormArray instead, which
+    // core never disables from that same flag, so there is no equivalent
+    // assertion for the checkbox list.
+    it('disables every rendered input when the control is disabled', () => {
+      const el = renderForm({
+        ...form,
+        form: [{ key: 'size', type: 'radios', disabled: true }],
+      });
+      const inputs = [...el.querySelectorAll('input[type=radio]')] as HTMLInputElement[];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        expect(input.disabled, 'the disabled attribute belongs on the input').toBe(true);
+      });
+    });
+
+    it('renders inline radios as siblings, each in its own wrapper', () => {
       const el = renderForm({ ...form, form: [{ key: 'size', type: 'radios-inline' }] });
-      expect(el.querySelector('input[type=radio]').closest('.form-check-inline'),
-        'the inline variant wraps items in .form-check-inline').toBeTruthy();
+      const inputs = [...el.querySelectorAll('input[type=radio]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+
+        const wrapper = input.closest('.form-check-inline');
+        expect(wrapper, 'the input must sit inside a form-check-inline element').toBeTruthy();
+        expect(label.closest('.form-check-inline')).toBe(wrapper);
+        expect(wrapper.parentElement.closest('.form-check-inline'),
+          'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(input.className).toContain('form-check-input');
+        expect(label.className).toContain('form-check-label');
+      });
+    });
+
+    // Bootstrap 4 nests the input inside the label for toggle buttons; this
+    // pins the opposite for Bootstrap 5, which uses the btn-check idiom here too.
+    it('uses the btn-check idiom for radio button sets, unlike Bootstrap 4', () => {
+      const el = renderForm({ ...form, form: [{ key: 'size', type: 'radiobuttons' }] });
+      const input = el.querySelector('input[type=radio]');
+      const label = input.parentElement.querySelector('label');
+      expect(input.className).toContain('btn-check');
+      expect(label.contains(input), 'btn-check keeps the input outside the label').toBe(false);
     });
 
     it('selects the item matching the control value', () => {

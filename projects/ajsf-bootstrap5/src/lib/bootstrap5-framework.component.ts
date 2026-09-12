@@ -130,8 +130,9 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {
         // Checkbox controls
-        // CheckboxComponent renders no element carrying htmlClass, so the
-        // single checkbox takes .form-check from the framework's own div.
+        // The framework template puts [class.form-check]="isSingleCheck" on
+        // its own wrapper div, so the single checkbox takes .form-check from
+        // there rather than from this switch.
         case 'checkbox':
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'form-check-input');
@@ -182,8 +183,6 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass,
             this.options.style || 'btn-outline-primary');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'visually-hidden');
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'btn-check');
           break;

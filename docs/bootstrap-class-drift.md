@@ -68,7 +68,7 @@ canonical Bootstrap markup the geometry is identical, and no core file changed.
 The one type that needs the framework div is the single `checkbox`, since
 `checkbox-widget` reads no `htmlClass` at all. The vertical `checkboxes` and
 `radios` widgets already bind `htmlClass` per item, and the inline variants take
-`form-check form-check-inline` on the item label.
+`form-check form-check-inline` on a per-item wrapper.
 
 ## Closed in 22.1.0
 
