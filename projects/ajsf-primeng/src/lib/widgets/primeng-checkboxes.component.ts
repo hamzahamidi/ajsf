@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, TitleMapItem, buildTitleMap } from '@ajsf/core';
 
 @Component({
@@ -11,17 +11,17 @@ import { JsonSchemaFormService, TitleMapItem, buildTitleMap } from '@ajsf/core';
         [ngModel]="allChecked"
         [indeterminate]="someChecked"
         [disabled]="controlDisabled || options?.readonly"
-        [name]="options?.name"
+        [name]="$safeNavigationMigration(options?.name)"
         (onChange)="updateAllValues($event)"
         (onBlur)="options.showErrors = true">
       </p-checkbox>
-      <span class="checkbox-name" [innerHTML]="options?.name"></span>
+      <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(options?.name)"></span>
       @if (options?.title) {
         <label
           class="title"
           [class]="options?.labelHtmlClass || ''"
           [style.display]="options?.notitle ? 'none' : ''"
-        [innerHTML]="options?.title"></label>
+        [innerHTML]="$safeNavigationMigration(options?.title)"></label>
       }
       <ul class="checkbox-list" [class.horizontal-list]="horizontalList">
         @for (checkboxItem of checkboxList; track checkboxItem) {
@@ -31,17 +31,17 @@ import { JsonSchemaFormService, TitleMapItem, buildTitleMap } from '@ajsf/core';
               [(ngModel)]="checkboxItem.checked"
               [binary]="true"
               [disabled]="controlDisabled || options?.readonly"
-              [name]="checkboxItem?.name"
+              [name]="$safeNavigationMigration(checkboxItem?.name)"
               (onChange)="updateValue()"
               (onBlur)="options.showErrors = true">
             </p-checkbox>
-            <span class="checkbox-name" [innerHTML]="checkboxItem?.name"></span>
+            <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(checkboxItem?.name)"></span>
           </li>
         }
       </ul>
       @if (options?.showErrors && options?.errorMessage) {
         <div class="p-error"
-        [innerHTML]="options?.errorMessage"></div>
+        [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
       }
     </div>`,
     styles: [`
@@ -51,6 +51,7 @@ import { JsonSchemaFormService, TitleMapItem, buildTitleMap } from '@ajsf/core';
     .checkbox-name { white-space: nowrap; }
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengCheckboxesComponent implements OnInit {

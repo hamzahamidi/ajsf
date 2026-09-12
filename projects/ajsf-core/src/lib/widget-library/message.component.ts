@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -10,6 +10,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [class]="options?.labelHtmlClass || ''"
       [innerHTML]="message"></span>
     }`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MessageComponent implements OnInit {

@@ -9,7 +9,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
       @if (showAddButton) {
         <button mat-raised-button
           [color]="options?.color || 'accent'"
-          [disabled]="options?.readonly"
+          [disabled]="$safeNavigationMigration(options?.readonly)"
           (click)="addItem($event)">
           @if (options?.icon) {
             <span [class]="options?.icon"></span>
@@ -20,7 +20,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         </button>
       }
     </section>`,
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialAddReferenceComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,6 +15,7 @@ import { PrimengFrameworkModule } from '../primeng-framework.module';
       (isValid)="valid = $event"
     ></json-schema-form>`,
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [PrimengFrameworkModule]
 })
 class IntegrationHostComponent {

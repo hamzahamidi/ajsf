@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {cloneDeep, isDefined, JsonSchemaFormService} from '@ajsf/core';
 
 @Component({
     selector: 'material-design-framework',
     templateUrl: './material-design-framework.component.html',
     styleUrls: ['./material-design-framework.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {

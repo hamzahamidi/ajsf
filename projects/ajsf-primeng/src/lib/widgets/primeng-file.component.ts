@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -28,16 +28,17 @@ import { JsonSchemaFormService } from '@ajsf/core';
     
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <small
-        [innerHTML]="options?.description"></small>
+        [innerHTML]="$safeNavigationMigration(options?.description)"></small>
       }
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengFileComponent implements OnInit {

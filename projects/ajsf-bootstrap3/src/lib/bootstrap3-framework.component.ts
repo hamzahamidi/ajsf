@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core';
 
 /**
@@ -8,6 +8,7 @@ import {JsonSchemaFormService, addClasses, cloneDeep, inArray} from '@ajsf/core'
     selector: 'bootstrap-3-framework',
     templateUrl: './bootstrap3-framework.component.html',
     styleUrls: ['./bootstrap3-framework.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {

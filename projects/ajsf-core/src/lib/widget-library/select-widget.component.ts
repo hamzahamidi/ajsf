@@ -1,6 +1,7 @@
 import {
   Component, ComponentRef, Input,
-  OnChanges, OnInit, ViewChild, ViewContainerRef
+  OnChanges, OnInit, ViewChild, ViewContainerRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { JsonSchemaFormService } from '../json-schema-form.service';
@@ -8,6 +9,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
 @Component({
     selector: 'select-widget-widget',
     template: `<div #widgetContainer></div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SelectWidgetComponent implements OnChanges, OnInit {

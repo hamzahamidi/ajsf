@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { buildTitleMap } from '@ajsf/core';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
 
 // TODO: Change this to use a Selection List instead?
@@ -15,17 +15,17 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
         [color]="options?.color || 'primary'"
         [disabled]="controlDisabled || options?.readonly"
         [indeterminate]="someChecked"
-        [name]="options?.name"
+        [name]="$safeNavigationMigration(options?.name)"
         (blur)="options.showErrors = true"
         (change)="updateAllValues($event)">
-        <span class="checkbox-name" [innerHTML]="options?.name"></span>
+        <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(options?.name)"></span>
       </mat-checkbox>
       @if (options?.title) {
         <label
           class="title"
           [class]="options?.labelHtmlClass || ''"
           [style.display]="options?.notitle ? 'none' : ''"
-        [innerHTML]="options?.title"></label>
+        [innerHTML]="$safeNavigationMigration(options?.title)"></label>
       }
       <ul class="checkbox-list" [class.horizontal-list]="horizontalList">
         @for (checkboxItem of checkboxList; track checkboxItem) {
@@ -35,17 +35,17 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
               [(ngModel)]="checkboxItem.checked"
               [color]="options?.color || 'primary'"
               [disabled]="controlDisabled || options?.readonly"
-              [name]="checkboxItem?.name"
+              [name]="$safeNavigationMigration(checkboxItem?.name)"
               (blur)="options.showErrors = true"
               (change)="updateValue()">
-              <span class="checkbox-name" [innerHTML]="checkboxItem?.name"></span>
+              <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(checkboxItem?.name)"></span>
             </mat-checkbox>
           </li>
         }
       </ul>
       @if (options?.showErrors && options?.errorMessage) {
         <mat-error
-        [innerHTML]="options?.errorMessage"></mat-error>
+        [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
       }
     </div>`,
     styles: [`
@@ -55,6 +55,7 @@ import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
     .checkbox-name { white-space: nowrap; }
     mat-error { font-size: 75%; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialCheckboxesComponent implements OnInit {

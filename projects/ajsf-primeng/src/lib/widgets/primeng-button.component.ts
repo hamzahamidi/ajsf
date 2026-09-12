@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
 
 @Component({
@@ -10,19 +10,20 @@ import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
         [attr.readonly]="options?.readonly ? 'readonly' : null"
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [disabled]="controlDisabled || options?.readonly"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
-        [type]="layoutNode?.type"
+        [type]="$safeNavigationMigration(layoutNode?.type)"
         (click)="updateValue($event)">
         @if (options?.icon) {
           <i [class]="options?.icon"></i>
         }
         @if (options?.title) {
-          <span [innerHTML]="options?.title"></span>
+          <span [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </button>
     </div>`,
     styles: [` button { margin-top: 10px; } `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengButtonComponent implements OnInit {

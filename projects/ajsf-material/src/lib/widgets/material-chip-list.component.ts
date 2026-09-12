@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService } from '@ajsf/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -34,16 +34,17 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
         (matChipInputTokenEnd)="add($event)">
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <mat-hint
-        align="end" [innerHTML]="options?.description"></mat-hint>
+        align="end" [innerHTML]="$safeNavigationMigration(options?.description)"></mat-hint>
       }
     </mat-form-field>
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialChipListComponent implements OnInit {

@@ -23,7 +23,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
       </div>
     }`,
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FlexLayoutRootComponent {

@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
@@ -228,6 +228,7 @@ describe('PrimengOneOfComponent', () => {
       (isValid)="valid = $event"
     ></json-schema-form>`,
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [PrimengFrameworkModule]
 })
 class OneOfHostComponent {

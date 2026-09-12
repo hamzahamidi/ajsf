@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -34,6 +34,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
       }
     </mat-stepper>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialStepperComponent implements OnInit {

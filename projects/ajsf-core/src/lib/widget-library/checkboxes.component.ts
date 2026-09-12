@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { buildTitleMap } from '../shared';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service';
 
 
@@ -11,7 +11,7 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
       <label
         [class]="options?.labelHtmlClass || ''"
         [style.display]="options?.notitle ? 'none' : ''"
-      [innerHTML]="options?.title"></label>
+      [innerHTML]="$safeNavigationMigration(options?.title)"></label>
     }
     
     <!-- 'horizontal' = checkboxes-inline or checkboxbuttons -->
@@ -28,8 +28,8 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
               [checked]="checkboxItem.checked"
               [class]="options?.fieldHtmlClass || ''"
               [disabled]="controlDisabled"
-              [id]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-              [name]="checkboxItem?.name"
+              [id]="'control' + $safeNavigationMigration(layoutNode?._id) + '/' + checkboxItem.value"
+              [name]="$safeNavigationMigration(checkboxItem?.name)"
               [readonly]="options?.readonly ? 'readonly' : null"
               [value]="checkboxItem.value"
               (change)="updateValue($event, checkboxItem)">
@@ -54,17 +54,18 @@ import { JsonSchemaFormService, TitleMapItem } from '../json-schema-form.service
                 [checked]="checkboxItem.checked"
                 [class]="options?.fieldHtmlClass || ''"
                 [disabled]="controlDisabled"
-                [id]="options?.name + '/' + checkboxItem.value"
-                [name]="checkboxItem?.name"
+                [id]="$safeNavigationMigration(options?.name) + '/' + checkboxItem.value"
+                [name]="$safeNavigationMigration(checkboxItem?.name)"
                 [readonly]="options?.readonly ? 'readonly' : null"
                 [value]="checkboxItem.value"
                 (change)="updateValue($event, checkboxItem)">
-              <span [innerHTML]="checkboxItem?.name"></span>
+              <span [innerHTML]="$safeNavigationMigration(checkboxItem?.name)"></span>
             </label>
           </div>
         }
       </div>
     }`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CheckboxesComponent implements OnInit {

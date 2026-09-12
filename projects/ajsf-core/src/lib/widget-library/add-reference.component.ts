@@ -13,7 +13,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     @if (showAddButton) {
       <button
         [class]="options?.fieldHtmlClass || ''"
-        [disabled]="options?.readonly"
+        [disabled]="$safeNavigationMigration(options?.readonly)"
         (click)="addItem($event)">
         @if (options?.icon) {
           <span [class]="options?.icon"></span>
@@ -23,7 +23,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         }
       </button>
     }`,
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AddReferenceComponent implements OnInit {

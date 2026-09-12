@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -14,16 +14,17 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [class]="options?.fieldHtmlClass || ''"
         [disabled]="controlDisabled"
         [name]="controlName"
-        [type]="layoutNode?.type"
+        [type]="$safeNavigationMigration(layoutNode?.type)"
         [value]="controlValue"
         (click)="updateValue($event)">
         @if (options?.icon || options?.title) {
           <span
             [class]="options?.icon"
-          [innerHTML]="options?.title"></span>
+          [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </button>
     </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ButtonComponent implements OnInit {

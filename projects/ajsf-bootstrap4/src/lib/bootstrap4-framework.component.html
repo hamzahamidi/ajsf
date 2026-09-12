@@ -14,7 +14,7 @@
       @if (options?.helpBlock) {
         <p
           class="form-text text-muted"
-        [innerHTML]="options?.helpBlock"></p>
+        [innerHTML]="$safeNavigationMigration(options?.helpBlock)"></p>
       }
     </div>
   }
@@ -24,7 +24,7 @@
       [attr.for]="'control' + layoutNode?._id"
       [class]="options?.labelHtmlClass || ''"
       [class.sr-only]="options?.notitle"
-    [innerHTML]="options?.title"></label>
+    [innerHTML]="$safeNavigationMigration(options?.title)"></label>
   }
   @if (layoutNode?.type === 'submit' && jsf?.formOptions?.fieldsRequired) {
     <p>
@@ -44,7 +44,7 @@
              (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
     @if (options?.fieldAddonLeft) {
       <div class="input-group-prepend">
-        <span class="input-group-text" [innerHTML]="options?.fieldAddonLeft"></span>
+        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonLeft)"></span>
       </div>
     }
 
@@ -55,7 +55,7 @@
 
     @if (options?.fieldAddonRight) {
       <div class="input-group-append">
-        <span class="input-group-text" [innerHTML]="options?.fieldAddonRight"></span>
+        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonRight)"></span>
       </div>
     }
   </div>
@@ -63,7 +63,7 @@
   @if ((formControl?.touched || formControl?.dirty || options?.feedbackOnRender) && options?.errorMessage) {
     <div
       class="invalid-feedback"
-    [innerHTML]="options?.errorMessage"></div>
+    [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
   }
 
   <!--
@@ -75,7 +75,7 @@
     !(options?.enableErrorState && formControl?.errors)) {
     <p
       class="form-text text-muted"
-    [innerHTML]="options?.helpBlock"></p>
+    [innerHTML]="$safeNavigationMigration(options?.helpBlock)"></p>
   }
 </div>
 

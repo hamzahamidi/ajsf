@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { hasOwn } from '../shared/utility.functions';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
@@ -15,12 +15,13 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [attr.required]="options?.required"
         [class]="options?.fieldHtmlClass || ''"
         [disabled]="controlDisabled"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
-        [type]="layoutNode?.type"
+        [type]="$safeNavigationMigration(layoutNode?.type)"
         [value]="controlValue"
         (click)="updateValue($event)">
     </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SubmitComponent implements OnInit {

@@ -2000,7 +2000,7 @@
     "valid": true
   },
   "primeng/jsf-fields-range": {
-    "controls": 1,
+    "controls": 2,
     "error": null,
     "valid": true
   },
@@ -2195,7 +2195,7 @@
     "valid": true
   },
   "primeng/rjsf-numbers": {
-    "controls": 8,
+    "controls": 10,
     "error": null,
     "valid": true
   },

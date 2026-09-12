@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
+import { Component, Inject, Input, OnInit, Optional, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService, buildTitleMap } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -19,14 +19,14 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         <mat-select
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [id]="'control' + layoutNode?._id"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           (blur)="options.showErrors = true">
           @for (item of selectList; track item) {
-            <mat-option [value]="item?.value">
-              <span [innerHTML]="item?.name"></span>
+            <mat-option [value]="$safeNavigationMigration(item?.value)">
+              <span [innerHTML]="$safeNavigationMigration(item?.name)"></span>
             </mat-option>
           }
         </mat-select>
@@ -35,17 +35,17 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       @if (!boundControl && !isFieldset) {
         <mat-select
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [disabled]="controlDisabled || options?.readonly"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           [value]="controlValue"
           (selectionChange)="updateValue($event)"
           (blur)="options.showErrors = true">
           @for (item of selectList; track item) {
-            <mat-option [value]="item?.value">
-              <span [innerHTML]="item?.name"></span>
+            <mat-option [value]="$safeNavigationMigration(item?.value)">
+              <span [innerHTML]="$safeNavigationMigration(item?.name)"></span>
             </mat-option>
           }
         </mat-select>
@@ -54,14 +54,14 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       @if (!boundControl && isFieldset) {
         <mat-select
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [disabled]="controlDisabled || options?.readonly"
           [style.width]="'100%'"
           [value]="selectedValue"
           (selectionChange)="selectChild($event)">
           @for (item of selectList; track item) {
-            <mat-option [value]="item?.value">
-              <span [innerHTML]="item?.name"></span>
+            <mat-option [value]="$safeNavigationMigration(item?.value)">
+              <span [innerHTML]="$safeNavigationMigration(item?.name)"></span>
             </mat-option>
           }
         </mat-select>
@@ -69,12 +69,12 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
     
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <mat-hint
-        align="end" [innerHTML]="options?.description"></mat-hint>
+        align="end" [innerHTML]="$safeNavigationMigration(options?.description)"></mat-hint>
       }
     </mat-form-field>
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }
     
     @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
@@ -90,6 +90,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialOneOfComponent implements OnInit {

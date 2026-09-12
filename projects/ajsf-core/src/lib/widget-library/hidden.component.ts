@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -9,7 +9,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     @if (boundControl) {
       <input
         [formControl]="formControl"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
         type="hidden">
     }
@@ -17,10 +17,11 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
       <input
         [disabled]="controlDisabled"
         [name]="controlName"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         type="hidden"
         [value]="controlValue">
     }`,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HiddenComponent implements OnInit {

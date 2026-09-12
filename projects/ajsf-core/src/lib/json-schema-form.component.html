@@ -1,5 +1,5 @@
 <form [autocomplete]="jsf?.formOptions?.autocomplete ? 'on' : 'off'" class="json-schema-form" (ngSubmit)="submitForm()">
-  <root-widget [layout]="jsf?.layout"></root-widget>
+  <root-widget [layout]="$safeNavigationMigration(jsf?.layout)"></root-widget>
 </form>
 @if (debug || jsf?.formOptions?.debug) {
   <div>

@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
+import {Component, Inject, Input, OnInit, Optional, ChangeDetectionStrategy} from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -25,11 +25,11 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
           [attr.max]="maxValue"
           [attr.min]="minValue"
           [attr.step]="options?.multipleOf || options?.step || 'any'"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [readonly]="options?.readonly ? 'readonly' : null"
-          [required]="options?.required"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           [type]="'number'"
           (blur)="options.showErrors = true">
@@ -41,11 +41,11 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
           [attr.min]="minValue"
           [attr.step]="options?.multipleOf || options?.step || 'any'"
           [disabled]="controlDisabled"
-          [id]="'control' + layoutNode?._id"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [readonly]="options?.readonly ? 'readonly' : null"
-          [required]="options?.required"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           [type]="'number'"
           [value]="controlValue"
@@ -62,18 +62,19 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <mat-hint
-        align="end" [innerHTML]="options?.description"></mat-hint>
+        align="end" [innerHTML]="$safeNavigationMigration(options?.description)"></mat-hint>
       }
     </mat-form-field>
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
     ::ng-deep json-schema-form mat-form-field .mat-mdc-form-field-wrapper .mat-form-field-flex
       .mat-form-field-infix { width: initial; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialNumberComponent implements OnInit {

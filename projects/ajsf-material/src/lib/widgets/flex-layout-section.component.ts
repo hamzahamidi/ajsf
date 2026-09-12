@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '@ajsf/core';
 
 @Component({
@@ -36,7 +36,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
         @if (options?.showErrors && options?.errorMessage) {
           <mat-error
-          [innerHTML]="options?.errorMessage"></mat-error>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
         }
       </div>
     }
@@ -46,7 +46,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         [class]="options?.htmlClass || ''"
         [class.expandable]="options?.expandable && !expanded"
         [class.expanded]="options?.expandable && expanded"
-        [disabled]="options?.readonly">
+        [disabled]="$safeNavigationMigration(options?.readonly)">
         @if (sectionTitle) {
           <legend
             [class]="'legend ' + (options?.labelHtmlClass || '')"
@@ -73,7 +73,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
         @if (options?.showErrors && options?.errorMessage) {
           <mat-error
-          [innerHTML]="options?.errorMessage"></mat-error>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
         }
       </fieldset>
     }
@@ -93,7 +93,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         }
         @if (expanded) {
           <mat-card-content>
-            <fieldset [disabled]="options?.readonly">
+            <fieldset [disabled]="$safeNavigationMigration(options?.readonly)">
               @if (expanded) {
                 <flex-layout-root-widget
                   [layout]="layoutNode.items"
@@ -118,7 +118,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         <mat-card-footer>
           @if (options?.showErrors && options?.errorMessage) {
             <mat-error
-            [innerHTML]="options?.errorMessage"></mat-error>
+            [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
           }
         </mat-card-footer>
       </mat-card>
@@ -138,7 +138,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
             }
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <fieldset [disabled]="options?.readonly">
+        <fieldset [disabled]="$safeNavigationMigration(options?.readonly)">
           @if (expanded) {
             <flex-layout-root-widget
               [layout]="layoutNode.items"
@@ -160,7 +160,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         </fieldset>
         @if (options?.showErrors && options?.errorMessage) {
           <mat-error
-          [innerHTML]="options?.errorMessage"></mat-error>
+          [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
         }
       </mat-expansion-panel>
     }`,
@@ -170,6 +170,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
     .expandable > .legend:before { content: '▶'; padding-right: .3em; }
     .expanded > .legend:before { content: '▼'; padding-right: .2em; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FlexLayoutSectionComponent implements OnInit {

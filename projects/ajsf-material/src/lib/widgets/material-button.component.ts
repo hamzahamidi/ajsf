@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
 
 @Component({
@@ -11,20 +11,21 @@ import { JsonSchemaFormService, hasOwn } from '@ajsf/core';
         [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
         [color]="options?.color || 'primary'"
         [disabled]="controlDisabled || options?.readonly"
-        [id]="'control' + layoutNode?._id"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
         [name]="controlName"
-        [type]="layoutNode?.type"
+        [type]="$safeNavigationMigration(layoutNode?.type)"
         [value]="controlValue"
         (click)="updateValue($event)">
         @if (options?.icon) {
           <mat-icon class="mat-24">{{options?.icon}}</mat-icon>
         }
         @if (options?.title) {
-          <span [innerHTML]="options?.title"></span>
+          <span [innerHTML]="$safeNavigationMigration(options?.title)"></span>
         }
       </button>
     </div>`,
     styles: [` button { margin-top: 10px; } `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialButtonComponent implements OnInit {

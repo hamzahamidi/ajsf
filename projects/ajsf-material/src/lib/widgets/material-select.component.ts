@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
+import {Component, Inject, Input, OnInit, Optional, ChangeDetectionStrategy} from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
@@ -24,26 +24,26 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
           [attr.name]="controlName"
-          [id]="'control' + layoutNode?._id"
-          [multiple]="options?.multiple"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
+          [multiple]="$safeNavigationMigration(options?.multiple)"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           (blur)="options.showErrors = true">
           @for (selectItem of selectList; track selectItem) {
-            @if (!isArray(selectItem?.items)) {
+            @if (!isArray($safeNavigationMigration(selectItem?.items))) {
               <mat-option
-                [value]="selectItem?.value">
-                <span [innerHTML]="selectItem?.name"></span>
+                [value]="$safeNavigationMigration(selectItem?.value)">
+                <span [innerHTML]="$safeNavigationMigration(selectItem?.name)"></span>
               </mat-option>
             }
-            @if (isArray(selectItem?.items)) {
+            @if (isArray($safeNavigationMigration(selectItem?.items))) {
               <mat-optgroup
-                [label]="selectItem?.group">
+                [label]="$safeNavigationMigration(selectItem?.group)">
                 @for (subItem of selectItem.items; track subItem) {
                   <mat-option
-                    [value]="subItem?.value">
-                    <span [innerHTML]="subItem?.name"></span>
+                    [value]="$safeNavigationMigration(subItem?.value)">
+                    <span [innerHTML]="$safeNavigationMigration(subItem?.name)"></span>
                   </mat-option>
                 }
               </mat-optgroup>
@@ -56,30 +56,30 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
           [attr.name]="controlName"
           [disabled]="controlDisabled || options?.readonly"
-          [id]="'control' + layoutNode?._id"
-          [multiple]="options?.multiple"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
+          [multiple]="$safeNavigationMigration(options?.multiple)"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [style.width]="'100%'"
           [value]="controlValue"
           (blur)="options.showErrors = true"
           (change)="updateValue($event)">
           @for (selectItem of selectList; track selectItem) {
-            @if (!isArray(selectItem?.items)) {
+            @if (!isArray($safeNavigationMigration(selectItem?.items))) {
               <mat-option
                 [attr.selected]="selectItem?.value === controlValue"
-                [value]="selectItem?.value">
-                <span [innerHTML]="selectItem?.name"></span>
+                [value]="$safeNavigationMigration(selectItem?.value)">
+                <span [innerHTML]="$safeNavigationMigration(selectItem?.name)"></span>
               </mat-option>
             }
-            @if (isArray(selectItem?.items)) {
+            @if (isArray($safeNavigationMigration(selectItem?.items))) {
               <mat-optgroup
-                [label]="selectItem?.group">
+                [label]="$safeNavigationMigration(selectItem?.group)">
                 @for (subItem of selectItem.items; track subItem) {
                   <mat-option
                     [attr.selected]="subItem?.value === controlValue"
-                    [value]="subItem?.value">
-                    <span [innerHTML]="subItem?.name"></span>
+                    [value]="$safeNavigationMigration(subItem?.value)">
+                    <span [innerHTML]="$safeNavigationMigration(subItem?.name)"></span>
                   </mat-option>
                 }
               </mat-optgroup>
@@ -93,18 +93,19 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <mat-hint
-        align="end" [innerHTML]="options?.description"></mat-hint>
+        align="end" [innerHTML]="$safeNavigationMigration(options?.description)"></mat-hint>
       }
     </mat-form-field>
     @if (options?.showErrors && options?.errorMessage) {
       <mat-error
-      [innerHTML]="options?.errorMessage"></mat-error>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
     }`,
     styles: [`
     mat-error { font-size: 75%; margin-top: -1rem; margin-bottom: 0.5rem; }
     ::ng-deep json-schema-form mat-form-field .mat-mdc-form-field-wrapper .mat-form-field-flex
       .mat-form-field-infix { width: initial; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialSelectComponent implements OnInit {

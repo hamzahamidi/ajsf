@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
 
 @Component({
@@ -18,22 +18,22 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
         <p-select
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [options]="selectList"
           [optionLabel]="'name'"
           [optionValue]="'value'"
           [group]="hasGroups"
           [optionGroupLabel]="'group'"
           [optionGroupChildren]="'items'"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [fluid]="true"
         (onBlur)="options.showErrors = true"></p-select>
       }
       @if (!boundControl && !options?.multiple) {
         <p-select
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [options]="selectList"
           [optionLabel]="'name'"
           [optionValue]="'value'"
@@ -41,8 +41,8 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
           [optionGroupLabel]="'group'"
           [optionGroupChildren]="'items'"
           [disabled]="controlDisabled || options?.readonly"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [required]="$safeNavigationMigration(options?.required)"
           [ngModel]="controlValue"
           [fluid]="true"
           (onChange)="updateValue($event)"
@@ -52,21 +52,21 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
         <p-multiselect
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [options]="selectList"
           [optionLabel]="'name'"
           [optionValue]="'value'"
           [group]="hasGroups"
           [optionGroupLabel]="'group'"
           [optionGroupChildren]="'items'"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [fluid]="true"
         (onBlur)="options.showErrors = true"></p-multiselect>
       }
       @if (!boundControl && options?.multiple) {
         <p-multiselect
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [options]="selectList"
           [optionLabel]="'name'"
           [optionValue]="'value'"
@@ -74,7 +74,7 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
           [optionGroupLabel]="'group'"
           [optionGroupChildren]="'items'"
           [disabled]="controlDisabled || options?.readonly"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
           [ngModel]="controlValue"
           [fluid]="true"
           (onChange)="updateValue($event)"
@@ -86,16 +86,17 @@ import { JsonSchemaFormService, buildTitleMap, isArray } from '@ajsf/core';
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <small
-        [innerHTML]="options?.description"></small>
+        [innerHTML]="$safeNavigationMigration(options?.description)"></small>
       }
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengSelectComponent implements OnInit {

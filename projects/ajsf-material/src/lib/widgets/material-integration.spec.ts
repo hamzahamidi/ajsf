@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,6 +16,7 @@ import { MaterialDesignFrameworkModule } from '../material-design-framework.modu
       (isValid)="valid = $event"
     ></json-schema-form>`,
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [MaterialDesignFrameworkModule]
 })
 class TestHostComponent {

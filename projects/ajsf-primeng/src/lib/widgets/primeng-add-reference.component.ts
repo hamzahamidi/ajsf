@@ -8,7 +8,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
     <section [class]="options?.htmlClass || ''" align="end">
       @if (showAddButton) {
         <button type="button"
-          [disabled]="options?.readonly"
+          [disabled]="$safeNavigationMigration(options?.readonly)"
           (click)="addItem($event)">
           @if (options?.icon) {
             <span [class]="options?.icon"></span>
@@ -19,7 +19,7 @@ import { JsonSchemaFormService } from '@ajsf/core';
         </button>
       }
     </section>`,
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengAddReferenceComponent implements OnInit {

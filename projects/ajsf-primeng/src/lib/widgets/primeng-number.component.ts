@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf/core';
 
 @Component({
@@ -18,11 +18,11 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
         <p-inputnumber
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [readonly]="options?.readonly"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [readonly]="$safeNavigationMigration(options?.readonly)"
+          [required]="$safeNavigationMigration(options?.required)"
           [min]="minValue"
           [max]="maxValue"
           [step]="options?.multipleOf || options?.step || 1"
@@ -34,11 +34,11 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
       @if (!boundControl) {
         <p-inputnumber
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-          [inputId]="'control' + layoutNode?._id"
+          [inputId]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
-          [placeholder]="options?.notitle ? options?.placeholder : options?.title"
-          [readonly]="options?.readonly"
-          [required]="options?.required"
+          [placeholder]="options?.notitle ? $safeNavigationMigration(options?.placeholder) : $safeNavigationMigration(options?.title)"
+          [readonly]="$safeNavigationMigration(options?.readonly)"
+          [required]="$safeNavigationMigration(options?.required)"
           [disabled]="controlDisabled"
           [min]="minValue"
           [max]="maxValue"
@@ -56,16 +56,17 @@ import { JsonSchemaFormService, effectiveMinimum, effectiveMaximum } from '@ajsf
       }
       @if (options?.description && (!options?.showErrors || !options?.errorMessage)) {
         <small
-        [innerHTML]="options?.description"></small>
+        [innerHTML]="$safeNavigationMigration(options?.description)"></small>
       }
     </div>
     @if (options?.showErrors && options?.errorMessage) {
       <div class="p-error"
-      [innerHTML]="options?.errorMessage"></div>
+      [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
     }`,
     styles: [`
     .p-error { font-size: 75%; margin-top: 0.25rem; }
   `],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrimengNumberComponent implements OnInit {
