@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CheckboxComponent } from '@ajsf/core';
 
 /**
@@ -11,6 +11,7 @@ import { CheckboxComponent } from '@ajsf/core';
  */
 @Component({
   selector: 'bootstrap5-checkbox-widget',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
   template: `
     <div [class]="options?.htmlClass || ''">
