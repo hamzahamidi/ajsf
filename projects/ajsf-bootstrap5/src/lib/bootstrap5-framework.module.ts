@@ -10,8 +10,7 @@ import {
 } from '@ajsf/core';
 import {Bootstrap5Framework} from './bootstrap5.framework';
 import {Bootstrap5FrameworkComponent} from './bootstrap5-framework.component';
-import {Bootstrap5CheckboxComponent} from './widgets/bootstrap5-checkbox.component';
-import {Bootstrap5CheckboxesComponent} from './widgets/bootstrap5-checkboxes.component';
+import {BOOTSTRAP5_FRAMEWORK_COMPONENTS} from './widgets/public_api';
 
 @NgModule({
     imports: [
@@ -21,14 +20,12 @@ import {Bootstrap5CheckboxesComponent} from './widgets/bootstrap5-checkboxes.com
     ],
     declarations: [
         Bootstrap5FrameworkComponent,
-        Bootstrap5CheckboxComponent,
-        Bootstrap5CheckboxesComponent,
+        ...BOOTSTRAP5_FRAMEWORK_COMPONENTS,
     ],
     exports: [
         JsonSchemaFormModule,
         Bootstrap5FrameworkComponent,
-        Bootstrap5CheckboxComponent,
-        Bootstrap5CheckboxesComponent,
+        ...BOOTSTRAP5_FRAMEWORK_COMPONENTS,
     ],
     providers: [
         JsonSchemaFormService,

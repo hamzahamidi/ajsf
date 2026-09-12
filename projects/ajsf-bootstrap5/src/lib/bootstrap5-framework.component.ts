@@ -165,11 +165,12 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'radios-inline':
+          this.widgetOptions.htmlClass = addClasses(
+            this.widgetOptions.htmlClass, 'form-check form-check-inline');
           this.widgetOptions.fieldHtmlClass = addClasses(
             this.widgetOptions.fieldHtmlClass, 'form-check-input');
           this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass,
-            'form-check form-check-inline form-check-label');
+            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         // Button sets - checkboxbuttons and radiobuttons
         case 'checkboxbuttons':

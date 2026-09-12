@@ -166,10 +166,14 @@ describe('FwBootstrap5Component', () => {
       expect(widgetOptions.htmlClass).not.toContain('checkbox-inline');
     });
 
-    it('marks inline radios with form-check-inline', () => {
+    it('marks inline radios with form-check-inline on its wrapper', () => {
+      // Sibling markup: the wrapper div is the input's ancestor, the label is
+      // not, so the class has to live on htmlClass rather than on the label.
       const { widgetOptions } = initialize('radios-inline');
-      expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-inline');
-      expect(widgetOptions.itemLabelHtmlClass).not.toContain('radio-inline');
+      expect(widgetOptions.htmlClass).toContain('form-check-inline');
+      expect(widgetOptions.itemLabelHtmlClass).toContain('form-check-label');
+      expect(widgetOptions.itemLabelHtmlClass).not.toContain('form-check-inline');
+      expect(widgetOptions.htmlClass).not.toContain('radio-inline');
     });
 
     it('stops emitting the Bootstrap 3 checkbox and radio classes', () => {
