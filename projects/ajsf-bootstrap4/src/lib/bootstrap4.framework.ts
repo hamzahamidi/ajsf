@@ -3,6 +3,7 @@ import {Framework} from '@ajsf/core';
 import {Bootstrap4FrameworkComponent} from './bootstrap4-framework.component';
 import {Bootstrap4CheckboxComponent} from './widgets/bootstrap4-checkbox.component';
 import {Bootstrap4CheckboxesComponent} from './widgets/bootstrap4-checkboxes.component';
+import {Bootstrap4RadiosComponent} from './widgets/bootstrap4-radios.component';
 
 // Bootstrap 4 Framework
 // https://github.com/ng-bootstrap/ng-bootstrap
@@ -16,6 +17,7 @@ export class Bootstrap4Framework extends Framework {
   widgets = {
     'checkbox': Bootstrap4CheckboxComponent,
     'checkboxes': Bootstrap4CheckboxesComponent,
+    'radios': Bootstrap4RadiosComponent,
   };
 
   stylesheets = [

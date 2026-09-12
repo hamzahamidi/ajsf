@@ -139,4 +139,61 @@ describe('Bootstrap 4 check and radio markup', () => {
       });
     });
   });
+
+  describe('radio list', () => {
+    const form = {
+      schema: { size: { type: 'string', title: 'Size', enum: ['small', 'large'] } },
+      form: [{ key: 'size', type: 'radios' }],
+    };
+
+    it('renders every item as an input beside its own label', () => {
+      const el = renderForm(form);
+      const inputs = [...el.querySelectorAll('input[type=radio]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+      });
+    });
+
+    it('classes each item as Bootstrap 4 documents', () => {
+      const input = renderForm(form).querySelector('input[type=radio]');
+      const label = input.parentElement.querySelector('label');
+      const wrapper = input.closest('.form-check');
+      expect(wrapper, 'the input must sit inside a .form-check').toBeTruthy();
+      expect(label.closest('.form-check')).toBe(wrapper);
+      expect(wrapper.parentElement.closest('.form-check'),
+        'nesting two .form-check elements doubles Bootstrap padding').toBeNull();
+      expect(input.className).toContain('form-check-input');
+      expect(label.className).toContain('form-check-label');
+    });
+
+    it('keeps the input inside the label for button sets, as Bootstrap 4 documents', () => {
+      const el = renderForm({ ...form, form: [{ key: 'size', type: 'radiobuttons' }] });
+      const input = el.querySelector('input[type=radio]');
+      expect(input.closest('label'), 'a Bootstrap 4 toggle button wraps its input').toBeTruthy();
+    });
+
+    it('renders inline radios as siblings, as Bootstrap 4 documents', () => {
+      const el = renderForm({ ...form, form: [{ key: 'size', type: 'radios-inline' }] });
+      const inputs = [...el.querySelectorAll('input[type=radio]')];
+      expect(inputs.length, 'both enum values should render').toEqual(2);
+      inputs.forEach((input) => {
+        const label = input.parentElement.querySelector('label');
+        expect(label, 'each item needs its own label').toBeTruthy();
+        expect(label.contains(input), 'the label must not wrap the input').toBe(false);
+        expect(label.getAttribute('for')).toEqual(input.getAttribute('id'));
+
+        const wrapper = input.closest('.form-check-inline');
+        expect(wrapper, 'the input must sit inside a form-check-inline element').toBeTruthy();
+        expect(label.closest('.form-check-inline')).toBe(wrapper);
+        expect(wrapper.parentElement.closest('.form-check-inline'),
+          'each item must own its wrapper rather than sharing one').toBeNull();
+        expect(input.className).toContain('form-check-input');
+        expect(label.className).toContain('form-check-label');
+      });
+    });
+  });
 });
