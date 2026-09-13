@@ -2,6 +2,7 @@ import { vi } from 'vitest';
 import { Subject } from 'rxjs';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryModule } from '@ajsf/core';
 import { Bootstrap4FrameworkModule } from './bootstrap4-framework.module';
@@ -63,22 +64,38 @@ describe('Bootstrap 4 array row', () => {
       'float utilities do nothing to a flex item, so the class should be gone').not.toContain('float-right');
   });
 
-  // showRemoveButton depends on array length against minItems, so it flips while
-  // the form is live. One structure rather than two branches is what stops the
-  // surviving controls being torn down and rebuilt when it does.
-  it('renders one structure whether or not the button is there', () => {
-    const withButton = render(arrayForm(0, 2));
-    expect(withButton.querySelector('button[type=button]'), 'removable').toBeTruthy();
-    const removableDepth = fieldWrapper(withButton).parentElement.className;
+  // showRemoveButton flips while the form is live, so this has to be one
+  // fixture crossing minItems rather than two separate renders. Two branches
+  // for wrapped and unwrapped would rebuild the surviving control here, taking
+  // its focus and its state with it.
+  it('keeps the surviving control across a removal that crosses minItems', () => {
+    const el = render(arrayForm(1, 2));
+    const items = () => [...el.querySelectorAll('input:not([type=submit])')] as HTMLInputElement[];
+    const removers = () => [...el.querySelectorAll('.d-flex > button')] as HTMLElement[];
 
-    const locked = render(arrayForm(2, 2));
-    expect(locked.querySelector('button[type=button]'),
-      'at minItems there is nothing to remove').toBeFalsy();
-    expect(fieldWrapper(locked).querySelector('input'),
-      'the control still renders at the same depth').toBeTruthy();
-    expect(removableDepth).toContain('d-flex');
-    expect(fieldWrapper(locked).parentElement.className,
-      'the wrapper is always there, it just stops being a flex row').not.toContain('d-flex');
+    expect(items().length, 'two entries render two inputs').toEqual(2);
+    expect(removers().length, 'both are removable above minItems').toEqual(2);
+
+    const survivor = items()[0];
+    const survivorWrapper = survivor.closest('select-widget-widget').parentElement;
+    const survivorRow = survivorWrapper.parentElement;
+    const jsf = fixture.debugElement.query(By.css('json-schema-form'))
+      .injector.get(JsonSchemaFormService);
+    const control = jsf.formGroup.get(['contacts', '0']);
+
+    removers()[1].click();
+    fixture.detectChanges();
+
+    expect(items().length, 'one entry left').toEqual(1);
+    expect(items()[0], 'the surviving input must be the same node').toBe(survivor);
+    expect(items()[0].closest('select-widget-widget').parentElement,
+      'and sit in the same wrapper').toBe(survivorWrapper);
+    expect(survivorWrapper.parentElement, 'inside the same row').toBe(survivorRow);
+    expect(jsf.formGroup.get(['contacts', '0']),
+      'backed by the same control').toBe(control);
+    expect(removers().length, 'at minItems the button goes').toEqual(0);
+    expect(survivorRow.className,
+      'and the row stops being a flex container without being replaced').not.toContain('d-flex');
   });
 
   it('leaves a field outside an array alone', () => {
