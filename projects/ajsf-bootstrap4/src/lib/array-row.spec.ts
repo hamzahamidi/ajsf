@@ -91,6 +91,27 @@ describe('Bootstrap 4 array row', () => {
       'the row really does hold a group rather than one control').toBeGreaterThan(1);
   });
 
+
+  // A group is a group because of what the layout resolved it to, not because
+  // of how many controls it happens to contain. A child count or a height
+  // would call this one centred.
+  it('treats a group holding a single field as a group', () => {
+    const el = render({
+      schema: {
+        people: {
+          type: 'array',
+          title: 'People',
+          items: { type: 'object', properties: { first: { type: 'string' } } },
+        },
+      },
+      data: { people: [{ first: 'Jane' }] },
+    });
+    const row = (el.querySelector('.d-flex > button') as HTMLElement).parentElement;
+    expect(row.querySelectorAll('input, select, textarea').length,
+      'exactly one control, and it is still a group').toEqual(1);
+    expect(row.className, 'so it anchors at the top').toContain('align-items-start');
+  });
+
   // showRemoveButton flips while the form is live, so this has to be one
   // fixture crossing minItems rather than two separate renders. Two branches
   // for wrapped and unwrapped would rebuild the surviving control here, taking
