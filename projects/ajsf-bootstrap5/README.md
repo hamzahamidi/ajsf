@@ -84,6 +84,10 @@ renders once, on the `<legend>` that names the group, in the normalised
 spelling. If your CSS targets the array label through `labelHtmlClass`, it now
 applies to the legend.
 
+The required marker moves with the title. It was previously appended only to
+the framework's own label, so a required fieldset, whose title the widget
+already owned, rendered no asterisk at all; it now does.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project @ajsf/bootstrap5` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project @ajsf/bootstrap5`.

@@ -54,6 +54,39 @@ describe('Bootstrap 3 array title', () => {
     expect(title.closest('fieldset'), 'and the legend must be inside it').toBeTruthy();
   });
 
+
+  const requiredArray = {
+    schema: {
+      type: 'object',
+      required: ['phone_numbers'],
+      properties: { phone_numbers: { type: 'array', items: { type: 'string' } } },
+    },
+    data: { phone_numbers: ['702-123-4567'] },
+  };
+
+  // The marker is appended to whichever title renders. Handing the array's
+  // title to the widget without moving the marker with it dropped the
+  // asterisk entirely, because the framework's own title is null by then.
+  it('keeps the required marker on the title it moved', () => {
+    const el = render(requiredArray);
+    const legends = [...el.querySelectorAll('legend')]
+      .filter((n) => n.textContent.trim().startsWith('Phone Numbers'));
+    expect(legends.length, 'one legend for the array').toEqual(1);
+    expect(legends[0].querySelectorAll('.text-danger').length,
+      'a required array keeps exactly one asterisk').toEqual(1);
+    expect([...el.querySelectorAll('label')]
+      .filter((n) => n.textContent.trim().startsWith('Phone Numbers')).length,
+      'and the framework still renders no label of its own').toEqual(0);
+  });
+
+  it('leaves an optional array unmarked', () => {
+    const el = render(underscored);
+    const legend = [...el.querySelectorAll('legend')]
+      .find((n) => n.textContent.trim() === 'Phone Numbers');
+    expect(legend.querySelectorAll('.text-danger').length,
+      'nothing required, nothing marked').toEqual(0);
+  });
+
   it('leaves a plain fieldset title alone', () => {
     const el = render({
       schema: { home_address: { type: 'object', properties: { city: { type: 'string' } } } },

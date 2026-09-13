@@ -120,12 +120,15 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       this.options.fieldAddonRight =
         this.options.fieldAddonRight || this.options.append;
 
-      // Add asterisk to titles if required
-      if (this.options.title && this.layoutNode.type !== 'tab' &&
+      // Add asterisk to titles if required. setTitle hands the title to the
+      // widget for a fieldset or an array and leaves none here, so the marker
+      // goes on whichever of the two actually renders.
+      const titled = this.options.title ? this.options : this.widgetOptions;
+      if (titled.title && this.layoutNode.type !== 'tab' &&
         !this.options.notitle && this.options.required &&
-        !this.options.title.includes('*')
+        !titled.title.includes('*')
       ) {
-        this.options.title += ' <strong class="text-danger">*</strong>';
+        titled.title += ' <strong class="text-danger">*</strong>';
       }
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {
