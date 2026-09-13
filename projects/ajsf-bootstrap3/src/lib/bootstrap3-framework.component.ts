@@ -238,6 +238,11 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
         this.widgetOptions.expandable = true;
         this.widgetOptions.title = 'Authentication settings';
         return null;
+      // An array is a fieldset too: its title belongs to the widget, which
+      // renders it as the legend naming the group. Leaving it to the default
+      // branch blanked it here and had the widget rebuild one from the raw
+      // property name, so the title appeared twice and in two spellings.
+      case 'array':
       case 'fieldset':
         this.widgetOptions.title = this.options.title;
         return null;

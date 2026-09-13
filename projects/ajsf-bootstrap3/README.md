@@ -53,6 +53,17 @@ Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to
 * `bootstrap-4` for 'Bootstrap 4.
 * `no-framework` for (plain HTML).
 
+## Array titles, changed in 22.2.0
+
+An array rendered its title twice: once as the field label, and again as the
+fieldset legend, which the widget rebuilt from the raw property name. A
+`phone_numbers` property showed "Phone Numbers" followed by "Phone_numbers".
+
+The title now belongs to the widget, as it already did for a fieldset, so it
+renders once, on the `<legend>` that names the group, in the normalised
+spelling. If your CSS targets the array label through `labelHtmlClass`, it now
+applies to the legend.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project @ajsf/bootstrap3` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project @ajsf/bootstrap3`.
