@@ -43,12 +43,14 @@ title, described further down under Correctness, which still need a design
 pass before code because they change shared widget structure rather than one
 package's class list.
 
-### Raise the Codecov project target
+### The Codecov project target has a floor
 
-`codecov.yml` has `project: auto` because coverage was 56 percent when it was
-written. `@ajsf/core` measured 91.14 percent of statements on 2026-09-12, so
-the target can become a real number. Measure the combined figure before
-choosing one, and only pick a number already met.
+Done. `codecov.yml` had `project: auto` alone because coverage was 56 percent
+when it was written; the combined figure measured 77.22 percent on 2026-09-13,
+so a floor of 76 percent now sits beside the ratchet. `auto` catches one large
+drop, the floor catches slow erosion that every individual pull request would
+otherwise pass. Raise the floor in steps, and only ever to a figure already
+met.
 
 ## Security
 

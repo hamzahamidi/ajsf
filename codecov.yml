@@ -1,24 +1,38 @@
 # Codecov configuration. Reference: https://docs.codecov.com/docs/codecovyml-reference
 #
-# Two different targets, on purpose.
+# Three targets, on purpose.
 #
 # `patch` is a fixed 80%: code being added or changed in a pull request has no
 # legacy excuse, so it carries the real standard.
 #
-# `project` is `auto`, meaning a pull request may not drop total coverage below
-# what main already has. It is deliberately not a fixed 80%, because coverage is
-# well under that today and a fixed target would fail every pull request until
-# the day it is reached, which trains everyone to ignore the check. Raise it in
-# steps as the number climbs, and only to a figure already met.
+# `project/default` stays `auto`, meaning a pull request may not drop total
+# coverage by more than the threshold. That is a ratchet, not a floor: it
+# catches a single bad drop but lets coverage erode slowly, half a point at a
+# time, with every individual pull request passing.
 #
-# `if_not_found: success` matters right now: main has no coverage report yet, so
-# there is nothing to compare against until the first upload lands there.
+# `project/floor` is the floor `auto` cannot be. main measured 77.22% on
+# 2026-09-13, so 76% is a figure already met with room for ordinary movement.
+# Raise it in steps as the number climbs, and only ever to a figure already
+# met: a target set above current coverage fails every pull request until the
+# day it is reached, which trains everyone to ignore the check.
+#
+# `if_not_found: success` covers a base commit that never uploaded a report,
+# which is not the same as main having none. main has had one since 20.0.0.
+codecov:
+  # Without this Codecov reports on `master`, which has not been this
+  # repository's default branch for years and still answers the API with a
+  # twelve file, 19% report.
+  branch: main
+
 coverage:
   status:
     project:
       default:
         target: auto
         threshold: 0.5%
+        if_not_found: success
+      floor:
+        target: 76%
         if_not_found: success
     patch:
       default:
