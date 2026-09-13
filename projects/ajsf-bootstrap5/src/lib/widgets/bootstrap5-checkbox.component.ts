@@ -3,8 +3,6 @@ import { CheckboxComponent } from '@ajsf/core';
 
 /**
  * Bootstrap 5 wants the input and label as siblings inside .form-check.
- *
- * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap5-checkbox-widget',

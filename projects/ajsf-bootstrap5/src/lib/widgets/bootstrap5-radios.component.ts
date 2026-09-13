@@ -4,8 +4,6 @@ import { RadiosComponent } from '@ajsf/core';
 /**
  * Siblings throughout: Bootstrap 5 button sets use .btn-check, which is a
  * sibling input too.
- *
- * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap5-radios-widget',

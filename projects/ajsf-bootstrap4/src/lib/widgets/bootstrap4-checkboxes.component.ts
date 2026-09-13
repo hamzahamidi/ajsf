@@ -4,8 +4,6 @@ import { CheckboxesComponent } from '@ajsf/core';
 /**
  * Siblings, except checkboxbuttons: Bootstrap 4 has no .btn-check, so its toggle
  * buttons keep the nested input .btn-group-toggle documents.
- *
- * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap4-checkboxes-widget',

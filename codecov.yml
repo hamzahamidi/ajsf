@@ -2,12 +2,13 @@
 #
 # patch is a fixed 80%: new code has no legacy excuse.
 #
-# project/default is auto, a ratchet against the base commit. project/floor is
-# the floor auto cannot be, since auto passes erosion under the threshold.
-# Raise the floor in steps, and only ever to a figure already met: a target
-# above current coverage fails every pull request until the day it is reached.
+# project/default is a ratchet against the base commit; project/floor is the
+# floor it cannot be, since auto passes erosion under the threshold.
 #
-# The default branch is a Codecov account setting, not a key here.
+# Raise the floor only to a figure already met.
+
+codecov:
+  branch: main
 
 coverage:
   status:
