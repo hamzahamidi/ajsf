@@ -64,6 +64,33 @@ describe('Bootstrap 5 array row', () => {
       'float utilities do nothing to a flex item, so the class should be gone').not.toContain('float-end');
   });
 
+
+  // A group-level action anchors at the group's upper edge: the midpoint of a
+  // nested item moves as its contents grow, which would leave the button
+  // looking attached to whichever child happened to sit halfway down.
+  it('anchors the button at the top when the item is a group', () => {
+    const el = render({
+      schema: {
+        people: {
+          type: 'array',
+          title: 'People',
+          items: {
+            type: 'object',
+            properties: { first: { type: 'string' }, last: { type: 'string' } },
+          },
+        },
+      },
+      data: { people: [{ first: 'Jane', last: 'Doe' }] },
+    });
+    const button = el.querySelector('.d-flex > button') as HTMLElement;
+    expect(button, 'a group item is still removable').toBeTruthy();
+    const row = button.parentElement;
+    expect(row.className, 'a group anchors at its top').toContain('align-items-start');
+    expect(row.className, 'and is not centred on its contents').not.toContain('align-items-center');
+    expect(row.querySelectorAll('input').length,
+      'the row really does hold a group rather than one control').toBeGreaterThan(1);
+  });
+
   // showRemoveButton flips while the form is live, so this has to be one
   // fixture crossing minItems rather than two separate renders. Two branches
   // for wrapped and unwrapped would rebuild the surviving control here, taking

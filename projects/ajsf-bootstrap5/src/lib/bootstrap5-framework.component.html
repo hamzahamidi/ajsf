@@ -36,7 +36,8 @@ to the field rather than to this container.
   -->
   <div
     [class.d-flex]="showRemoveButton"
-    [class.align-items-center]="showRemoveButton"
+    [class.align-items-center]="showRemoveButton && options?.isInputWidget"
+    [class.align-items-start]="showRemoveButton && !options?.isInputWidget"
     [class.is-invalid]="!!options?.errorMessage">
     <div
       [class.h-100]="true"

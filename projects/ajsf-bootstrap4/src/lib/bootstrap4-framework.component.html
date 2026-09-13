@@ -34,7 +34,8 @@
   -->
   <div
     [class.d-flex]="showRemoveButton"
-    [class.align-items-center]="showRemoveButton"
+    [class.align-items-center]="showRemoveButton && options?.isInputWidget"
+    [class.align-items-start]="showRemoveButton && !options?.isInputWidget"
     [class.is-invalid]="options?.enableErrorState && formControl?.errors &&
           (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
     <div [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
