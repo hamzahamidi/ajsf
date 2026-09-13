@@ -1,14 +1,5 @@
 <div [class]="options?.htmlClass || ''">
 
-  @if (showRemoveButton) {
-    <button
-      class="close float-right"
-      type="button"
-      (click)="removeItem()">
-      <span aria-hidden="true">&times;</span>
-      <span class="sr-only">Close</span>
-    </button>
-  }
   @if (options?.messageLocation === 'top') {
     <div>
       @if (options?.helpBlock) {
@@ -33,30 +24,47 @@
   }
 
   <!--
-  is-invalid sits on this wrapper, not on the control. Bootstrap reveals
+  is-invalid sits on this row, not on the control. Bootstrap reveals
   .invalid-feedback only as a following sibling of the element carrying
   .is-invalid, and select-widget-widget renders its own host element and a
   container div between here and the real input, so the input and the
-  message can never be siblings.
+  message can never be siblings. The row is a flex container only for a
+  removable array item, which is also what stops .close taking its built in
+  float and leaving normal flow.
   -->
-  <div [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
-       [class.is-invalid]="options?.enableErrorState && formControl?.errors &&
-             (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
-    @if (options?.fieldAddonLeft) {
-      <div class="input-group-prepend">
-        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonLeft)"></span>
-      </div>
-    }
+  <div
+    [class.d-flex]="showRemoveButton"
+    [class.align-items-center]="showRemoveButton"
+    [class.is-invalid]="options?.enableErrorState && formControl?.errors &&
+          (formControl?.touched || formControl?.dirty || options?.feedbackOnRender)">
+    <div [class.input-group]="options?.fieldAddonLeft || options?.fieldAddonRight"
+         [class.flex-grow-1]="showRemoveButton">
+      @if (options?.fieldAddonLeft) {
+        <div class="input-group-prepend">
+          <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonLeft)"></span>
+        </div>
+      }
 
-    <select-widget-widget
-      [layoutNode]="widgetLayoutNode"
-      [dataIndex]="dataIndex"
-    [layoutIndex]="layoutIndex"></select-widget-widget>
+      <select-widget-widget
+        [layoutNode]="widgetLayoutNode"
+        [dataIndex]="dataIndex"
+      [layoutIndex]="layoutIndex"></select-widget-widget>
 
-    @if (options?.fieldAddonRight) {
-      <div class="input-group-append">
-        <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonRight)"></span>
-      </div>
+      @if (options?.fieldAddonRight) {
+        <div class="input-group-append">
+          <span class="input-group-text" [innerHTML]="$safeNavigationMigration(options?.fieldAddonRight)"></span>
+        </div>
+      }
+    </div>
+
+    @if (showRemoveButton) {
+      <button
+        class="close ml-2"
+        type="button"
+        (click)="removeItem()">
+        <span aria-hidden="true">&times;</span>
+        <span class="sr-only">Close</span>
+      </button>
     }
   </div>
 
