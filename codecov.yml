@@ -18,12 +18,13 @@
 #
 # `if_not_found: success` covers a base commit that never uploaded a report,
 # which is not the same as main having none. main has had one since 20.0.0.
-codecov:
-  # Without this Codecov reports on `master`, which has not been this
-  # repository's default branch for years and still answers the API with a
-  # twelve file, 19% report.
-  branch: main
-
+#
+# There is no `codecov: branch:` key here on purpose. Codecov's own record of
+# this repository's default branch still says `master`, a name git has not had
+# here for years, so its dashboard and API answer with a twelve file, 19%
+# report. Setting that key changed nothing across a successful upload from
+# main, so it is an account setting rather than a repository one. The badge
+# asks for `branch/main` by URL and is unaffected.
 coverage:
   status:
     project:
