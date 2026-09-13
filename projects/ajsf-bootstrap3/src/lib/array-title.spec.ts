@@ -87,6 +87,37 @@ describe('Bootstrap 3 array title', () => {
       'nothing required, nothing marked').toEqual(0);
   });
 
+
+  // A submit widget uses its title as the input's value, and a submit input
+  // renders its value as text, so markup appended there shows literally.
+  it('leaves a required submit caption as plain text', () => {
+    const el = render({
+      schema: { name: { type: 'string' } },
+      form: [{ key: 'name' }, { type: 'submit', title: 'Save', required: true }],
+    });
+    const submit = el.querySelector('input[type=submit]') as HTMLInputElement;
+    expect(submit, 'the submit control should render').toBeTruthy();
+    expect(submit.value, 'the caption must not carry markup').toEqual('Save');
+  });
+
+  // The marker was only ever appended to the framework's own title, which
+  // setTitle leaves null for a fieldset, so a required fieldset rendered none.
+  it('marks a required fieldset, which had been losing its asterisk', () => {
+    const el = render({
+      schema: {
+        type: 'object',
+        required: ['home_address'],
+        properties: { home_address: { type: 'object', properties: { city: { type: 'string' } } } },
+      },
+      form: [{ key: 'home_address', type: 'fieldset' }],
+    });
+    const legend = [...el.querySelectorAll('legend')]
+      .find((n) => n.textContent.trim().startsWith('Home Address'));
+    expect(legend, 'the fieldset keeps its legend').toBeTruthy();
+    expect(legend.querySelectorAll('.text-danger').length,
+      'a required fieldset gets exactly one asterisk').toEqual(1);
+  });
+
   it('leaves a plain fieldset title alone', () => {
     const el = render({
       schema: { home_address: { type: 'object', properties: { city: { type: 'string' } } } },

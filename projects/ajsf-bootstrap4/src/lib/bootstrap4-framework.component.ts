@@ -116,9 +116,12 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
         this.options.fieldAddonRight || this.options.append;
 
       // Add asterisk to titles if required. setTitle hands the title to the
-      // widget for a fieldset or an array and leaves none here, so the marker
-      // goes on whichever of the two actually renders.
-      const titled = this.options.title ? this.options : this.widgetOptions;
+      // widget for an array or a fieldset and leaves none here, so the marker
+      // follows it. Named types only: setTitle also returns null for submit,
+      // whose widget uses the title as an input value rather than as HTML, so
+      // markup appended there would render literally.
+      const titled = this.layoutNode.type === 'array' || this.layoutNode.type === 'fieldset'
+        ? this.widgetOptions : this.options;
       if (titled.title && this.layoutNode.type !== 'tab' &&
         !this.options.notitle && this.options.required &&
         !titled.title.includes('*')
