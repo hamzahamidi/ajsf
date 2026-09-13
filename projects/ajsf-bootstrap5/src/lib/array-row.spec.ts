@@ -193,3 +193,42 @@ describe('Bootstrap 5 invalid feedback placement', () => {
       'the message must follow the element carrying is-invalid, not merely exist').toEqual(1);
   });
 });
+
+describe('Bootstrap 5 input widget classification', () => {
+  let component: Bootstrap5FrameworkComponent;
+  let fixture: ComponentFixture<Bootstrap5FrameworkComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [JsonSchemaFormModule, CommonModule, WidgetLibraryModule],
+      declarations: [Bootstrap5FrameworkComponent],
+      providers: [JsonSchemaFormService],
+    }).compileComponents();
+    fixture = TestBed.createComponent(Bootstrap5FrameworkComponent);
+    component = fixture.componentInstance;
+    component.layoutIndex = [];
+    component.dataIndex = [];
+  });
+
+  const classify = (type: string) => {
+    component.layoutNode = { type, options: {} };
+    component.initializeFramework();
+    return component.options.isInputWidget;
+  };
+
+  // The row alignment reads this flag, so a control missing from the list is
+  // aligned as though it were a group. checkboxbuttons was the one omission,
+  // beside radiobuttons and every other check and radio variant.
+  it('counts every check and radio variant as a control', () => {
+    ['checkbox', 'checkboxes', 'checkboxes-inline', 'checkboxbuttons',
+      'radio', 'radios', 'radios-inline', 'radiobuttons'].forEach((type) => {
+      expect(classify(type), `${type} is a control, not a group`).toBe(true);
+    });
+  });
+
+  it('still counts a container as a group', () => {
+    ['array', 'fieldset', 'section'].forEach((type) => {
+      expect(classify(type), `${type} is a group`).toBeFalsy();
+    });
+  });
+});

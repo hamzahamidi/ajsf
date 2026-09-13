@@ -107,8 +107,10 @@ control's ancestor, that is where the difference is.
 
 The remove button on an array item used to be the first child of the field
 wrapper and floated, so it left normal flow and sat at the top of the row
-rather than beside the control. It now shares a flex row with the field and
-aligns to its centre.
+rather than beside the control. It now shares a flex row with the field. Beside
+a single control it aligns to that control's centre; when the item is a group
+of fields it anchors at the group's top edge, because a group's midpoint moves
+as its contents grow.
 
 Two details matter if you have written CSS against the old output. Every field
 gains one wrapper element between the outer `form-group` container and the field
