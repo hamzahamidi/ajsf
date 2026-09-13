@@ -103,6 +103,22 @@ has no `.btn-check`.
 If you wrote CSS selecting `label > input` or styling the label as the
 control's ancestor, that is where the difference is.
 
+## Array row layout, changed in 22.2.0
+
+The remove button on an array item used to be the first child of the field
+wrapper and floated, so it left normal flow and sat at the top of the row
+rather than beside the control. It now shares a flex row with the field. Beside
+a single control it aligns to that control's centre; when the item is a group
+of fields it anchors at the group's top edge, because a group's midpoint moves
+as its contents grow.
+
+Two details matter if you have written CSS against the old output. Every field
+gains one wrapper element between the outer `form-group` container and the field
+itself, and that wrapper becomes a flex container only on a removable array
+item. The invalid marker moved onto that wrapper, so a selector written as
+`.input-group.is-invalid` no longer matches; the marker is now on the
+element directly above it.
+
 ## Array titles, changed in 22.2.0
 
 An array rendered its title twice: once as the field label, and again as the

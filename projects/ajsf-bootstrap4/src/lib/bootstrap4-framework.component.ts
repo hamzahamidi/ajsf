@@ -87,7 +87,8 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
       this.formControl = this.jsf.getFormControl(this);
 
       this.options.isInputWidget = inArray(this.layoutNode.type, [
-        'button', 'checkbox', 'checkboxes-inline', 'checkboxes', 'color',
+        'button', 'checkbox', 'checkboxbuttons', 'checkboxes-inline',
+        'checkboxes', 'color',
         'date', 'datetime-local', 'datetime', 'email', 'file', 'hidden',
         'image', 'integer', 'month', 'number', 'password', 'radio',
         'radiobuttons', 'radios-inline', 'radios', 'range', 'reset', 'search',
