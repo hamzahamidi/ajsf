@@ -23,15 +23,8 @@
     </p>
   }
 
-  <!--
-  is-invalid sits on this row, not on the control. Bootstrap reveals
-  .invalid-feedback only as a following sibling of the element carrying
-  .is-invalid, and select-widget-widget renders its own host element and a
-  container div between here and the real input, so the input and the
-  message can never be siblings. The row is a flex container only for a
-  removable array item, which is also what stops .close taking its built in
-  float and leaving normal flow.
-  -->
+  <!-- Bootstrap reveals .invalid-feedback only after the element carrying
+  .is-invalid, so the marker belongs on this row, not on the control. -->
   <div
     [class.d-flex]="showRemoveButton"
     [class.align-items-center]="showRemoveButton && options?.isInputWidget"

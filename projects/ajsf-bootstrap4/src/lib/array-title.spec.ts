@@ -36,9 +36,7 @@ describe('Bootstrap 4 array title', () => {
     data: { phone_numbers: ['702-123-4567'] },
   };
 
-  // fixTitle turns phone_numbers into Phone Numbers; toTitleCase, which the
-  // widget fell back to when the framework blanked the title, splits on
-  // whitespace and hyphens only and left the underscore in place.
+  // toTitleCase, the old fallback, does not split on underscores.
   it('renders the title once, normalised', () => {
     const el = render(underscored);
     expect(titled(el, 'Phone_numbers').length,
@@ -64,9 +62,7 @@ describe('Bootstrap 4 array title', () => {
     data: { phone_numbers: ['702-123-4567'] },
   };
 
-  // The marker is appended to whichever title renders. Handing the array's
-  // title to the widget without moving the marker with it dropped the
-  // asterisk entirely, because the framework's own title is null by then.
+  // The framework's own title is null here, so the marker has to follow.
   it('keeps the required marker on the title it moved', () => {
     const el = render(requiredArray);
     const legends = [...el.querySelectorAll('legend')]
@@ -88,8 +84,7 @@ describe('Bootstrap 4 array title', () => {
   });
 
 
-  // A submit widget uses its title as the input's value, and a submit input
-  // renders its value as text, so markup appended there shows literally.
+  // A submit input renders its value as text, so markup would show literally.
   it('leaves a required submit caption as plain text', () => {
     const el = render({
       schema: { name: { type: 'string' } },
@@ -100,8 +95,7 @@ describe('Bootstrap 4 array title', () => {
     expect(submit.value, 'the caption must not carry markup').toEqual('Save');
   });
 
-  // The marker was only ever appended to the framework's own title, which
-  // setTitle leaves null for a fieldset, so a required fieldset rendered none.
+  // A fieldset's title is the widget's too, so it had been losing the marker.
   it('marks a required fieldset, which had been losing its asterisk', () => {
     const el = render({
       schema: {

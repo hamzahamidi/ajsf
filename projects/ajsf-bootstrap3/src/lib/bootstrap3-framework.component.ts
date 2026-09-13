@@ -108,11 +108,8 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
       this.options.fieldAddonRight =
         this.options.fieldAddonRight || this.options.append;
 
-      // Add asterisk to titles if required. setTitle hands the title to the
-      // widget for an array or a fieldset and leaves none here, so the marker
-      // follows it. Named types only: setTitle also returns null for submit,
-      // whose widget uses the title as an input value rather than as HTML, so
-      // markup appended there would render literally.
+      // Named types only: submit also has a null title here, and its widget
+      // uses the title as an input value, where markup would render literally.
       const titled = this.layoutNode.type === 'array' || this.layoutNode.type === 'fieldset'
         ? this.widgetOptions : this.options;
       if (titled.title && this.layoutNode.type !== 'tab' &&
@@ -244,10 +241,7 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
         this.widgetOptions.expandable = true;
         this.widgetOptions.title = 'Authentication settings';
         return null;
-      // An array is a fieldset too: its title belongs to the widget, which
-      // renders it as the legend naming the group. Leaving it to the default
-      // branch blanked it here and had the widget rebuild one from the raw
-      // property name, so the title appeared twice and in two spellings.
+      // An array is a fieldset: the widget owns the title and renders the legend.
       case 'array':
       case 'fieldset':
         this.widgetOptions.title = this.options.title;

@@ -2,12 +2,9 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CheckboxComponent } from '@ajsf/core';
 
 /**
- * Bootstrap 5 wants the input and label as siblings inside .form-check, and
- * styles the input's state through sibling selectors. The core widget nests
- * the input inside the label, which is the Bootstrap 3 shape.
+ * Bootstrap 5 wants the input and label as siblings inside .form-check.
  *
- * Template only. No constructor: Angular inherits the base's injection
- * through its generated factory, and adding one would break that.
+ * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap5-checkbox-widget',

@@ -2,18 +2,10 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CheckboxesComponent } from '@ajsf/core';
 
 /**
- * Sibling input and label per item, for checkboxes, checkboxes-inline and
- * checkboxbuttons alike. The horizontal branch splits on layoutNode.type:
- * checkboxbuttons keeps the one shared wrapper, because btn-group belongs on
- * a single element around the whole set and Bootstrap 5's btn-check idiom is
- * a sibling input there too. checkboxes-inline gives each item its own
- * wrapper, because Bootstrap 5 documents one .form-check.form-check-inline
- * per item, not one around the whole set.
+ * Siblings throughout: Bootstrap 5 button sets use .btn-check, which is a
+ * sibling input too.
  *
- * activeClass and style.selected stay on the label, where the core widget
- * puts them, so the button idiom keeps working.
- *
- * Template only. No constructor.
+ * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap5-checkboxes-widget',

@@ -2,17 +2,10 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CheckboxesComponent } from '@ajsf/core';
 
 /**
- * Bootstrap 4 splits these two ways, so this template does too.
+ * Siblings, except checkboxbuttons: Bootstrap 4 has no .btn-check, so its toggle
+ * buttons keep the nested input .btn-group-toggle documents.
  *
- * Vertical checkboxes take the sibling form, which is what Bootstrap 4
- * documents for .form-check. The horizontal branch splits again on
- * layoutNode.type: checkboxes-inline is .form-check.form-check-inline, the
- * same sibling shape as vertical, while checkboxbuttons keeps the input
- * inside the label, because Bootstrap 4's toggle buttons are
- * .btn-group-toggle with a nested input and it has no .btn-check. That is
- * deliberate, not a widget that was missed.
- *
- * Template only. No constructor.
+ * Template only: a constructor would break the inherited injection factory.
  */
 @Component({
   selector: 'bootstrap4-checkboxes-widget',
