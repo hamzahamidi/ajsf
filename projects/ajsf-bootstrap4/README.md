@@ -119,6 +119,21 @@ item. The invalid marker moved onto that wrapper, so a selector written as
 `.input-group.is-invalid` no longer matches; the marker is now on the
 element directly above it.
 
+## Array titles, changed in 22.2.0
+
+An array rendered its title twice: once as the field label, and again as the
+fieldset legend, which the widget rebuilt from the raw property name. A
+`phone_numbers` property showed "Phone Numbers" followed by "Phone_numbers".
+
+The title now belongs to the widget, as it already did for a fieldset, so it
+renders once, on the `<legend>` that names the group, in the normalised
+spelling. If your CSS targets the array label through `labelHtmlClass`, it now
+applies to the legend.
+
+The required marker moves with the title. It was previously appended only to
+the framework's own label, so a required fieldset, whose title the widget
+already owned, rendered no asterisk at all; it now does.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project @ajsf/bootstrap4` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project @ajsf/bootstrap4`.
