@@ -2,15 +2,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RadiosComponent } from '@ajsf/core';
 
 /**
- * Sibling input and label per item, for radios, radios-inline and
- * radiobuttons alike. The horizontal branch splits on layoutNode.type:
- * radiobuttons keeps the one shared wrapper, because btn-group belongs on a
- * single element around the whole set and Bootstrap 5's btn-check idiom is a
- * sibling input there too. radios-inline gives each item its own wrapper,
- * because Bootstrap 5 documents one .form-check.form-check-inline per item,
- * not one around the whole set.
- *
- * Template only. No constructor.
+ * Siblings throughout: Bootstrap 5 button sets use .btn-check, which is a
+ * sibling input too.
  */
 @Component({
   selector: 'bootstrap5-radios-widget',

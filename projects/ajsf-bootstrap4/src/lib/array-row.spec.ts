@@ -65,9 +65,7 @@ describe('Bootstrap 4 array row', () => {
   });
 
 
-  // A group-level action anchors at the group's upper edge: the midpoint of a
-  // nested item moves as its contents grow, which would leave the button
-  // looking attached to whichever child happened to sit halfway down.
+  // A group's midpoint moves as it grows, so the action anchors at its top.
   it('anchors the button at the top when the item is a group', () => {
     const el = render({
       schema: {
@@ -92,9 +90,7 @@ describe('Bootstrap 4 array row', () => {
   });
 
 
-  // A group is a group because of what the layout resolved it to, not because
-  // of how many controls it happens to contain. A child count or a height
-  // would call this one centred.
+  // What the layout resolved it to decides this, not how many controls it has.
   it('treats a group holding a single field as a group', () => {
     const el = render({
       schema: {
@@ -112,10 +108,7 @@ describe('Bootstrap 4 array row', () => {
     expect(row.className, 'so it anchors at the top').toContain('align-items-start');
   });
 
-  // showRemoveButton flips while the form is live, so this has to be one
-  // fixture crossing minItems rather than two separate renders. Two branches
-  // for wrapped and unwrapped would rebuild the surviving control here, taking
-  // its focus and its state with it.
+  // Two branches would rebuild the surviving control as this flag flips.
   it('keeps the surviving control across a removal that crosses minItems', () => {
     const el = render(arrayForm(1, 2));
     const items = () => [...el.querySelectorAll('input:not([type=submit])')] as HTMLInputElement[];
@@ -169,12 +162,9 @@ describe('Bootstrap 4 invalid feedback placement', () => {
     component.dataIndex = [];
   });
 
-  // Bootstrap reveals .invalid-feedback only as a following sibling of the
-  // element carrying .is-invalid. The row the remove button joined now carries
-  // that marker, so this is the assertion that the move preserved the rule.
+  // Bootstrap reveals .invalid-feedback only after the .is-invalid element.
   it('renders the message as a following sibling of the invalid element', () => {
-    // initializeFramework reassigns formControl from the service, so the stub
-    // has to be the service's answer rather than a field set on the component.
+    // initializeFramework reassigns formControl, so stub the service instead.
     const jsf = TestBed.inject(JsonSchemaFormService);
     vi.spyOn(jsf, 'getFormControl').mockReturnValue({
       status: 'INVALID',
@@ -216,9 +206,7 @@ describe('Bootstrap 4 input widget classification', () => {
     return component.options.isInputWidget;
   };
 
-  // The row alignment reads this flag, so a control missing from the list is
-  // aligned as though it were a group. checkboxbuttons was the one omission,
-  // beside radiobuttons and every other check and radio variant.
+  // The row alignment reads this flag: a missing type aligns as a group.
   it('counts every check and radio variant as a control', () => {
     ['checkbox', 'checkboxes', 'checkboxes-inline', 'checkboxbuttons',
       'radio', 'radios', 'radios-inline', 'radiobuttons'].forEach((type) => {
