@@ -1,5 +1,5 @@
-/*
- * Public API Surface of @ajsf/bootstrap3
+/**
+ * @module \@ajsf/bootstrap3
  */
 
 export * from './lib/bootstrap3.framework';

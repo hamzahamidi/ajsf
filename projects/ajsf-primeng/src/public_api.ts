@@ -1,5 +1,5 @@
-/*
- * Public API Surface of @ajsf/primeng
+/**
+ * @module \@ajsf/primeng
  */
 
 export * from './lib/primeng-framework.module';

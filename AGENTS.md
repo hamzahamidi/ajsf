@@ -24,7 +24,8 @@ nvm use "$(cat .nvmrc)"
 ```bash
 npm ci                       # install
 npm run build:libs           # build all six packages into dist/@ajsf/
-npm run build:demo           # build the libraries and the demo app
+npm run build:demo           # build the libraries, the demo app and the API reference
+npm run docs:api             # regenerate only the API reference, into dist/demo/api
 npm start                    # serve the demo
 npm run test:scripts         # tests for scripts/, plain jasmine, fast
 npm run smoke:consumer       # install the built packages into a throwaway app
@@ -36,6 +37,17 @@ Angular project with the CLI, packs `dist/@ajsf/*`, installs the tarballs
 following the release notes for that major, and runs a production build. Pass
 `--keep` to leave the project behind for inspection. The release workflow runs
 it in `verify`, so a publish is gated on the packages being installable.
+
+`docs:api` runs TypeDoc from `typedoc.json` and writes into `dist/demo/api`,
+which `deploy.yml` publishes as https://hamidihamza.com/ajsf/api/. `build:demo`
+runs it last because the application builder empties `dist/demo` first;
+`build:demo-only` does not run it.
+
+`tsconfig.typedoc.json` maps `@ajsf/core` to its source rather than to `dist`,
+so the reference builds without `build:libs` and framework pages link to the
+core types. The `@module` tag at the top of each `public_api.ts` is what names
+the modules `@ajsf/core` and so on; without it TypeDoc names them after their
+paths.
 
 All six libraries run on Vitest through `@angular/build:unit-test`:
 
