@@ -8,6 +8,8 @@ There are two main forms of contribution: reporting issues and performing code c
 
 If you find a problem with ajsf, report it using [GitHub issues](https://github.com/hamzahamidi/ajsf/issues/new).
 
+A security vulnerability is the exception: report it privately as [SECURITY.md](./SECURITY.md) describes, not in a public issue.
+
 Before reporting a new issue, please take a moment to check whether it has already been reported
 [here](https://github.com/hamzahamidi/ajsf/issues). If this is the case, please:
 
