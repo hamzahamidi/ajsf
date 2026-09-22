@@ -206,7 +206,7 @@ The main directories are:
 * `demo`: example playground application
 * `demo/assets/example-schemas`: JSON Schema examples used in the playground
 
-There is no generated API reference yet. The functions under `projects/ajsf-core/src/lib/shared` carry doc comments describing what they do; the widget and framework libraries mostly do not.
+The [API reference](https://hamidihamza.com/ajsf/api/) is generated from the six packages' public exports and published with the playground. The functions under `projects/ajsf-core/src/lib/shared` carry doc comments describing what they do; the widget and framework libraries mostly do not, so their pages list signatures without descriptions.
 
 ## Using Angular JSON Schema Form
 
