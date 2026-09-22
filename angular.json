@@ -24,6 +24,7 @@
             "tsConfig": "demo/tsconfig.app.json",
             "assets": [
               "demo/favicon.ico",
+              "demo/llms.txt",
               "demo/assets",
               {
                 "glob": "*.svg",

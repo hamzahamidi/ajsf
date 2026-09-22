@@ -1,0 +1,29 @@
+# AJSF
+
+> AJSF (Angular JSON Schema Form) builds Angular forms from a JSON Schema, published as @ajsf/core plus framework packages for Angular Material, PrimeNG, Bootstrap 3, Bootstrap 4 and Bootstrap 5.
+
+The package major equals the Angular major it targets: @ajsf/* 22.x is for Angular 22. JSON Schema drafts 1 to 4, 6 and 7 are supported; 2019-09 and 2020-12 are not.
+
+## Docs
+
+- [README](https://github.com/hamzahamidi/ajsf#readme): what AJSF is, the six packages, and how to render a form with the json-schema-form component
+- [Installation](https://github.com/hamzahamidi/ajsf#installation): which package to install for each UI library and the peer dependencies each one needs
+- [Version compatibility](https://github.com/hamzahamidi/ajsf#version-compatibility): how @ajsf majors map to Angular majors
+- [JSON Schema versions](https://github.com/hamzahamidi/ajsf#json-schema-versions): supported drafts and known limits
+- [API reference](https://hamidihamza.com/ajsf/api/): generated from the public_api.ts entry point of each package
+
+## Release notes
+
+- [GitHub releases](https://github.com/hamzahamidi/ajsf/releases): one page per published version
+- [Major upgrade notes](https://github.com/hamzahamidi/ajsf/tree/main/docs/release-notes): what changes for a project moving to each Angular major
+
+## Playground
+
+- [Live playground](https://hamidihamza.com/ajsf/): more than 70 example schemas, each rendered with any of the supported frameworks
+
+## Optional
+
+- [@ajsf/material README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-material/README.md): Angular Material setup
+- [@ajsf/primeng README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-primeng/README.md): PrimeNG setup
+- [@ajsf/bootstrap5 README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-bootstrap5/README.md): Bootstrap 5 setup
+- [Contributing](https://github.com/hamzahamidi/ajsf/blob/main/CONTRIBUTING.md): reporting issues, running the workspace and its tests, and commit conventions
