@@ -37,15 +37,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 jobs:
   decide:
     runs-on: ubuntu-latest
+    # The branches filter matches the head branch name, so a fork pull
+    # request from a branch called main passes it.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository)
     outputs:
       version: ${{ steps.check.outputs.version }}
       publish: ${{ steps.check.outputs.publish }}
@@ -185,6 +188,9 @@ jobs:
     # Settings > Environments > npm-publish with yourself as a required
     # reviewer. Free on public repositories.
     environment: npm-publish
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
