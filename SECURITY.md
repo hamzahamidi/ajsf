@@ -9,12 +9,21 @@ in any one of them ships as a release of all six.
 
 The package major matches the Angular major it targets, and every release is
 cut from `main`, which tracks the newest Angular major. Security fixes
-therefore ship as a new minor or patch release of the current major, the one
-on the npm `latest` dist-tag. `npm view @ajsf/core version` prints it.
+therefore ship in the next release cut from `main`. Usually that is a minor or
+patch release of the major on the npm `latest` dist-tag, which
+`npm view @ajsf/core version` prints.
 
-There are no maintenance branches for earlier majors, so fixes are not
-backported to them. That includes the earlier `@ajsf/*` majors, `0.8.0` and
-earlier, prereleases on the `next` dist-tag, and the older
+While a release candidate series is open, `main` is ahead of `latest`: it
+carries a candidate such as `19.0.0-rc.3` on the `next` dist-tag, and only the
+stable release that closes the series moves `latest`. A fix made in that
+window ships as the next candidate on `next` and then in that stable release,
+with no release for the version on `latest` in between.
+`npm view @ajsf/core dist-tags` shows both tags, and `next` keeps its last
+candidate after the series closes.
+
+There are no maintenance branches, so fixes are not backported. That includes
+the earlier `@ajsf/*` majors, `0.8.0` and earlier, a release candidate that a
+later candidate or a stable release has replaced, and the older
 `angular6-json-schema-form` package. To pick up a fix on an older Angular
 major, upgrade to the current one.
 
