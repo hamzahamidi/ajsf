@@ -4,13 +4,15 @@
 
 # AJSF (Angular JSON Schema Form)
 
-**N.B:** For Angular6-json-schema-form please check [this documentation](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
+AJSF turns a JSON Schema into an Angular 22 form, rendered as plain HTML by `@ajsf/core` or styled by one of five framework packages: `@ajsf/material`, `@ajsf/primeng`, `@ajsf/bootstrap3`, `@ajsf/bootstrap4` and `@ajsf/bootstrap5`.
 
 <p align="center">
   <a href="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI Status"></a>
   <a href="https://codecov.io/gh/hamzahamidi/ajsf"><img src="https://codecov.io/gh/hamzahamidi/ajsf/branch/main/graph/badge.svg" alt="Code coverage"></a>
+  <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/v/@ajsf/core.svg?style=plastic" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
   <a href="https://github.com/hamzahamidi/ajsf/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="MIT licence"></a>
+  <a href="https://github.com/hamzahamidi/ajsf/stargazers"><img src="https://img.shields.io/github/stars/hamzahamidi/ajsf.svg?style=social" alt="GitHub stars"></a>
   <a href="https://app.netlify.com/sites/ajsf/deploys"><img src="https://api.netlify.com/api/v1/badges/6c5b5a1d-db7c-4d0e-8ac1-a4840d8812f0/deploy-status" alt="Netlify Status"></a>
 </p>
 
@@ -74,6 +76,12 @@ No code change is needed. `FlexLayoutRootComponent`, `FlexLayoutSectionComponent
 `flex` and `section` layout types and options such as `fxFlex`, `fxFlexAlign` and
 `fxLayoutGap` all behave as before. The version jump is the Angular-aligned scheme
 starting, not a rewrite: `14.0.0` targets the same Angular 14 that `0.8.0` did.
+
+### Angular 6 to 8
+
+Before the `@ajsf` packages, this project shipped as one package,
+`angular6-json-schema-form`. Its last release is `8.0.0`, and its documentation
+is on the [`angular6-json-schema-form` branch](https://github.com/hamzahamidi/ajsf/tree/angular6-json-schema-form).
 
 ## JSON Schema versions
 
