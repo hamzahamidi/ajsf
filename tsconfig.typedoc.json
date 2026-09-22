@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@ajsf/core": [
+        "./projects/ajsf-core/src/public_api.ts"
+      ]
+    },
+    "types": []
+  },
+  "include": [
+    "projects/*/src/public_api.ts"
+  ]
+}

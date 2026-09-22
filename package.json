@@ -52,8 +52,9 @@
     "build:material": "ng build @ajsf/material --configuration production",
     "postbuild:material": "cp projects/ajsf-material/README.md LICENSE dist/@ajsf/material",
     "build:libs": "npm run build:core && npm run build:bs4 && npm run build:bs3 && npm run build:bs5 && npm run build:material && npm run build:primeng",
-    "build:demo": "npm run build:libs && ng build demo --configuration production --base-href ./",
+    "build:demo": "npm run build:libs && ng build demo --configuration production --base-href ./ && npm run docs:api",
     "build:demo-only": "ng build demo --configuration production --base-href ./",
+    "docs:api": "typedoc",
     "stats": "ng build demo --configuration production --stats-json && echo \"stats.json written to dist/demo. Analyze it at https://esbuild.github.io/analyze/\"",
     "test:core": "ng test @ajsf/core",
     "test:bs3": "ng test @ajsf/bootstrap3",
@@ -107,6 +108,7 @@
     "ts-node": "~8.6.2",
     "tslib": "^2.3.1",
     "tslint": "~6.1.0",
+    "typedoc": "0.28.20",
     "typescript": "~6.0.3",
     "vitest": "^4.1.11"
   }

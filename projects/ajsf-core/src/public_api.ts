@@ -1,5 +1,5 @@
-/*
- * Public API Surface of json-schema-form
+/**
+ * @module \@ajsf/core
  */
 
 export { JsonSchemaFormModule } from './lib/json-schema-form.module';

@@ -1,5 +1,5 @@
-/*
- * Public API Surface of @ajsf/material-framework
+/**
+ * @module \@ajsf/material
  */
 
 export * from './lib/material-design.framework';

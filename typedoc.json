@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "AJSF API reference",
+  "entryPoints": [
+    "projects/ajsf-core/src/public_api.ts",
+    "projects/ajsf-material/src/public_api.ts",
+    "projects/ajsf-bootstrap3/src/public_api.ts",
+    "projects/ajsf-bootstrap4/src/public_api.ts",
+    "projects/ajsf-bootstrap5/src/public_api.ts",
+    "projects/ajsf-primeng/src/public_api.ts"
+  ],
+  "sortEntryPoints": false,
+  "tsconfig": "tsconfig.typedoc.json",
+  "out": "dist/demo/api",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "navigationLinks": {
+    "Playground": "https://hamidihamza.com/ajsf/",
+    "GitHub": "https://github.com/hamzahamidi/ajsf"
+  }
+}
