@@ -45,15 +45,15 @@ describe('FwBootstrap4Component', () => {
   /**
    * A control in the state issue #315 describes: blurred, still empty.
    *
-   * statusChanges is part of the shape because initializeFramework subscribes
-   * to it, so a stub without one throws before any assertion runs.
+   * events is part of the shape because initializeFramework subscribes to it,
+   * so a stub without one throws before any assertion runs.
    */
   const touchedButUnchanged = (extra: any = {}) => ({
     status: 'INVALID',
     errors: { required: true },
     touched: true,
     dirty: false,
-    statusChanges: { subscribe: () => ({ unsubscribe: () => undefined }) },
+    events: { subscribe: () => ({ unsubscribe: () => undefined }) },
     ...extra,
   });
 
@@ -146,7 +146,7 @@ describe('FwBootstrap4Component', () => {
     // description, because both went through one help-block paragraph.
     it('puts the error in an element that carries no description text', () => {
       const el = render(
-        { enableErrorState: true, errorMessage: 'Name is required', helpBlock: 'Your full name' },
+        { enableErrorState: true, validationMessages: { required: 'Name is required' }, description: 'Your full name' },
         touchedButUnchanged()
       );
       const error = el.querySelector('.invalid-feedback');
@@ -165,7 +165,7 @@ describe('FwBootstrap4Component', () => {
 
     it('marks the field so Bootstrap reveals the feedback beside it', () => {
       const el = render(
-        { enableErrorState: true, errorMessage: 'Name is required' },
+        { enableErrorState: true, validationMessages: { required: 'Name is required' } },
         touchedButUnchanged()
       );
       const invalid = el.querySelector('.is-invalid');

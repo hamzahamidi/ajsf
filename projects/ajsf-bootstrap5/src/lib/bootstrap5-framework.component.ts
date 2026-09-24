@@ -24,6 +24,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   widgetOptions: any; // Options passed to child widget
   widgetLayoutNode: any; // layoutNode passed to child widget
   options: any; // Options used in this framework
+  errorMessage: string = null;
   formControl: any = null;
   debugOutput: any = '';
   debug: any = '';
@@ -234,7 +235,8 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
       if (this.formControl) {
         this.updateHelpBlock(this.formControl.status);
-        this.formControl.statusChanges.subscribe(status => this.updateHelpBlock(status));
+        // events, not statusChanges: a blur marks the control touched without changing its status.
+        this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
 
         if (this.options.debug) {
           const vars: any[] = [];
@@ -247,11 +249,11 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
   }
 
   updateHelpBlock(status) {
-    this.options.helpBlock = status === 'INVALID' &&
+    this.errorMessage = status === 'INVALID' &&
     this.options.enableErrorState && this.formControl.errors &&
     (this.formControl.touched || this.formControl.dirty || this.options.feedbackOnRender) ?
-      this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages) :
-      this.options.description || this.options.help || null;
+      this.jsf.formatErrors(this.formControl.errors, this.options.validationMessages) : null;
+    this.options.helpBlock = this.errorMessage || this.options.description || this.options.help || null;
   }
 
   setTitle(): string {

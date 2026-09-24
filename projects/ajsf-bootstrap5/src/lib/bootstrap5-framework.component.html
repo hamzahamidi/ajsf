@@ -33,8 +33,7 @@ to the field rather than to this container.
     [class.d-flex]="showRemoveButton"
     [class.align-items-center]="showRemoveButton && options?.isInputWidget"
     [class.align-items-start]="showRemoveButton && !options?.isInputWidget"
-    [class.is-invalid]="(formControl?.touched || formControl?.dirty || options?.feedbackOnRender) &&
-          !!widgetOptions?.errorMessage">
+    [class.is-invalid]="!!errorMessage">
     <div
       [class.h-100]="true"
       [class.mt-1]="true"
@@ -70,11 +69,10 @@ to the field rather than to this container.
     }
   </div>
 
-  @if ((formControl?.touched || formControl?.dirty || options?.feedbackOnRender) &&
-    widgetOptions?.errorMessage && options?.messageLocation !== 'top') {
+  @if (errorMessage && options.messageLocation !== 'top') {
     <div
       class="invalid-feedback"
-    [innerHTML]="$safeNavigationMigration(widgetOptions?.errorMessage)"></div>
+    [innerHTML]="errorMessage"></div>
   }
 
   <!--
@@ -84,8 +82,7 @@ to the field rather than to this container.
   to 'top', and without it the same text renders in both places.
   -->
   @if ((options?.description || options?.help) &&
-    options?.messageLocation !== 'top' &&
-    (!options?.showErrors || !options?.errorMessage)) {
+    options?.messageLocation !== 'top' && !errorMessage) {
     <div
       class="form-text text-muted"
     [innerHTML]="options?.description || options?.help"></div>

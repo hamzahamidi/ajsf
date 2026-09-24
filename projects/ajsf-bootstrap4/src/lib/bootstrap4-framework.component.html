@@ -62,11 +62,10 @@
     }
   </div>
 
-  @if ((formControl?.touched || formControl?.dirty || options?.feedbackOnRender) &&
-    widgetOptions?.errorMessage && options?.messageLocation !== 'top') {
+  @if (errorMessage && options.messageLocation !== 'top') {
     <div
       class="invalid-feedback"
-    [innerHTML]="$safeNavigationMigration(widgetOptions?.errorMessage)"></div>
+    [innerHTML]="errorMessage"></div>
   }
 
   <!--

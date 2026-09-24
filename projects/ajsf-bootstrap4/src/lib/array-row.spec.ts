@@ -171,9 +171,9 @@ describe('Bootstrap 4 invalid feedback placement', () => {
       errors: { minLength: true },
       touched: true,
       dirty: false,
-      statusChanges: new Subject(),
+      events: new Subject(),
     } as any);
-    component.layoutNode = { type: 'text', options: { errorMessage: 'Too short', enableErrorState: true } };
+    component.layoutNode = { type: 'text', options: { validationMessages: { minLength: 'Too short' }, enableErrorState: true } };
     component.initializeFramework();
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
