@@ -178,7 +178,7 @@
           <!-- This is the form! -->
           @if (formActive) {
             <json-schema-form
-              loadExternalAssets="true"
+              [loadExternalAssets]="true"
               [form]="jsonFormObject"
               [options]="jsonFormOptions"
               [framework]="selectedFramework"
