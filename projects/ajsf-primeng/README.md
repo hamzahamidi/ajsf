@@ -1,80 +1,79 @@
 # @ajsf/primeng
 
+PrimeNG framework for [AJSF](https://github.com/hamzahamidi/ajsf#readme), which builds Angular forms from JSON Schema.
+
 ## Getting started
 
-```shell
-npm install @ajsf/primeng@latest
-```
-
-With YARN, run the following:
+Install the package and PrimeNG at your Angular major, with a theme package. For Angular 22:
 
 ```shell
-yarn add @ajsf/primeng@latest
+npm install @ajsf/primeng@22 primeng@22 @primeuix/themes
 ```
 
-### PrimeNG needs @angular/animations at your Angular patch version
+npm adds `@angular/cdk`, which PrimeNG declares as a peer dependency. `@angular/animations` is not needed: PrimeNG 22 neither declares nor imports it.
 
-Install `@angular/animations` at the same patch version as the rest of your
-Angular framework packages. PrimeNG 20 declares it as a peer dependency, and
-Angular 20 no longer adds it to a new project, so npm resolves it on its own.
-The Angular framework packages peer on each other by exact patch, so a version
-npm picks freely can leave the install unresolvable:
+PrimeNG is configured by the consuming application, not by this package. Set up `providePrimeNG` with a preset from `@primeuix/themes` once, in `app.config.ts`:
 
-```shell
-# if your @angular/* packages are 20.3.31
-npm install @angular/animations@20.3.31
+```typescript
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    providePrimeNG({ theme: { preset: Aura } }),
+  ]
+};
 ```
 
-Without it, installing `@ajsf/primeng` alongside `primeng` can fail with
-`ERESOLVE`, reporting that `@angular/animations` peers `@angular/common` at a
-version other than the one you have.
+Import `PrimengFrameworkModule` in the standalone component that renders the form:
 
-This is a PrimeNG installation requirement rather than an `@ajsf/primeng` one,
-which is why it is not declared as a peer here: a range such as `^20.0.0` would
-not fix it, because npm could still choose a patch that disagrees with yours.
-
-Then import `PrimengFrameworkModule` in your main application module if you want to use `primeng` UI, like this:
-
-```javascript
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
+```typescript
+import { Component } from '@angular/core';
 import { PrimengFrameworkModule } from '@ajsf/primeng';
 
-import { AppComponent } from './app.component';
-
-@NgModule({
-  declarations: [ AppComponent ],
-  imports: [
-    PrimengFrameworkModule
-  ],
-  providers: [],
-  bootstrap: [ AppComponent ]
+@Component({
+  selector: 'app-root',
+  imports: [PrimengFrameworkModule],
+  templateUrl: './app.html',
 })
-export class AppModule { }
+export class App {
+  schema = {
+    type: 'object',
+    properties: {
+      name: { type: 'string', title: 'Name' },
+      plan: { type: 'string', title: 'Plan', enum: ['free', 'pro', 'team'] },
+    },
+    required: ['name'],
+  };
+
+  onSubmit(data: any) {
+    console.log(data);
+  }
+}
 ```
 
-PrimeNG is configured by the consuming application, not by this package. Set up
-`providePrimeNG` with a theme preset from `@primeuix/themes` once, as PrimeNG's own
-installation guide describes. This package uses PrimeNG components and leaves the
-theme to you.
+In an `NgModule` app, add `PrimengFrameworkModule` to the module's `imports` and the `providePrimeNG(...)` call to its `providers` instead.
 
-For basic use, after loading the module as described above, to display a form in your Angular component, simply add the following to your component's template:
+Then render the form in the component's template:
 
 ```html
 <json-schema-form
-  [schema]="yourJsonSchema"
+  [schema]="schema"
   framework="primeng"
-  (onSubmit)="yourOnSubmitFn($event)">
+  (onSubmit)="onSubmit($event)">
 </json-schema-form>
 ```
 
-Where `schema` is a valid JSON schema object, and `onSubmit` calls a function to process the submitted JSON form data.
+`framework="primeng"` selects this package's widgets. The other values are `material-design`, `bootstrap-3`, `bootstrap-4`, `bootstrap-5` and `no-framework`, the default.
 
-## Build
+This package takes the initial bundle of a new app to 1.55 MB, above the 1 MB `maximumError` budget `ng new` writes into `angular.json`, so raise the `initial` budget of the `production` configuration, for example to `"maximumWarning": "2MB"` and `"maximumError": "2.5MB"`.
 
-Run `ng build @ajsf/primeng` to build the project. The build artifacts will be stored in the `dist/` directory.
+PrimeNG 22 checks for a PrimeUI license key when the app starts. Without one it logs `[PrimeUI] PrimeUI license is not configured.` and shows an "Invalid PrimeUI License" notice in the corner of the page. That comes from PrimeNG, not from this package; PrimeNG's own documentation covers its license terms and how to configure a key.
 
-## Running unit tests
-
-Run `ng test @ajsf/primeng` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The [AJSF README](https://github.com/hamzahamidi/ajsf#readme) covers the other inputs and outputs, layouts, custom widgets and validation messages.

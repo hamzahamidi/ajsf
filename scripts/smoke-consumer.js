@@ -4,12 +4,7 @@
  * because two things are only observable from outside this workspace.
  *
  * Peer resolution is one. The workspace has every Angular package pinned in one
- * lockfile, so it can never see what npm does with a consumer's tree. 20.0.0
- * shipped needing `npm install @angular/animations` at the exact Angular patch,
- * and that was found by installing the release into a new project, not by
- * reading a manifest: PrimeNG peers on @angular/animations, Angular 20 no
- * longer scaffolds it, and the Angular packages peer on each other by exact
- * patch, so a patch npm picks freely leaves the install unresolvable.
+ * lockfile, so it can never see what npm does with a consumer's tree.
  *
  * AOT against the published entry points is the other. `test:material` and the
  * rest compile against dist/@ajsf/core through a tsconfig path mapping, which
@@ -107,7 +102,6 @@ function smokeMain() {
   const moduleNames = FRAMEWORK_MODULES.map(([m]) => m).join(', ');
   return `import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { JsonSchemaFormModule } from '@ajsf/core';
 ${imports}
 
@@ -133,7 +127,7 @@ export class AppComponent {
   };
 }
 
-bootstrapApplication(AppComponent, { providers: [provideAnimations()] });
+bootstrapApplication(AppComponent);
 `;
 }
 
@@ -160,11 +154,7 @@ function main(argv) {
 
     run('npm', ['install'], app);
 
-    // Exactly what docs/release-notes/<major>.md tells a consumer to do, so a
-    // failure here means either the packages or those instructions are wrong.
-    const core = capture('node', ['-p', "require('@angular/core/package.json').version"], app);
-    console.log(`[smoke] scaffold resolved @angular/core ${core}`);
-    run('npm', ['install', `@angular/animations@${core}`], app);
+    // No @angular/animations, as the README documents: ng new does not install it.
     run('npm', ['install', `@angular/material@${major}`, `primeng@${major}`], app);
     run('npm', ['install', ...tarballs], app);
 

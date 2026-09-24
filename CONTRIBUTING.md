@@ -92,13 +92,15 @@ If you have a better method please send a PR.
 
 ### Running the tests
 
-The library tests run in headless Chrome and need the launcher flags:
+The library tests run on Vitest through Angular's unit-test builder, in jsdom, so
+they need no browser:
 
 ```bash
-$ npm run test:core -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+$ npm run test:core -- --no-watch
 ```
 
-Substitute `test:bs3`, `test:bs4` or `test:material` for the other packages.
+Substitute `test:bs3`, `test:bs4`, `test:bs5`, `test:material` or `test:primeng` for the
+other packages. Leave `--browsers` out, because its absence is what selects jsdom.
 
 `npm run test:scripts` runs the tests for the files in `scripts/`. It is plain jasmine
 with no browser, so it takes about a second, and CI runs it too.
@@ -162,7 +164,9 @@ The following is the list of supported scopes:
 * **ajsf/core**
 * **ajsf/bs3**
 * **ajsf/bs4**
+* **ajsf/bs5**
 * **ajsf/material**
+* **ajsf/primeng**
 * **locales**
 * **demo**
 * ...
@@ -203,7 +207,7 @@ workflow then does nothing.
 The package major always matches the Angular major it targets, so `@ajsf/* 16.x`
 is for Angular 16. Minor and patch are free.
 
-1. Set the version. One script writes it to all four packages, along with the
+1. Set the version. One script writes it to all six packages, along with the
    internal `@ajsf/core` range and the Angular peer ranges, because setting those
    separately is how a package ships resolving to the previous core:
 
@@ -218,7 +222,7 @@ is for Angular 16. Minor and patch are free.
 
 3. Approve the `npm-publish` deployment. Nothing reaches npm before this.
 
-4. The workflow publishes `@ajsf/core` first, then the three framework packages,
+4. The workflow publishes `@ajsf/core` first, then the five framework packages,
    and tags the commit afterwards.
 
 A version containing a hyphen (`16.0.0-rc.1`) publishes to the `next` dist-tag

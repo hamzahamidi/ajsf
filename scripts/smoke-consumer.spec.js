@@ -84,6 +84,11 @@ describe('smokeMain', () => {
   it('renders the form component, so the templates compile too', () => {
     expect(source).toContain('<json-schema-form');
   });
+
+  it('bootstraps without @angular/animations, as the README documents', () => {
+    expect(source).not.toContain('@angular/animations');
+    expect(source).not.toContain('provideAnimations');
+  });
 });
 
 describe('dropBundleBudgets', () => {

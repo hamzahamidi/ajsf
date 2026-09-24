@@ -7,7 +7,7 @@ From 14.0.0 onward, the package major equals the Angular major it targets: @ajsf
 ## Docs
 
 - [README](https://github.com/hamzahamidi/ajsf#readme): what AJSF is, the six packages, and how to render a form with the json-schema-form component
-- [Installation](https://github.com/hamzahamidi/ajsf#installation): which package to install for each UI library, the Angular Material peers (@angular/material and @angular/cdk), and a link to the separate PrimeNG setup guide
+- [Installation](https://github.com/hamzahamidi/ajsf#installation): which package to install for each UI library, the Angular Material peers (@angular/material and @angular/cdk), importing the framework module in a standalone component (or an NgModule), the production bundle budget, and a link to the separate PrimeNG setup guide
 - [Version compatibility](https://github.com/hamzahamidi/ajsf#version-compatibility): how @ajsf majors map to Angular majors
 - [JSON Schema versions](https://github.com/hamzahamidi/ajsf#json-schema-versions): supported drafts and known limits
 - [API reference](https://hamidihamza.com/ajsf/api/): generated from the public_api.ts entry point of each package
@@ -25,5 +25,5 @@ From 14.0.0 onward, the package major equals the Angular major it targets: @ajsf
 
 - [@ajsf/material README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-material/README.md): Angular Material setup
 - [@ajsf/primeng README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-primeng/README.md): PrimeNG setup
-- [@ajsf/bootstrap5 README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-bootstrap5/README.md): Bootstrap 5 setup
+- [@ajsf/bootstrap5 README](https://github.com/hamzahamidi/ajsf/blob/main/projects/ajsf-bootstrap5/README.md): Bootstrap 5 setup, including the bootstrap package and its stylesheet
 - [Contributing](https://github.com/hamzahamidi/ajsf/blob/main/CONTRIBUTING.md): reporting issues, running the workspace and its tests, and commit conventions
