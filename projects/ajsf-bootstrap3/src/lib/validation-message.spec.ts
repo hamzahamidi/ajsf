@@ -21,8 +21,6 @@ class ValidationHost {
   };
 }
 
-// Rendered through json-schema-form rather than a stubbed control, so the
-// message has to arrive through the same path it takes in an application.
 describe('Bootstrap 3 validation message', () => {
   let fixture: ComponentFixture<ValidationHost>;
 

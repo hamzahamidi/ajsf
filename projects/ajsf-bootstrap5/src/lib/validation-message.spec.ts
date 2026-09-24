@@ -27,8 +27,6 @@ class ValidationHost {
   };
 }
 
-// Rendered through json-schema-form rather than a stubbed control, because
-// core writes the message onto the widget's options, not the framework's.
 describe('Bootstrap 5 validation message', () => {
   let fixture: ComponentFixture<ValidationHost>;
 
@@ -79,7 +77,6 @@ describe('Bootstrap 5 validation message', () => {
     expect(field('age').querySelectorAll('.is-invalid ~ .invalid-feedback').length).toEqual(1);
   });
 
-  // A container already renders its message above its fields.
   it('does not repeat a container message below the container', () => {
     enter('email', 'ada@example.com');
     const text: string = fixture.nativeElement.textContent;
