@@ -4,10 +4,10 @@ PrimeNG framework for [AJSF](https://github.com/hamzahamidi/ajsf#readme), which 
 
 ## Getting started
 
-Install the package with PrimeNG at the same major and a theme package:
+Install the package and PrimeNG at your Angular major, with a theme package. For Angular 22:
 
 ```shell
-npm install @ajsf/primeng primeng @primeuix/themes
+npm install @ajsf/primeng@22 primeng@22 @primeuix/themes
 ```
 
 npm adds `@angular/cdk`, which PrimeNG declares as a peer dependency. `@angular/animations` is not needed: PrimeNG 22 neither declares nor imports it.

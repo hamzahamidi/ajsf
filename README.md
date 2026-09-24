@@ -63,8 +63,9 @@ plain install fails when the application is not on the newest supported Angular 
 
 `0.8.0` and earlier predate this scheme. They declare open peer ranges with no upper
 bound: `>=14.0.0` in `0.8.0`, which was built against Angular 14, `>=13.0.0` in `0.7.0`,
-and lower floors before that, down to `>=6.0.0` in `0.1.x`. There is no release for
-Angular 15, which reached end of life. See the [versions on npm](https://www.npmjs.com/package/@ajsf/core?activeTab=versions)
+and lower floors before that, down to `>=6.0.0` in `0.1.x`.
+
+There is no release for Angular 15, which reached end of life. See the [versions on npm](https://www.npmjs.com/package/@ajsf/core?activeTab=versions)
 for what is currently available.
 
 ### Upgrading from `0.8.0` to `14.0.0`
@@ -103,8 +104,7 @@ name, a draft 4 schema comes out stamped as draft 7. Keywords it does not recogn
 carried through untouched rather than dropped, which is why draft 7 schemas validate
 correctly.
 
-A schema without `$schema` is read as draft 7. The `defaultDraft` input names another
-draft for such schemas, and a declared `$schema` always wins.
+A schema without `$schema` is read as draft 7.
 
 Two limits are worth knowing about before you rely on them.
 
@@ -186,7 +186,9 @@ import { AppComponent } from './app.component';
 export class AppModule { }
 ```
 
-No animations setup is needed. With Angular Material 22, the select, datepicker, expansion panel, tabs and stepper widgets open, switch and submit without `@angular/animations` installed and with nothing logged to the console. `ng new` does not install that package, so importing `BrowserAnimationsModule` fails the build with `Could not resolve "@angular/animations/browser"`, and Angular has deprecated it since 20.2. Zoneless change detection, the Angular 22 default, works as well: no `zone.js` is needed.
+No animations setup is needed. With Angular Material 22, the select, datepicker, expansion panel, tabs and stepper widgets open, switch and submit without `@angular/animations` installed and with nothing logged to the console. `ng new` does not install that package, so importing `BrowserAnimationsModule` fails the build with `Could not resolve "@angular/animations/browser"`, and Angular has deprecated it since 20.2.
+
+Zoneless change detection, the Angular 22 default, works as well: no `zone.js` is needed.
 
 `@ajsf/material` takes the initial bundle of a new app to 1.40 MB, and `ng new` sets a 1 MB `maximumError` budget, so `ng build` fails with `bundle initial exceeded maximum budget`. Raise the `initial` budget in the `production` configuration of `angular.json`:
 
@@ -198,7 +200,9 @@ No animations setup is needed. With Angular Material 22, the select, datepicker,
 }
 ```
 
-`@ajsf/primeng` needs the same change (1.55 MB). The Bootstrap packages and `@ajsf/core` stay under 1 MB. The build also warns that `ajv` and `ajv-formats` are not ES modules. That warning is harmless, and adding both to `allowedCommonJsDependencies` in the build `options` silences it:
+`@ajsf/primeng` needs the same change (1.55 MB). The Bootstrap packages and `@ajsf/core` stay under 1 MB.
+
+The build also warns that `ajv` and `ajv-formats` are not ES modules. That warning is harmless, and adding both to `allowedCommonJsDependencies` in the build `options` silences it:
 
 ```json
 "allowedCommonJsDependencies": ["ajv", "ajv-formats"]
@@ -274,7 +278,9 @@ Here, `schema` is a valid JSON Schema object and `onSubmit` calls a function tha
 * `bootstrap-5` for Bootstrap 5
 * `no-framework` for plain HTML
 
-Setting `[loadExternalAssets]="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details. Keep the brackets: the input is a boolean, and a project created by `ng new` rejects the plain attribute `loadExternalAssets="true"` with `TS2322`.
+Setting `[loadExternalAssets]="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details.
+
+Keep the brackets: the input is a boolean, and a project created by `ng new` rejects the plain attribute `loadExternalAssets="true"` with `TS2322`.
 
 Note what this does and does not cover. For `bootstrap-4` and `bootstrap-5` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
 
@@ -547,7 +553,9 @@ maxItems         |  array    | maximumItems,          currentItems
 uniqueItems      |  array    | duplicateItems
  contains      * |  array    | requiredItem
 
-* Note: `contains` and `dependencies` are enforced on the form as a whole. While either fails, the `isValid` output is `false`, `validationErrors` reports it, and with the default options the submit button stays disabled. Neither is shown on a field, so a `validationMessages` entry for them is never displayed.
+* Note: `contains` and `dependencies` are enforced on the form as a whole. While either fails, the `isValid` output is `false`, `validationErrors` reports it, and with the default options the submit button stays disabled.
+
+`contains` never shows a message on a field. With Material, `dependencies` on a nested object shows a generated message on that object's section, such as `Credit card Error: Billing address: Required` when `credit_card` requires `billing_address`. On the root object it shows none.
 
 ### Changing or adding widgets
 
@@ -587,7 +595,9 @@ widgetLibrary.registerWidget('text', YourInputWidgetComponent);
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets), and PrimeNG widgets are in [`projects/ajsf-primeng/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-primeng/src/lib/widgets). Bootstrap 3 reformats the default widgets. Bootstrap 4 and Bootstrap 5 do the same for most widgets, and since 22.1.0 ship their own `checkbox`, `checkboxes` and `radios` widgets, in [`projects/ajsf-bootstrap4/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap4/src/lib/widgets) and [`projects/ajsf-bootstrap5/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap5/src/lib/widgets).
+Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets), and PrimeNG widgets are in [`projects/ajsf-primeng/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-primeng/src/lib/widgets).
+
+Bootstrap 3 reformats the default widgets. Bootstrap 4 and Bootstrap 5 do the same for most widgets, and since 22.1.0 ship their own `checkbox`, `checkboxes` and `radios` widgets, in [`projects/ajsf-bootstrap4/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap4/src/lib/widgets) and [`projects/ajsf-bootstrap5/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap5/src/lib/widgets).
 
 ### Changing or adding frameworks
 
