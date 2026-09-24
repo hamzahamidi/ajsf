@@ -149,6 +149,28 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({ $schema: 'urn:custom', type: 'string' });
       expect(result).toEqual({ $schema: 'urn:custom', type: 'string' });
     });
+
+    [4, 6, 7].forEach(draft => {
+      const path = `json-schema.org/draft-0${draft}/schema`;
+      const schema = ($schema: string): any => ({
+        $schema,
+        type: 'object',
+        properties: {
+          n: draft === 4
+            ? { type: 'number', minimum: 5, exclusiveMinimum: true }
+            : { type: 'number', exclusiveMinimum: 5 },
+        },
+      });
+
+      [`http://${path}`, `https://${path}#`, `https://${path}`].forEach(uri => {
+        it(`should convert ${uri} exactly as the canonical draft ${draft} URI`, () => {
+          const result: any = convertSchemaToDraft6(schema(uri));
+          expect(result).toEqual(convertSchemaToDraft6(schema(`http://${path}#`)));
+          expect(result.$schema).toEqual(`http://json-schema.org/draft-0${draft === 4 ? 7 : draft}/schema#`);
+          expect(result.properties.n).toEqual({ type: 'number', exclusiveMinimum: 5 });
+        });
+      });
+    });
   });
 
   describe('top level legacy keys', () => {
@@ -481,6 +503,15 @@ describe('detectDraft', () => {
     expect(at('http://json-schema.org/draft-04/schema#')).toBe(4);
     expect(at('http://json-schema.org/draft-06/schema#')).toBe(6);
     expect(at('http://json-schema.org/draft-07/schema#')).toBe(7);
+  });
+
+  it('reads the draft number over https and without the trailing #', () => {
+    [4, 6, 7].forEach(draft => {
+      const path = `json-schema.org/draft-0${draft}/schema`;
+      expect(at(`http://${path}`)).toBe(draft);
+      expect(at(`https://${path}#`)).toBe(draft);
+      expect(at(`https://${path}`)).toBe(draft);
+    });
   });
 
   it('returns null when no draft is declared', () => {

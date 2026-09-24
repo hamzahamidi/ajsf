@@ -26,16 +26,17 @@ export const DEFAULT_DRAFT = 7;
  *
  * Reads the draft number a schema declares in its '$schema' keyword.
  *
- * Recognises the draft 1 to 7 schema URIs only. A hyper-schema URI, a 2019-09
- * or 2020-12 URI, and an absent '$schema' all return null, which is why a
- * schema declaring draft 1 hyper-schema currently falls through to inference.
+ * Recognises the draft 1 to 7 schema URIs only, over http or https and with or
+ * without the trailing '#'. A hyper-schema URI, a 2019-09 or 2020-12 URI, and
+ * an absent '$schema' all return null, which is why a schema declaring draft 1
+ * hyper-schema currently falls through to inference.
  *
  * // { any } schema - the schema to read
  * // { number } - the declared draft, or null
  */
 export function detectDraft(schema): number {
   if (!schema || typeof schema.$schema !== 'string') { return null; }
-  const declared = /http:\/\/json-schema\.org\/draft-0(\d)\/schema#/.exec(schema.$schema);
+  const declared = /^https?:\/\/json-schema\.org\/draft-0(\d)\/schema#?$/.exec(schema.$schema);
   return declared ? Number(declared[1]) : null;
 }
 
@@ -142,6 +143,12 @@ function normaliseIdentifiers(newSchema: any, draft: number, changed: boolean): 
       !simpleTypes.includes(newSchema.type)
     )) {
       changed = true;
+    }
+
+    // ajv registers its meta-schemas under the http URIs only.
+    const declared = detectDraft(newSchema);
+    if (declared !== null) {
+      newSchema.$schema = `http://json-schema.org/draft-0${declared}/schema#`;
     }
 
     // If schema changed, update or remove $schema identifier
