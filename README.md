@@ -61,9 +61,10 @@ Peer ranges are bounded from `14.0.0` onward, so npm reports a clear resolution 
 rather than installing a combination that was never built or tested. This also means a
 plain install fails when the application is not on the newest supported Angular major.
 
-`0.8.0` and earlier predate this scheme. They declare open peer ranges (`>=14.0.0`) and
-were built against Angular 14. There is no release for Angular 15, which reached end of
-life. See the [versions on npm](https://www.npmjs.com/package/@ajsf/core?activeTab=versions)
+`0.8.0` and earlier predate this scheme. They declare open peer ranges with no upper
+bound: `>=14.0.0` in `0.8.0`, which was built against Angular 14, `>=13.0.0` in `0.7.0`,
+and lower floors before that, down to `>=6.0.0` in `0.1.x`. There is no release for
+Angular 15, which reached end of life. See the [versions on npm](https://www.npmjs.com/package/@ajsf/core?activeTab=versions)
 for what is currently available.
 
 ### Upgrading from `0.8.0` to `14.0.0`
@@ -85,19 +86,25 @@ is on the [`angular6-json-schema-form` branch](https://github.com/hamzahamidi/aj
 
 ## JSON Schema versions
 
-Your existing schemas keep working. AJSF stays backward compatible with the older drafts,
-and nothing you have today needs changing.
+Draft 4, 6 and 7 schemas work as they are. Drafts 1 to 3 were dropped in `19.0.0`: a
+property level `required`, `optional` or `requires` is removed, with a console warning
+naming the properties, so move those into a draft 4 `required` array.
 
 | Draft | Status |
 | --- | --- |
-| Draft 1, 2, 3, 4 | Supported, converted to draft 6 internally |
+| Draft 1, 2, 3 | Not supported since `19.0.0` |
+| Draft 4 | Supported, converted to draft 7 internally |
 | Draft 6 | Supported directly |
 | Draft 7 | Supported, including `if`, `then` and `else` |
 | 2019-09, 2020-12 | Not supported yet |
 
-Older drafts pass through `convertSchemaToDraft6` before the form is built. Keywords it
-does not recognise are carried through untouched rather than dropped, which is why draft 7
-schemas validate correctly.
+Every schema passes through `convertSchemaToDraft6` before the form is built. Despite the
+name, a draft 4 schema comes out stamped as draft 7. Keywords it does not recognise are
+carried through untouched rather than dropped, which is why draft 7 schemas validate
+correctly.
+
+A schema without `$schema` is read as draft 7. The `defaultDraft` input names another
+draft for such schemas, and a declared `$schema` always wins.
 
 Two limits are worth knowing about before you rely on them.
 
@@ -125,7 +132,7 @@ The playground includes more than 70 JSON Schemas. You can render each one with 
 
 Pick the package for the UI you want. [`@ajsf/material`](https://www.npmjs.com/package/@ajsf/material) renders with [Angular Material](https://material.angular.io), [`@ajsf/primeng`](https://www.npmjs.com/package/@ajsf/primeng) renders with [PrimeNG](https://primeng.org), and there are Bootstrap 3, Bootstrap 4 and Bootstrap 5 packages alongside them.
 
-`@ajsf/material` renders Angular Material components, so it declares `@angular/material` and `@angular/cdk` as peer dependencies. Your app needs both installed, with a theme and animations set up. `ng add @angular/material` does all three:
+`@ajsf/material` renders Angular Material components, so it declares `@angular/material` and `@angular/cdk` as peer dependencies. Your app needs both installed and a Material theme. `ng add @angular/material` installs both, writes a theme to `src/material-theme.scss`, adds it to the `angular.json` styles and links the Roboto and Material Symbols fonts in `index.html`:
 
 ```shell
 ng add @angular/material
@@ -148,31 +155,54 @@ For an older Angular major, install the matching AJSF major as described in
 
 For PrimeNG setup, including theme configuration, see the [`@ajsf/primeng` getting started guide](./projects/ajsf-primeng/README.md).
 
-Then import `MaterialDesignFrameworkModule` in your main application module like this:
+Then import `MaterialDesignFrameworkModule` in the `imports` of the standalone component that renders the form, which is how `ng new` scaffolds an Angular 22 app. The module provides everything the form needs, so `app.config.ts` stays as `ng new` wrote it:
 
 ```typescript
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { Component } from '@angular/core';
+import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
+@Component({
+  selector: 'app-root',
+  imports: [MaterialDesignFrameworkModule],
+  templateUrl: './app.html',
+})
+export class App { }
+```
+
+In an app that still bootstraps an `NgModule`, add the framework module to that module's `imports` instead. The declared component needs `standalone: false`, since components are standalone by default:
+
+```typescript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
 import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [ AppComponent ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MaterialDesignFrameworkModule
-  ],
-  providers: [],
+  imports: [ BrowserModule, MaterialDesignFrameworkModule ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
 ```
 
-`BrowserAnimationsModule` is required, not optional: the framework module pulls in `MatSelect`, `MatDatepicker`, `MatExpansion`, `MatTabs`, `MatStepper` and others that use animations, and without it the first form throws `Found the synthetic property @transformPanel`. Use `NoopAnimationsModule` instead if you want the components without the motion.
+No animations setup is needed. With Angular Material 22, the select, datepicker, expansion panel, tabs and stepper widgets open, switch and submit without `@angular/animations` installed and with nothing logged to the console. `ng new` does not install that package, so importing `BrowserAnimationsModule` fails the build with `Could not resolve "@angular/animations/browser"`, and Angular has deprecated it since 20.2. Zoneless change detection, the Angular 22 default, works as well: no `zone.js` is needed.
+
+`@ajsf/material` takes the initial bundle of a new app to 1.40 MB, and `ng new` sets a 1 MB `maximumError` budget, so `ng build` fails with `bundle initial exceeded maximum budget`. Raise the `initial` budget in the `production` configuration of `angular.json`:
+
+```json
+{
+  "type": "initial",
+  "maximumWarning": "2MB",
+  "maximumError": "2.5MB"
+}
+```
+
+`@ajsf/primeng` needs the same change (1.55 MB). The Bootstrap packages and `@ajsf/core` stay under 1 MB. The build also warns that `ajv` and `ajv-formats` are not ES modules. That warning is harmless, and adding both to `allowedCommonJsDependencies` in the build `options` silences it:
+
+```json
+"allowedCommonJsDependencies": ["ajv", "ajv-formats"]
+```
 
 Six framework modules are available. Choose the one that matches the UI you want:
 
@@ -182,6 +212,8 @@ Six framework modules are available. Choose the one that matches the UI you want
 * `Bootstrap4FrameworkModule` from `@ajsf/bootstrap4` for Bootstrap 4
 * `Bootstrap5FrameworkModule` from `@ajsf/bootstrap5` for Bootstrap 5
 * `JsonSchemaFormModule` from `@ajsf/core` for plain HTML (no styling)
+
+The five framework modules are used the same way. `JsonSchemaFormModule` on its own does not provide `FrameworkLibraryService`, so a standalone component that imports only it also needs `providers: [FrameworkLibraryService]`, imported from `@ajsf/core`, or the form fails with `NG0201`. An `NgModule` that imports it needs nothing more.
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
 
@@ -220,13 +252,13 @@ The [API reference](https://hamidihamza.com/ajsf/api/) is generated from the six
 
 ### Basic use
 
-For basic use, after loading JsonSchemaFormModule as described above, to display a form in your Angular component, simply add the following to your component's template:
+For basic use, after importing a framework module as described above, to display a form in your Angular component, simply add the following to your component's template:
 
 ```html
 <json-schema-form
-  loadExternalAssets="true"
+  [loadExternalAssets]="true"
   [schema]="yourJsonSchema"
-  framework="no-framework"
+  framework="material-design"
   (onSubmit)="yourOnSubmitFn($event)">
 </json-schema-form>
 ```
@@ -242,7 +274,7 @@ Here, `schema` is a valid JSON Schema object and `onSubmit` calls a function tha
 * `bootstrap-5` for Bootstrap 5
 * `no-framework` for plain HTML
 
-Setting `loadExternalAssets="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details.
+Setting `[loadExternalAssets]="true"` loads assets the display framework needs from a CDN. It is useful while trying the library out, but production sites should load those assets themselves. See [Loading external assets required by a framework](#loading-external-assets-required-by-a-framework) for details. Keep the brackets: the input is a boolean, and a project created by `ng new` rejects the plain attribute `loadExternalAssets="true"` with `TS2322`.
 
 Note what this does and does not cover. For `bootstrap-4` and `bootstrap-5` it loads Bootstrap's CSS and JavaScript, so a form is styled straight away. For `material-design` it loads only the Material Icons and Roboto fonts: an Angular Material **theme is not included**, so add one to your app as `ng add @angular/material` offers to do, or the controls render unthemed.
 
@@ -252,7 +284,7 @@ Angular JSON Schema Form can also create a form entirely from a JSON object, wit
 
 ```html
 <json-schema-form
-  loadExternalAssets="true"
+  [loadExternalAssets]="true"
   [(ngModel)]="exampleJsonObject">
 </json-schema-form>
 ```
@@ -305,7 +337,7 @@ Here is an example:
   [widgets]="yourCustomWidgets"
   language="fr"
   framework="material-design"
-  loadExternalAssets="true"
+  [loadExternalAssets]="true"
   (onChanges)="yourOnChangesFn($event)"
   (onSubmit)="yourOnSubmitFn($event)"
   (isValid)="yourIsValidFn($event)"
@@ -363,7 +395,7 @@ Combining inputs is useful when each form stores its data and schema together. S
 
 #### Compatibility modes
 
-If you have used Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery, Angular JSON Schema Form recognizes their input names and custom input objects. It also accepts the [truncated draft 3 format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut). See [JSON Schema versions](#json-schema-versions) for the drafts AJSF supports.
+If you have used Angular Schema Form for AngularJS, React JSON Schema Form, or JSON Form for jQuery, Angular JSON Schema Form recognizes their input names and custom input objects. It also accepts the [truncated schema format supported by JSON Form](https://github.com/joshfire/jsonform/wiki#schema-shortcut), though a draft 3 `required: true` on a property is dropped with a console warning. See [JSON Schema versions](#json-schema-versions) for the drafts AJSF supports.
 
 Angular Schema Form (AngularJS) compatibility:
 
@@ -412,7 +444,7 @@ Finally, Angular JSON Schema Form includes some additional inputs and outputs fo
 <json-schema-form
   [schema]="yourJsonSchema"
   [debug]="true"
-  loadExternalAssets="true"
+  [loadExternalAssets]="true"
   (formSchema)="showFormSchemaFn($event)"
   (formLayout)="showFormLayoutFn($event)">
 </json-schema-form>
@@ -515,7 +547,7 @@ maxItems         |  array    | maximumItems,          currentItems
 uniqueItems      |  array    | duplicateItems
  contains      * |  array    | requiredItem
 
-* Note: The `contains` and `dependencies` validators are still in development, and do not yet work correctly.
+* Note: `contains` and `dependencies` are enforced on the form as a whole. While either fails, the `isValid` output is `false`, `validationErrors` reports it, and with the default options the submit button stays disabled. Neither is shown on a field, so a `validationMessages` entry for them is never displayed.
 
 ### Changing or adding widgets
 
@@ -555,7 +587,7 @@ widgetLibrary.registerWidget('text', YourInputWidgetComponent);
 widgetLibrary.registerWidget('custom-control', YourCustomWidgetComponent);
 ```
 
-Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets), and PrimeNG widgets are in [`projects/ajsf-primeng/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-primeng/src/lib/widgets). Bootstrap 3, Bootstrap 4 and Bootstrap 5 reformat the default widgets and do not provide custom widgets.
+Call `getAllWidgets()` on `WidgetLibraryService` to inspect the registered widgets. Default widgets are in [`projects/ajsf-core/src/lib/widget-library`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-core/src/lib/widget-library), Material widgets are in [`projects/ajsf-material/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-material/src/lib/widgets), and PrimeNG widgets are in [`projects/ajsf-primeng/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-primeng/src/lib/widgets). Bootstrap 3 reformats the default widgets. Bootstrap 4 and Bootstrap 5 do the same for most widgets, and since 22.1.0 ship their own `checkbox`, `checkboxes` and `radios` widgets, in [`projects/ajsf-bootstrap4/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap4/src/lib/widgets) and [`projects/ajsf-bootstrap5/src/lib/widgets`](https://github.com/hamzahamidi/ajsf/tree/main/projects/ajsf-bootstrap5/src/lib/widgets).
 
 ### Changing or adding frameworks
 
@@ -602,7 +634,7 @@ During development, Angular JSON Schema Form can load these resources for you in
 
 * Call `setFramework` with a second parameter of `true` (e.g. `setFramework('material-design', true)`), or
 * Add `loadExternalAssets: true` to your `options` object, or
-* Add `loadExternalAssets="true"` to your `<json-schema-form>` tag, as shown above
+* Add `[loadExternalAssets]="true"` to your `<json-schema-form>` tag, as shown above
 
 Finally, if you want to see what scripts a particular framework will automatically load, after setting that framework you can call `getFrameworkStylesheets()` or `getFrameworkScripts()` from the `FrameworkLibraryService` to return the built-in arrays of URLs.
 

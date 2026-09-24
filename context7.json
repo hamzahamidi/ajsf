@@ -1,7 +1,7 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
   "projectTitle": "AJSF (Angular JSON Schema Form)",
-  "description": "Builds Angular forms from JSON Schema. @ajsf/core renders plain HTML widgets, @ajsf/material and @ajsf/primeng supply their own, and the Bootstrap 3, 4 and 5 packages restyle the core widgets.",
+  "description": "Builds Angular forms from JSON Schema. @ajsf/core renders plain HTML widgets, @ajsf/material and @ajsf/primeng supply their own, and the Bootstrap 3, 4 and 5 packages restyle the core widgets, with Bootstrap 4 and 5 adding their own checkbox, checkboxes and radios widgets.",
   "folders": ["projects", "docs/release-notes"],
   "excludeFolders": ["demo", "docs/superpowers", "scripts", "testing"],
   "excludeFiles": ["AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md"],
@@ -9,16 +9,20 @@
     "The @ajsf/* major equals the Angular major it targets, for example @ajsf/material@17 for Angular 17. Peer ranges are bounded, so a mismatched major fails to install.",
     "Install at least one framework package: @ajsf/material, @ajsf/primeng, @ajsf/bootstrap3, @ajsf/bootstrap4 or @ajsf/bootstrap5. Each depends on @ajsf/core. Several can be installed and switched at runtime. Use @ajsf/core alone only for unstyled HTML.",
     "Keep every @ajsf/* package in a project on the same version. The six packages are released together.",
-    "Import the NgModule of each framework in use: MaterialDesignFrameworkModule, PrimengFrameworkModule, Bootstrap3FrameworkModule, Bootstrap4FrameworkModule or Bootstrap5FrameworkModule, or JsonSchemaFormModule from @ajsf/core for plain HTML.",
+    "Import the framework module in the imports of the standalone component that renders the form, or of the NgModule that declares it: MaterialDesignFrameworkModule, PrimengFrameworkModule, Bootstrap3FrameworkModule, Bootstrap4FrameworkModule or Bootstrap5FrameworkModule. Nothing goes in app.config.ts for them.",
+    "JsonSchemaFormModule from @ajsf/core renders plain HTML. A standalone component that imports only it also needs providers: [FrameworkLibraryService] from @ajsf/core, or the form fails with NG0201.",
+    "No animations provider and no @angular/animations package are needed, and zoneless change detection works. @ajsf/primeng does not need @angular/animations either.",
+    "@ajsf/material and @ajsf/primeng take a new app's initial bundle to 1.40 MB and 1.55 MB, above the 1 MB maximumError budget ng new writes, so raise the initial budget in angular.json.",
     "Render with <json-schema-form [schema]=\"schema\" framework=\"material-design\" (onSubmit)=\"onSubmit($event)\">. framework accepts material-design, primeng, bootstrap-3, bootstrap-4, bootstrap-5 and no-framework, the default.",
     "@ajsf/material needs @angular/material and @angular/cdk at the same major, and a Material theme in the app.",
     "@ajsf/primeng needs primeng at the same major. The app sets the theme with providePrimeNG and a preset from @primeuix/themes.",
-    "loadExternalAssets=\"true\" loads framework CSS and scripts from a CDN and is for trying the library out. In production, load those assets in the app and remove it. For Material it loads fonts, not a theme.",
+    "[loadExternalAssets]=\"true\" loads framework CSS and scripts from a CDN and is for trying the library out. Bind it with brackets: the input is a boolean and the plain attribute fails with TS2322 in a project created by ng new. In production, load those assets in the app and remove it. For Material it loads fonts, not a theme.",
     "Two-way binding works with [(data)], [(ngModel)], [(model)] and [(formData)], not with the combined [form] input.",
     "Add or replace widgets with the widgets input or WidgetLibraryService.registerWidget(type, component). Switch or supply a framework with the framework input or FrameworkLibraryService.setFramework.",
     "Form wide validation messages go in options.defautWidgetOptions.validationMessages. That spelling is public API: do not correct it to defaultWidgetOptions.",
     "A schema without $schema is read as draft 7 unless the defaultDraft input names another draft. JSON Schema 2019-09 and 2020-12 are not supported, and a 2020-12 $schema fails to compile.",
     "Draft 7 if, then and else are validated, but the layout is built once and does not react to them.",
+    "contains and dependencies are enforced on the whole form: isValid is false, validationErrors reports them and the submit button stays disabled, but no field shows a message for them.",
     "The language input sets the validation message language: de, en, es, fr, it, pt or zh."
   ]
 }
