@@ -33,7 +33,8 @@ to the field rather than to this container.
     [class.d-flex]="showRemoveButton"
     [class.align-items-center]="showRemoveButton && options?.isInputWidget"
     [class.align-items-start]="showRemoveButton && !options?.isInputWidget"
-    [class.is-invalid]="!!options?.errorMessage">
+    [class.is-invalid]="(formControl?.touched || formControl?.dirty || options?.feedbackOnRender) &&
+          !!widgetOptions?.errorMessage">
     <div
       [class.h-100]="true"
       [class.mt-1]="true"
@@ -69,10 +70,11 @@ to the field rather than to this container.
     }
   </div>
 
-  @if (formControl?.touched && options?.errorMessage) {
+  @if ((formControl?.touched || formControl?.dirty || options?.feedbackOnRender) &&
+    widgetOptions?.errorMessage && options?.messageLocation !== 'top') {
     <div
       class="invalid-feedback"
-    [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
+    [innerHTML]="$safeNavigationMigration(widgetOptions?.errorMessage)"></div>
   }
 
   <!--
