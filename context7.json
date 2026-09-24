@@ -10,7 +10,7 @@
     "Install at least one framework package: @ajsf/material, @ajsf/primeng, @ajsf/bootstrap3, @ajsf/bootstrap4 or @ajsf/bootstrap5. Each depends on @ajsf/core. Several can be installed and switched at runtime. Use @ajsf/core alone only for unstyled HTML.",
     "Keep every @ajsf/* package in a project on the same version. The six packages are released together.",
     "Import the framework module in the imports of the standalone component, or NgModule, that renders the form: MaterialDesignFrameworkModule, PrimengFrameworkModule, Bootstrap3FrameworkModule, Bootstrap4FrameworkModule or Bootstrap5FrameworkModule.",
-    "JsonSchemaFormModule from @ajsf/core renders plain HTML. A standalone component that imports only it also needs providers: [FrameworkLibraryService] from @ajsf/core, or the form fails with NG0201.",
+    "JsonSchemaFormModule from @ajsf/core renders plain HTML and needs no extra providers. In 22.2.1 and earlier, a standalone component that imports only it also needs providers: [FrameworkLibraryService] from @ajsf/core, or the form fails with NG0201.",
     "No animations provider and no @angular/animations package are needed, and zoneless change detection works. @ajsf/primeng does not need @angular/animations either.",
     "@ajsf/material and @ajsf/primeng take a new app's initial bundle above the 1 MB maximumError budget that ng new writes, so raise the initial budget in angular.json.",
     "Render with <json-schema-form [schema]=\"schema\" framework=\"material-design\" (onSubmit)=\"onSubmit($event)\">. framework accepts material-design, primeng, bootstrap-3, bootstrap-4, bootstrap-5 and no-framework, the default.",

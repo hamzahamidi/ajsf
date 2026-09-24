@@ -1,6 +1,7 @@
 import { Framework } from './framework';
+import { NoFramework } from './no.framework';
 import { hasOwn } from '../shared/utility.functions';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { WidgetLibraryService } from '../widget-library/widget-library.service';
 
 // Possible future frameworks:
@@ -23,9 +24,11 @@ export class FrameworkLibraryService {
   frameworkLibrary: { [name: string]: Framework } = {};
 
   constructor(
-    @Inject(Framework) private frameworks: any[],
+    @Optional() @Inject(Framework) private frameworks: any[],
     @Inject(WidgetLibraryService) private widgetLibrary: WidgetLibraryService
   ) {
+    // Root cannot see Framework when only a standalone component's imports provide it.
+    this.frameworks = frameworks ?? [new NoFramework()];
     this.frameworks.forEach(framework =>
       this.frameworkLibrary[framework.name] = framework
     );
