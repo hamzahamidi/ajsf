@@ -200,7 +200,8 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
 
       if (this.formControl) {
         this.updateHelpBlock(this.formControl.status);
-        this.formControl.statusChanges.subscribe(status => this.updateHelpBlock(status));
+        // events, not statusChanges: a blur marks the control touched without changing its status.
+        this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
 
         if (this.options.debug) {
           const vars: any[] = [];
