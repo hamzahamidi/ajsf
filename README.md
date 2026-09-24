@@ -111,7 +111,9 @@ Two limits are worth knowing about before you rely on them.
 **Draft 7 conditionals validate, but the layout does not follow them.** `if`, `then` and
 `else` are enforced, so a field that becomes required because of another field's value
 really is required and the form will not submit without it. The layout is built once,
-though, so that field is not marked as required until you try to submit. `readOnly` and
+though, so that field shows no required marker and no message, even after it is touched
+or the user tries to submit: with the default options Submit stays disabled and nothing
+names the missing field. `readOnly` and
 `writeOnly` are accepted and currently have no effect: they are annotations, and neither
 the validator nor the widgets act on them.
 
