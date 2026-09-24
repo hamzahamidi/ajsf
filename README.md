@@ -217,7 +217,7 @@ Six framework modules are available. Choose the one that matches the UI you want
 * `Bootstrap5FrameworkModule` from `@ajsf/bootstrap5` for Bootstrap 5
 * `JsonSchemaFormModule` from `@ajsf/core` for plain HTML (no styling)
 
-The five framework modules are used the same way. `JsonSchemaFormModule` on its own does not provide `FrameworkLibraryService`, so a standalone component that imports only it also needs `providers: [FrameworkLibraryService]`, imported from `@ajsf/core`, or the form fails with `NG0201`. An `NgModule` that imports it needs nothing more.
+All six are used the same way, in the imports of a standalone component or an `NgModule`, and none needs extra providers. In 22.2.1 and earlier, a standalone component that imports only `JsonSchemaFormModule` also needs `providers: [FrameworkLibraryService]`, imported from `@ajsf/core`, or the form fails with `NG0201`.
 
 It is also possible to load multiple frameworks and switch between them at runtime, like the example playground on GitHub. But most typical sites will just load one framework.
 
