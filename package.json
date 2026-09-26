@@ -54,7 +54,7 @@
     "build:libs": "npm run build:core && npm run build:bs4 && npm run build:bs3 && npm run build:bs5 && npm run build:material && npm run build:primeng",
     "build:demo": "npm run build:libs && ng build demo --configuration production --base-href ./ && npm run docs:api",
     "build:demo-only": "ng build demo --configuration production --base-href ./",
-    "docs:api": "typedoc",
+    "docs:api": "typedoc && node scripts/inject-analytics.mjs",
     "stats": "ng build demo --configuration production --stats-json && echo \"stats.json written to dist/demo. Analyze it at https://esbuild.github.io/analyze/\"",
     "test:core": "ng test @ajsf/core",
     "test:bs3": "ng test @ajsf/bootstrap3",
