@@ -398,6 +398,29 @@ describe('JsonValidators', () => {
       expect(JsonValidators.format('relative-json-pointer')(ctrl('/foo'))).not.toBeNull();
     });
 
+    it('checks IPv4 octets and supported color formats', () => {
+      const ipv4 = JsonValidators.format('ipv4');
+      expect(ipv4(ctrl('255.255.255.255'))).toBeNull();
+      expect(ipv4(ctrl('001.0.10.255'))).toBeNull();
+      expect(ipv4(ctrl('1.2.3'))).not.toBeNull();
+      expect(ipv4(ctrl('1.2.3.256'))).not.toBeNull();
+      expect(ipv4(ctrl('1.2.x.4'))).not.toBeNull();
+
+      const color = JsonValidators.format('color');
+      ['#abc', '#aabbcc', 'rgb(1, 20, 300)', 'rgba(1,2,3,.5)',
+        'hsl(1, 20%, 30%)', 'hsla(1,20%,30%,0.5)', ' #abc ']
+        .forEach(value => expect(color(ctrl(value))).toBeNull());
+      expect(color(ctrl('rgb(1,2,3'))).not.toBeNull();
+    });
+
+    it('validates JSON pointer and fragment segments', () => {
+      const pointer = JsonValidators.format('json-pointer');
+      ['', '/', '/foo~0bar/~1baz', '#', '#/foo%20bar', '#/foo~1bar\n']
+        .forEach(value => expect(pointer(ctrl(value))).toBeNull());
+      ['foo', '#foo', '/foo~2bar', '#/foo%GG', '#/foo bar']
+        .forEach(value => expect(pointer(ctrl(value))).not.toBeNull());
+    });
+
     it('accepts well-formed URLs with supported schemes, credentials, ports, and public IP literals', () => {
       const validator = JsonValidators.format('url');
 
@@ -1308,14 +1331,24 @@ describe('JsonValidators', () => {
   });
 
   describe('email', () => {
-    it('accepts a well formed address', () => {
+    it('accepts addresses with valid local parts and domain labels', () => {
       expect(JsonValidators.email(ctrl('a@b.com'))).toBeNull();
+      expect(JsonValidators.email(ctrl('a.b+tag@example-domain.com'))).toBeNull();
+      expect(JsonValidators.email(ctrl(`${'a'.repeat(64)}@${'b'.repeat(63)}.com`))).toBeNull();
     });
 
-    it('rejects a malformed address', () => {
+    it('rejects malformed addresses and out of range parts', () => {
       expect(JsonValidators.email(ctrl('not-an-email'))).toEqual({ email: true });
       expect(JsonValidators.email(ctrl(''))).toEqual({ email: true });
       expect(JsonValidators.email(ctrl(null))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('@example.com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl(`${'a'.repeat(65)}@example.com`))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a..b@example.com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a b@example.com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a@-example.com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a@example..com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a@b@c.com'))).toEqual({ email: true });
+      expect(JsonValidators.email(ctrl('a'.repeat(255)))).toEqual({ email: true });
     });
 
     it('returns no error when given no control', () => {
