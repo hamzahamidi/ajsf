@@ -72,9 +72,6 @@ function withoutNullValues(object: any): any {
  *   Not used by JSON Schema:  min (*), max (*), requiredTrue (*), email (*)
  * (Validators originally included with Angular are maked with (*).)
  *
- * NOTE / TODO: The dependencies validator is not complete.
- * NOTE / TODO: The contains validator is not complete.
- *
  * Validators not used by JSON Schema (but included for compatibility)
  * and their JSON Schema equivalents:
  *

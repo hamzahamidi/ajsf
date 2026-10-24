@@ -400,8 +400,6 @@ export function setRequiredFields(schema: any, formControlTemplate: any): boolea
   }
   return fieldsRequired;
 
-  // TODO: Add support for patternProperties
-  // https://spacetelescope.github.io/understanding-json-schema/reference/object.html#pattern-properties
 }
 
 /**

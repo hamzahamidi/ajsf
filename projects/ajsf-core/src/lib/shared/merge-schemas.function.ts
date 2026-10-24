@@ -217,8 +217,10 @@ export function mergeSchemas(...schemas) {
                     [ ...notAnyOfArray, ...notSchema.anyOf ] :
                     [ ...notAnyOfArray, notSchema ]
                 , []);
-              // TODO: Remove duplicate items from array
-              combinedSchema.not = { anyOf: notAnyOf };
+              const uniqueNotAnyOf = notAnyOf.filter((notSchema, index) =>
+                notAnyOf.findIndex(candidate => deepEqual(candidate, notSchema)) === index
+              );
+              combinedSchema.not = { anyOf: uniqueNotAnyOf };
             } else {
               return { allOf: [ ...schemas ] };
             }
