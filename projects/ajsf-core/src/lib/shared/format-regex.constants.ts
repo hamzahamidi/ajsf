@@ -197,15 +197,21 @@ function isValidJsonPointerSegment(segment: string, fragment: boolean): boolean 
   return true;
 }
 
-function isJsonPointerFormat(value: string): boolean {
-  if (value.length === 0) { return true; }
-  const fragment = value.startsWith('#');
-  const pointer = fragment
-    ? value.slice(1).replace(/(?:\r\n|[\n\r\u2028\u2029])$/, '')
-    : value;
+function removeFinalLineTerminator(value: string): string {
+  return value.replace(/(?:\r\n|[\n\r\u2028\u2029])$/, '');
+}
+
+function isValidJsonPointer(pointer: string, fragment: boolean): boolean {
   if (pointer.length > 0 && !pointer.startsWith('/')) { return false; }
   const segments = pointer.length === 0 ? [] : pointer.slice(1).split('/');
   return segments.every(segment => isValidJsonPointerSegment(segment, fragment));
+}
+
+function isJsonPointerFormat(value: string): boolean {
+  if (value.length === 0) { return true; }
+  const fragment = value.startsWith('#');
+  const pointer = fragment ? removeFinalLineTerminator(value.slice(1)) : value;
+  return isValidJsonPointer(pointer, fragment);
 }
 
 export const jsonSchemaFormatTests = {

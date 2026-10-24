@@ -26,12 +26,12 @@ import { forkJoin } from 'rxjs';
 import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.constants';
 import { map } from 'rxjs/operators';
 
-const emailLocalCharacterPattern = /^[-!#$%&'*+\/0-9=?A-Za-z^_`{|}~]$/;
+const emailLocalCharacters = "-!#$%&'*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz^_`{|}~";
 const emailDomainLabelPattern = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
 
 function isValidEmailLocalPart(value: string): boolean {
   return value.split('.').every(part => part.length > 0 &&
-    part.split('').every(character => emailLocalCharacterPattern.test(character))
+    part.split('').every(character => emailLocalCharacters.includes(character))
   );
 }
 
@@ -43,7 +43,7 @@ function isValidEmail(value: string): boolean {
   const address = String(value).replace(/(?:\r\n|[\n\r\u2028\u2029])$/, '');
   if (address.length > 254) { return false; }
   const atIndex = address.indexOf('@');
-  if (atIndex <= 0 || atIndex > 64 || address.indexOf('@', atIndex + 1) !== -1) {
+  if (atIndex <= 0 || atIndex > 64 || address.includes('@', atIndex + 1)) {
     return false;
   }
   return isValidEmailLocalPart(address.slice(0, atIndex)) &&
