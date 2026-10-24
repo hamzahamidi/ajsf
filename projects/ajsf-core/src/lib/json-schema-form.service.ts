@@ -740,12 +740,19 @@ export class JsonSchemaFormService {
       if (typeof validationMessage !== 'string') {
         return addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey]);
       }
-      if (!/{{.+?}}/.test(validationMessage)) { return validationMessage; }
-      return Object.keys(errors[errorKey]).reduce(
+      const errorProperties = errors[errorKey];
+      if (
+        !validationMessage.includes('{{') ||
+        !validationMessage.includes('}}') ||
+        errorProperties == null
+      ) {
+        return validationMessage;
+      }
+      return Object.keys(errorProperties).reduce(
         (errorMessage, errorProperty) =>
-          errorMessage.replace(
-            new RegExp('{{' + errorProperty + '}}', 'g'),
-            errors[errorKey][errorProperty]
+          errorMessage.replaceAll(
+            '{{' + errorProperty + '}}',
+            errorProperties[errorProperty]
           ),
         validationMessage
       );
