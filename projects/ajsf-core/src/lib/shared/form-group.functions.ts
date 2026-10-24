@@ -522,6 +522,15 @@ export function setRequiredFields(schema: any, formControlTemplate: any): boolea
 
 }
 
+interface FormDataFormattingContext {
+  formattedData: any;
+  dataMap: Map<string, any>;
+  recursiveRefMap: Map<string, string>;
+  arrayMap: Map<string, number>;
+  returnEmptyFields: boolean;
+  fixErrors: boolean;
+}
+
 /**
  * 'formatFormData' function
  *
@@ -539,58 +548,107 @@ export function formatFormData(
 ): any {
   if (formData === null || typeof formData !== 'object') { return formData; }
   const formattedData = isArray(formData) ? [] : {};
-  JsonPointer.forEachDeep(formData, (value, dataPointer) => {
-
-    // If returnEmptyFields === true,
-    // add empty arrays and objects to all allowed keys
-    if (returnEmptyFields && isArray(value)) {
-      JsonPointer.set(formattedData, dataPointer, []);
-    } else if (returnEmptyFields && isObject(value) && !isDate(value)) {
-      JsonPointer.set(formattedData, dataPointer, {});
-    } else {
-      const genericPointer =
-        JsonPointer.has(dataMap, [dataPointer, 'schemaType']) ? dataPointer :
-          removeRecursiveReferences(dataPointer, recursiveRefMap, arrayMap);
-      if (JsonPointer.has(dataMap, [genericPointer, 'schemaType'])) {
-        const schemaType: SchemaPrimitiveType | SchemaPrimitiveType[] =
-          dataMap.get(genericPointer).get('schemaType');
-        if (schemaType === 'null') {
-          JsonPointer.set(formattedData, dataPointer, null);
-        } else if ((hasValue(value) || returnEmptyFields) &&
-          inArray(schemaType, ['string', 'integer', 'number', 'boolean'])
-        ) {
-          const newValue = (fixErrors || (value === null && returnEmptyFields)) ?
-            toSchemaType(value, schemaType) : toJavaScriptType(value, schemaType);
-          if (isDefined(newValue) || returnEmptyFields) {
-            JsonPointer.set(formattedData, dataPointer, newValue);
-          }
-        }
-
-        // Finish incomplete 'date-time' entries
-        if (dataMap.get(genericPointer).get('schemaFormat') === 'date-time') {
-          // "2000-03-14T01:59:26.535" -> "2000-03-14T01:59:26.535Z" (add "Z")
-          if (/^\d\d\d\d-[0-1]\d-[0-3]\d[t\s][0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?$/i.test(value)) {
-            JsonPointer.set(formattedData, dataPointer, `${value}Z`);
-            // "2000-03-14T01:59" -> "2000-03-14T01:59:00Z" (add ":00Z")
-          } else if (/^\d\d\d\d-[0-1]\d-[0-3]\d[t\s][0-2]\d:[0-5]\d$/i.test(value)) {
-            JsonPointer.set(formattedData, dataPointer, `${value}:00Z`);
-            // "2000-03-14" -> "2000-03-14T00:00:00Z" (add "T00:00:00Z")
-          } else if (fixErrors && /^\d\d\d\d-[0-1]\d-[0-3]\d$/i.test(value)) {
-            JsonPointer.set(formattedData, dataPointer, `${value}:00:00:00Z`);
-          }
-        }
-      } else if (typeof value !== 'object' || isDate(value) ||
-        (value === null && returnEmptyFields)
-      ) {
-        console.error('formatFormData error: ' +
-          `Schema type not found for form value at ${genericPointer}`);
-        console.error('dataMap', dataMap);
-        console.error('recursiveRefMap', recursiveRefMap);
-        console.error('genericPointer', genericPointer);
-      }
-    }
-  });
+  const context: FormDataFormattingContext = {
+    formattedData,
+    dataMap,
+    recursiveRefMap,
+    arrayMap,
+    returnEmptyFields,
+    fixErrors,
+  };
+  JsonPointer.forEachDeep(formData, (value, dataPointer) =>
+    formatFormDataEntry(value, dataPointer, context)
+  );
   return formattedData;
+}
+
+function formatFormDataEntry(
+  value: any,
+  dataPointer: string,
+  context: FormDataFormattingContext,
+): void {
+  if (addEmptyFormDataContainer(value, dataPointer, context)) return;
+  const genericPointer = JsonPointer.has(context.dataMap, [dataPointer, 'schemaType'])
+    ? dataPointer
+    : removeRecursiveReferences(dataPointer, context.recursiveRefMap, context.arrayMap);
+  const schemaOptions = JsonPointer.has(context.dataMap, [genericPointer, 'schemaType'])
+    ? context.dataMap.get(genericPointer)
+    : undefined;
+  if (schemaOptions) {
+    formatKnownFormDataValue(value, dataPointer, schemaOptions, context);
+  } else {
+    logMissingFormDataSchemaType(value, genericPointer, context);
+  }
+}
+
+function addEmptyFormDataContainer(
+  value: any,
+  dataPointer: string,
+  context: FormDataFormattingContext,
+): boolean {
+  if (!context.returnEmptyFields) return false;
+  if (isArray(value)) {
+    JsonPointer.set(context.formattedData, dataPointer, []);
+    return true;
+  }
+  if (isObject(value) && !isDate(value)) {
+    JsonPointer.set(context.formattedData, dataPointer, {});
+    return true;
+  }
+  return false;
+}
+
+function formatKnownFormDataValue(
+  value: any,
+  dataPointer: string,
+  schemaOptions: Map<string, any>,
+  context: FormDataFormattingContext,
+): void {
+  const schemaType: SchemaPrimitiveType | SchemaPrimitiveType[] = schemaOptions.get('schemaType');
+  if (schemaType === 'null') {
+    JsonPointer.set(context.formattedData, dataPointer, null);
+  } else if ((hasValue(value) || context.returnEmptyFields) &&
+    inArray(schemaType, ['string', 'integer', 'number', 'boolean'])
+  ) {
+    const newValue = (context.fixErrors || (value === null && context.returnEmptyFields))
+      ? toSchemaType(value, schemaType)
+      : toJavaScriptType(value, schemaType);
+    if (isDefined(newValue) || context.returnEmptyFields) {
+      JsonPointer.set(context.formattedData, dataPointer, newValue);
+    }
+  }
+  completeDateTimeFormData(value, dataPointer, schemaOptions, context);
+}
+
+function completeDateTimeFormData(
+  value: any,
+  dataPointer: string,
+  schemaOptions: Map<string, any>,
+  context: FormDataFormattingContext,
+): void {
+  if (schemaOptions.get('schemaFormat') !== 'date-time') return;
+  if (/^\d\d\d\d-[0-1]\d-[0-3]\d[t\s][0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?$/i.test(value)) {
+    JsonPointer.set(context.formattedData, dataPointer, `${value}Z`);
+  } else if (/^\d\d\d\d-[0-1]\d-[0-3]\d[t\s][0-2]\d:[0-5]\d$/i.test(value)) {
+    JsonPointer.set(context.formattedData, dataPointer, `${value}:00Z`);
+  } else if (context.fixErrors && /^\d\d\d\d-[0-1]\d-[0-3]\d$/i.test(value)) {
+    JsonPointer.set(context.formattedData, dataPointer, `${value}:00:00:00Z`);
+  }
+}
+
+function logMissingFormDataSchemaType(
+  value: any,
+  genericPointer: string,
+  context: FormDataFormattingContext,
+): void {
+  if (typeof value === 'object' && !isDate(value) &&
+    !(value === null && context.returnEmptyFields)
+  ) return;
+  console.error('formatFormData error: ' +
+    `Schema type not found for form value at ${genericPointer}`);
+  console.error('dataMap', context.dataMap);
+  console.error('recursiveRefMap', context.recursiveRefMap);
+  console.error('genericPointer', genericPointer);
 }
 
 function getControlFromInvalidInput(formGroup: any, dataPointer: Pointer): any {
