@@ -870,34 +870,10 @@ export class JsonPointer {
       const pointerArray = this.parse(dataPointer);
       if (!pointerArray.length) { return ''; }
       const firstKey = pointerArray.shift();
-      if (schema.type === 'object' || schema.properties || schema.additionalProperties) {
-        if (schema.properties?.[firstKey]) {
-          return `/properties/${this.escape(firstKey)}` +
-            this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
-        } else  if (schema.additionalProperties) {
-          return '/additionalProperties' +
-            this.toSchemaPointer(pointerArray, schema.additionalProperties);
-        }
-      }
-      if ((schema.type === 'array' || schema.items) &&
-        (isNumber(firstKey) || firstKey === '-' || firstKey === '')
-      ) {
-        const arrayItem = firstKey === '-' || firstKey === '' ? 0 : +firstKey;
-        if (isArray(schema.items)) {
-          if (arrayItem < schema.items.length) {
-            return '/items/' + arrayItem +
-              this.toSchemaPointer(pointerArray, schema.items[arrayItem]);
-          } else if (schema.additionalItems) {
-            return '/additionalItems' +
-              this.toSchemaPointer(pointerArray, schema.additionalItems);
-          }
-        } else if (isObject(schema.items)) {
-          return '/items' + this.toSchemaPointer(pointerArray, schema.items);
-        } else if (isObject(schema.additionalItems)) {
-          return '/additionalItems' +
-            this.toSchemaPointer(pointerArray, schema.additionalItems);
-        }
-      }
+      const objectPointer = this.toObjectSchemaPointer(firstKey, pointerArray, schema);
+      if (objectPointer !== undefined) { return objectPointer; }
+      const arrayPointer = this.toArraySchemaPointer(firstKey, pointerArray, schema);
+      if (arrayPointer !== undefined) { return arrayPointer; }
       console.error(`toSchemaPointer error: Data pointer ${dataPointer} ` +
         `not compatible with schema ${schema}`);
       return null;
@@ -909,6 +885,46 @@ export class JsonPointer {
       console.error(`toSchemaPointer error: Invalid JSON Schema: ${schema}`);
     }
     return null;
+  }
+
+  private static toObjectSchemaPointer(firstKey, pointerArray, schema) {
+    if (!(schema.type === 'object' || schema.properties || schema.additionalProperties)) {
+      return undefined;
+    }
+    if (schema.properties?.[firstKey]) {
+      return `/properties/${this.escape(firstKey)}` +
+        this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
+    }
+    if (schema.additionalProperties) {
+      return '/additionalProperties' +
+        this.toSchemaPointer(pointerArray, schema.additionalProperties);
+    }
+    return undefined;
+  }
+
+  private static toArraySchemaPointer(firstKey, pointerArray, schema) {
+    if (!(schema.type === 'array' || schema.items) ||
+      !(isNumber(firstKey) || firstKey === '-' || firstKey === '')
+    ) {
+      return undefined;
+    }
+    const arrayItem = firstKey === '-' || firstKey === '' ? 0 : +firstKey;
+    if (isArray(schema.items)) {
+      if (arrayItem < schema.items.length) {
+        return '/items/' + arrayItem +
+          this.toSchemaPointer(pointerArray, schema.items[arrayItem]);
+      }
+      if (schema.additionalItems) {
+        return '/additionalItems' +
+          this.toSchemaPointer(pointerArray, schema.additionalItems);
+      }
+    } else if (isObject(schema.items)) {
+      return '/items' + this.toSchemaPointer(pointerArray, schema.items);
+    } else if (isObject(schema.additionalItems)) {
+      return '/additionalItems' +
+        this.toSchemaPointer(pointerArray, schema.additionalItems);
+    }
+    return undefined;
   }
 
   /**
