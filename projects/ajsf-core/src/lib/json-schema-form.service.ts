@@ -686,11 +686,11 @@ export class JsonSchemaFormService {
 
   private evaluateStringCondition(condition: string, dataIndex: number[]): boolean {
     const arrayIndex = dataIndex?.at(-1);
-    let pointer = condition;
+    let path = condition;
     if (hasValue(arrayIndex)) {
-      pointer = pointer.replace('[arrayIndex]', `[${arrayIndex}]`);
+      path = path.replace('[arrayIndex]', `[${arrayIndex}]`);
     }
-    pointer = JsonPointer.parseObjectPath(pointer);
+    const pointer = JsonPointer.parseObjectPath(path);
     const result = !!JsonPointer.get(this.data, pointer);
     return !result && pointer[0] === 'model'
       ? !!JsonPointer.get({ model: this.data }, pointer)
