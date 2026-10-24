@@ -746,7 +746,7 @@ export class JsonSchemaFormService {
               ))
       );
       ctx.formControl.valueChanges.subscribe(value => {
-        if (!!value) {
+        if (value) {
           ctx.controlValue = value;
         }
       });
