@@ -369,17 +369,12 @@ export class JsonPointer {
 
   private static getWriteTargetStep(target, key, nextKey, copyPath) {
     if (isMap(target) && target.has(key)) {
-      const value = target.get(key);
-      if (copyPath) {
-        const copiedValue = copy(value);
-        target.set(key, copiedValue);
-        return copiedValue;
-      }
-      return value;
+      if (copyPath) { target.set(key, copy(target.get(key))); }
+      return target.get(key);
     }
 
     if (!hasOwn(target, key)) {
-      target[key] = /^(\d+|-)$/.test(nextKey) ? [] : {};
+      target[key] = (nextKey.match(/^(\d+|-)$/)) ? [] : {};
     }
     if (copyPath) { target[key] = copy(target[key]); }
     return target[key];
