@@ -153,7 +153,7 @@ function normaliseIdentifiers(newSchema: any, draft: number, changed: boolean): 
 
     // If schema changed, update or remove $schema identifier
     if (typeof newSchema.$schema === 'string' &&
-      /http\:\/\/json\-schema\.org\/draft\-0[1-4]\/schema\#/.test(newSchema.$schema)
+      /http:\/\/json-schema\.org\/draft-0[1-4]\/schema#/.test(newSchema.$schema)
     ) {
       newSchema.$schema = 'http://json-schema.org/draft-07/schema#';
       changed = true;
@@ -191,9 +191,11 @@ function normaliseTypes(schema: any, draft: number, changed: boolean): DraftStat
         if (typeof newSchema.type.every === 'function') {
           // If array of strings, only allow standard types
           if (newSchema.type.every(type => typeof type === 'string')) {
-            newSchema.type = newSchema.type.includes('any') ?
-              newSchema.type = simpleTypes :
-              newSchema.type.filter(type => simpleTypes.includes(type));
+            if (newSchema.type.includes('any')) {
+              newSchema.type = simpleTypes;
+            } else {
+              newSchema.type = newSchema.type.filter(type => simpleTypes.includes(type));
+            }
             // If type is an array with objects, convert the current schema to an 'anyOf' array
           } else if (newSchema.type.length > 1) {
             const arrayKeys = ['additionalItems', 'items', 'maxItems', 'minItems', 'uniqueItems', 'contains'];

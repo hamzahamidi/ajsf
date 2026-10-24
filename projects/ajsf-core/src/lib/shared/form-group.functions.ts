@@ -392,8 +392,8 @@ export function setRequiredFields(schema: any, formControlTemplate: any): boolea
   let fieldsRequired = false;
   if (hasOwn(schema, 'required') && !isEmpty(schema.required)) {
     fieldsRequired = true;
-    let requiredArray = isArray(schema.required) ? schema.required : [schema.required];
-    requiredArray = forEach(requiredArray,
+    const requiredArray = isArray(schema.required) ? schema.required : [schema.required];
+    forEach(requiredArray,
       key => JsonPointer.set(formControlTemplate,
         '/' + JsonPointer.escape(key) + '/validators/required', [])
     );

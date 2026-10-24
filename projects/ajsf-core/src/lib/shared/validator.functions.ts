@@ -517,11 +517,11 @@ export function toSchemaType(value, types) {
   }
   if ((<SchemaPrimitiveType[]>types).includes('number')) { // Convert mixed string to number
     const testValue = Number.parseFloat(<string>value);
-    if (!!testValue) { return testValue; }
+    if (testValue) { return testValue; }
   }
   if ((<SchemaPrimitiveType[]>types).includes('integer')) { // Convert string or number to integer
     const testValue = Number.parseInt(<string>value, 10);
-    if (!!testValue) { return testValue; }
+    if (testValue) { return testValue; }
   }
   if ((<SchemaPrimitiveType[]>types).includes('boolean')) { // Convert anything to boolean
     return !!value;

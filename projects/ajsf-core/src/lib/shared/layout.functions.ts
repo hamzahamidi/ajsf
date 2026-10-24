@@ -1078,7 +1078,7 @@ export function buildTitleMap(
             groupTitleMap = [
               ...groupTitleMap,
               ...title.items.map(item =>
-                ({ ...item, ...{ name: `${title.group}: ${item.name}` } })
+                ({ ...item, name: `${title.group}: ${item.name}` })
               )
             ];
             if (title.items.some(item => item.value === undefined || item.value === null)) {

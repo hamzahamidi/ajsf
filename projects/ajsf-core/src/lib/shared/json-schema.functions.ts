@@ -158,7 +158,6 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
   const length = dataPointerArray.length;
   if (returnType.startsWith('parent')) { dataPointerArray.length--; }
   for (let i = 0; i < length; ++i) {
-    const parentSchema = subSchema;
     const key = dataPointerArray[i];
     let subSchemaFound = false;
     if (typeof subSchema !== 'object') {
