@@ -176,23 +176,29 @@ function isColorFormat(value: string): boolean {
 const jsonPointerFragmentCharacterPattern = /^[-a-z0-9_.!$&'()*+,;:=@]$/i;
 const jsonPointerPercentEncodingPattern = /^[\da-f]{2}$/i;
 
+function hasValidJsonPointerEscape(segment: string, index: number): boolean {
+  const escape = segment[index + 1];
+  return escape === '0' || escape === '1';
+}
+
+function jsonPointerFragmentCharacterLength(segment: string, index: number): number {
+  if (segment[index] === '%') {
+    return jsonPointerPercentEncodingPattern.test(segment.slice(index + 1, index + 3)) ? 3 : 0;
+  }
+  return jsonPointerFragmentCharacterPattern.test(segment[index]!) ? 1 : 0;
+}
+
 function isValidJsonPointerSegment(segment: string, fragment: boolean): boolean {
   for (let index = 0; index < segment.length; index++) {
     if (segment[index] === '~') {
-      const escape = segment[index + 1];
-      if (escape !== '0' && escape !== '1') { return false; }
+      if (!hasValidJsonPointerEscape(segment, index)) { return false; }
       index += 1;
       continue;
     }
     if (!fragment) { continue; }
-    if (segment[index] === '%') {
-      if (!jsonPointerPercentEncodingPattern.test(segment.slice(index + 1, index + 3))) {
-        return false;
-      }
-      index += 2;
-      continue;
-    }
-    if (!jsonPointerFragmentCharacterPattern.test(segment[index]!)) { return false; }
+    const characterLength = jsonPointerFragmentCharacterLength(segment, index);
+    if (characterLength === 0) { return false; }
+    index += characterLength - 1;
   }
   return true;
 }
