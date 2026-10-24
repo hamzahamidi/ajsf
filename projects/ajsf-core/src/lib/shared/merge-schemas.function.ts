@@ -6,6 +6,37 @@ import {
 import { hasOwn, uniqueItems, commonItems } from './utility.functions';
 import { JsonPointer, Pointer } from './jsonpointer.functions';
 
+function decimalPlaces(value: number): number {
+  const [mantissa, exponentText] = value.toString().toLowerCase().split('e');
+  const exponent = exponentText ? Number(exponentText) : 0;
+  return Math.max(0, (mantissa.split('.')[1]?.length || 0) - exponent);
+}
+
+function greatestCommonDivisor(left: number, right: number): number {
+  while (right) {
+    [left, right] = [right, left % right];
+  }
+  return left;
+}
+
+function leastCommonMultipleOfDecimals(left: number, right: number): number|null {
+  if (!Number.isFinite(left) || !Number.isFinite(right) || left <= 0 || right <= 0) {
+    return null;
+  }
+  const scale = 10 ** Math.max(decimalPlaces(left), decimalPlaces(right));
+  if (!Number.isSafeInteger(scale)) { return null; }
+  const scaledLeft = Math.round(left * scale);
+  const scaledRight = Math.round(right * scale);
+  if (!Number.isSafeInteger(scaledLeft) || !Number.isSafeInteger(scaledRight)) {
+    return null;
+  }
+  const commonMultiple = (scaledLeft / greatestCommonDivisor(scaledLeft, scaledRight)) *
+    scaledRight;
+  if (!Number.isSafeInteger(commonMultiple)) { return null; }
+  const result = commonMultiple / scale;
+  return Number.isFinite(result) && result > 0 ? result : null;
+}
+
 /**
  * 'mergeSchemas' function
  *
@@ -179,12 +210,13 @@ export function mergeSchemas(...schemas) {
             }
           break;
           case 'multipleOf':
-            // TODO: Adjust to correctly handle decimal values
-            // If numbers, set to least common multiple
             if (isNumber(combinedValue) && isNumber(schemaValue)) {
-              const gcd = (x, y) => !y ? x : gcd(y, x % y);
-              const lcm = (x, y) => (x * y) / gcd(x, y);
-              combinedSchema.multipleOf = lcm(combinedValue, schemaValue);
+              const multipleOf = leastCommonMultipleOfDecimals(combinedValue, schemaValue);
+              if (multipleOf !== null) {
+                combinedSchema.multipleOf = multipleOf;
+              } else {
+                return { allOf: [ ...schemas ] };
+              }
             } else {
               return { allOf: [ ...schemas ] };
             }
