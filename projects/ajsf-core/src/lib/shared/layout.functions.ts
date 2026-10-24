@@ -4,6 +4,8 @@ import {
   getFromSchema,
   getInputType,
   isInputRequired,
+  getMatchingPatternProperty,
+  getObjectPropertySchemaPointer,
   removeRecursiveReferences,
   updateInputOptions
   } from './json-schema.functions';
@@ -856,17 +858,20 @@ function buildObjectSchemaLayout(
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
   }
-  if (!isObject(schema.properties)) return newNode;
+  const properties = isObject(schema.properties) ? schema.properties : {};
+  const patternProperties = isObject(schema.patternProperties) ? schema.patternProperties : {};
+  if (!Object.keys(properties).length && !Object.keys(patternProperties).length &&
+    !isArray(schema['ui:order'])) return newNode;
 
   const newSection: any[] = [];
-  const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
-  expandSchemaPropertyOrder(propertyKeys, schema.properties);
-  for (const key of propertyKeys.filter(key =>
-    hasOwn(schema.properties, key) || hasOwn(schema, 'additionalProperties')
-  )) {
-    const keySchemaPointer = hasOwn(schema.properties, key)
-      ? '/properties/' + JsonPointer.escape(key)
-      : '/additionalProperties';
+  const propertyKeys = schema['ui:order'] || Object.keys(properties);
+  expandSchemaPropertyOrder(propertyKeys, properties);
+  const matchingDataKeys = isObject(nodeValue)
+    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key))
+    : [];
+  for (const key of [...new Set([...propertyKeys, ...matchingDataKeys])]) {
+    const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);
+    if (!keySchemaPointer) continue;
     const innerItem = buildSchemaLayout(
       extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
       isObject(nodeValue) ? nodeValue[key] : null,

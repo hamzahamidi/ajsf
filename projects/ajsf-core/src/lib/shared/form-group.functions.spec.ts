@@ -196,6 +196,22 @@ describe('form-group.functions', () => {
       expect(result.controls).toEqual({});
     });
 
+    it('builds controls for data keys matching patternProperties', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        patternProperties: { '^name_': { type: 'string', minLength: 2 } },
+        additionalProperties: false,
+      });
+      const template: any = buildFormGroupTemplate(jsf, { name_first: 'A', ignored: 'value' });
+      const form: any = buildFormGroup(template);
+
+      expect(Object.keys(template.controls)).toEqual(['name_first']);
+      expect(template.controls.name_first.validators).toEqual({ minLength: [2] });
+      expect(jsf.dataMap.get('/name_first').get('schemaPointer'))
+        .toEqual('/patternProperties/^name_');
+      expect(form.get('name_first').errors).toEqual({ minLength: { minimumLength: 2, currentLength: 1 } });
+    });
+
     it('builds an additionalProperties control for a key named only in ui:order', () => {
       const result: any = buildFormGroupTemplate(makeJsf({
         type: 'object',

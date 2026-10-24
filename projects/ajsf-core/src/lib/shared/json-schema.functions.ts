@@ -176,10 +176,15 @@ function findArraySchemaChild(subSchema, key, schemaPointer) {
 
 function findObjectSchemaChild(subSchema, key, schemaPointer) {
   let subSchemaFound = false;
+  const pattern = getMatchingPatternProperty(subSchema, key);
   if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
     subSchemaFound = true;
     subSchema = subSchema.properties[key];
     schemaPointer.push('properties', key);
+  } else if (pattern !== null) {
+    subSchemaFound = true;
+    subSchema = subSchema.patternProperties[pattern];
+    schemaPointer.push('patternProperties', pattern);
   } else if (isObject(subSchema.additionalProperties)) {
     subSchemaFound = true;
     subSchema = subSchema.additionalProperties;
@@ -190,6 +195,32 @@ function findObjectSchemaChild(subSchema, key, schemaPointer) {
     schemaPointer.push('additionalProperties');
   }
   return { subSchema, subSchemaFound };
+}
+
+export function getMatchingPatternProperty(schema: any, propertyName: string): string | null {
+  if (!isObject(schema?.patternProperties)) { return null; }
+  const match = Object.keys(schema.patternProperties).find(pattern => {
+    try {
+      return new RegExp(pattern).test(propertyName);
+    } catch {
+      return false;
+    }
+  });
+  return match === undefined ? null : match;
+}
+
+export function getObjectPropertySchemaPointer(schema: any, propertyName: string): string | null {
+  if (isObject(schema?.properties) && hasOwn(schema.properties, propertyName)) {
+    return '/properties/' + JsonPointer.escape(propertyName);
+  }
+  const pattern = getMatchingPatternProperty(schema, propertyName);
+  if (pattern !== null) {
+    return '/patternProperties/' + JsonPointer.escape(pattern);
+  }
+  if (hasOwn(schema, 'additionalProperties') && schema.additionalProperties === false) {
+    return null;
+  }
+  return hasOwn(schema, 'additionalProperties') ? '/additionalProperties' : null;
 }
 
 export function getFromSchema(schema, dataPointer, returnType = 'schema') {
@@ -285,10 +316,10 @@ export function removeRecursiveReferences(
  * // { string }
  */
 function getObjectInputType(schema) {
-  if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+  if (hasOwn(schema, 'properties') || hasOwn(schema, 'patternProperties') ||
+    hasOwn(schema, 'additionalProperties')) {
     return 'section';
   }
-  // TODO: Figure out how to handle additionalProperties
   if (hasOwn(schema, '$ref')) { return '$ref'; }
 }
 
