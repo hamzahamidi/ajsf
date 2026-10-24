@@ -1,5 +1,7 @@
 import {hasValue, inArray, isArray, isDefined, isEmpty, isMap, isObject, isSet, isString, PlainObject} from './validator.functions';
 
+type ClassCollection = string | string[] | Set<string>;
+
 /**
  * Utility function library:
  *
@@ -17,9 +19,9 @@ import {hasValue, inArray, isArray, isDefined, isEmpty, isMap, isObject, isSet, 
  * // {string | string[] | Set<string>} - Combined classes
  */
 export function addClasses(
-  oldClasses: string | string[] | Set<string>,
-  newClasses: string | string[] | Set<string>
-): string | string[] | Set<string> {
+  oldClasses: ClassCollection,
+  newClasses: ClassCollection
+): ClassCollection {
   const badType = i => !isSet(i) && !isArray(i) && !isString(i);
   if (badType(newClasses)) { return oldClasses; }
   if (badType(oldClasses)) { oldClasses = ''; }
@@ -87,14 +89,7 @@ export function forEach(
   if (isEmpty(object)) { return; }
   if ((isObject(object) || isArray(object)) && typeof fn === 'function') {
     for (const key of Object.keys(object)) {
-      const value = object[key];
-      if (recurse === 'bottom-up' && (isObject(value) || isArray(value))) {
-        forEach(value, fn, recurse, rootObject);
-      }
-      fn(value, key, object, rootObject);
-      if (recurse === 'top-down' && (isObject(value) || isArray(value))) {
-        forEach(value, fn, recurse, rootObject);
-      }
+      visitRecursedValue(object[key], key, object, fn, recurse, rootObject);
     }
   }
   if (errors) {
@@ -106,6 +101,24 @@ export function forEach(
       console.error('forEach error: Input object must be an object or array.');
       console.error('object', object);
     }
+  }
+}
+
+function visitRecursedValue(
+  value: any,
+  key: string,
+  object: any,
+  fn: (v: any, k?: string | number, c?: any, rc?: any) => any,
+  recurse: boolean | string,
+  rootObject: any,
+): void {
+  const isContainer = isObject(value) || isArray(value);
+  if (recurse === 'bottom-up' && isContainer) {
+    forEach(value, fn, recurse, rootObject);
+  }
+  fn(value, key, object, rootObject);
+  if (recurse === 'top-down' && isContainer) {
+    forEach(value, fn, recurse, rootObject);
   }
 }
 
