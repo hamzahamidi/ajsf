@@ -45,7 +45,7 @@ describe('FwBootstrap4Component', () => {
   ])('detects template expressions in %s', (title, hasExpression) => {
     const jsf = TestBed.inject(JsonSchemaFormService);
     vi.spyOn(jsf, 'getFormControl').mockReturnValue(null as any);
-    vi.spyOn(jsf, 'getFormControlValue').mockReturnValue({});
+    vi.spyOn(jsf, 'getFormControlValue').mockReturnValue(null as any);
     vi.spyOn(jsf, 'getFormControlGroup').mockReturnValue({ value: {} } as any);
     vi.spyOn(jsf, 'parseText').mockReturnValue(title as string);
     component.layoutNode = { type: 'text', options: { title } };
