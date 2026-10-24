@@ -48,9 +48,7 @@ export class SubmitComponent implements OnInit {
       this.controlDisabled = !this.jsf.isValid;
       this.jsf.isValidChanges.subscribe(isValid => this.controlDisabled = !isValid);
     }
-    if (this.controlValue === null || this.controlValue === undefined) {
-      this.controlValue = this.options.title;
-    }
+    this.controlValue ??= this.options.title;
   }
 
   updateValue(event) {

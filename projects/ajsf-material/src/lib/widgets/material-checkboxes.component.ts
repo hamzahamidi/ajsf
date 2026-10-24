@@ -1,7 +1,6 @@
 import { AbstractControl } from '@angular/forms';
-import { buildTitleMap } from '@ajsf/core';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
+import { buildTitleMap, JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
 
 // TODO: Change this to use a Selection List instead?
 // https://material.angular.io/components/list/overview

@@ -112,7 +112,13 @@ export class PrimengOneOfComponent implements OnInit {
     this.isFieldset = (type === 'selectfieldset' || type === 'optionfieldset')
       && Array.isArray(this.layoutNode.items) && this.layoutNode.items.length > 0;
 
-    if (this.isFieldset && !this.options.titleMap && !this.options.enum) {
+    this.initializeSelectList();
+    this.initializeFieldsetValueMap();
+    this.initializeControl();
+  }
+
+  private initializeSelectList() {
+    if (this.isFieldset && !this.hasExplicitFieldsetOptions()) {
       this.selectList = this.layoutNode.items.map((item, i) => ({
         name: item.options?.legend || item.options?.title || item.name || `Option ${i + 1}`,
         value: i
@@ -123,20 +129,27 @@ export class PrimengOneOfComponent implements OnInit {
         this.options.enum, !!this.options.required, !!this.options.flatList
       );
     }
+  }
 
-    if (this.isFieldset && (this.options.titleMap || this.options.enum)) {
-      let idx = 0;
-      for (const entry of this.selectList) {
-        if (entry.value != null && entry.value !== '') {
-          if (idx === 0) { this.selectedValue = entry.value; }
-          this.fieldsetValueMap.set(entry.value, idx++);
-        }
-      }
+  private initializeFieldsetValueMap() {
+    if (!this.isFieldset || !this.hasExplicitFieldsetOptions()) { return; }
+
+    let index = 0;
+    for (const entry of this.selectList) {
+      if (entry.value == null || entry.value === '') { continue; }
+      if (index === 0) { this.selectedValue = entry.value; }
+      this.fieldsetValueMap.set(entry.value, index++);
     }
+  }
 
-    if (!this.isFieldset || this.options.titleMap || this.options.enum) {
+  private initializeControl() {
+    if (!this.isFieldset || this.hasExplicitFieldsetOptions()) {
       this.jsf.initializeControl(this, !this.options.readonly);
     }
+  }
+
+  private hasExplicitFieldsetOptions() {
+    return this.options.titleMap || this.options.enum;
   }
 
   selectChild(event) {

@@ -4,7 +4,6 @@ import {
   isArray, isEmpty, isNumber, isObject, isString
 } from './validator.functions';
 import { hasOwn, uniqueItems, commonItems } from './utility.functions';
-import { JsonPointer, Pointer } from './jsonpointer.functions';
 
 function decimalPlaces(value: number): number {
   const [mantissa, exponentText] = value.toString().toLowerCase().split('e');
@@ -107,7 +106,7 @@ export function mergeSchemas(...schemas) {
             // Keep only items that appear in both arrays
             if (isArray(combinedValue) && isArray(schemaValue)) {
               combinedSchema[key] = combinedValue.filter(item1 =>
-                schemaValue.findIndex(item2 => deepEqual(item1, item2)) > -1
+                schemaValue.some(item2 => deepEqual(item1, item2))
               );
               if (!combinedSchema[key].length) { return { allOf: [ ...schemas ] }; }
             } else {
@@ -303,7 +302,7 @@ export function mergeSchemas(...schemas) {
               const newAdditional = hasOwn(schema, 'additionalProperties') ?
                 schema.additionalProperties : undefined;
               const priorForbids = priorAdditional.includes(false);
-              const priorConstraint = priorAdditional.filter(isObject)[0];
+              const priorConstraint = priorAdditional.find(isObject);
 
               // A key the new schema does not declare is governed by its
               // additionalProperties: removed outright, or constrained by it.

@@ -80,7 +80,8 @@ export class OrderableDirective implements OnInit {
           // Part 1 of a hack, inspired by Dragster, to simulate mouseover and mouseout
           // behavior while dragging items - http://bensmithett.github.io/dragster/
           if (this.overParentElement) {
-            return this.overChildElement = true;
+            this.overChildElement = true;
+            return true;
           } else {
             this.overParentElement = true;
           }
@@ -105,14 +106,12 @@ export class OrderableDirective implements OnInit {
 
           const sourceArrayIndex = sessionStorage.getItem(this.arrayLayoutIndex);
           if (!this.overParentElement && !this.overChildElement && sourceArrayIndex !== null) {
-            this.element.classList.remove('drag-target-top');
-            this.element.classList.remove('drag-target-bottom');
+            this.element.classList.remove('drag-target-top', 'drag-target-bottom');
           }
         });
 
         this.element.addEventListener('drop', (event) => {
-          this.element.classList.remove('drag-target-top');
-          this.element.classList.remove('drag-target-bottom');
+          this.element.classList.remove('drag-target-top', 'drag-target-bottom');
           // Confirm that drop target is another item in the same array as source item
           const sourceArrayIndex = sessionStorage.getItem(this.arrayLayoutIndex);
           const destArrayIndex = this.dataIndex.at(-1);
