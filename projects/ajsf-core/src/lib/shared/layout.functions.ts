@@ -593,6 +593,21 @@ interface SchemaLayoutData {
   nodeDataMap: any;
 }
 
+interface TupleSchemaLayoutContext {
+  context: SchemaLayoutContext;
+  newNode: any;
+  schema: any;
+  nodeValue: any;
+  schemaPointer: string;
+  dataPointer: string;
+  shortDataPointer: string;
+  removable: boolean;
+}
+
+interface AdditionalSchemaListContext extends TupleSchemaLayoutContext {
+  additionalItemsSchemaPointer: string;
+}
+
 export function buildLayoutFromSchema(jsf, widgetLibrary, ...args: BuildSchemaLayoutArguments) {
   const [
     nodeValue = null,
@@ -625,7 +640,7 @@ function buildSchemaLayout(
   schemaPointer: string,
   dataPointer: string
 ) {
-  const { jsf, widgetLibrary } = context;
+  const { jsf } = context;
   const schema = JsonPointer.get(jsf.schema, schemaPointer);
   if (
     !hasOwn(schema, 'type') &&
@@ -653,7 +668,7 @@ function buildSchemaLayout(
     data.nodeDataMap.set('disabled', !!newNode.options.disabled);
   }
   updateInputOptions(newNode, schema, jsf);
-  if (!newNode.options.title && newNode.name && !/^[0-9]+$/.test(newNode.name)) {
+  if (!newNode.options.title && newNode.name && !/^\d+$/.test(newNode.name)) {
     newNode.options.title = fixTitle(newNode.name);
   }
 
@@ -767,14 +782,19 @@ function buildArraySchemaLayout(
   data: SchemaLayoutData
 ): any {
   const removable = initializeArraySchemaLayout(newNode, schema, context.jsf, schemaPointer, data.shortDataPointer, data.nodeDataMap);
-  const additionalItemsSchemaPointer = buildTupleSchemaItems(
-    context, newNode, schema, nodeValue, schemaPointer, dataPointer, data.shortDataPointer, removable
-  );
+  const tupleContext: TupleSchemaLayoutContext = {
+    context,
+    newNode,
+    schema,
+    nodeValue,
+    schemaPointer,
+    dataPointer,
+    shortDataPointer: data.shortDataPointer,
+    removable,
+  };
+  const additionalItemsSchemaPointer = buildTupleSchemaItems(tupleContext);
   if (additionalItemsSchemaPointer) {
-    buildAdditionalSchemaListItems(
-      context, newNode, schema, nodeValue, schemaPointer, dataPointer, data.shortDataPointer,
-      additionalItemsSchemaPointer, removable
-    );
+    buildAdditionalSchemaListItems({ ...tupleContext, additionalItemsSchemaPointer });
   }
   return newNode;
 }
@@ -815,37 +835,19 @@ function adjustSchemaArrayItemCounts(newNode: any): void {
   }
 }
 
-function buildTupleSchemaItems(
-  context: SchemaLayoutContext,
-  newNode: any,
-  schema: any,
-  nodeValue: any,
-  schemaPointer: string,
-  dataPointer: string,
-  shortDataPointer: string,
-  removable: boolean
-): string | null {
+function buildTupleSchemaItems(input: TupleSchemaLayoutContext): string | null {
+  const { newNode, schema, schemaPointer } = input;
   if (!isArray(schema.items)) return isObject(schema.items) ? schemaPointer + '/items' : null;
   newNode.items = [];
   for (let index = 0; index < newNode.options.tupleItems; index++) {
-    const newItem = buildTupleSchemaItem(
-      context, newNode, nodeValue, schemaPointer, dataPointer, shortDataPointer, index, removable
-    );
+    const newItem = buildTupleSchemaItem(input, index);
     if (newItem) newNode.items.push(newItem);
   }
   return isObject(schema.additionalItems) ? schemaPointer + '/additionalItems' : null;
 }
 
-function buildTupleSchemaItem(
-  context: SchemaLayoutContext,
-  newNode: any,
-  nodeValue: any,
-  schemaPointer: string,
-  dataPointer: string,
-  shortDataPointer: string,
-  index: number,
-  removable: boolean
-): any {
+function buildTupleSchemaItem(input: TupleSchemaLayoutContext, index: number): any {
+  const { context, newNode, nodeValue, schemaPointer, dataPointer, shortDataPointer, removable } = input;
   const { jsf, widgetLibrary } = context;
   const itemRefPointer = removeRecursiveReferences(
     shortDataPointer + '/' + index, jsf.dataRecursiveRefMap, jsf.arrayMap
@@ -883,10 +885,10 @@ function registerTupleLayoutReference(
   dataPointer: string,
   index: number
 ): void {
-  const { jsf, widgetLibrary } = context;
+  const { jsf } = context;
   if (hasOwn(jsf.layoutRefLibrary, itemRefPointer)) return;
   jsf.layoutRefLibrary[itemRefPointer] = null;
-  jsf.layoutRefLibrary[itemRefPointer] = buildSchemaLayout(
+  jsf.layoutRefLibrary[itemRefPointer] = buildSchemaLayout( // NOSONAR: replace the recursion placeholder after building the layout.
     extendSchemaLayoutContext(context, {
       arrayItem: true,
       arrayItemType: 'tuple',
@@ -901,17 +903,11 @@ function registerTupleLayoutReference(
   if (itemRecursive) jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
 }
 
-function buildAdditionalSchemaListItems(
-  context: SchemaLayoutContext,
-  newNode: any,
-  schema: any,
-  nodeValue: any,
-  schemaPointer: string,
-  dataPointer: string,
-  shortDataPointer: string,
-  additionalItemsSchemaPointer: string,
-  removable: boolean
-): void {
+function buildAdditionalSchemaListItems(input: AdditionalSchemaListContext): void {
+  const {
+    context, newNode, schema, nodeValue, dataPointer,
+    shortDataPointer, additionalItemsSchemaPointer, removable,
+  } = input;
   const { jsf } = context;
   const itemRefPointer = removeRecursiveReferences(
     shortDataPointer + '/-', jsf.dataRecursiveRefMap, jsf.arrayMap
@@ -938,7 +934,7 @@ function registerAdditionalListLayoutReference(
   const { jsf } = context;
   if (!itemRefPointer.length || hasOwn(jsf.layoutRefLibrary, itemRefPointer)) return;
   jsf.layoutRefLibrary[itemRefPointer] = null;
-  jsf.layoutRefLibrary[itemRefPointer] = buildSchemaLayout(
+  jsf.layoutRefLibrary[itemRefPointer] = buildSchemaLayout( // NOSONAR: replace the recursion placeholder after building the layout.
     extendSchemaLayoutContext(context, {
       arrayItem: true,
       arrayItemType: 'list',
@@ -1044,7 +1040,7 @@ function buildReferenceSchemaLayout(
 
 function referenceSchemaButtonText(newNode: any, jsf: any, schemaPointer: string): string {
   if (newNode.options.add) return newNode.options.add;
-  if (newNode.name && !/^[0-9]+$/.test(newNode.name)) {
+  if (newNode.name && !/^\d+$/.test(newNode.name)) {
     return (/^add\b/i.test(newNode.name) ? '' : 'Add ') + fixTitle(newNode.name);
   }
   const parentSchema = JsonPointer.get(jsf.schema, schemaPointer, 0, -1);
