@@ -93,463 +93,585 @@ function findDataPointer(items) {
  * //   widgetLibrary
  * //
  */
+interface LayoutBuildContext {
+  jsf: any;
+  widgetLibrary: any;
+  hasSubmitButton: boolean;
+}
+
+interface LayoutNodeSchemaContext {
+  nodeValue: any;
+  nodeSchema: any;
+  schemaPointer: string;
+  nodeDataMap: any;
+  shortDataPointer: string;
+  recursive: boolean;
+}
+
 export function buildLayout(jsf, widgetLibrary) {
-  let hasSubmitButton = !JsonPointer.get(jsf, '/formOptions/addSubmit');
-  const formLayout = mapLayout(jsf.layout, (layoutItem, index, layoutPointer) => {
-    const newNode: any = {
-      _id: uniqueId(),
-      options: {},
-    };
-    if (isObject(layoutItem)) {
-      Object.assign(newNode, layoutItem);
-      Object.keys(newNode)
-        .filter(option => !inArray(option, [
-          '_id', '$ref', 'arrayItem', 'arrayItemType', 'dataPointer', 'dataType',
-          'items', 'key', 'name', 'options', 'recursiveReference', 'type', 'widget'
-        ]))
-        .forEach(option => {
-          newNode.options[option] = newNode[option];
-          delete newNode[option];
-        });
-      if (!hasOwn(newNode, 'type') && isString(newNode.widget)) {
-        newNode.type = newNode.widget;
-        delete newNode.widget;
-      }
-      if (!hasOwn(newNode.options, 'title')) {
-        if (hasOwn(newNode.options, 'legend')) {
-          newNode.options.title = newNode.options.legend;
-          delete newNode.options.legend;
-        }
-      }
-      if (!hasOwn(newNode.options, 'validationMessages')) {
-        if (hasOwn(newNode.options, 'errorMessages')) {
-          newNode.options.validationMessages = newNode.options.errorMessages;
-          delete newNode.options.errorMessages;
-
-          // Convert Angular Schema Form (AngularJS) 'validationMessage' to
-          // Angular JSON Schema Form 'validationMessages'
-          // TV4 codes from https://github.com/geraintluff/tv4/blob/master/source/api.js
-        } else if (hasOwn(newNode.options, 'validationMessage')) {
-          if (typeof newNode.options.validationMessage === 'string') {
-            newNode.options.validationMessages = newNode.options.validationMessage;
-          } else {
-            newNode.options.validationMessages = {};
-            Object.keys(newNode.options.validationMessage).forEach(key => {
-              const code = key + '';
-              const newKey = legacyValidationMessageCodes.get(code) ?? code;
-              newNode.options.validationMessages[newKey] = newNode.options.validationMessage[key];
-            });
-          }
-          delete newNode.options.validationMessage;
-        }
-      }
-    } else if (JsonPointer.isJsonPointer(layoutItem)) {
-      newNode.dataPointer = layoutItem;
-    } else if (isString(layoutItem)) {
-      newNode.key = layoutItem;
-    } else {
-      console.error('buildLayout error: Form layout element not recognized:');
-      console.error(layoutItem);
-      return null;
-    }
-    let nodeSchema: any = null;
-
-    // If newNode does not have a dataPointer, try to find an equivalent
-    if (!hasOwn(newNode, 'dataPointer')) {
-
-      // If newNode has a key, change it to a dataPointer
-      if (hasOwn(newNode, 'key')) {
-        newNode.dataPointer = newNode.key === '*' ? newNode.key :
-          JsonPointer.compile(JsonPointer.parseObjectPath(newNode.key), '-');
-        delete newNode.key;
-
-        // If newNode is an array, search for dataPointer in child nodes
-      } else if (hasOwn(newNode, 'type') && newNode.type.slice(-5) === 'array') {
-        const childDataPointer = findDataPointer(newNode);
-        if (childDataPointer) {
-          newNode.dataPointer =
-            childDataPointer.slice(0, childDataPointer.lastIndexOf('/-'));
-        }
-      }
-    }
-
-    if (hasOwn(newNode, 'dataPointer')) {
-      if (newNode.dataPointer === '*') {
-        return buildLayoutFromSchema(jsf, widgetLibrary, jsf.formValues);
-      }
-      const nodeValue =
-        JsonPointer.get(jsf.formValues, newNode.dataPointer.replaceAll('/-', '/1'));
-
-      // TODO: Create function getFormValues(jsf, dataPointer, forRefLibrary)
-      // check formOptions.setSchemaDefaults and formOptions.setLayoutDefaults
-      // then set apropriate values from initialVaues, schema, or layout
-
-      newNode.dataPointer =
-        JsonPointer.toGenericPointer(newNode.dataPointer, jsf.arrayMap);
-      const LastKey = JsonPointer.toKey(newNode.dataPointer);
-      if (!newNode.name && isString(LastKey) && LastKey !== '-') {
-        newNode.name = LastKey;
-      }
-      const shortDataPointer = removeRecursiveReferences(
-        newNode.dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap
-      );
-      const recursive = !shortDataPointer.length ||
-        shortDataPointer !== newNode.dataPointer;
-      let schemaPointer: string;
-      if (!jsf.dataMap.has(shortDataPointer)) {
-        jsf.dataMap.set(shortDataPointer, new Map());
-      }
-      const nodeDataMap = jsf.dataMap.get(shortDataPointer);
-      if (nodeDataMap.has('schemaPointer')) {
-        schemaPointer = nodeDataMap.get('schemaPointer');
-      } else {
-        schemaPointer = JsonPointer.toSchemaPointer(shortDataPointer, jsf.schema);
-        nodeDataMap.set('schemaPointer', schemaPointer);
-      }
-      nodeDataMap.set('disabled', !!newNode.options.disabled);
-      nodeSchema = JsonPointer.get(jsf.schema, schemaPointer);
-      if (nodeSchema) {
-        if (!hasOwn(newNode, 'type')) {
-          newNode.type = getInputType(nodeSchema, newNode);
-        } else if (!widgetLibrary.hasWidget(newNode.type)) {
-          const oldWidgetType = newNode.type;
-          newNode.type = getInputType(nodeSchema, newNode);
-          console.error(`error: widget type "${oldWidgetType}" ` +
-            `not found in library. Replacing with "${newNode.type}".`);
-        } else {
-          newNode.type = checkInlineType(newNode.type, nodeSchema, newNode);
-        }
-        if (nodeSchema.type === 'object' && isArray(nodeSchema.required)) {
-          nodeDataMap.set('required', nodeSchema.required);
-        }
-        newNode.dataType =
-          nodeSchema.type || (hasOwn(nodeSchema, '$ref') ? '$ref' : null);
-        updateInputOptions(newNode, nodeSchema, jsf);
-
-        // Present checkboxes as single control, rather than array
-        if (newNode.type === 'checkboxes' && hasOwn(nodeSchema, 'items')) {
-          updateInputOptions(newNode, nodeSchema.items, jsf);
-        } else if (newNode.dataType === 'array') {
-          newNode.options.maxItems = Math.min(
-            nodeSchema.maxItems || 1000, newNode.options.maxItems || 1000
-          );
-          newNode.options.minItems = Math.max(
-            nodeSchema.minItems || 0, newNode.options.minItems || 0
-          );
-          newNode.options.listItems = Math.max(
-            newNode.options.listItems || 0, isArray(nodeValue) ? nodeValue.length : 0
-          );
-          newNode.options.tupleItems =
-            isArray(nodeSchema.items) ? nodeSchema.items.length : 0;
-          if (newNode.options.maxItems < newNode.options.tupleItems) {
-            newNode.options.tupleItems = newNode.options.maxItems;
-            newNode.options.listItems = 0;
-          } else if (newNode.options.maxItems <
-            newNode.options.tupleItems + newNode.options.listItems
-          ) {
-            newNode.options.listItems =
-              newNode.options.maxItems - newNode.options.tupleItems;
-          } else if (newNode.options.minItems >
-            newNode.options.tupleItems + newNode.options.listItems
-          ) {
-            newNode.options.listItems =
-              newNode.options.minItems - newNode.options.tupleItems;
-          }
-          if (!nodeDataMap.has('maxItems')) {
-            nodeDataMap.set('maxItems', newNode.options.maxItems);
-            nodeDataMap.set('minItems', newNode.options.minItems);
-            nodeDataMap.set('tupleItems', newNode.options.tupleItems);
-            nodeDataMap.set('listItems', newNode.options.listItems);
-          }
-          if (!jsf.arrayMap.has(shortDataPointer)) {
-            jsf.arrayMap.set(shortDataPointer, newNode.options.tupleItems);
-          }
-        }
-        if (isInputRequired(jsf.schema, schemaPointer)) {
-          newNode.options.required = true;
-          jsf.fieldsRequired = true;
-        }
-      } else {
-        // TODO: create item in FormGroup model from layout key (?)
-        updateInputOptions(newNode, {}, jsf);
-      }
-
-      if (!newNode.options.title && !/^\d+$/.test(newNode.name)) {
-        newNode.options.title = fixTitle(newNode.name);
-      }
-
-      if (hasOwn(newNode.options, 'copyValueTo')) {
-        if (typeof newNode.options.copyValueTo === 'string') {
-          newNode.options.copyValueTo = [newNode.options.copyValueTo];
-        }
-        if (isArray(newNode.options.copyValueTo)) {
-          newNode.options.copyValueTo = newNode.options.copyValueTo.map(item =>
-            JsonPointer.compile(JsonPointer.parseObjectPath(item), '-')
-          );
-        }
-      }
-
-      newNode.widget = widgetLibrary.getWidget(newNode.type);
-      nodeDataMap.set('inputType', newNode.type);
-      nodeDataMap.set('widget', newNode.widget);
-
-      // The gate below tests the layout node, not the schema, so a layout entry
-      // that names an array by key carries no 'items' and skipped the whole block:
-      // no item nodes and no Add button. Fill the items from the schema instead.
-      // Only for widgets that render them, since checkboxes ignores items entirely.
-      if (newNode.dataType === 'array' && !hasOwn(newNode, 'items') &&
-        !hasOwn(newNode, 'additionalItems') &&
-        inArray(newNode.type, ['array', 'tabarray'])
-      ) {
-        const fromSchema = buildLayoutFromSchema(
-          jsf, widgetLibrary, nodeValue, schemaPointer, newNode.dataPointer,
-          newNode.arrayItem, newNode.arrayItemType, newNode.options.removable
-        );
-        if (fromSchema && isArray(fromSchema.items) && fromSchema.items.length) {
-          newNode.items = fromSchema.items;
-        }
-      }
-
-      if (newNode.dataType === 'array' &&
-        (hasOwn(newNode, 'items') || hasOwn(newNode, 'additionalItems'))
-      ) {
-        const itemRefPointer = removeRecursiveReferences(
-          newNode.dataPointer + '/-', jsf.dataRecursiveRefMap, jsf.arrayMap
-        );
-        if (!jsf.dataMap.has(itemRefPointer)) {
-          jsf.dataMap.set(itemRefPointer, new Map());
-        }
-        jsf.dataMap.get(itemRefPointer).set('inputType', 'section');
-
-        // Fix insufficiently nested array item groups
-        if (newNode.items.length > 1) {
-          const arrayItemGroup = [];
-          for (let i = newNode.items.length - 1; i >= 0; i--) {
-            const subItem = newNode.items[i];
-            if (hasOwn(subItem, 'dataPointer') &&
-              subItem.dataPointer.slice(0, itemRefPointer.length) === itemRefPointer
-            ) {
-              const arrayItem = newNode.items.splice(i, 1)[0];
-              arrayItem.dataPointer = newNode.dataPointer + '/-' +
-                arrayItem.dataPointer.slice(itemRefPointer.length);
-              arrayItemGroup.unshift(arrayItem);
-            } else {
-              subItem.arrayItem = true;
-              // A slot addressed by index is a fixed tuple position. It is only a
-              // list item once it sits past the tuple, and a tuple position cannot
-              // be removed: the framework components read arrayItemType === 'list'
-              // to decide whether to render the remove control.
-              // String() rather than a guard: a sub item with no dataPointer
-              // reaches this branch too, and 'undefined' gives NaN, which is the
-              // answer a missing pointer should produce.
-              const slot = Number(String(subItem.dataPointer).split('/').pop());
-              const tupleSlot = Number.isInteger(slot) &&
-                slot < newNode.options.tupleItems;
-              subItem.arrayItemType = tupleSlot ? 'tuple' : 'list';
-              subItem.removable = !tupleSlot && newNode.options.removable !== false;
-            }
-          }
-          if (arrayItemGroup.length) {
-            newNode.items.push({
-              _id: uniqueId(),
-              arrayItem: true,
-              arrayItemType: newNode.options.tupleItems > newNode.items.length ?
-                'tuple' : 'list',
-              items: arrayItemGroup,
-              options: { removable: newNode.options.removable !== false, },
-              dataPointer: newNode.dataPointer + '/-',
-              type: 'section',
-              widget: widgetLibrary.getWidget('section'),
-            });
-          }
-        // Every statement below reads items[0], so an empty list has nothing to
-        // do here. Falling through threw and took the whole form with it.
-        } else if (newNode.items.length) {
-          // TODO: Fix to hndle multiple items
-          newNode.items[0].arrayItem = true;
-          if (!newNode.items[0].dataPointer) {
-            newNode.items[0].dataPointer =
-              JsonPointer.toGenericPointer(itemRefPointer, jsf.arrayMap);
-          }
-          if (!JsonPointer.has(newNode, '/items/0/options/removable')) {
-            newNode.items[0].options.removable = true;
-          }
-          if (newNode.options.orderable === false) {
-            newNode.items[0].options.orderable = false;
-          }
-          newNode.items[0].arrayItemType =
-            newNode.options.tupleItems ? 'tuple' : 'list';
-        }
-
-        if (isArray(newNode.items)) {
-          const arrayListItems =
-            newNode.items.filter(item => item.type !== '$ref').length -
-            newNode.options.tupleItems;
-          if (arrayListItems > newNode.options.listItems) {
-            newNode.options.listItems = arrayListItems;
-            nodeDataMap.set('listItems', arrayListItems);
-          }
-        }
-
-        if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
-          const lastItem = newNode.items.at(-1);
-          // The last existing item is only a template for a new one when it is
-          // itself a list item. On a tuple array it is a fixed slot, so cloning
-          // it gave every added item that slot's schema, title and pointer.
-          let listItemSchemaPointer: string | null = null;
-          if (isArray(nodeSchema?.items)) {
-            listItemSchemaPointer = isObject(nodeSchema.additionalItems) ?
-              schemaPointer + '/additionalItems' : null;
-          } else if (isObject(nodeSchema?.items)) {
-            listItemSchemaPointer = schemaPointer + '/items';
-          }
-
-          if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
-            // Set to null first to prevent a recursive reference from looping.
-            jsf.layoutRefLibrary[itemRefPointer] = null;
-            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
-              jsf, widgetLibrary, null,
-              removeRecursiveReferences(
-                listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap
-              ),
-              recursive ? '' : newNode.dataPointer + '/-',
-              true, 'list', newNode.options.removable !== false, true,
-              recursive ? newNode.dataPointer + '/-' : ''
-            );
-            if (recursive && jsf.layoutRefLibrary[itemRefPointer]) {
-              jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
-            }
-          } else {
-            jsf.layoutRefLibrary[itemRefPointer] = cloneDeep(lastItem);
-            if (recursive) {
-              jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
-            }
-            // Only a cloned sibling needs this: it carries the id and the
-            // absolute pointer of the node it was copied from. A node built
-            // from the schema above already has neither.
-            forEach(jsf.layoutRefLibrary[itemRefPointer], (item, key) => {
-              if (hasOwn(item, '_id')) { item._id = null; }
-              if (recursive) {
-                if (hasOwn(item, 'dataPointer')) {
-                  item.dataPointer = item.dataPointer.slice(itemRefPointer.length);
-                }
-              }
-            }, 'top-down');
-          }
-        }
-
-        // Add any additional default items
-        if (!newNode.recursiveReference || newNode.options.required) {
-          const arrayLength = Math.min(Math.max(
-            newNode.options.tupleItems + newNode.options.listItems,
-            isArray(nodeValue) ? nodeValue.length : 0
-          ), newNode.options.maxItems);
-          for (let i = newNode.items.length; i < arrayLength; i++) {
-            newNode.items.push(getLayoutNode({
-              $ref: itemRefPointer,
-              dataPointer: newNode.dataPointer,
-              recursiveReference: newNode.recursiveReference,
-            }, jsf, widgetLibrary));
-          }
-        }
-
-        // If needed, add button to add items to array
-        if (newNode.options.addable !== false &&
-          newNode.options.minItems < newNode.options.maxItems &&
-          newNode.items.at(-1)?.type !== '$ref'
-        ) {
-          let buttonText = 'Add';
-          if (newNode.options.title) {
-            if (/^add\b/i.test(newNode.options.title)) {
-              buttonText = newNode.options.title;
-            } else {
-              buttonText += ' ' + newNode.options.title;
-            }
-          } else if (newNode.name && !/^\d+$/.test(newNode.name)) {
-            if (/^add\b/i.test(newNode.name)) {
-              buttonText += ' ' + fixTitle(newNode.name);
-            } else {
-              buttonText = fixTitle(newNode.name);
-            }
-
-            // If newNode doesn't have a title, look for title of parent array item
-          } else {
-            const parentSchema =
-              getFromSchema(jsf.schema, newNode.dataPointer, 'parentSchema');
-            if (hasOwn(parentSchema, 'title')) {
-              buttonText += ' to ' + parentSchema.title;
-            } else {
-              const pointerArray = JsonPointer.parse(newNode.dataPointer);
-              buttonText += ' to ' + fixTitle(pointerArray.at(-2));
-            }
-          }
-          newNode.items.push({
-            _id: uniqueId(),
-            arrayItem: true,
-            arrayItemType: 'list',
-            dataPointer: newNode.dataPointer + '/-',
-            options: {
-              listItems: newNode.options.listItems,
-              maxItems: newNode.options.maxItems,
-              minItems: newNode.options.minItems,
-              removable: false,
-              title: buttonText,
-              tupleItems: newNode.options.tupleItems,
-            },
-            recursiveReference: recursive,
-            type: '$ref',
-            widget: widgetLibrary.getWidget('$ref'),
-            $ref: itemRefPointer,
-          });
-          if (isString(JsonPointer.get(newNode, '/style/add'))) {
-            newNode.items.at(-1).options.fieldStyle =
-              newNode.style.add;
-            delete newNode.style.add;
-            if (isEmpty(newNode.style)) { delete newNode.style; }
-          }
-        }
-      } else {
-        newNode.arrayItem = false;
-      }
-    } else if (hasOwn(newNode, 'type') || hasOwn(newNode, 'items')) {
-      const parentType: string =
-        JsonPointer.get(jsf.layout, layoutPointer, 0, -2).type;
-      if (!hasOwn(newNode, 'type')) {
-        newNode.type =
-          inArray(parentType, ['tabs', 'tabarray']) ? 'tab' : 'array';
-      }
-      newNode.arrayItem = parentType === 'array';
-      newNode.widget = widgetLibrary.getWidget(newNode.type);
-      updateInputOptions(newNode, {}, jsf);
-    }
-    if (newNode.type === 'submit') { hasSubmitButton = true; }
-    return newNode;
-  });
-  if (jsf.hasRootReference) {
-    const fullLayout = cloneDeep(formLayout);
-    if (fullLayout.at(-1).type === 'submit') { fullLayout.pop(); }
-    jsf.layoutRefLibrary[''] = {
-      _id: null,
-      dataPointer: '',
-      dataType: 'object',
-      items: fullLayout,
-      name: '',
-      options: cloneDeep(jsf.formOptions.defautWidgetOptions),
-      recursiveReference: true,
-      required: false,
-      type: 'section',
-      widget: widgetLibrary.getWidget('section'),
-    };
-  }
-  if (!hasSubmitButton) {
-    formLayout.push({
-      _id: uniqueId(),
-      options: { title: 'Submit' },
-      type: 'submit',
-      widget: widgetLibrary.getWidget('submit'),
-    });
-  }
+  const context: LayoutBuildContext = {
+    jsf,
+    widgetLibrary,
+    hasSubmitButton: !JsonPointer.get(jsf, '/formOptions/addSubmit'),
+  };
+  const formLayout = mapLayout(jsf.layout, (layoutItem, _index, layoutPointer) =>
+    buildLayoutItem(layoutItem, layoutPointer, context)
+  );
+  registerRootLayout(context, formLayout);
+  appendSubmitButton(context, formLayout);
   return formLayout;
+}
+
+function buildLayoutItem(
+  layoutItem: any,
+  layoutPointer: string,
+  context: LayoutBuildContext,
+): any {
+  const newNode = normalizeLayoutItem(layoutItem);
+  if (!newNode) return null;
+  normalizeLayoutDataPointer(newNode);
+  if (hasOwn(newNode, 'dataPointer')) {
+    if (newNode.dataPointer === '*') {
+      return buildLayoutFromSchema(context.jsf, context.widgetLibrary, context.jsf.formValues);
+    }
+    buildDataPointerNode(newNode, context);
+  } else if (hasOwn(newNode, 'type') || hasOwn(newNode, 'items')) {
+    buildLayoutGroupNode(newNode, layoutPointer, context);
+  }
+  if (newNode.type === 'submit') context.hasSubmitButton = true;
+  return newNode;
+}
+
+function normalizeLayoutItem(layoutItem: any): Record<string, any> | null {
+  const newNode: any = { _id: uniqueId(), options: {} };
+  if (isObject(layoutItem)) {
+    Object.assign(newNode, layoutItem);
+    const layoutProperties = Object.keys(newNode).filter(option => !inArray(option, [
+      '_id', '$ref', 'arrayItem', 'arrayItemType', 'dataPointer', 'dataType',
+      'items', 'key', 'name', 'options', 'recursiveReference', 'type', 'widget'
+    ]));
+    for (const option of layoutProperties) {
+      newNode.options[option] = newNode[option];
+      delete newNode[option];
+    }
+    normalizeLayoutNodeType(newNode);
+    normalizeLayoutNodeTitle(newNode);
+    normalizeLayoutNodeValidationMessages(newNode.options);
+    return newNode;
+  }
+  if (JsonPointer.isJsonPointer(layoutItem)) {
+    newNode.dataPointer = layoutItem;
+    return newNode;
+  }
+  if (isString(layoutItem)) {
+    newNode.key = layoutItem;
+    return newNode;
+  }
+  console.error('buildLayout error: Form layout element not recognized:');
+  console.error(layoutItem);
+  return null;
+}
+
+function normalizeLayoutNodeType(node: any): void {
+  if (!hasOwn(node, 'type') && isString(node.widget)) {
+    node.type = node.widget;
+    delete node.widget;
+  }
+}
+
+function normalizeLayoutNodeTitle(node: any): void {
+  if (!hasOwn(node.options, 'title') && hasOwn(node.options, 'legend')) {
+    node.options.title = node.options.legend;
+    delete node.options.legend;
+  }
+}
+
+function normalizeLayoutNodeValidationMessages(options: any): void {
+  if (hasOwn(options, 'validationMessages')) return;
+  if (hasOwn(options, 'errorMessages')) {
+    options.validationMessages = options.errorMessages;
+    delete options.errorMessages;
+    return;
+  }
+  if (!hasOwn(options, 'validationMessage')) return;
+  options.validationMessages = convertLegacyValidationMessages(options.validationMessage);
+  delete options.validationMessage;
+}
+
+function convertLegacyValidationMessages(messages: any): any {
+  if (typeof messages === 'string') return messages;
+  const validationMessages = {};
+  for (const key of Object.keys(messages)) {
+    const code = key + '';
+    const newKey = legacyValidationMessageCodes.get(code) ?? code;
+    validationMessages[newKey] = messages[key];
+  }
+  return validationMessages;
+}
+
+function normalizeLayoutDataPointer(node: any): void {
+  if (hasOwn(node, 'dataPointer')) return;
+  if (hasOwn(node, 'key')) {
+    node.dataPointer = node.key === '*'
+      ? node.key
+      : JsonPointer.compile(JsonPointer.parseObjectPath(node.key), '-');
+    delete node.key;
+    return;
+  }
+  if (!hasOwn(node, 'type') || node.type.slice(-5) !== 'array') return;
+  const childDataPointer = findDataPointer(node);
+  if (childDataPointer) {
+    node.dataPointer = childDataPointer.slice(0, childDataPointer.lastIndexOf('/-'));
+  }
+}
+
+function buildDataPointerNode(node: any, context: LayoutBuildContext): void {
+  const nodeContext = resolveLayoutNodeSchema(node, context);
+  configureLayoutNodeFromSchema(node, nodeContext, context);
+  normalizeLayoutNodeOptions(node);
+  registerLayoutNodeWidget(node, nodeContext, context);
+  if (node.dataType === 'array') {
+    inferArrayItemsFromSchema(node, nodeContext, context);
+    if (hasOwn(node, 'items') || hasOwn(node, 'additionalItems')) {
+      buildArrayLayout(node, nodeContext, context);
+      return;
+    }
+  }
+  node.arrayItem = false;
+}
+
+function resolveLayoutNodeSchema(node: any, context: LayoutBuildContext): LayoutNodeSchemaContext {
+  const { jsf } = context;
+  const nodeValue = JsonPointer.get(
+    jsf.formValues,
+    node.dataPointer.replaceAll('/-', '/1')
+  );
+  node.dataPointer = JsonPointer.toGenericPointer(node.dataPointer, jsf.arrayMap);
+  const lastKey = JsonPointer.toKey(node.dataPointer);
+  if (!node.name && isString(lastKey) && lastKey !== '-') node.name = lastKey;
+  const shortDataPointer = removeRecursiveReferences(
+    node.dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap
+  );
+  const recursive = !shortDataPointer.length || shortDataPointer !== node.dataPointer;
+  if (!jsf.dataMap.has(shortDataPointer)) jsf.dataMap.set(shortDataPointer, new Map());
+  const nodeDataMap = jsf.dataMap.get(shortDataPointer);
+  const schemaPointer = getLayoutSchemaPointer(shortDataPointer, nodeDataMap, jsf);
+  nodeDataMap.set('disabled', !!node.options.disabled);
+  return {
+    nodeValue,
+    nodeSchema: JsonPointer.get(jsf.schema, schemaPointer),
+    schemaPointer,
+    nodeDataMap,
+    shortDataPointer,
+    recursive,
+  };
+}
+
+function getLayoutSchemaPointer(shortDataPointer: string, nodeDataMap: any, jsf: any): string {
+  if (nodeDataMap.has('schemaPointer')) return nodeDataMap.get('schemaPointer');
+  const schemaPointer = JsonPointer.toSchemaPointer(shortDataPointer, jsf.schema);
+  nodeDataMap.set('schemaPointer', schemaPointer);
+  return schemaPointer;
+}
+
+function configureLayoutNodeFromSchema(
+  node: any,
+  nodeContext: LayoutNodeSchemaContext,
+  context: LayoutBuildContext,
+): void {
+  const { jsf, widgetLibrary } = context;
+  const { nodeSchema, schemaPointer, nodeDataMap, shortDataPointer, nodeValue } = nodeContext;
+  if (!nodeSchema) {
+    updateInputOptions(node, {}, jsf);
+    return;
+  }
+  configureLayoutNodeType(node, nodeSchema, widgetLibrary);
+  if (nodeSchema.type === 'object' && isArray(nodeSchema.required)) {
+    nodeDataMap.set('required', nodeSchema.required);
+  }
+  node.dataType = nodeSchema.type || (hasOwn(nodeSchema, '$ref') ? '$ref' : null);
+  updateInputOptions(node, nodeSchema, jsf);
+  if (node.type === 'checkboxes' && hasOwn(nodeSchema, 'items')) {
+    updateInputOptions(node, nodeSchema.items, jsf);
+  } else if (node.dataType === 'array') {
+    configureArrayOptions(node, nodeSchema, nodeValue, shortDataPointer, nodeDataMap, jsf);
+  }
+  if (isInputRequired(jsf.schema, schemaPointer)) {
+    node.options.required = true;
+    jsf.fieldsRequired = true;
+  }
+}
+
+function configureLayoutNodeType(node: any, nodeSchema: any, widgetLibrary: any): void {
+  if (!hasOwn(node, 'type')) {
+    node.type = getInputType(nodeSchema, node);
+    return;
+  }
+  if (widgetLibrary.hasWidget(node.type)) {
+    node.type = checkInlineType(node.type, nodeSchema, node);
+    return;
+  }
+  const oldWidgetType = node.type;
+  node.type = getInputType(nodeSchema, node);
+  console.error(`error: widget type "${oldWidgetType}" ` +
+    `not found in library. Replacing with "${node.type}".`);
+}
+
+function configureArrayOptions(
+  node: any,
+  schema: any,
+  nodeValue: any,
+  shortDataPointer: string,
+  nodeDataMap: any,
+  jsf: any,
+): void {
+  node.options.maxItems = Math.min(schema.maxItems || 1000, node.options.maxItems || 1000);
+  node.options.minItems = Math.max(schema.minItems || 0, node.options.minItems || 0);
+  node.options.listItems = Math.max(
+    node.options.listItems || 0,
+    isArray(nodeValue) ? nodeValue.length : 0
+  );
+  node.options.tupleItems = isArray(schema.items) ? schema.items.length : 0;
+  reconcileArrayItemCounts(node);
+  if (!nodeDataMap.has('maxItems')) {
+    nodeDataMap.set('maxItems', node.options.maxItems);
+    nodeDataMap.set('minItems', node.options.minItems);
+    nodeDataMap.set('tupleItems', node.options.tupleItems);
+    nodeDataMap.set('listItems', node.options.listItems);
+  }
+  if (!jsf.arrayMap.has(shortDataPointer)) {
+    jsf.arrayMap.set(shortDataPointer, node.options.tupleItems);
+  }
+}
+
+function reconcileArrayItemCounts(node: any): void {
+  if (node.options.maxItems < node.options.tupleItems) {
+    node.options.tupleItems = node.options.maxItems;
+    node.options.listItems = 0;
+    return;
+  }
+  if (node.options.maxItems < node.options.tupleItems + node.options.listItems) {
+    node.options.listItems = node.options.maxItems - node.options.tupleItems;
+    return;
+  }
+  if (node.options.minItems > node.options.tupleItems + node.options.listItems) {
+    node.options.listItems = node.options.minItems - node.options.tupleItems;
+  }
+}
+
+function normalizeLayoutNodeOptions(node: any): void {
+  if (!node.options.title && !/^\d+$/.test(node.name)) {
+    node.options.title = fixTitle(node.name);
+  }
+  if (!hasOwn(node.options, 'copyValueTo')) return;
+  const copyValueTo = node.options.copyValueTo;
+  if (typeof copyValueTo === 'string') node.options.copyValueTo = [copyValueTo];
+  if (isArray(node.options.copyValueTo)) {
+    node.options.copyValueTo = node.options.copyValueTo.map(item =>
+      JsonPointer.compile(JsonPointer.parseObjectPath(item), '-')
+    );
+  }
+}
+
+function registerLayoutNodeWidget(
+  node: any,
+  nodeContext: LayoutNodeSchemaContext,
+  context: LayoutBuildContext,
+): void {
+  node.widget = context.widgetLibrary.getWidget(node.type);
+  nodeContext.nodeDataMap.set('inputType', node.type);
+  nodeContext.nodeDataMap.set('widget', node.widget);
+}
+
+function inferArrayItemsFromSchema(
+  node: any,
+  nodeContext: LayoutNodeSchemaContext,
+  context: LayoutBuildContext,
+): void {
+  if (hasOwn(node, 'items') || hasOwn(node, 'additionalItems') ||
+    !inArray(node.type, ['array', 'tabarray'])) return;
+  const fromSchema = buildLayoutFromSchema(
+    context.jsf, context.widgetLibrary, nodeContext.nodeValue,
+    nodeContext.schemaPointer, node.dataPointer,
+    node.arrayItem, node.arrayItemType, node.options.removable
+  );
+  if (fromSchema && isArray(fromSchema.items) && fromSchema.items.length) {
+    node.items = fromSchema.items;
+  }
+}
+
+function buildArrayLayout(
+  node: any,
+  nodeContext: LayoutNodeSchemaContext,
+  context: LayoutBuildContext,
+): void {
+  const itemRefPointer = createArrayItemReference(node, context);
+  normalizeArrayItems(node, itemRefPointer, context);
+  updateArrayListItemCount(node, nodeContext.nodeDataMap);
+  registerArrayItemReference(node, nodeContext, itemRefPointer, context);
+  appendRequiredArrayItems(node, itemRefPointer, nodeContext.nodeValue, context);
+  appendArrayAddButton(node, itemRefPointer, nodeContext.recursive, context);
+}
+
+function createArrayItemReference(node: any, context: LayoutBuildContext): string {
+  const { jsf } = context;
+  const itemRefPointer = removeRecursiveReferences(
+    node.dataPointer + '/-', jsf.dataRecursiveRefMap, jsf.arrayMap
+  );
+  if (!jsf.dataMap.has(itemRefPointer)) jsf.dataMap.set(itemRefPointer, new Map());
+  jsf.dataMap.get(itemRefPointer).set('inputType', 'section');
+  return itemRefPointer;
+}
+
+function normalizeArrayItems(node: any, itemRefPointer: string, context: LayoutBuildContext): void {
+  if (node.items.length > 1) {
+    groupArrayItemNodes(node, itemRefPointer, context);
+    return;
+  }
+  if (node.items.length) normalizeSingleArrayItem(node, itemRefPointer, context.jsf);
+}
+
+function groupArrayItemNodes(node: any, itemRefPointer: string, context: LayoutBuildContext): void {
+  const arrayItemGroup = [];
+  for (let i = node.items.length - 1; i >= 0; i--) {
+    const subItem = node.items[i];
+    if (hasOwn(subItem, 'dataPointer') &&
+      subItem.dataPointer.slice(0, itemRefPointer.length) === itemRefPointer
+    ) {
+      const arrayItem = node.items.splice(i, 1)[0];
+      arrayItem.dataPointer = node.dataPointer + '/-' +
+        arrayItem.dataPointer.slice(itemRefPointer.length);
+      arrayItemGroup.unshift(arrayItem);
+      continue;
+    }
+    configureArrayItemNode(subItem, node);
+  }
+  if (!arrayItemGroup.length) return;
+  node.items.push({
+    _id: uniqueId(),
+    arrayItem: true,
+    arrayItemType: node.options.tupleItems > node.items.length ? 'tuple' : 'list',
+    items: arrayItemGroup,
+    options: { removable: node.options.removable !== false },
+    dataPointer: node.dataPointer + '/-',
+    type: 'section',
+    widget: context.widgetLibrary.getWidget('section'),
+  });
+}
+
+function configureArrayItemNode(subItem: any, node: any): void {
+  subItem.arrayItem = true;
+  const slot = Number(String(subItem.dataPointer).split('/').pop());
+  const tupleSlot = Number.isInteger(slot) && slot < node.options.tupleItems;
+  subItem.arrayItemType = tupleSlot ? 'tuple' : 'list';
+  subItem.removable = !tupleSlot && node.options.removable !== false;
+}
+
+function normalizeSingleArrayItem(node: any, itemRefPointer: string, jsf: any): void {
+  const item = node.items[0];
+  item.arrayItem = true;
+  if (!item.dataPointer) {
+    item.dataPointer = JsonPointer.toGenericPointer(itemRefPointer, jsf.arrayMap);
+  }
+  if (!JsonPointer.has(node, '/items/0/options/removable')) item.options.removable = true;
+  if (node.options.orderable === false) item.options.orderable = false;
+  item.arrayItemType = node.options.tupleItems ? 'tuple' : 'list';
+}
+
+function updateArrayListItemCount(node: any, nodeDataMap: any): void {
+  if (!isArray(node.items)) return;
+  const arrayListItems = node.items.filter(item => item.type !== '$ref').length -
+    node.options.tupleItems;
+  if (arrayListItems <= node.options.listItems) return;
+  node.options.listItems = arrayListItems;
+  nodeDataMap.set('listItems', arrayListItems);
+}
+
+function registerArrayItemReference(
+  node: any,
+  nodeContext: LayoutNodeSchemaContext,
+  itemRefPointer: string,
+  context: LayoutBuildContext,
+): void {
+  const { jsf } = context;
+  if (hasOwn(jsf.layoutRefLibrary, itemRefPointer)) return;
+  const lastItem = node.items.at(-1);
+  const listItemSchemaPointer = getArrayListItemSchemaPointer(nodeContext);
+  // A tuple slot is fixed, so the schema defines the template for new list items.
+  if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
+    registerTupleListItemReference(node, nodeContext.recursive, itemRefPointer, listItemSchemaPointer, context);
+    return;
+  }
+  registerClonedArrayItemReference(lastItem, node, nodeContext.recursive, itemRefPointer, jsf);
+}
+
+function getArrayListItemSchemaPointer(nodeContext: LayoutNodeSchemaContext): string | null {
+  const { nodeSchema, schemaPointer } = nodeContext;
+  if (isArray(nodeSchema?.items)) {
+    return isObject(nodeSchema.additionalItems) ? schemaPointer + '/additionalItems' : null;
+  }
+  return isObject(nodeSchema?.items) ? schemaPointer + '/items' : null;
+}
+
+function registerTupleListItemReference(
+  node: any,
+  recursive: boolean,
+  itemRefPointer: string,
+  listItemSchemaPointer: string,
+  context: LayoutBuildContext,
+): void {
+  const { jsf, widgetLibrary } = context;
+  // Register the in-progress reference before schema expansion to stop recursive layouts.
+  jsf.layoutRefLibrary[itemRefPointer] = null;
+  jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR: replace the recursion placeholder after building the layout.
+    jsf, widgetLibrary, null,
+    removeRecursiveReferences(listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap),
+    recursive ? '' : node.dataPointer + '/-',
+    true, 'list', node.options.removable !== false, true,
+    recursive ? node.dataPointer + '/-' : ''
+  );
+  if (recursive && jsf.layoutRefLibrary[itemRefPointer]) {
+    jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
+  }
+}
+
+function registerClonedArrayItemReference(
+  lastItem: any,
+  node: any,
+  recursive: boolean,
+  itemRefPointer: string,
+  jsf: any,
+): void {
+  jsf.layoutRefLibrary[itemRefPointer] = cloneDeep(lastItem);
+  if (recursive) jsf.layoutRefLibrary[itemRefPointer].recursiveReference = true;
+  // Only cloned siblings carry ids and absolute data pointers that need adjustment.
+  forEach(jsf.layoutRefLibrary[itemRefPointer], (item, _key) => {
+    if (hasOwn(item, '_id')) item._id = null;
+    if (recursive && hasOwn(item, 'dataPointer')) {
+      item.dataPointer = item.dataPointer.slice(itemRefPointer.length);
+    }
+  }, 'top-down');
+}
+
+function appendRequiredArrayItems(
+  node: any,
+  itemRefPointer: string,
+  nodeValue: any,
+  context: LayoutBuildContext,
+): void {
+  if (node.recursiveReference && !node.options.required) return;
+  const valueLength = isArray(nodeValue) ? nodeValue.length : 0;
+  const arrayLength = Math.min(
+    Math.max(node.options.tupleItems + node.options.listItems, valueLength),
+    node.options.maxItems
+  );
+  for (let i = node.items.length; i < arrayLength; i++) {
+    node.items.push(getLayoutNode({
+      $ref: itemRefPointer,
+      dataPointer: node.dataPointer,
+      recursiveReference: node.recursiveReference,
+    }, context.jsf, context.widgetLibrary));
+  }
+}
+
+function appendArrayAddButton(
+  node: any,
+  itemRefPointer: string,
+  recursive: boolean,
+  context: LayoutBuildContext,
+): void {
+  if (!shouldAddArrayButton(node)) return;
+  const buttonText = getArrayButtonText(node, context.jsf);
+  const button = {
+    _id: uniqueId(),
+    arrayItem: true,
+    arrayItemType: 'list',
+    dataPointer: node.dataPointer + '/-',
+    options: {
+      listItems: node.options.listItems,
+      maxItems: node.options.maxItems,
+      minItems: node.options.minItems,
+      removable: false,
+      title: buttonText,
+      tupleItems: node.options.tupleItems,
+    },
+    recursiveReference: recursive,
+    type: '$ref',
+    widget: context.widgetLibrary.getWidget('$ref'),
+    $ref: itemRefPointer,
+  };
+  node.items.push(button);
+  applyArrayButtonStyle(node, button);
+}
+
+function shouldAddArrayButton(node: any): boolean {
+  return node.options.addable !== false &&
+    node.options.minItems < node.options.maxItems &&
+    node.items.at(-1)?.type !== '$ref';
+}
+
+function getArrayButtonText(node: any, jsf: any): string {
+  if (node.options.title) return arrayButtonTextFromTitle(node.options.title);
+  if (node.name && !/^\d+$/.test(node.name)) return arrayButtonTextFromName(node.name);
+  const parentSchema = getFromSchema(jsf.schema, node.dataPointer, 'parentSchema');
+  if (hasOwn(parentSchema, 'title')) return 'Add to ' + parentSchema.title;
+  const pointerArray = JsonPointer.parse(node.dataPointer);
+  return 'Add to ' + fixTitle(pointerArray.at(-2));
+}
+
+function arrayButtonTextFromTitle(title: string): string {
+  return /^add\b/i.test(title) ? title : 'Add ' + title;
+}
+
+function arrayButtonTextFromName(name: string): string {
+  return /^add\b/i.test(name) ? 'Add ' + fixTitle(name) : fixTitle(name);
+}
+
+function applyArrayButtonStyle(node: any, button: any): void {
+  if (!isString(JsonPointer.get(node, '/style/add'))) return;
+  button.options.fieldStyle = node.style.add;
+  delete node.style.add;
+  if (isEmpty(node.style)) delete node.style;
+}
+
+function buildLayoutGroupNode(node: any, layoutPointer: string, context: LayoutBuildContext): void {
+  const { jsf, widgetLibrary } = context;
+  const parentType: string = JsonPointer.get(jsf.layout, layoutPointer, 0, -2).type;
+  if (!hasOwn(node, 'type')) {
+    node.type = inArray(parentType, ['tabs', 'tabarray']) ? 'tab' : 'array';
+  }
+  node.arrayItem = parentType === 'array';
+  node.widget = widgetLibrary.getWidget(node.type);
+  updateInputOptions(node, {}, jsf);
+}
+
+function registerRootLayout(context: LayoutBuildContext, formLayout: any[]): void {
+  const { jsf, widgetLibrary } = context;
+  if (!jsf.hasRootReference) return;
+  const fullLayout = cloneDeep(formLayout);
+  if (fullLayout.at(-1).type === 'submit') fullLayout.pop();
+  jsf.layoutRefLibrary[''] = {
+    _id: null,
+    dataPointer: '',
+    dataType: 'object',
+    items: fullLayout,
+    name: '',
+    options: cloneDeep(jsf.formOptions.defautWidgetOptions),
+    recursiveReference: true,
+    required: false,
+    type: 'section',
+    widget: widgetLibrary.getWidget('section'),
+  };
+}
+
+function appendSubmitButton(context: LayoutBuildContext, formLayout: any[]): void {
+  if (context.hasSubmitButton) return;
+  formLayout.push({
+    _id: uniqueId(),
+    options: { title: 'Submit' },
+    type: 'submit',
+    widget: context.widgetLibrary.getWidget('submit'),
+  });
 }
 
 /**
