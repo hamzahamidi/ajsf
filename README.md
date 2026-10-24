@@ -8,7 +8,7 @@ AJSF turns a JSON Schema into an Angular 22 form, rendered as plain HTML by `@aj
 
 <p align="center">
   <a href="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/hamzahamidi/ajsf/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI Status"></a>
-  <a href="https://codecov.io/gh/hamzahamidi/ajsf"><img src="https://codecov.io/gh/hamzahamidi/ajsf/branch/main/graph/badge.svg" alt="Code coverage"></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=hamzahamidi_ajsf"><img src="https://sonarcloud.io/api/project_badges/measure?project=hamzahamidi_ajsf&metric=coverage" alt="SonarQube Cloud coverage"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/v/@ajsf/core.svg?style=plastic" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@ajsf/core"><img src="https://img.shields.io/npm/dm/@ajsf/core.svg?style=plastic" alt="npm number of downloads"></a>
   <a href="https://github.com/hamzahamidi/ajsf/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hamzahamidi/ajsf.svg?style=social" alt="MIT licence"></a>

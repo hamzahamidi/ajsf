@@ -19,12 +19,6 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    # Minting the Codecov credential needs id-token, which is not in the
-    # default set.
-    permissions:
-      contents: read
-      id-token: write
-
     strategy:
       matrix:
         # Node 20 reached end of life on 2026-04-30, so it is gone whatever the
@@ -34,6 +28,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
     - name: Setup Node ${{ matrix.node-version }}
       uses: actions/setup-node@v7
       with:
@@ -51,25 +47,8 @@ jobs:
       # coverage/ before writing lcov.info, so reports are staged and restored.
       # It also picks each suite's flags from its runner, which differ.
       run: node scripts/run-coverage.js
-    # The codecov npm package is deprecated and its uploader now fails against
-    # the current API with "result.split is not a function". This action is the
-    # supported path.
-    #
-    # Only one leg uploads. Both produce identical coverage for the same commit,
-    # so uploading twice just makes Codecov merge duplicates.
-    #
-    # Fork pull requests receive no id-token, so there is no credential to mint
-    # and the upload could only go out tokenless and be rejected.
-    #
-    # Failures are surfaced rather than swallowed. This step previously ran with
-    # continue-on-error and fail_ci_if_error: false, and reported success while
-    # every upload was rejected with "Token required because branch is
-    # protected". Nine pull requests merged before anyone noticed there was no
-    # coverage data. An upload that cannot fail cannot tell you it is broken.
-    - name: Publish code coverage
+    - name: Analyze with SonarQube Cloud
       if: matrix.node-version == '24.x' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-      uses: codecov/codecov-action@v7
-      with:
-        use_oidc: true
-        directory: ./coverage
-        fail_ci_if_error: true
+      uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

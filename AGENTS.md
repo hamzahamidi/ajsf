@@ -129,10 +129,11 @@ There is no CHANGELOG.md and no changelog script. The release pages are the reco
 
 ## Coverage
 
-Run it with `npm run coverage`, never by invoking the suites yourself. CI runs the
-same `scripts/run-coverage.js`, so there is one implementation. It uploads to Codecov
-from the `20.x` matrix leg only: both legs run the same tests on the same commit, so a
-second upload is a duplicate.
+Run it with `npm run coverage`, never by invoking the suites yourself. CI and the
+release workflow run the same `scripts/run-coverage.js`, so there is one
+implementation. The runner checks the combined report against the 76% project
+floor before returning successfully. The Node 24 leg then submits the SonarQube
+Cloud analysis.
 
 ⚠️ **Two things about the Vitest coverage path will mislead you, and the script exists
 to handle both.**
@@ -158,11 +159,10 @@ Do not add `coverageExclude` for the `chunk-*.js` entry in the lcov. It looks li
 bundling noise and is not: the source entries are remapped from that chunk, so
 excluding it drops the report from 57 source files to 1.
 
-**Codecov authenticates with OIDC, like the npm publishing flow, and there is no `CODECOV_TOKEN` in use.** `codecov-action@v7` mints a short lived credential from `id-token` and passes it to the CLI as `CC_TOKEN`. A run log reports it as a non-zero `Token length:`, so that line is how you tell a real upload from one going out tokenless, which Codecov rejects with `Token required because branch is protected`. The job has to declare `id-token: write`, because it is not in the default permission set.
-
-This replaced a `CODECOV_TOKEN` secret. The note that used to sit here claimed the CLI ignores the OIDC credential and falls back to tokenless (`codecov-action#1461`); v7 does not do that, and the claim went unchecked because the secret was already working. Fork pull requests are the case with no credential to mint: the action derives `CC_FORK` itself and skips minting, so the step is skipped rather than left to attempt an upload that can only be rejected.
-
-⚠️ **Never give the upload step `continue-on-error` or `fail_ci_if_error: false`.** It carried both from #361 to #370 and reported success on every run while Codecov rejected every upload with `Token required because branch is protected`. Nine pull requests merged before anyone noticed. A step that cannot fail cannot tell you it is broken.
+`sonar-project.properties` maps the per-project LCOV reports into SonarQube Cloud.
+The CI scanner runs on the Node 24 leg and waits for the quality gate. `SONAR_TOKEN`
+is a repository secret, also configured for Dependabot. Fork pull requests run tests
+without submitting an analysis.
 
 ## Linting
 
