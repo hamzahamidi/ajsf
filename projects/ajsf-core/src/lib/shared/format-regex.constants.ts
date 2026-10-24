@@ -153,6 +153,61 @@ function isUriTemplate(value: string): boolean {
   return true;
 }
 
+function isIpv4Format(value: string): boolean {
+  const octets = value.split('.');
+  return octets.length === 4 && octets.every(octet =>
+    /^\d{1,3}$/.test(octet) && Number(octet) <= 255
+  );
+}
+
+const colorFormatPatterns = [
+  /^#[\da-f]{3}(?:[\da-f]{3})?$/i,
+  /^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$/i,
+  /^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*(?:\d+(?:\.\d+)?|\.\d+)\)$/i,
+  /^hsl\(\d{1,3},\s*\d{1,3}%,\s*\d{1,3}%\)$/i,
+  /^hsla\(\d{1,3},\s*\d{1,3}%,\s*\d{1,3}%,\s*(?:\d+(?:\.\d+)?|\.\d+)\)$/i
+];
+
+function isColorFormat(value: string): boolean {
+  const color = value.trim();
+  return colorFormatPatterns.some(pattern => pattern.test(color));
+}
+
+const jsonPointerFragmentCharacterPattern = /^[-a-z0-9_.!$&'()*+,;:=@]$/i;
+const jsonPointerPercentEncodingPattern = /^[\da-f]{2}$/i;
+
+function isValidJsonPointerSegment(segment: string, fragment: boolean): boolean {
+  for (let index = 0; index < segment.length; index++) {
+    if (segment[index] === '~') {
+      const escape = segment[index + 1];
+      if (escape !== '0' && escape !== '1') { return false; }
+      index += 1;
+      continue;
+    }
+    if (!fragment) { continue; }
+    if (segment[index] === '%') {
+      if (!jsonPointerPercentEncodingPattern.test(segment.slice(index + 1, index + 3))) {
+        return false;
+      }
+      index += 2;
+      continue;
+    }
+    if (!jsonPointerFragmentCharacterPattern.test(segment[index]!)) { return false; }
+  }
+  return true;
+}
+
+function isJsonPointerFormat(value: string): boolean {
+  if (value.length === 0) { return true; }
+  const fragment = value.startsWith('#');
+  const pointer = fragment
+    ? value.slice(1).replace(/(?:\r\n|[\n\r\u2028\u2029])$/, '')
+    : value;
+  if (pointer.length > 0 && !pointer.startsWith('/')) { return false; }
+  const segments = pointer.length === 0 ? [] : pointer.slice(1).split('/');
+  return segments.every(segment => isValidJsonPointerSegment(segment, fragment));
+}
+
 export const jsonSchemaFormatTests = {
 
   'date': /^\d\d\d\d-[0-1]\d-[0-3]\d$/,
@@ -171,7 +226,7 @@ export const jsonSchemaFormatTests = {
   'hostname': /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*$/i,
 
   // optimized https://www.safaribooksonline.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html
-  'ipv4': /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
+  'ipv4': isIpv4Format,
 
   'ipv6': isIpv6,
 
@@ -194,10 +249,10 @@ export const jsonSchemaFormatTests = {
   'uuid': /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i,
 
   // optimized https://gist.github.com/olmokramer/82ccce673f86db7cda5e
-  'color': /^\s*(#(?:[\da-f]{3}){1,2}|rgb\((?:\d{1,3},\s*){2}\d{1,3}\)|rgba\((?:\d{1,3},\s*){3}\d*\.?\d+\)|hsl\(\d{1,3}(?:,\s*\d{1,3}%){2}\)|hsla\(\d{1,3}(?:,\s*\d{1,3}%){2},\s*\d*\.?\d+\))\s*$/i,
+  'color': isColorFormat,
 
   // JSON-pointer: https://tools.ietf.org/html/rfc6901
-  'json-pointer': /^(?:\/(?:[^~/]|~0|~1)*)*$|^#(?:\/(?:[a-z0-9_\-.!$&'()*+,;:=@]|%[0-9a-f]{2}|~0|~1)*)*$/i,
+  'json-pointer': isJsonPointerFormat,
 
   'relative-json-pointer': /^(?:0|[1-9]\d*)(?:#|(?:\/(?:[^~/]|~0|~1)*)*)$/,
 
