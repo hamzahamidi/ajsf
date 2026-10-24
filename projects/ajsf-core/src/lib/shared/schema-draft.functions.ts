@@ -194,9 +194,9 @@ function typeSpecificKeys() {
 
 function typeSchema(type: any, schema: any, filterKeys: any): any {
   const newType = typeof type === 'string' ? { type } : { ...type };
-  const excluded = [...(filterKeys[newType.type] || filterKeys.all), 'type', 'default'];
+  const excluded = new Set([...(filterKeys[newType.type] || filterKeys.all), 'type', 'default']);
   for (const key of Object.keys(schema)) {
-    if (!newType.hasOwnProperty(key) && !excluded.includes(key)) {
+    if (!newType.hasOwnProperty(key) && !excluded.has(key)) {
       newType[key] = schema[key];
     }
   }

@@ -1118,8 +1118,8 @@ function nestTitleGroups(titles: TitleMapItem[]): TitleMapState {
   return { items, hasEmptyValue };
 }
 
-function groupTitleMap(state: TitleMapState, flatList: boolean): TitleMapState {
-  return flatList ? flattenTitleGroups(state.items) : nestTitleGroups(state.items);
+function groupTitleMap(state: TitleMapState, options: { flatList: boolean }): TitleMapState {
+  return options.flatList ? flattenTitleGroups(state.items) : nestTitleGroups(state.items);
 }
 
 /**
@@ -1136,7 +1136,7 @@ export function buildTitleMap(
 ) {
   let state = buildTitleMapState(titleMap, enumList, fieldRequired);
   if (state.items.some(title => hasOwn(title, 'group'))) {
-    state = groupTitleMap({ ...state, hasEmptyValue: false }, flatList);
+    state = groupTitleMap({ ...state, hasEmptyValue: false }, { flatList });
   }
   if (!fieldRequired && !state.hasEmptyValue) {
     state.items.unshift({ name: '<em>None</em>', value: null });
