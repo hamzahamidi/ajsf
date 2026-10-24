@@ -327,6 +327,64 @@ export function fixTitle(name: string): string {
   return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replaceAll('_', ' '));
 }
 
+interface TitleCaseWordResult {
+  text: string;
+  previousLastChar: string;
+}
+
+function usesExistingCase(word: string, noInitialCase: boolean): boolean {
+  return !noInitialCase && word.slice(1).search(/[A-Z]|\../) !== -1;
+}
+
+function regularTitleWord(word: string, noInitialCase: boolean): string {
+  if (noInitialCase && word.slice(1).search(/\../) !== -1) return word.toLowerCase();
+  const rest = noInitialCase ? word.slice(1).toLowerCase() : word.slice(1);
+  return word[0].toUpperCase() + rest;
+}
+
+function startsOrEndsPhrase(
+  word: string,
+  input: string,
+  index: number,
+  previousLastChar: string,
+): boolean {
+  const previousChar = input[index - 1] || '';
+  return index === 0 || index + word.length === input.length || previousLastChar === ':' ||
+    previousChar.search(/[^\s-]/) !== -1 || (previousChar !== '-' && input[index + word.length] === '-');
+}
+
+function forcedTitleWord(
+  forceWord: string,
+  word: string,
+  input: string,
+  index: number,
+  previousLastChar: string,
+): string {
+  if (forceWord !== forceWord.toLowerCase() ||
+      !startsOrEndsPhrase(word, input, index, previousLastChar)) return forceWord;
+  return forceWord[0].toUpperCase() + forceWord.slice(1);
+}
+
+function titleCaseWord(
+  word: string,
+  index: number,
+  input: string,
+  forceArray: string[],
+  forceArrayLower: string[],
+  noInitialCase: boolean,
+  previousLastChar: string,
+): TitleCaseWordResult {
+  if (usesExistingCase(word, noInitialCase)) return { text: word, previousLastChar };
+  const forceIndex = forceArrayLower.indexOf(word.toLowerCase());
+  const forceWord = forceArray[forceIndex];
+  return {
+    text: forceWord
+      ? forcedTitleWord(forceWord, word, input, index, previousLastChar)
+      : regularTitleWord(word, noInitialCase),
+    previousLastChar: word.slice(-1),
+  };
+}
+
 /**
  * 'toTitleCase' function
  *
@@ -356,35 +414,8 @@ export function toTitleCase(input: string, forceWords?: string|string[]): string
   let prevLastChar = '';
   input = input.trim();
   return input.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, (word, idx) => {
-    if (!noInitialCase && word.slice(1).search(/[A-Z]|\../) !== -1) {
-      return word;
-    } else {
-      let newWord: string;
-      const forceWord: string =
-        forceArray[forceArrayLower.indexOf(word.toLowerCase())];
-      if (!forceWord) {
-        if (noInitialCase) {
-          if (word.slice(1).search(/\../) !== -1) {
-            newWord = word.toLowerCase();
-          } else {
-            newWord = word[0].toUpperCase() + word.slice(1).toLowerCase();
-          }
-        } else {
-          newWord = word[0].toUpperCase() + word.slice(1);
-        }
-      } else if (
-        forceWord === forceWord.toLowerCase() && (
-          idx === 0 || idx + word.length === input.length ||
-          prevLastChar === ':' || input[idx - 1].search(/[^\s-]/) !== -1 ||
-          (input[idx - 1] !== '-' && input[idx + word.length] === '-')
-        )
-      ) {
-        newWord = forceWord[0].toUpperCase() + forceWord.slice(1);
-      } else {
-        newWord = forceWord;
-      }
-      prevLastChar = word.slice(-1);
-      return newWord;
-    }
+    const result = titleCaseWord(word, idx, input, forceArray, forceArrayLower, noInitialCase, prevLastChar);
+    prevLastChar = result.previousLastChar;
+    return result.text;
   });
 }
