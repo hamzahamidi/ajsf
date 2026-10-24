@@ -997,6 +997,128 @@ export function getLayoutNode(
   }
 }
 
+interface TitleMapState {
+  items: TitleMapItem[];
+  hasEmptyValue: boolean;
+}
+
+function isEmptyTitleValue(value: unknown): boolean {
+  return value === undefined || value === null;
+}
+
+function titleMapFromArray(titleMap: any[], enumList: any, fieldRequired: boolean): TitleMapState {
+  if (!enumList) {
+    return {
+      items: titleMap,
+      hasEmptyValue: !fieldRequired && titleMap.some(item => isEmptyTitleValue(item.value)),
+    };
+  }
+
+  const items: TitleMapItem[] = [];
+  let hasEmptyValue = false;
+  for (const index of Object.keys(titleMap)) {
+    const entry = titleMap[index];
+    if (isObject(entry)) {
+      if (enumList.includes(entry.value)) {
+        items.push({ name: entry.name, value: entry.value });
+        hasEmptyValue ||= isEmptyTitleValue(entry.value);
+      }
+    } else if (isString(entry) && index < enumList.length) {
+      const value = enumList[index];
+      items.push({ name: entry, value });
+      hasEmptyValue ||= isEmptyTitleValue(value);
+    }
+  }
+  return { items, hasEmptyValue };
+}
+
+function titleMapFromObject(titleMap: any, enumList: any): TitleMapState {
+  const items: TitleMapItem[] = [];
+  let hasEmptyValue = false;
+  if (enumList) {
+    for (const index of Object.keys(enumList)) {
+      const value = enumList[index];
+      if (!hasOwn(titleMap, value)) { continue; }
+      items.push({ name: titleMap[value], value });
+      hasEmptyValue ||= isEmptyTitleValue(value);
+    }
+  } else {
+    for (const value of Object.keys(titleMap)) {
+      items.push({ name: titleMap[value], value });
+      hasEmptyValue ||= isEmptyTitleValue(value);
+    }
+  }
+  return { items, hasEmptyValue };
+}
+
+function buildTitleMapState(titleMap: any, enumList: any, fieldRequired: boolean): TitleMapState {
+  if (titleMap) {
+    return isArray(titleMap)
+      ? titleMapFromArray(titleMap, enumList, fieldRequired)
+      : titleMapFromObject(titleMap, enumList);
+  }
+  if (enumList) {
+    const items = Object.keys(enumList).map(index => ({ name: enumList[index], value: enumList[index] }));
+    return { items, hasEmptyValue: items.some(item => isEmptyTitleValue(item.value)) };
+  }
+  return {
+    items: [{ name: 'True', value: true }, { name: 'False', value: false }],
+    hasEmptyValue: false,
+  };
+}
+
+function flattenTitleGroups(titles: TitleMapItem[]): TitleMapState {
+  const items: TitleMapItem[] = [];
+  let hasEmptyValue = false;
+  for (const title of titles) {
+    if (hasOwn(title, 'group')) {
+      if (isArray(title.items)) {
+        items.push(...title.items.map(item => ({ ...item, name: `${title.group}: ${item.name}` })));
+        hasEmptyValue ||= title.items.some(item => isEmptyTitleValue(item.value));
+      }
+      if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
+        title.name = `${title.group}: ${title.name}`;
+        delete title.group;
+        items.push(title);
+        hasEmptyValue ||= isEmptyTitleValue(title.value);
+      }
+    } else {
+      items.push(title);
+      hasEmptyValue ||= isEmptyTitleValue(title.value);
+    }
+  }
+  return { items, hasEmptyValue };
+}
+
+function nestTitleGroups(titles: TitleMapItem[]): TitleMapState {
+  const items: TitleMapItem[] = [];
+  let hasEmptyValue = false;
+  for (const title of titles) {
+    if (hasOwn(title, 'group')) {
+      // Matching groups combine, so an already open group is found by name.
+      // Comparing only against the last entry opened a second group whenever
+      // a name recurred with anything in between.
+      let openGroup = items.find(item => item.group === title.group);
+      if (!openGroup) {
+        openGroup = { group: title.group, items: title.items || [] };
+        items.push(openGroup);
+      }
+      if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
+        openGroup.items!.push({ name: title.name, value: title.value });
+        hasEmptyValue ||= isEmptyTitleValue(title.value);
+      }
+    } else {
+      items.push(title);
+      hasEmptyValue ||= isEmptyTitleValue(title.value);
+    }
+  }
+  return { items, hasEmptyValue };
+}
+
+function groupTitleMap(state: TitleMapState, flatList: boolean): TitleMapState {
+  return flatList ? flattenTitleGroups(state.items) : nestTitleGroups(state.items);
+}
+
 /**
  * 'buildTitleMap' function
  *
@@ -1009,129 +1131,12 @@ export function getLayoutNode(
 export function buildTitleMap(
   titleMap, enumList, fieldRequired = true, flatList = true
 ) {
-  let newTitleMap: TitleMapItem[] = [];
-  let hasEmptyValue = false;
-  if (titleMap) {
-    if (isArray(titleMap)) {
-      if (enumList) {
-        for (const i of Object.keys(titleMap)) {
-          if (isObject(titleMap[i])) { // JSON Form style
-            const value = titleMap[i].value;
-            if (enumList.includes(value)) {
-              const name = titleMap[i].name;
-              newTitleMap.push({ name, value });
-              if (value === undefined || value === null) { hasEmptyValue = true; }
-            }
-          } else if (isString(titleMap[i])) { // React Jsonschema Form style
-            if (i < enumList.length) {
-              const name = titleMap[i];
-              const value = enumList[i];
-              newTitleMap.push({ name, value });
-              if (value === undefined || value === null) { hasEmptyValue = true; }
-            }
-          }
-        }
-      } else { // If array titleMap and no enum list, just return the titleMap - Angular Schema Form style
-        newTitleMap = titleMap;
-        if (!fieldRequired) {
-          hasEmptyValue = !!newTitleMap
-            .filter(i => i.value === undefined || i.value === null)
-            .length;
-        }
-      }
-    } else if (enumList) { // Alternate JSON Form style, with enum list
-      for (const i of Object.keys(enumList)) {
-        const value = enumList[i];
-        if (hasOwn(titleMap, value)) {
-          const name = titleMap[value];
-          newTitleMap.push({ name, value });
-          if (value === undefined || value === null) { hasEmptyValue = true; }
-        }
-      }
-    } else { // Alternate JSON Form style, without enum list
-      for (const value of Object.keys(titleMap)) {
-        const name = titleMap[value];
-        newTitleMap.push({ name, value });
-        if (value === undefined || value === null) { hasEmptyValue = true; }
-      }
-    }
-  } else if (enumList) { // Build map from enum list alone
-    for (const i of Object.keys(enumList)) {
-      const name = enumList[i];
-      const value = enumList[i];
-      newTitleMap.push({ name, value });
-      if (value === undefined || value === null) { hasEmptyValue = true; }
-    }
-  } else { // If no titleMap and no enum list, return default map of boolean values
-    newTitleMap = [{ name: 'True', value: true }, { name: 'False', value: false }];
+  let state = buildTitleMapState(titleMap, enumList, fieldRequired);
+  if (state.items.some(title => hasOwn(title, 'group'))) {
+    state = groupTitleMap({ ...state, hasEmptyValue: false }, flatList);
   }
-
-  // Does titleMap have groups?
-  if (newTitleMap.some(title => hasOwn(title, 'group'))) {
-    hasEmptyValue = false;
-
-    // If flatList = true, flatten items & update name to group: name
-    if (flatList) {
-      newTitleMap = newTitleMap.reduce((groupTitleMap, title) => {
-        if (hasOwn(title, 'group')) {
-          if (isArray(title.items)) {
-            groupTitleMap = [
-              ...groupTitleMap,
-              ...title.items.map(item =>
-                ({ ...item, name: `${title.group}: ${item.name}` })
-              )
-            ];
-            if (title.items.some(item => item.value === undefined || item.value === null)) {
-              hasEmptyValue = true;
-            }
-          }
-          if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
-            title.name = `${title.group}: ${title.name}`;
-            delete title.group;
-            groupTitleMap.push(title);
-            if (title.value === undefined || title.value === null) {
-              hasEmptyValue = true;
-            }
-          }
-        } else {
-          groupTitleMap.push(title);
-          if (title.value === undefined || title.value === null) {
-            hasEmptyValue = true;
-          }
-        }
-        return groupTitleMap;
-      }, []);
-
-      // If flatList = false, combine items from matching groups
-    } else {
-      newTitleMap = newTitleMap.reduce((groupTitleMap, title) => {
-        if (hasOwn(title, 'group')) {
-          // Matching groups combine, so an already open group is found by name.
-          // Comparing only against the last entry opened a second group whenever
-          // a name recurred with anything in between.
-          let openGroup = groupTitleMap.find(item => item.group === title.group);
-          if (!openGroup) {
-            openGroup = { group: title.group, items: title.items || [] };
-            groupTitleMap.push(openGroup);
-          }
-          if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
-            openGroup.items.push({ name: title.name, value: title.value });
-            if (title.value === undefined || title.value === null) {
-              hasEmptyValue = true;
-            }
-          }
-        } else {
-          groupTitleMap.push(title);
-          if (title.value === undefined || title.value === null) {
-            hasEmptyValue = true;
-          }
-        }
-        return groupTitleMap;
-      }, []);
-    }
+  if (!fieldRequired && !state.hasEmptyValue) {
+    state.items.unshift({ name: '<em>None</em>', value: null });
   }
-  if (!fieldRequired && !hasEmptyValue) {
-    newTitleMap.unshift({ name: '<em>None</em>', value: null });
-  }
-  return newTitleMap;
+  return state.items;
 }
