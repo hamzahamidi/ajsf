@@ -393,43 +393,51 @@ function buildPrimitiveFormGroupTemplate(context: FormGroupTemplateContext): any
  * // {AbstractControl}
 */
 export function buildFormGroup(template: any): AbstractControl {
+  const validatorFns = buildValidatorFunctions(template);
+  const validatorFn = getContainerValidator(template.controlType, validatorFns);
+  if (!hasOwn(template, 'controlType')) return null;
+  switch (template.controlType) {
+    case 'FormGroup':
+      return new UntypedFormGroup(buildGroupControls(template), validatorFn);
+    case 'FormArray':
+      return buildArrayControl(template, validatorFn);
+    case 'FormControl':
+      return new UntypedFormControl(template.value, validatorFns);
+    default:
+      return null;
+  }
+}
+
+function buildValidatorFunctions(template: any): ValidatorFn[] {
   const validatorFns: ValidatorFn[] = [];
-  let validatorFn: ValidatorFn = null;
-  if (hasOwn(template, 'validators')) {
-    forEach(template.validators, (parameters, validator) => {
-      if (typeof JsonValidators[validator] === 'function') {
-        validatorFns.push(JsonValidators[validator].apply(null, parameters));
-      }
-    });
-    if (validatorFns.length &&
-      inArray(template.controlType, ['FormGroup', 'FormArray'])
-    ) {
-      validatorFn = validatorFns.length > 1 ?
-        JsonValidators.compose(validatorFns) : validatorFns[0];
+  if (!hasOwn(template, 'validators')) return validatorFns;
+  forEach(template.validators, (parameters, validator) => {
+    if (typeof JsonValidators[validator] === 'function') {
+      validatorFns.push(JsonValidators[validator].apply(null, parameters));
     }
-  }
-  if (hasOwn(template, 'controlType')) {
-    switch (template.controlType) {
-      case 'FormGroup': {
-        const groupControls: { [key: string]: AbstractControl } = {};
-        forEach(template.controls, (controls, key) => {
-          const newControl: AbstractControl = buildFormGroup(controls);
-          if (newControl) { groupControls[key] = newControl; }
-        });
-        return new UntypedFormGroup(groupControls, validatorFn);
-      }
-      case 'FormArray':
-        return new UntypedFormArray(
-          (template.controls || [])
-            .map(controls => buildFormGroup(controls))
-            .filter(Boolean),
-          validatorFn
-        );
-      case 'FormControl':
-        return new UntypedFormControl(template.value, validatorFns);
-    }
-  }
-  return null;
+  });
+  return validatorFns;
+}
+
+function getContainerValidator(controlType: string, validatorFns: ValidatorFn[]): ValidatorFn {
+  if (!validatorFns.length || !inArray(controlType, ['FormGroup', 'FormArray'])) return null;
+  return validatorFns.length > 1 ? JsonValidators.compose(validatorFns) : validatorFns[0];
+}
+
+function buildGroupControls(template: any): { [key: string]: AbstractControl } {
+  const controls: { [key: string]: AbstractControl } = {};
+  forEach(template.controls, (controlTemplate, key) => {
+    const control = buildFormGroup(controlTemplate);
+    if (control) controls[key] = control;
+  });
+  return controls;
+}
+
+function buildArrayControl(template: any, validatorFn: ValidatorFn): AbstractControl {
+  const controls = (template.controls || [])
+    .map(controlTemplate => buildFormGroup(controlTemplate))
+    .filter(Boolean);
+  return new UntypedFormArray(controls, validatorFn);
 }
 
 /**
@@ -441,44 +449,53 @@ export function buildFormGroup(template: any): AbstractControl {
 export function mergeValues(...valuesToMerge) {
   let mergedValues: any = null;
   for (const currentValue of valuesToMerge) {
-    if (!isEmpty(currentValue)) {
-      if (typeof currentValue === 'object' &&
-        (isEmpty(mergedValues) || typeof mergedValues !== 'object')
-      ) {
-        if (isArray(currentValue)) {
-          mergedValues = [...currentValue];
-        } else if (isObject(currentValue)) {
-          mergedValues = { ...currentValue };
-        }
-      } else if (typeof currentValue !== 'object') {
-        mergedValues = currentValue;
-      } else if (isObject(mergedValues) && isObject(currentValue)) {
-        Object.assign(mergedValues, currentValue);
-      } else if (isObject(mergedValues) && isArray(currentValue)) {
-        const newValues = [];
-        for (const value of currentValue) {
-          newValues.push(mergeValues(mergedValues, value));
-        }
-        mergedValues = newValues;
-      } else if (isArray(mergedValues) && isObject(currentValue)) {
-        const newValues = [];
-        for (const value of mergedValues) {
-          newValues.push(mergeValues(value, currentValue));
-        }
-        mergedValues = newValues;
-      } else if (isArray(mergedValues) && isArray(currentValue)) {
-        const newValues = [];
-        for (let i = 0; i < Math.max(mergedValues.length, currentValue.length); i++) {
-          if (i < mergedValues.length && i < currentValue.length) {
-            newValues.push(mergeValues(mergedValues[i], currentValue[i]));
-          } else if (i < mergedValues.length) {
-            newValues.push(mergedValues[i]);
-          } else if (i < currentValue.length) {
-            newValues.push(currentValue[i]);
-          }
-        }
-        mergedValues = newValues;
-      }
+    if (!isEmpty(currentValue)) mergedValues = mergeCurrentValue(mergedValues, currentValue);
+  }
+  return mergedValues;
+}
+
+function mergeCurrentValue(merged: any, current: any): any {
+  if (isInitialContainerValue(merged, current)) return cloneInitialContainer(current, merged);
+  if (typeof current !== 'object') return current;
+  if (isObject(merged) && isObject(current)) return Object.assign(merged, current);
+  if (isObject(merged) && isArray(current)) return mergeObjectWithArray(merged, current);
+  if (isArray(merged) && isObject(current)) return mergeArrayWithObject(merged, current);
+  if (isArray(merged) && isArray(current)) return mergeArrayValues(merged, current);
+  return merged;
+}
+
+function isInitialContainerValue(merged: any, current: any): boolean {
+  return typeof current === 'object' && (isEmpty(merged) || typeof merged !== 'object');
+}
+
+function cloneInitialContainer(current: any, fallback: any): any {
+  if (isArray(current)) return [...current];
+  if (isObject(current)) return { ...current };
+  return fallback;
+}
+
+function mergeObjectWithArray(objectValue: any, arrayValue: any[]): any[] {
+  const mergedValues = [];
+  for (const value of arrayValue) mergedValues.push(mergeValues(objectValue, value));
+  return mergedValues;
+}
+
+function mergeArrayWithObject(arrayValue: any[], objectValue: any): any[] {
+  const mergedValues = [];
+  for (const value of arrayValue) mergedValues.push(mergeValues(value, objectValue));
+  return mergedValues;
+}
+
+function mergeArrayValues(left: any[], right: any[]): any[] {
+  const mergedValues = [];
+  const length = Math.max(left.length, right.length);
+  for (let index = 0; index < length; index += 1) {
+    if (index < left.length && index < right.length) {
+      mergedValues.push(mergeValues(left[index], right[index]));
+    } else if (index < left.length) {
+      mergedValues.push(left[index]);
+    } else if (index < right.length) {
+      mergedValues.push(right[index]);
     }
   }
   return mergedValues;
