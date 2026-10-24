@@ -201,6 +201,19 @@ describe('JsonSchemaFormComponent input updates', () => {
     fixture.destroy();
   });
 
+  it('loads a primitive root schema from a raw form input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.form = { type: 'string', minLength: 2 };
+
+    component.initializeForm();
+
+    expect(component.objectWrap).toBe(true);
+    expect(component.jsf.schema.properties['1']).toEqual({ type: 'string', minLength: 2 });
+    expect(component.jsf.formGroup.get('1')).toBeTruthy();
+    fixture.destroy();
+  });
+
   it('normalizes alternate schema type shapes', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;

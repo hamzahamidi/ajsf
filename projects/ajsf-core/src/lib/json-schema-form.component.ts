@@ -31,6 +31,14 @@ import { JsonSchemaFormService } from './json-schema-form.service';
 import { resolveSchemaReferences } from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
 
+const jsonSchemaTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
+
+function isJsonSchemaType(type: any): boolean {
+  return isArray(type)
+    ? type.length > 0 && type.every(schemaType => jsonSchemaTypes.includes(schemaType))
+    : jsonSchemaTypes.includes(type);
+}
+
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => JsonSchemaFormComponent),
@@ -422,12 +430,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * 7. If data input - build schema from data
    */
   private initializeSchema() {
-
-    // TODO: update to allow non-object schemas
-
-    if (!this.initializeSchemaFromInputs() && isObject(this.form)) {
-      // TODO: Handle other types of form input
-    }
+    this.initializeSchemaFromInputs();
 
     if (!isEmpty(this.jsf.schema)) {
       this.normalizeSchemaType();
@@ -476,6 +479,10 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     if (hasOwn(this.form, 'JSONSchema') && isObject(this.form.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.jsf.schema = cloneDeep(this.form.JSONSchema);
+      return true;
+    }
+    if (isObject(this.form) && isJsonSchemaType(this.form.type)) {
+      this.jsf.schema = cloneDeep(this.form);
       return true;
     }
     if (hasOwn(this.form, 'properties') && isObject(this.form.properties)) {
