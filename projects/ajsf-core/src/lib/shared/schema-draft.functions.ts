@@ -224,19 +224,20 @@ function normaliseTypeArray(schema: any): any {
   return schema;
 }
 
+function normaliseLegacyStringType(schema: any): any {
+  schema.type = schema.type === 'any' ? simpleTypes : undefined;
+  if (schema.type === undefined) { delete schema.type; }
+  return schema;
+}
+
 /** Expands the draft 1 to 3 'any' and object type forms into the standard type list, or into an 'anyOf'. */
 function normaliseTypes(schema: any, draft: number, changed: boolean): DraftState {
   let newSchema = schema;
-  if (!newSchema.type || !isLegacyType(newSchema.type)) {
-    return { newSchema, draft, changed };
-  }
+  if (!newSchema.type || !isLegacyType(newSchema.type)) return { newSchema, draft, changed };
   if (newSchema.type.length === 1) { newSchema.type = newSchema.type[0]; }
   if (typeof newSchema.type === 'string') {
-    newSchema.type = newSchema.type === 'any' ? simpleTypes : undefined;
-    if (newSchema.type === undefined) { delete newSchema.type; }
-  } else if (typeof newSchema.type === 'object' &&
-    typeof newSchema.type.every === 'function'
-  ) {
+    newSchema = normaliseLegacyStringType(newSchema);
+  } else if (typeof newSchema.type === 'object' && typeof newSchema.type.every === 'function') {
     newSchema = normaliseTypeArray(newSchema);
   } else if (typeof newSchema.type !== 'object') {
     delete newSchema.type;
