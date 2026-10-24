@@ -20,8 +20,8 @@
  * It also refuses to run rather than guessing: every suite must be on
  * `@angular/build:unit-test`, the suite list must cover every `@ajsf/*` project
  * angular.json declares, and every suite must leave a report with at least one
- * source record. The release workflow calls this script and does not upload to
- * Codecov, so a silently missing report would otherwise reach a publish.
+ * source record. The release workflow calls this script, then checks the
+ * combined report before publishing.
  */
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -94,8 +94,7 @@ for (const r of reports.sort()) {
 }
 
 // Listing what was produced is not the same as requiring it. The release
-// workflow runs this script and does not upload to Codecov, so without this a
-// suite whose report went missing or came out empty would release silently.
+// workflow also checks the combined report, so empty suites cannot be released.
 if (produced.length !== SUITES.length) {
   throw new Error(`run-coverage: ${produced.length} reports, expected ${SUITES.length}`);
 }

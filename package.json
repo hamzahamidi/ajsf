@@ -65,7 +65,7 @@
     "version:set": "node scripts/set-version.js",
     "test:scripts": "jasmine scripts/*.spec.js",
     "coverage:clean": "node -e \"const f=require('fs');for(const d of ['coverage','dist/test-out'])f.rmSync(d,{recursive:true,force:true})\"",
-    "coverage:report": "node scripts/coverage-summary.js --files",
+    "coverage:report": "node scripts/coverage-summary.js --files --min 76",
     "coverage": "npm run coverage:clean && node scripts/run-coverage.js && npm run coverage:report",
     "corpus:index": "node scripts/generate-corpus-index.js",
     "build:primeng": "ng build @ajsf/primeng --configuration production",
