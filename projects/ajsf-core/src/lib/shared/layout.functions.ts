@@ -50,12 +50,16 @@ const legacyValidationMessageCodes: ReadonlyMap<string, string> = new Map<string
 
 const uniqueId = () => String(++idCounter);
 
+function hasArrayDataPointer(item) {
+  return hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-');
+}
+
 function findDataPointer(items) {
   if (items === null || typeof items !== 'object') { return; }
   if (hasOwn(items, 'dataPointer')) { return items.dataPointer; }
   if (isArray(items.items)) {
     for (const item of items.items) {
-      if (hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-')) {
+      if (hasArrayDataPointer(item)) {
         return item.dataPointer;
       }
       if (hasOwn(item, 'items')) {
