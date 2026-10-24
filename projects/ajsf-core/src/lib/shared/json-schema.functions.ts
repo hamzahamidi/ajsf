@@ -447,14 +447,13 @@ export function isInputRequired(schema, schemaPointer) {
  * //   jsf
  * // { void }
  */
-export function updateInputOptions(layoutNode, schema, jsf) {
-  if (!isObject(layoutNode) || !isObject(layoutNode.options)) { return; }
-
-  // Set all option values in layoutNode.options
-  const newOptions: any = { };
+function collectInputOptions(layoutNode, schema, jsf) {
+  const newOptions: any = {};
   const fixUiKeys = key => key.slice(0, 3).toLowerCase() === 'ui:' ? key.slice(3) : key;
   mergeFilteredObject(newOptions, jsf.formOptions.defautWidgetOptions, [], fixUiKeys);
-  [ [ JsonPointer.get(schema, '/ui:widget/options'), [] ],
+
+  const optionSources = [
+    [JsonPointer.get(schema, '/ui:widget/options'), []],
     [ JsonPointer.get(schema, '/ui:widget'), [] ],
     [ schema, [
       'additionalProperties', 'additionalItems', 'properties', 'items',
@@ -467,34 +466,44 @@ export function updateInputOptions(layoutNode, schema, jsf) {
       'items', 'key', 'name', 'options', 'recursiveReference', 'type', 'widget'
     ] ],
     [ layoutNode.options, [] ],
-  ].forEach(([ object, excludeKeys ]) =>
+  ];
+  optionSources.forEach(([object, excludeKeys]) =>
     mergeFilteredObject(newOptions, object, excludeKeys, fixUiKeys)
   );
-  if (!hasOwn(newOptions, 'titleMap')) {
-    let newTitleMap: any = null;
-    newTitleMap = getTitleMapFromOneOf(schema, newOptions.flatList);
-    if (newTitleMap) { newOptions.titleMap = newTitleMap; }
-    if (!hasOwn(newOptions, 'titleMap') && !hasOwn(newOptions, 'enum') && hasOwn(schema, 'items')) {
-      if (JsonPointer.has(schema, '/items/titleMap')) {
-        newOptions.titleMap = schema.items.titleMap;
-      } else if (JsonPointer.has(schema, '/items/enum')) {
-        newOptions.enum = schema.items.enum;
-        if (!hasOwn(newOptions, 'enumNames') && JsonPointer.has(schema, '/items/enumNames')) {
-          newOptions.enumNames = schema.items.enumNames;
-        }
-      } else if (JsonPointer.has(schema, '/items/oneOf')) {
-        newTitleMap = getTitleMapFromOneOf(schema.items, newOptions.flatList);
-        if (newTitleMap) { newOptions.titleMap = newTitleMap; }
-      }
+  return newOptions;
+}
+
+function applySchemaItemOptions(newOptions, schema) {
+  if (JsonPointer.has(schema, '/items/titleMap')) {
+    newOptions.titleMap = schema.items.titleMap;
+    return;
+  }
+  if (JsonPointer.has(schema, '/items/enum')) {
+    newOptions.enum = schema.items.enum;
+    if (!hasOwn(newOptions, 'enumNames') && JsonPointer.has(schema, '/items/enumNames')) {
+      newOptions.enumNames = schema.items.enumNames;
     }
+    return;
   }
+  if (!JsonPointer.has(schema, '/items/oneOf')) { return; }
+  const titleMap = getTitleMapFromOneOf(schema.items, newOptions.flatList);
+  if (titleMap) { newOptions.titleMap = titleMap; }
+}
 
-  // If schema type is integer, enforce by setting multipleOf = 1
-  if (schema.type === 'integer' && !hasValue(newOptions.multipleOf)) {
-    newOptions.multipleOf = 1;
+function updateTitleMapOptions(newOptions, schema) {
+  if (hasOwn(newOptions, 'titleMap')) { return; }
+  const titleMap = getTitleMapFromOneOf(schema, newOptions.flatList);
+  if (titleMap) { newOptions.titleMap = titleMap; }
+  if (
+    !hasOwn(newOptions, 'titleMap') &&
+    !hasOwn(newOptions, 'enum') &&
+    hasOwn(schema, 'items')
+  ) {
+    applySchemaItemOptions(newOptions, schema);
   }
+}
 
-  // Copy any typeahead word lists to options.typeahead.source
+function updateTypeaheadOptions(newOptions) {
   if (JsonPointer.has(newOptions, '/autocomplete/source')) {
     newOptions.typeahead = newOptions.autocomplete;
   } else if (JsonPointer.has(newOptions, '/tagsinput/source')) {
@@ -502,7 +511,20 @@ export function updateInputOptions(layoutNode, schema, jsf) {
   } else if (JsonPointer.has(newOptions, '/tagsinput/typeahead/source')) {
     newOptions.typeahead = newOptions.tagsinput.typeahead;
   }
+}
 
+export function updateInputOptions(layoutNode, schema, jsf) {
+  if (!isObject(layoutNode) || !isObject(layoutNode.options)) { return; }
+  const newOptions = collectInputOptions(layoutNode, schema, jsf);
+
+  updateTitleMapOptions(newOptions, schema);
+
+  // If schema type is integer, enforce by setting multipleOf = 1
+  if (schema.type === 'integer' && !hasValue(newOptions.multipleOf)) {
+    newOptions.multipleOf = 1;
+  }
+
+  updateTypeaheadOptions(newOptions);
   layoutNode.options = newOptions;
 }
 
@@ -639,6 +661,47 @@ export function effectiveMaximum(maximum, exclusiveMaximum) {
   return bounds.length ? Math.min(...bounds) : undefined;
 }
 
+function updateCompiledSchemaReference(subSchema, subSchemaPointer, context) {
+  let refPointer = JsonPointer.compile(subSchema['$ref']);
+  if (!JsonPointer.isSubPointer(refPointer, subSchemaPointer, true)) {
+    refPointer = removeRecursiveReferences(subSchemaPointer, context.recursiveRefMap);
+    JsonPointer.set(context.compiledSchema, subSchemaPointer, { $ref: `#${refPointer}` });
+  }
+  if (!hasOwn(context.schemaRefLibrary, 'refPointer')) {
+    context.schemaRefLibrary[refPointer] = !refPointer.length ? context.compiledSchema :
+      getSubSchema(
+        context.compiledSchema, refPointer, context.schemaRefLibrary, context.recursiveRefMap
+      );
+  }
+  if (!context.schemaRecursiveRefMap.has(subSchemaPointer)) {
+    context.schemaRecursiveRefMap.set(subSchemaPointer, refPointer);
+  }
+  const fromDataRef = JsonPointer.toDataPointer(subSchemaPointer, context.compiledSchema);
+  if (!context.dataRecursiveRefMap.has(fromDataRef)) {
+    const toDataRef = JsonPointer.toDataPointer(refPointer, context.compiledSchema);
+    context.dataRecursiveRefMap.set(fromDataRef, toDataRef);
+  }
+}
+
+function updateCompiledSchemaArray(subSchema, subSchemaPointer, context) {
+  if (subSchema.type !== 'array' ||
+    (!hasOwn(subSchema, 'items') && !hasOwn(subSchema, 'additionalItems'))
+  ) {
+    return;
+  }
+  const dataPointer = JsonPointer.toDataPointer(subSchemaPointer, context.compiledSchema);
+  if (context.arrayMap.has(dataPointer)) { return; }
+  const tupleItems = isArray(subSchema.items) ? subSchema.items.length : 0;
+  context.arrayMap.set(dataPointer, tupleItems);
+}
+
+function updateCompiledSchemaNode(subSchema, subSchemaPointer, context) {
+  if (isString(subSchema['$ref'])) {
+    updateCompiledSchemaReference(subSchema, subSchemaPointer, context);
+  }
+  updateCompiledSchemaArray(subSchema, subSchemaPointer, context);
+}
+
 /**
  * 'resolveSchemaReferences' function
  *
@@ -726,36 +789,15 @@ export function resolveSchemaReferences(
 
   // Make sure all remaining schema $refs are recursive, and build final
   // schemaRefLibrary, schemaRecursiveRefMap, dataRecursiveRefMap, & arrayMap
-  JsonPointer.forEachDeep(compiledSchema, (subSchema, subSchemaPointer) => {
-    if (isString(subSchema['$ref'])) {
-      let refPointer = JsonPointer.compile(subSchema['$ref']);
-      if (!JsonPointer.isSubPointer(refPointer, subSchemaPointer, true)) {
-        refPointer = removeRecursiveReferences(subSchemaPointer, recursiveRefMap);
-        JsonPointer.set(compiledSchema, subSchemaPointer, { $ref: `#${refPointer}` });
-      }
-      if (!hasOwn(schemaRefLibrary, 'refPointer')) {
-        schemaRefLibrary[refPointer] = !refPointer.length ? compiledSchema :
-          getSubSchema(compiledSchema, refPointer, schemaRefLibrary, recursiveRefMap);
-      }
-      if (!schemaRecursiveRefMap.has(subSchemaPointer)) {
-        schemaRecursiveRefMap.set(subSchemaPointer, refPointer);
-      }
-      const fromDataRef = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
-      if (!dataRecursiveRefMap.has(fromDataRef)) {
-        const toDataRef = JsonPointer.toDataPointer(refPointer, compiledSchema);
-        dataRecursiveRefMap.set(fromDataRef, toDataRef);
-      }
-    }
-    if (subSchema.type === 'array' &&
-      (hasOwn(subSchema, 'items') || hasOwn(subSchema, 'additionalItems'))
-    ) {
-      const dataPointer = JsonPointer.toDataPointer(subSchemaPointer, compiledSchema);
-      if (!arrayMap.has(dataPointer)) {
-        const tupleItems = isArray(subSchema.items) ? subSchema.items.length : 0;
-        arrayMap.set(dataPointer, tupleItems);
-      }
-    }
-  }, true);
+  const context = {
+    compiledSchema, recursiveRefMap, schemaRefLibrary, schemaRecursiveRefMap,
+    dataRecursiveRefMap, arrayMap
+  };
+  JsonPointer.forEachDeep(
+    compiledSchema,
+    (subSchema, subSchemaPointer) => updateCompiledSchemaNode(subSchema, subSchemaPointer, context),
+    true
+  );
   return compiledSchema;
 }
 
@@ -769,6 +811,40 @@ export function resolveSchemaReferences(
  * //  { string[] = [] } usedPointers
  * //
  */
+const NO_SUBSCHEMA_REPLACEMENT = Symbol('no sub-schema replacement');
+
+function replaceSubSchemaReference(subSchema, context) {
+  if (!isString(subSchema.$ref)) { return NO_SUBSCHEMA_REPLACEMENT; }
+  const refPointer = JsonPointer.compile(subSchema.$ref);
+  const canResolveReference = refPointer.length && context.usedPointers.every(ptr =>
+    !JsonPointer.isSubPointer(refPointer, ptr, true)
+  );
+  if (!canResolveReference) { return NO_SUBSCHEMA_REPLACEMENT; }
+
+  const refSchema = getSubSchema(
+    context.schema, refPointer, context.schemaRefLibrary,
+    context.schemaRecursiveRefMap, context.usedPointers
+  );
+  if (Object.keys(subSchema).length === 1) { return refSchema; }
+
+  const extraKeys = { ...subSchema };
+  delete extraKeys.$ref;
+  return mergeSchemas(refSchema, extraKeys);
+}
+
+function processSubSchemaNode(subSchema, context) {
+  if (!isObject(subSchema)) { return subSchema; }
+
+  const referencedSchema = replaceSubSchemaReference(subSchema, context);
+  if (referencedSchema !== NO_SUBSCHEMA_REPLACEMENT) { return referencedSchema; }
+  // TODO: Convert schemas with 'type' arrays to 'oneOf'
+  if (isArray(subSchema.allOf)) { return combineAllOf(subSchema); }
+  if (subSchema.type === 'array' && isArray(subSchema.required)) {
+    return fixRequiredArrayProperties(subSchema);
+  }
+  return subSchema;
+}
+
 export function getSubSchema(
   schema, pointer, schemaRefLibrary = null,
   schemaRecursiveRefMap: Map<string, string> = null, usedPointers: string[] = []
@@ -790,40 +866,13 @@ export function getSubSchema(
       [schema, shortPointer]
     ]);
   }
-  return JsonPointer.forEachDeepCopy(newSchema, (subSchema, subPointer) => {
-    if (isObject(subSchema)) {
-
-      // Replace non-recursive $ref links with referenced schemas
-      if (isString(subSchema.$ref)) {
-        const refPointer = JsonPointer.compile(subSchema.$ref);
-        if (refPointer.length && usedPointers.every(ptr =>
-          !JsonPointer.isSubPointer(refPointer, ptr, true)
-        )) {
-          const refSchema = getSubSchema(
-            schema, refPointer, schemaRefLibrary, schemaRecursiveRefMap, usedPointers
-          );
-          if (Object.keys(subSchema).length === 1) {
-            return refSchema;
-          } else {
-            const extraKeys = { ...subSchema };
-            delete extraKeys.$ref;
-            return mergeSchemas(refSchema, extraKeys);
-          }
-        }
-      }
-
-      // TODO: Convert schemas with 'type' arrays to 'oneOf'
-
-      // Combine allOf subSchemas
-      if (isArray(subSchema.allOf)) { return combineAllOf(subSchema); }
-
-      // Fix incorrectly placed array object required lists
-      if (subSchema.type === 'array' && isArray(subSchema.required)) {
-        return fixRequiredArrayProperties(subSchema);
-      }
-    }
-    return subSchema;
-  }, true, <string>pointer);
+  const context = { schema, schemaRefLibrary, schemaRecursiveRefMap, usedPointers };
+  return JsonPointer.forEachDeepCopy(
+    newSchema,
+    subSchema => processSubSchemaNode(subSchema, context),
+    true,
+    <string>pointer
+  );
 }
 
 /**
