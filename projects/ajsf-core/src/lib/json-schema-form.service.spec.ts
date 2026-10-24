@@ -1134,6 +1134,31 @@ describe('JsonSchemaFormService', () => {
       )).toBe(false);
     });
 
+    it('evaluates strict comparisons for nested values, literals, and escaped strings', () => {
+      jsf.data = {
+        name: 'Bob',
+        items: [{ flag: true }],
+        nil: null,
+        quote: '"quoted"',
+      };
+
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.items.0.flag === true;' } } }, []
+      )).toBe(true);
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.nil === null;' } } }, []
+      )).toBe(true);
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.missing === undefined;' } } }, []
+      )).toBe(true);
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.quote === "\\"quoted\\"";' } } }, []
+      )).toBe(true);
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return arrayIndices[0] !== 0;' } } }, [1]
+      )).toBe(true);
+    });
+
     it('passes dataIndex to the functionBody as arrayIndices', () => {
       expect(jsf.evaluateCondition(
         { options: { condition: { functionBody: 'return arrayIndices[0] === 1;' } } }, [1]
@@ -1146,6 +1171,18 @@ describe('JsonSchemaFormService', () => {
         { options: { condition: { functionBody: 'return nope.nope;' } } }, []
       )).toBe(true);
       expect(consoleError).toHaveBeenCalled();
+    });
+
+    it('does not evaluate non-comparison or unsafe functionBody expressions', () => {
+      const consoleError = vi.spyOn(console, 'error');
+
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'model.name === "Bob"' } } }, []
+      )).toBe(true);
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.name.toString === "Bob";' } } }, []
+      )).toBe(true);
+      expect(consoleError).toHaveBeenCalledTimes(2);
     });
 
     it('is true for a condition object with no functionBody', () => {
