@@ -401,34 +401,59 @@ export const toIsoString = (date: Date) => {
  * //  { boolean = false } strictIntegers - if FALSE, treat integers as numbers
  * // { PrimitiveValue }
  */
-export function toJavaScriptType(value, types, strictIntegers = true)  {
+function convertIntegerType(value, types) {
+  if (!inArray('integer', types)) { return null; }
+  if (isInteger(value, 'strict')) { return value; }
+  return isInteger(value) ? Number.parseInt(value, 10) : null;
+}
+
+function convertNumberType(value, types, strictIntegers) {
+  const numberAllowed = inArray('number', types) ||
+    (!strictIntegers && inArray('integer', types));
+  if (!numberAllowed) { return null; }
+  if (isNumber(value, 'strict')) { return value; }
+  return isNumber(value) ? Number.parseFloat(value) : null;
+}
+
+function convertStringType(value, types) {
+  if (!inArray('string', types)) { return null; }
+  if (isString(value)) { return value; }
+  if (isDate(value)) { return toIsoString(value); }
+  if (isNumber(value) || isBoolean(value, 'strict')) { return value.toString(); }
+  return null;
+}
+
+function convertDateType(value, types) {
+  if (!isDate(value)) { return null; }
+  if (!inArray('integer', types) && !inArray('number', types)) { return null; }
+  return value.getTime();
+}
+
+function convertBooleanType(value, types) {
+  if (!inArray('boolean', types)) { return null; }
+  if (isBoolean(value, true)) { return true; }
+  return isBoolean(value, false) ? false : null;
+}
+
+export function toJavaScriptType(value, types, strictIntegers = true) {
   if (!isDefined(value)) { return null; }
   if (isString(types)) { types = [types]; }
-  if (strictIntegers && inArray('integer', types)) {
-    if (isInteger(value, 'strict')) { return value; }
-    if (isInteger(value)) { return Number.parseInt(value, 10); }
-  }
-  if (inArray('number', types) || (!strictIntegers && inArray('integer', types))) {
-    if (isNumber(value, 'strict')) { return value; }
-    if (isNumber(value)) { return Number.parseFloat(value); }
-  }
-  if (inArray('string', types)) {
-    if (isString(value)) { return value; }
-    // If value is a date, and types includes 'string',
-    // convert the date to a string
-    if (isDate(value)) { return toIsoString(value); }
-    if (isNumber(value)) { return value.toString(); }
-    if (isBoolean(value, 'strict')) { return value.toString(); }
-  }
-  // If value is a date, and types includes 'integer' or 'number',
-  // but not 'string', convert the date to a number
-  if (isDate(value) && (inArray('integer', types) || inArray('number', types))) {
-    return value.getTime();
-  }
-  if (inArray('boolean', types)) {
-    if (isBoolean(value, true)) { return true; }
-    if (isBoolean(value, false)) { return false; }
-  }
+
+  const integerValue = strictIntegers ? convertIntegerType(value, types) : null;
+  if (integerValue !== null) { return integerValue; }
+
+  const numberValue = convertNumberType(value, types, strictIntegers);
+  if (numberValue !== null) { return numberValue; }
+
+  const stringValue = convertStringType(value, types);
+  if (stringValue !== null) { return stringValue; }
+
+  const dateValue = convertDateType(value, types);
+  if (dateValue !== null) { return dateValue; }
+
+  const booleanValue = convertBooleanType(value, types);
+  if (booleanValue !== null) { return booleanValue; }
+
   return null;
 }
 
@@ -476,63 +501,101 @@ export function toJavaScriptType(value, types, strictIntegers = true)  {
  * //  { SchemaPrimitiveType | SchemaPrimitiveType[] } types - allowed types to convert to
  * // { PrimitiveValue }
  */
+const NO_SCHEMA_CONVERSION = Symbol('no schema conversion');
+
+function convertDeclaredSchemaType(value, types) {
+  if (types.includes('integer')) {
+    const integerValue = toJavaScriptType(value, 'integer');
+    if (integerValue !== null) { return +integerValue; }
+  }
+  if (types.includes('number')) {
+    const numberValue = toJavaScriptType(value, 'number');
+    if (numberValue !== null) { return +numberValue; }
+  }
+  if ((isString(value) || isNumber(value, 'strict')) && types.includes('string')) {
+    return toJavaScriptType(value, 'string');
+  }
+  return NO_SCHEMA_CONVERSION;
+}
+
+function convertDeclaredBooleanType(value, types) {
+  if (types.includes('boolean') && isBoolean(value)) {
+    return toJavaScriptType(value, 'boolean');
+  }
+  return NO_SCHEMA_CONVERSION;
+}
+
+function preserveNonBooleanValue(value, types) {
+  return types.includes('boolean') && !isBoolean(value, 'strict');
+}
+
+function convertFallbackString(value, types) {
+  if (!types.includes('string')) { return NO_SCHEMA_CONVERSION; }
+  if (value === null) { return ''; }
+  const stringValue = toJavaScriptType(value, 'string');
+  return stringValue !== null ? stringValue : NO_SCHEMA_CONVERSION;
+}
+
+function hasNumericSchemaType(types) {
+  return types.includes('number') || types.includes('integer');
+}
+
+function convertBooleanToNumber(value, types) {
+  if (!hasNumericSchemaType(types)) { return NO_SCHEMA_CONVERSION; }
+  if (value === true) { return 1; }
+  if (value === false || value === null || value === '') { return 0; }
+  return NO_SCHEMA_CONVERSION;
+}
+
+function parseNumericFallback(value, types) {
+  if (types.includes('number')) {
+    const numberValue = Number.parseFloat(<string>value);
+    if (numberValue) { return numberValue; }
+  }
+  if (types.includes('integer')) {
+    const integerValue = Number.parseInt(<string>value, 10);
+    if (integerValue) { return integerValue; }
+  }
+  return NO_SCHEMA_CONVERSION;
+}
+
+function convertNumericFallback(value, types) {
+  const booleanValue = convertBooleanToNumber(value, types);
+  if (booleanValue !== NO_SCHEMA_CONVERSION) { return booleanValue; }
+
+  const parsedValue = parseNumericFallback(value, types);
+  if (parsedValue !== NO_SCHEMA_CONVERSION) { return parsedValue; }
+
+  if (hasNumericSchemaType(types) && !types.includes('null')) { return 0; }
+  return NO_SCHEMA_CONVERSION;
+}
+
+function convertFallbackBoolean(value, types) {
+  return types.includes('boolean') ? !!value : NO_SCHEMA_CONVERSION;
+}
+
 export function toSchemaType(value, types) {
   if (!isArray(<SchemaPrimitiveType>types)) {
     types = <SchemaPrimitiveType[]>[types];
   }
-  if ((<SchemaPrimitiveType[]>types).includes('null') && !hasValue(value)) {
-    return null;
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('boolean') && !isBoolean(value, 'strict')) {
-    return value;
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('integer')) {
-    const testValue = toJavaScriptType(value, 'integer');
-    if (testValue !== null) { return +testValue; }
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('number')) {
-    const testValue = toJavaScriptType(value, 'number');
-    if (testValue !== null) { return +testValue; }
-  }
-  if (
-    (isString(value) || isNumber(value, 'strict')) &&
-    (<SchemaPrimitiveType[]>types).includes('string')
-  ) { // Convert number to string
-    return toJavaScriptType(value, 'string');
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('boolean') && isBoolean(value)) {
-    return toJavaScriptType(value, 'boolean');
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('string')) { // Convert null & boolean to string
-    if (value === null) { return ''; }
-    const testValue = toJavaScriptType(value, 'string');
-    if (testValue !== null) { return testValue; }
-  }
-  if ((
-    (<SchemaPrimitiveType[]>types).includes('number') ||
-    (<SchemaPrimitiveType[]>types).includes('integer'))
-  ) {
-    if (value === true) { return 1; } // Convert boolean & null to number
-    if (value === false || value === null || value === '') { return 0; }
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('number')) { // Convert mixed string to number
-    const testValue = Number.parseFloat(<string>value);
-    if (testValue) { return testValue; }
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('integer')) { // Convert string or number to integer
-    const testValue = Number.parseInt(<string>value, 10);
-    if (testValue) { return testValue; }
-  }
-  if ((<SchemaPrimitiveType[]>types).includes('boolean')) { // Convert anything to boolean
-    return !!value;
-  }
-  if ((
-      (<SchemaPrimitiveType[]>types).includes('number') ||
-      (<SchemaPrimitiveType[]>types).includes('integer')
-    ) && !(<SchemaPrimitiveType[]>types).includes('null')
-  ) {
-    return 0; // If null not allowed, return 0 for non-convertable values
-  }
+  const schemaTypes = <SchemaPrimitiveType[]>types;
+  if (schemaTypes.includes('null') && !hasValue(value)) { return null; }
+  if (preserveNonBooleanValue(value, schemaTypes)) { return value; }
+
+  const declaredValue = convertDeclaredSchemaType(value, schemaTypes);
+  if (declaredValue !== NO_SCHEMA_CONVERSION) { return declaredValue; }
+
+  const declaredBooleanValue = convertDeclaredBooleanType(value, schemaTypes);
+  if (declaredBooleanValue !== NO_SCHEMA_CONVERSION) { return declaredBooleanValue; }
+
+  const stringValue = convertFallbackString(value, schemaTypes);
+  if (stringValue !== NO_SCHEMA_CONVERSION) { return stringValue; }
+
+  const booleanValue = convertFallbackBoolean(value, schemaTypes);
+  if (booleanValue !== NO_SCHEMA_CONVERSION) { return booleanValue; }
+
+  const numericValue = convertNumericFallback(value, schemaTypes);
+  if (numericValue !== NO_SCHEMA_CONVERSION) { return numericValue; }
 }
 
 /**
