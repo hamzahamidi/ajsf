@@ -672,37 +672,41 @@ export class JsonSchemaFormService {
   }
 
   evaluateCondition(layoutNode: any, dataIndex: number[]): boolean {
-    const arrayIndex = dataIndex?.at(-1);
-    let result = true;
-    if (hasValue(layoutNode.options?.condition)) {
-      if (typeof layoutNode.options.condition === 'string') {
-        let pointer = layoutNode.options.condition;
-        if (hasValue(arrayIndex)) {
-          pointer = pointer.replace('[arrayIndex]', `[${arrayIndex}]`);
-        }
-        pointer = JsonPointer.parseObjectPath(pointer);
-        result = !!JsonPointer.get(this.data, pointer);
-        if (!result && pointer[0] === 'model') {
-          result = !!JsonPointer.get({ model: this.data }, pointer);
-        }
-      } else if (typeof layoutNode.options.condition === 'function') {
-        result = layoutNode.options.condition(this.data);
-      } else if (
-        typeof layoutNode.options.condition.functionBody === 'string'
-      ) {
-        const functionBody = layoutNode.options.condition.functionBody;
-        const evaluation = evaluateConditionFunctionBody(functionBody, this.data, dataIndex);
-        if (evaluation.supported) {
-          result = !!evaluation.value;
-        } else {
-          console.error(
-            'condition functionBody is not a supported comparison expression: ' +
-            functionBody
-          );
-        }
-      }
+    const condition = layoutNode.options?.condition;
+    if (!hasValue(condition)) { return true; }
+    if (typeof condition === 'string') {
+      return this.evaluateStringCondition(condition, dataIndex);
     }
-    return result;
+    if (typeof condition === 'function') { return condition(this.data); }
+    if (typeof condition.functionBody === 'string') {
+      return this.evaluateFunctionBodyCondition(condition.functionBody, dataIndex);
+    }
+    return true;
+  }
+
+  private evaluateStringCondition(condition: string, dataIndex: number[]): boolean {
+    const arrayIndex = dataIndex?.at(-1);
+    let pointer = condition;
+    if (hasValue(arrayIndex)) {
+      pointer = pointer.replace('[arrayIndex]', `[${arrayIndex}]`);
+    }
+    pointer = JsonPointer.parseObjectPath(pointer);
+    const result = !!JsonPointer.get(this.data, pointer);
+    return !result && pointer[0] === 'model'
+      ? !!JsonPointer.get({ model: this.data }, pointer)
+      : result;
+  }
+
+  private evaluateFunctionBodyCondition(functionBody: string, dataIndex: number[]): boolean {
+    const evaluation = evaluateConditionFunctionBody(functionBody, this.data, dataIndex);
+    if (evaluation.supported) {
+      return !!evaluation.value;
+    }
+    console.error(
+      'condition functionBody is not a supported comparison expression: ' +
+      functionBody
+    );
+    return true;
   }
 
   initializeControl(ctx: any, bind = true): boolean {

@@ -49,23 +49,37 @@ export class JsonPointer {
     getBoolean = false, errors = false
   ) {
     if (object === null) { return getBoolean ? false : undefined; }
-    let keyArray: any[] = this.parse(pointer, errors);
+    const keyArray: any[] = this.parse(pointer, errors);
     if (typeof object === 'object' && keyArray !== null) {
-      let subObject = object;
-      if (startSlice >= keyArray.length || endSlice <= -keyArray.length) { return object; }
-      if (startSlice <= -keyArray.length) { startSlice = 0; }
-      if (!isDefined(endSlice) || endSlice >= keyArray.length) { endSlice = keyArray.length; }
-      keyArray = keyArray.slice(startSlice, endSlice);
-      for (const key of keyArray) {
-        const result = this.getValueAtKey(subObject, key);
-        if (!result.found) {
-          this.logErrors(errors, result.key, pointer, object);
-          return getBoolean ? false : undefined;
-        }
-        subObject = result.value;
-      }
-      return getBoolean ? true : subObject;
+      return this.getFromParsedPointer(
+        object, pointer, keyArray, startSlice, endSlice, getBoolean, errors
+      );
     }
+    this.logInvalidGetInput(errors, keyArray, pointer, object);
+    return getBoolean ? false : undefined;
+  }
+
+  private static getFromParsedPointer(
+    object, pointer, keyArray: any[], startSlice: number, endSlice: number,
+    getBoolean: boolean, errors: boolean
+  ) {
+    if (startSlice >= keyArray.length || endSlice <= -keyArray.length) { return object; }
+    if (startSlice <= -keyArray.length) { startSlice = 0; }
+    if (!isDefined(endSlice) || endSlice >= keyArray.length) { endSlice = keyArray.length; }
+    const keys = keyArray.slice(startSlice, endSlice);
+    let subObject = object;
+    for (const key of keys) {
+      const result = this.getValueAtKey(subObject, key);
+      if (!result.found) {
+        this.logErrors(errors, result.key, pointer, object);
+        return getBoolean ? false : undefined;
+      }
+      subObject = result.value;
+    }
+    return getBoolean ? true : subObject;
+  }
+
+  private static logInvalidGetInput(errors, keyArray, pointer, object): void {
     if (errors && keyArray === null) {
       console.error(`get error: Invalid JSON Pointer: ${pointer}`);
     }
@@ -73,7 +87,6 @@ export class JsonPointer {
       console.error('get error: Invalid object:');
       console.error(object);
     }
-    return getBoolean ? false : undefined;
   }
 
   private static getValueAtKey(subObject, key) {
