@@ -870,34 +870,10 @@ export class JsonPointer {
       const pointerArray = this.parse(dataPointer);
       if (!pointerArray.length) { return ''; }
       const firstKey = pointerArray.shift();
-      if (schema.type === 'object' || schema.properties || schema.additionalProperties) {
-        if (schema.properties?.[firstKey]) {
-          return `/properties/${this.escape(firstKey)}` +
-            this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
-        } else  if (schema.additionalProperties) {
-          return '/additionalProperties' +
-            this.toSchemaPointer(pointerArray, schema.additionalProperties);
-        }
-      }
-      if ((schema.type === 'array' || schema.items) &&
-        (isNumber(firstKey) || firstKey === '-' || firstKey === '')
-      ) {
-        const arrayItem = firstKey === '-' || firstKey === '' ? 0 : +firstKey;
-        if (isArray(schema.items)) {
-          if (arrayItem < schema.items.length) {
-            return '/items/' + arrayItem +
-              this.toSchemaPointer(pointerArray, schema.items[arrayItem]);
-          } else if (schema.additionalItems) {
-            return '/additionalItems' +
-              this.toSchemaPointer(pointerArray, schema.additionalItems);
-          }
-        } else if (isObject(schema.items)) {
-          return '/items' + this.toSchemaPointer(pointerArray, schema.items);
-        } else if (isObject(schema.additionalItems)) {
-          return '/additionalItems' +
-            this.toSchemaPointer(pointerArray, schema.additionalItems);
-        }
-      }
+      const objectPointer = this.toObjectSchemaPointer(firstKey, pointerArray, schema);
+      if (objectPointer !== undefined) { return objectPointer; }
+      const arrayPointer = this.toArraySchemaPointer(firstKey, pointerArray, schema);
+      if (arrayPointer !== undefined) { return arrayPointer; }
       console.error(`toSchemaPointer error: Data pointer ${dataPointer} ` +
         `not compatible with schema ${schema}`);
       return null;
@@ -909,6 +885,46 @@ export class JsonPointer {
       console.error(`toSchemaPointer error: Invalid JSON Schema: ${schema}`);
     }
     return null;
+  }
+
+  private static toObjectSchemaPointer(firstKey, pointerArray, schema) {
+    if (!(schema.type === 'object' || schema.properties || schema.additionalProperties)) {
+      return undefined;
+    }
+    if (schema.properties?.[firstKey]) {
+      return `/properties/${this.escape(firstKey)}` +
+        this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
+    }
+    if (schema.additionalProperties) {
+      return '/additionalProperties' +
+        this.toSchemaPointer(pointerArray, schema.additionalProperties);
+    }
+    return undefined;
+  }
+
+  private static toArraySchemaPointer(firstKey, pointerArray, schema) {
+    if (!(schema.type === 'array' || schema.items) ||
+      !(isNumber(firstKey) || firstKey === '-' || firstKey === '')
+    ) {
+      return undefined;
+    }
+    const arrayItem = firstKey === '-' || firstKey === '' ? 0 : +firstKey;
+    if (isArray(schema.items)) {
+      if (arrayItem < schema.items.length) {
+        return '/items/' + arrayItem +
+          this.toSchemaPointer(pointerArray, schema.items[arrayItem]);
+      }
+      if (schema.additionalItems) {
+        return '/additionalItems' +
+          this.toSchemaPointer(pointerArray, schema.additionalItems);
+      }
+    } else if (isObject(schema.items)) {
+      return '/items' + this.toSchemaPointer(pointerArray, schema.items);
+    } else if (isObject(schema.additionalItems)) {
+      return '/additionalItems' +
+        this.toSchemaPointer(pointerArray, schema.additionalItems);
+    }
+    return undefined;
   }
 
   /**
@@ -932,33 +948,7 @@ export class JsonPointer {
     if (this.isJsonPointer(schemaPointer) && typeof schema === 'object' &&
       this.has(schema, schemaPointer)
     ) {
-      const pointerArray = this.parse(schemaPointer);
-      if (!pointerArray.length) { return ''; }
-      const firstKey = pointerArray.shift();
-      if (firstKey === 'properties' ||
-        (firstKey === 'items' && isArray(schema.items))
-      ) {
-        const secondKey = pointerArray.shift();
-        const pointerSuffix = this.toDataPointer(pointerArray, schema[firstKey][secondKey]);
-        // parse() returned secondKey unescaped, so it has to go back escaped:
-        // toSchemaPointer does the same at the matching site.
-        return pointerSuffix === null ? null : '/' + this.escape(secondKey) + pointerSuffix;
-      } else if (firstKey === 'additionalItems' ||
-        (firstKey === 'items' && isObject(schema.items))
-      ) {
-        const pointerSuffix = this.toDataPointer(pointerArray, schema[firstKey]);
-        return pointerSuffix === null ? null : '/-' + pointerSuffix;
-      } else if (['allOf', 'anyOf', 'oneOf'].includes(firstKey)) {
-        const secondKey = pointerArray.shift();
-        return this.toDataPointer(pointerArray, schema[firstKey][secondKey]);
-      } else if (firstKey === 'not') {
-        return this.toDataPointer(pointerArray, schema[firstKey]);
-      } else if (['contains', 'definitions', 'dependencies', 'additionalItems',
-        'additionalProperties', 'patternProperties', 'propertyNames'].includes(firstKey)
-      ) {
-        if (errors) { console.error(`toDataPointer error: Ambiguous location`); }
-      }
-      return '';
+      return this.toDataPointerFromPath(this.parse(schemaPointer), schema, errors);
     }
     if (errors) {
       if (!this.isJsonPointer(schemaPointer)) {
@@ -972,6 +962,41 @@ export class JsonPointer {
       }
     }
     return null;
+  }
+
+  private static toDataPointerFromPath(pointerArray, schema, errors) {
+    if (!pointerArray.length) { return ''; }
+    const firstKey = pointerArray.shift();
+    if (firstKey === 'properties' || (firstKey === 'items' && isArray(schema.items))) {
+      return this.toDataPointerForProperty(pointerArray, schema, firstKey);
+    }
+    if (firstKey === 'additionalItems' || (firstKey === 'items' && isObject(schema.items))) {
+      return this.toDataPointerForItem(pointerArray, schema, firstKey);
+    }
+    if (['allOf', 'anyOf', 'oneOf'].includes(firstKey)) {
+      const secondKey = pointerArray.shift();
+      return this.toDataPointer(pointerArray, schema[firstKey][secondKey]);
+    }
+    if (firstKey === 'not') return this.toDataPointer(pointerArray, schema[firstKey]);
+    if (['contains', 'definitions', 'dependencies', 'additionalItems',
+      'additionalProperties', 'patternProperties', 'propertyNames'].includes(firstKey) && errors
+    ) {
+      console.error(`toDataPointer error: Ambiguous location`);
+    }
+    return '';
+  }
+
+  private static toDataPointerForProperty(pointerArray, schema, firstKey) {
+    const secondKey = pointerArray.shift();
+    const pointerSuffix = this.toDataPointer(pointerArray, schema[firstKey][secondKey]);
+    // parse() returned secondKey unescaped, so it has to go back escaped:
+    // toSchemaPointer does the same at the matching site.
+    return pointerSuffix === null ? null : '/' + this.escape(secondKey) + pointerSuffix;
+  }
+
+  private static toDataPointerForItem(pointerArray, schema, firstKey) {
+    const pointerSuffix = this.toDataPointer(pointerArray, schema[firstKey]);
+    return pointerSuffix === null ? null : '/-' + pointerSuffix;
   }
 
   /**
