@@ -139,9 +139,6 @@ jobs:
       - name: Test libraries
         run: node scripts/run-coverage.js
 
-      - name: Enforce project coverage floor
-        run: npm run coverage:report
-
       - name: Confirm every package carries the release version
         run: |
           VERSION="${{ needs.decide.outputs.version }}"

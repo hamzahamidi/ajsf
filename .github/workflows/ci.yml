@@ -47,9 +47,6 @@ jobs:
       # coverage/ before writing lcov.info, so reports are staged and restored.
       # It also picks each suite's flags from its runner, which differ.
       run: node scripts/run-coverage.js
-    - name: Enforce project coverage floor
-      if: matrix.node-version == '24.x'
-      run: npm run coverage:report
     - name: Analyze with SonarQube Cloud
       if: matrix.node-version == '24.x' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
       uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0

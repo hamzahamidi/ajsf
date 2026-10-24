@@ -129,10 +129,11 @@ There is no CHANGELOG.md and no changelog script. The release pages are the reco
 
 ## Coverage
 
-Run it with `npm run coverage`, never by invoking the suites yourself. CI runs the
-same `scripts/run-coverage.js`, so there is one implementation. The Node 24 leg
-checks the combined report against the 76% project floor before SonarQube Cloud
-analysis. The release workflow runs the same runner and floor check before publishing.
+Run it with `npm run coverage`, never by invoking the suites yourself. CI and the
+release workflow run the same `scripts/run-coverage.js`, so there is one
+implementation. The runner checks the combined report against the 76% project
+floor before returning successfully. The Node 24 leg then submits the SonarQube
+Cloud analysis.
 
 ⚠️ **Two things about the Vitest coverage path will mislead you, and the script exists
 to handle both.**
