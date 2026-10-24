@@ -216,6 +216,10 @@ function normaliseTypeArray(schema: any): any {
       : schema.type.filter(type => simpleTypes.includes(type));
   } else if (schema.type.length > 1) {
     return anyOfSchema(schema, schema.type);
+  } else {
+    const typeSchema = schema.type;
+    delete schema.type;
+    Object.assign(schema, typeSchema);
   }
   return schema;
 }
