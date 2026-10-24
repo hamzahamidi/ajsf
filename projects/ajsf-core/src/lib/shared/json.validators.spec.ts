@@ -418,6 +418,8 @@ describe('JsonValidators', () => {
         'https://localhost',
         'https://[::1]/',
         'http://0.0.0.1',
+        'http://8.8.8.0',
+        'http://8.8.8.255',
         'http://10.0.0.1',
         'http://127.0.0.1',
         'http://169.254.0.1',

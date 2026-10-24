@@ -38,7 +38,7 @@ function isUrl(value: string): boolean {
         (first === 172 && second >= 16 && second <= 31);
       return (
         octets.every(octet => Number.isInteger(octet) && octet >= 0 && octet <= 255) &&
-        first >= 1 && first <= 223 && fourth <= 254 && !inPrivateRange
+        first >= 1 && first <= 223 && fourth >= 1 && fourth <= 254 && !inPrivateRange
       );
     }
 
