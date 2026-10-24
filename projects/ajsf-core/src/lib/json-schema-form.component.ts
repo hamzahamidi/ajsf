@@ -80,7 +80,7 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
     standalone: false
 })
 export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges, OnInit {
-  // TODO: quickfix to avoid subscribing twice to the same emitters
+  // Each activation ends the previous form event subscriptions.
   private readonly unsubscribeOnActivateForm$ = new Subject<void>();
 
   debugOutput: any; // Debug information, if requested
