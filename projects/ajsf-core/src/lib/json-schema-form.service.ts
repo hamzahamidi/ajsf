@@ -165,6 +165,62 @@ function evaluateConditionFunctionBody(
   };
 }
 
+function splitExpressionOutsideQuotes(
+  expression: string,
+  delimiter: string
+): string[] {
+  const parts: string[] = [];
+  let quote = '';
+  let escaped = false;
+  let start = 0;
+  for (let index = 0; index < expression.length; index++) {
+    const character = expression[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === quote) {
+        quote = '';
+      }
+      continue;
+    }
+    if (character === "'" || character === '"') {
+      quote = character;
+      continue;
+    }
+    if (expression.startsWith(delimiter, index)) {
+      parts.push(expression.slice(start, index));
+      index += delimiter.length - 1;
+      start = index + 1;
+    }
+  }
+  if (parts.length === 0) {
+    return [expression];
+  }
+  parts.push(expression.slice(start));
+  return parts;
+}
+
+function isQuotedLiteral(expression: string): boolean {
+  const quote = expression[0];
+  if ((quote !== "'" && quote !== '"') || expression.at(-1) !== quote) {
+    return false;
+  }
+  let escaped = false;
+  for (let index = 1; index < expression.length - 1; index++) {
+    const character = expression[index];
+    if (escaped) {
+      escaped = false;
+    } else if (character === '\\') {
+      escaped = true;
+    } else if (character === quote) {
+      return false;
+    }
+  }
+  return true;
+}
+
 @Injectable()
 export class JsonSchemaFormService {
   JsonFormCompatibility = false;
@@ -520,47 +576,23 @@ export class JsonSchemaFormService {
     }
     const index = typeof key === 'number' ? key + 1 + '' : key || '';
     expression = expression.trim();
-    if (
-      (expression.startsWith("'") || expression.startsWith('"')) &&
-      expression.endsWith(expression[0]) &&
-      !expression.slice(1, -1).includes(expression[0])
-    ) {
-      return expression.slice(1, expression.length - 1);
-    }
     if (expression === 'idx' || expression === '$index') {
       return index;
     }
     if (expression === 'value' && !hasOwn(values, 'value')) {
       return value;
     }
-    if (
-      ['"', "'", ' ', '||', '&&', '+'].every(
-        delim => !expression.includes(delim)
-      )
-    ) {
-      const pointer = JsonPointer.parseObjectPath(expression);
-      return this.resolveTextPointer(pointer, value, values, tpldata);
+    const orTerms = splitExpressionOutsideQuotes(expression, '||');
+    if (orTerms.length > 1) {
+      return orTerms.reduce(
+        (all, term) =>
+          all || this.parseExpression(term, value, values, key, tpldata),
+        ''
+      );
     }
-    if (expression.includes('[idx]')) {
-      expression = expression.replaceAll('[idx]', <string>index);
-    }
-    if (expression.includes('[$index]')) {
-      expression = expression.replace(/\[$index\]/g, <string>index);
-    }
-    // TODO: Improve expression evaluation by parsing quoted strings first
-    // let expressionArray = expression.match(/([^"']+|"[^"]+"|'[^']+')/g);
-    if (expression.includes('||')) {
-      return expression
-        .split('||')
-        .reduce(
-          (all, term) =>
-            all || this.parseExpression(term, value, values, key, tpldata),
-          ''
-        );
-    }
-    if (expression.includes('&&')) {
-      return expression
-        .split('&&')
+    const andTerms = splitExpressionOutsideQuotes(expression, '&&');
+    if (andTerms.length > 1) {
+      return andTerms
         .reduce(
           (all, term) =>
             all && this.parseExpression(term, value, values, key, tpldata),
@@ -568,11 +600,28 @@ export class JsonSchemaFormService {
         )
         .trim();
     }
-    if (expression.includes('+')) {
-      return expression
-        .split('+')
+    const additionTerms = splitExpressionOutsideQuotes(expression, '+');
+    if (additionTerms.length > 1) {
+      return additionTerms
         .map(term => this.parseExpression(term, value, values, key, tpldata))
         .join('');
+    }
+    if (isQuotedLiteral(expression)) {
+      return expression.slice(1, -1);
+    }
+    if (expression.includes('[idx]')) {
+      expression = expression.replaceAll('[idx]', <string>index);
+    }
+    if (expression.includes('[$index]')) {
+      expression = expression.replace(/\[$index\]/g, <string>index);
+    }
+    if (
+      !expression.includes(' ') &&
+      !expression.includes("'") &&
+      !expression.includes('"')
+    ) {
+      const pointer = JsonPointer.parseObjectPath(expression);
+      return this.resolveTextPointer(pointer, value, values, tpldata);
     }
     return '';
   }
