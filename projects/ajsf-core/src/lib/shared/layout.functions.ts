@@ -142,7 +142,7 @@ function buildLayoutItem(
   return newNode;
 }
 
-function normalizeLayoutItem(layoutItem: any): any | null {
+function normalizeLayoutItem(layoutItem: any): Record<string, any> | null {
   const newNode: any = { _id: uniqueId(), options: {} };
   if (isObject(layoutItem)) {
     Object.assign(newNode, layoutItem);
@@ -523,7 +523,7 @@ function registerTupleListItemReference(
   const { jsf, widgetLibrary } = context;
   // Register the in-progress reference before schema expansion to stop recursive layouts.
   jsf.layoutRefLibrary[itemRefPointer] = null;
-  jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+  jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR: replace the recursion placeholder after building the layout.
     jsf, widgetLibrary, null,
     removeRecursiveReferences(listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap),
     recursive ? '' : node.dataPointer + '/-',
