@@ -229,8 +229,6 @@ export class JsonValidators {
    * Converts types as needed to allow string inputs to still correctly
    * match number, boolean, and null values.
    *
-   * TODO: modify to work with objects
-   *
    * // {any[]} requiredValue - required value
    * // {IValidatorFn}
    */
@@ -244,7 +242,8 @@ export class JsonValidators {
         isNumber(constValue) && +inputValue === +constValue ||
         isBoolean(constValue, 'strict') &&
           toJavaScriptType(inputValue, 'boolean') === constValue ||
-        constValue === null && !hasValue(inputValue);
+        constValue === null && !hasValue(inputValue) ||
+        deepEqual(constValue, inputValue);
       const isValid = isEqualVal(requiredValue, currentValue);
       return xor(isValid, invert) ?
         null : { 'const': { requiredValue, currentValue } };
