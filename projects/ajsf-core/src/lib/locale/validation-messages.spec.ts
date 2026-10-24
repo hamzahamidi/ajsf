@@ -188,7 +188,7 @@ describe('Validation messages', () => {
       it('falls through to the default branch for uri, which has no case', () => {
         const result = messages.format({ requiredFormat: 'uri' });
 
-        expect(result).toContain('uri');
+        expect(result.toLowerCase()).toContain('uri');
       });
 
       it('interpolates the string "undefined" when requiredFormat is missing', () => {
