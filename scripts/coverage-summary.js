@@ -2,19 +2,15 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Reports coverage the way Codecov reports it, so the number printed locally is
- * the number the pull request gate will use.
+ * Reports branch-aware line coverage from LCOV.
  *
- * The two disagree by default, and it is not a bug in either. lcov's own LH and
- * LF summary counts a line as hit whenever it executed at least once. Codecov
- * additionally looks at branch data: a line that executed but whose branches
- * were not all taken is a *partial*, and a partial counts in the denominator
- * but not the numerator.
+ * This differs from the default LCOV summary, which counts a line as hit
+ * whenever it executed at least once. Here, a line with untaken branches is a
+ * *partial*, counted in the denominator but not the numerator.
  *
- * On this repository that is the difference between 66.2% (lcov) and 56.4%
- * (Codecov) from one identical set of files, because 344 lines are partial.
- * Reading the higher number and pushing to a gate enforcing the lower one wastes
- * an afternoon, so this script only ever reports the lower one.
+ * This score can be lower than the LCOV line summary because partial lines are
+ * not counted as hits. That keeps uncovered branch paths visible in the project
+ * floor.
  *
  * Karma writes one lcov.info per project, nested under a directory named after
  * the browser, and the four projects instrument disjoint file sets. Every
@@ -56,11 +52,9 @@ function findLcovFiles(dir) {
  * execution count, `BRDA` gives one branch on a line and how many times it was
  * taken, where `-` means the branch was never reached at all.
  *
- * 225 lines in this repository carry `BRDA` records with no `DA` record. They
- * are counted as executed, not as missed. Treating them as missed puts the
- * total at Codecov's exact 3840 lines but scores 53.36% against its 56.40%;
- * counting them as executed reproduces Codecov's hit count of 2166 exactly.
- * A `BRDA` record only exists because the instrumenter saw a branch there.
+ * Some instrumented branch lines have `BRDA` records but no `DA` execution
+ * record. Classify those lines from their branch data rather than treating them
+ * automatically as missed.
  */
 function parseLcov(text) {
   const files = new Map();
