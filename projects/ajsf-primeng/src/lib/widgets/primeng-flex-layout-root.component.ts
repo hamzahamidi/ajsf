@@ -46,11 +46,11 @@ export class PrimengFlexLayoutRootComponent {
   };
 
   getFlexBasis(node: any): string {
-    return (node?.options || {}).fxFlex || this.getFlexAttribute(node, 'flex-basis');
+    return node?.options?.fxFlex || this.getFlexAttribute(node, 'flex-basis');
   }
 
   getMaxWidth(node: any): string {
-    const fxFlex = (node?.options || {}).fxFlex;
+    const fxFlex = node?.options?.fxFlex;
     return fxFlex && `${fxFlex}`.trim().endsWith('%') ? fxFlex : null;
   }
 
@@ -66,13 +66,13 @@ export class PrimengFlexLayoutRootComponent {
   }
 
   getOffset(node: any): string {
-    return (node?.options || {}).fxFlexOffset || null;
+    return node?.options?.fxFlexOffset || null;
   }
 
   getFlexAttribute(node: any, attribute: string) {
     const index = ['flex-grow', 'flex-shrink', 'flex-basis'].indexOf(attribute);
-    return ((node.options || {}).flex || '').split(/\s+/)[index] ||
-      (node.options || {})[attribute] || ['1', '1', 'auto'][index];
+    return (node.options?.flex || '').split(/\s+/)[index] ||
+      node.options?.[attribute] || ['1', '1', 'auto'][index];
   }
 
   showWidget(layoutNode: any): boolean {

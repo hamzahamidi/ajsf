@@ -232,7 +232,7 @@ export class FlexLayoutSectionComponent implements OnInit {
   };
 
   private fxAlign(position: number): string {
-    const value = `${(this.options || {}).fxLayoutAlign || ''}`.trim().split(/\s+/)[position];
+    const value = `${this.options?.fxLayoutAlign || ''}`.trim().split(/\s+/)[position];
     return FlexLayoutSectionComponent.ALIGN[value] || null;
   }
 

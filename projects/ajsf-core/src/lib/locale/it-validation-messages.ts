@@ -32,7 +32,7 @@ export const itValidationMessages: any = { // Default Italian error messages
       case 'relative-json-pointer':
         return 'Deve essere un JSON Pointer relativo, come "2/pointer/to/something"';
       case 'regex':
-        return 'Deve essere una regular expression, come "(1-)?\\d{3}-\\d{3}-\\d{4}"';
+        return String.raw`Deve essere una regular expression, come "(1-)?\d{3}-\d{3}-\d{4}"`;
       default:
         return 'Deve essere formattato correttamente ' + error.requiredFormat;
     }
