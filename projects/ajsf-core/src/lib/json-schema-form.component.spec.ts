@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoFrameworkModule } from './framework-library/no-framework.module';
+import { JsonSchemaFormComponent } from './json-schema-form.component';
 import { JsonSchemaFormModule } from './json-schema-form.module';
 
 @Component({
@@ -88,5 +89,140 @@ describe('json-schema-form with a declared $schema', () => {
       expect(() => render(ageSchema(7, uri), {}))
         .toThrowError(`no schema with key or ref "${uri}"`);
     });
+  });
+});
+
+describe('JsonSchemaFormComponent input updates', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [JsonSchemaFormModule, NoFrameworkModule],
+    }).compileComponents();
+  });
+
+  const createComponent = (): ComponentFixture<JsonSchemaFormComponent> => {
+    const fixture = TestBed.createComponent(JsonSchemaFormComponent);
+    fixture.componentInstance.framework = 'no-framework';
+    return fixture;
+  };
+
+  const schema = {
+    type: 'object',
+    properties: { name: { type: 'string' } },
+  };
+
+  it('updates a data input without rebuilding the form', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = schema;
+    component.data = { name: 'Ada' };
+    component.initializeForm();
+    component.updateForm();
+
+    component.jsf.formGroup.get('name').markAsDirty();
+    component.data = { name: 'Grace' };
+    component.updateForm();
+
+    expect(component.jsf.formGroup.value).toEqual({ name: 'Grace' });
+    expect(component.jsf.formGroup.get('name').pristine).toBe(true);
+    fixture.destroy();
+  });
+
+  it('updates a nested form data input without resetting its controls', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.form = { schema, data: { name: 'Ada' } };
+    component.initializeForm();
+    component.updateForm();
+
+    component.jsf.formGroup.get('name').markAsDirty();
+    component.form = { ...component.form, data: { name: 'Grace' } };
+    component.updateForm();
+
+    expect(component.formValuesInput).toBe('form.data');
+    expect(component.jsf.formGroup.value).toEqual({ name: 'Grace' });
+    expect(component.jsf.formGroup.get('name').dirty).toBe(true);
+    fixture.destroy();
+  });
+
+  it('notifies registered callbacks when a non-value input changes', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = schema;
+    component.data = { name: 'Ada' };
+    component.initializeForm();
+    component.updateForm();
+    const onChange = vi.fn();
+    const onTouched = vi.fn();
+    component.registerOnChange(onChange);
+    component.registerOnTouched(onTouched);
+
+    component.schema = {
+      ...schema,
+      properties: { name: { type: 'string' }, age: { type: 'number' } },
+    };
+    component.updateForm();
+
+    expect(onChange).toHaveBeenCalledWith(component.jsf.formValues);
+    expect(onTouched).toHaveBeenCalledWith(component.jsf.formValues);
+    fixture.destroy();
+  });
+
+  it('loads schemas from the React and JSON Form input shapes', () => {
+    const reactFixture = createComponent();
+    const reactComponent = reactFixture.componentInstance;
+    reactComponent.JSONSchema = schema;
+    reactComponent.initializeForm();
+    expect(reactComponent.jsf.ReactJsonSchemaFormCompatibility).toBe(true);
+    expect(reactComponent.jsf.schema.properties.name).toEqual({ type: 'string' });
+    reactFixture.destroy();
+
+    const formReactFixture = createComponent();
+    const formReactComponent = formReactFixture.componentInstance;
+    formReactComponent.form = { JSONSchema: schema };
+    formReactComponent.initializeForm();
+    expect(formReactComponent.jsf.ReactJsonSchemaFormCompatibility).toBe(true);
+    expect(formReactComponent.jsf.schema.properties.name).toEqual({ type: 'string' });
+    formReactFixture.destroy();
+
+    const jsonFormFixture = createComponent();
+    const jsonFormComponent = jsonFormFixture.componentInstance;
+    jsonFormComponent.form = schema;
+    jsonFormComponent.initializeForm();
+    expect(jsonFormComponent.jsf.schema.properties.name).toEqual({ type: 'string' });
+    jsonFormFixture.destroy();
+  });
+
+  it('returns false when no schema input is available', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.form = {};
+
+    expect((component as any).initializeSchemaFromInputs()).toBe(false);
+    fixture.destroy();
+  });
+
+  it('normalizes alternate schema type shapes', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    const normalize = (input: any): any => {
+      component.jsf.schema = input;
+      component.objectWrap = false;
+      component.jsf.JsonFormCompatibility = false;
+      (component as any).normalizeSchemaType();
+      return component.jsf.schema;
+    };
+
+    expect(normalize({ type: ['object', 'null'] }).type).toBe('object');
+
+    const wrapped = normalize({ type: 'string' });
+    expect(component.objectWrap).toBe(true);
+    expect(wrapped.properties['1'].type).toBe('string');
+
+    expect(normalize({ properties: { name: { type: 'string' } } }).type).toBe('object');
+
+    const shorthand = normalize({ name: { type: 'string' } });
+    expect(component.jsf.JsonFormCompatibility).toBe(true);
+    expect(shorthand.properties.name).toEqual({ type: 'string' });
+    fixture.destroy();
   });
 });
