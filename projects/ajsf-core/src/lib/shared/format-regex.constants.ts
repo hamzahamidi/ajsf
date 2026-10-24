@@ -51,6 +51,91 @@ function isUrl(value: string): boolean {
   }
 }
 
+const ipv6HextetPattern = /^[\da-f]{1,4}$/i;
+const ipv6Ipv4OctetPattern = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+
+function isIpv4Address(value: string): boolean {
+  const octets = value.split('.');
+  return octets.length === 4 && octets.every(octet => ipv6Ipv4OctetPattern.test(octet));
+}
+
+function isIpv6(value: string): boolean {
+  let input = value.trimStart();
+  let address = input;
+  const zoneIndex = address.indexOf('%');
+  if (zoneIndex !== -1) {
+    const zone = address.slice(zoneIndex + 1);
+    const lineTerminatorIndex = zone.search(/[\r\n\u2028\u2029]/);
+    if (
+      zone.length === 0 ||
+      lineTerminatorIndex === 0 ||
+      (lineTerminatorIndex !== -1 && !/^\s+$/.test(zone.slice(lineTerminatorIndex)))
+    ) {
+      return false;
+    }
+    address = address.slice(0, zoneIndex);
+  } else {
+    input = input.trimEnd();
+    address = input;
+  }
+
+  const compressionIndex = address.indexOf('::');
+  const compressed = compressionIndex !== -1;
+  if (compressed && address.indexOf('::', compressionIndex + 2) !== -1) return false;
+  const left = compressed ? address.slice(0, compressionIndex) : address;
+  const right = compressed ? address.slice(compressionIndex + 2) : '';
+  const groups = [
+    ...(left.length === 0 ? [] : left.split(':')),
+    ...(right.length === 0 ? [] : right.split(':')),
+  ];
+  if (groups.some(group => group.length === 0)) return false;
+
+  let groupCount = groups.length;
+  const ipv4Index = groups.findIndex(group => group.includes('.'));
+  if (ipv4Index !== -1) {
+    if (ipv4Index !== groups.length - 1 || !isIpv4Address(groups[ipv4Index]!)) return false;
+    groups.pop();
+    groupCount += 1;
+  }
+
+  if (!groups.every(group => ipv6HextetPattern.test(group))) return false;
+  return compressed ? groupCount < 8 : groupCount === 8;
+}
+
+const uriTemplateOperators = '+#./;?&=,!@|';
+const uriTemplateVariablePattern = /^(?:[a-z0-9_]|%[\da-f]{2})+(?::[1-9]\d{0,3}|\*)?$/i;
+const uriTemplateForbiddenLiteralCharacter = /[\x00-\x20"'<>\\^`{|}]/;
+const uriTemplatePercentEncoding = /^%[\da-f]{2}$/i;
+
+function isUriTemplateExpression(expression: string): boolean {
+  const operator = expression[0] ?? '';
+  const body = uriTemplateOperators.includes(operator) ? expression.slice(1) : expression;
+  return body.length > 0 && body.split(',').every(variable => uriTemplateVariablePattern.test(variable));
+}
+
+function isUriTemplate(value: string): boolean {
+  let index = 0;
+  while (index < value.length) {
+    const character = value[index]!;
+    if (character === '{') {
+      const closingIndex = value.indexOf('}', index + 1);
+      if (closingIndex === -1) return false;
+      const expression = value.slice(index + 1, closingIndex);
+      if (expression.includes('{') || !isUriTemplateExpression(expression)) return false;
+      index = closingIndex + 1;
+      continue;
+    }
+    if (character === '%') {
+      if (!uriTemplatePercentEncoding.test(value.slice(index, index + 3))) return false;
+      index += 3;
+      continue;
+    }
+    if (character === '}' || uriTemplateForbiddenLiteralCharacter.test(character)) return false;
+    index += 1;
+  }
+  return true;
+}
+
 export const jsonSchemaFormatTests = {
 
   'date': /^\d\d\d\d-[0-1]\d-[0-3]\d$/,
@@ -71,8 +156,7 @@ export const jsonSchemaFormatTests = {
   // optimized https://www.safaribooksonline.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html
   'ipv4': /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
 
-  // optimized http://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
-  'ipv6': /^\s*(?:(?:(?:[0-9a-f]{1,4}:){7}(?:[0-9a-f]{1,4}|:))|(?:(?:[0-9a-f]{1,4}:){6}(?::[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){5}(?:(?:(?::[0-9a-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){4}(?:(?:(?::[0-9a-f]{1,4}){1,3})|(?:(?::[0-9a-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){3}(?:(?:(?::[0-9a-f]{1,4}){1,4})|(?:(?::[0-9a-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){2}(?:(?:(?::[0-9a-f]{1,4}){1,5})|(?:(?::[0-9a-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:)(?:(?:(?::[0-9a-f]{1,4}){1,6})|(?:(?::[0-9a-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9a-f]{1,4}){1,7})|(?:(?::[0-9a-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(?:%.+)?\s*$/i,
+  'ipv6': isIpv6,
 
   // uri: https://github.com/mafintosh/is-my-json-valid/blob/master/formats.js
   'uri': /^(?:[a-z][a-z0-9+-.]*)[:/]\/?[^\s]*$/i,
@@ -81,7 +165,7 @@ export const jsonSchemaFormatTests = {
   'uri-reference': /^(?:(?:[a-z][a-z0-9+-.]*:)?\/\/)?[^\s]*$/i,
 
   // uri-template: https://tools.ietf.org/html/rfc6570
-  'uri-template': /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9]\d{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9]\d{0,3}|\*)?)*\})*$/i,
+  'uri-template': isUriTemplate,
 
   // For the source: https://gist.github.com/dperini/729294
   // For test cases: https://mathiasbynens.be/demo/url-regex
