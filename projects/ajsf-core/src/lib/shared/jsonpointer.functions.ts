@@ -318,7 +318,7 @@ export class JsonPointer {
    * //  { boolean } insert - insert value?
    * // { object } - The original object, modified with the set value
    */
-  static set(object, pointer, value, insert = false) {
+  static set(object, pointer, value, insert = false) { // NOSONAR: Returns the mutated object by contract.
     const keyArray = this.parse(pointer);
     if (keyArray?.length) {
       const target = this.getWriteTarget(object, keyArray, false);
@@ -360,22 +360,29 @@ export class JsonPointer {
   private static getWriteTarget(object, keyArray, copyPath) {
     let target = object;
     for (let index = 0; index < keyArray.length - 1; index++) {
-      let key = keyArray[index];
-      if (key === '-' && isArray(target)) {
-        key = target.length;
-      }
-      if (isMap(target) && target.has(key)) {
-        if (copyPath) { target.set(key, copy(target.get(key))); }
-        target = target.get(key);
-        continue;
-      }
-      if (!hasOwn(target, key)) {
-        target[key] = (keyArray[index + 1].match(/^(\d+|-)$/)) ? [] : {};
-      }
-      if (copyPath) { target[key] = copy(target[key]); }
-      target = target[key];
+      const nextKey = keyArray[index + 1];
+      const key = keyArray[index] === '-' && isArray(target) ? target.length : keyArray[index];
+      target = this.getWriteTargetStep(target, key, nextKey, copyPath);
     }
     return target;
+  }
+
+  private static getWriteTargetStep(target, key, nextKey, copyPath) {
+    if (isMap(target) && target.has(key)) {
+      const value = target.get(key);
+      if (copyPath) {
+        const copiedValue = copy(value);
+        target.set(key, copiedValue);
+        return copiedValue;
+      }
+      return value;
+    }
+
+    if (!hasOwn(target, key)) {
+      target[key] = /^(\d+|-)$/.test(nextKey) ? [] : {};
+    }
+    if (copyPath) { target[key] = copy(target[key]); }
+    return target[key];
   }
 
   private static writeAtKey(target, key, value, insert) {
