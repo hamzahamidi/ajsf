@@ -59,47 +59,59 @@ function isIpv4Address(value: string): boolean {
   return octets.length === 4 && octets.every(octet => ipv6Ipv4OctetPattern.test(octet));
 }
 
-function isIpv6(value: string): boolean {
+function ipv6AddressPart(value: string): string|null {
   let input = value.trimStart();
-  let address = input;
-  const zoneIndex = address.indexOf('%');
+  const zoneIndex = input.indexOf('%');
   if (zoneIndex !== -1) {
-    const zone = address.slice(zoneIndex + 1);
+    const zone = input.slice(zoneIndex + 1);
     const lineTerminatorIndex = zone.search(/[\r\n\u2028\u2029]/);
     if (
       zone.length === 0 ||
       lineTerminatorIndex === 0 ||
       (lineTerminatorIndex !== -1 && !/^\s+$/.test(zone.slice(lineTerminatorIndex)))
     ) {
-      return false;
+      return null;
     }
-    address = address.slice(0, zoneIndex);
-  } else {
-    input = input.trimEnd();
-    address = input;
+    return input.slice(0, zoneIndex);
   }
+  return input.trimEnd();
+}
 
+function ipv6Groups(address: string): { groups: string[]; compressed: boolean }|null {
   const compressionIndex = address.indexOf('::');
   const compressed = compressionIndex !== -1;
-  if (compressed && address.indexOf('::', compressionIndex + 2) !== -1) return false;
+  if (compressed && address.includes('::', compressionIndex + 2)) return null;
   const left = compressed ? address.slice(0, compressionIndex) : address;
   const right = compressed ? address.slice(compressionIndex + 2) : '';
   const groups = [
     ...(left.length === 0 ? [] : left.split(':')),
     ...(right.length === 0 ? [] : right.split(':')),
   ];
-  if (groups.some(group => group.length === 0)) return false;
+  if (groups.some(group => group.length === 0)) return null;
+  return { groups, compressed };
+}
 
+function isValidIpv6Groups(groups: string[], compressed: boolean): boolean {
   let groupCount = groups.length;
   const ipv4Index = groups.findIndex(group => group.includes('.'));
   if (ipv4Index !== -1) {
-    if (ipv4Index !== groups.length - 1 || !isIpv4Address(groups[ipv4Index]!)) return false;
+    if (ipv4Index !== groups.length - 1 || !isIpv4Address(groups[ipv4Index]!)) {
+      return false;
+    }
     groups.pop();
     groupCount += 1;
   }
 
   if (!groups.every(group => ipv6HextetPattern.test(group))) return false;
   return compressed ? groupCount < 8 : groupCount === 8;
+}
+
+function isIpv6(value: string): boolean {
+  const address = ipv6AddressPart(value);
+  if (address === null) return false;
+  const parsedGroups = ipv6Groups(address);
+  return parsedGroups !== null &&
+    isValidIpv6Groups(parsedGroups.groups, parsedGroups.compressed);
 }
 
 const uriTemplateOperators = '+#./;?&=,!@|';
@@ -113,15 +125,20 @@ function isUriTemplateExpression(expression: string): boolean {
   return body.length > 0 && body.split(',').every(variable => uriTemplateVariablePattern.test(variable));
 }
 
+function uriTemplateExpressionEndIndex(value: string, index: number): number|null {
+  const closingIndex = value.indexOf('}', index + 1);
+  if (closingIndex === -1) return null;
+  const expression = value.slice(index + 1, closingIndex);
+  return expression.includes('{') || !isUriTemplateExpression(expression) ? null : closingIndex;
+}
+
 function isUriTemplate(value: string): boolean {
   let index = 0;
   while (index < value.length) {
     const character = value[index]!;
     if (character === '{') {
-      const closingIndex = value.indexOf('}', index + 1);
-      if (closingIndex === -1) return false;
-      const expression = value.slice(index + 1, closingIndex);
-      if (expression.includes('{') || !isUriTemplateExpression(expression)) return false;
+      const closingIndex = uriTemplateExpressionEndIndex(value, index);
+      if (closingIndex === null) return false;
       index = closingIndex + 1;
       continue;
     }
