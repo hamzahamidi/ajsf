@@ -20,4 +20,4 @@ class Bootstrap5CorpusHost implements CorpusHost {
   valid: boolean | null = null;
 }
 
-runCorpus('bootstrap-5', Bootstrap5CorpusHost);
+runCorpus('bootstrap-5', Bootstrap5CorpusHost); // NOSONAR The shared harness declares this file's tests.

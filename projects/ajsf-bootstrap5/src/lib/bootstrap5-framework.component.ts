@@ -58,11 +58,13 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
       return false;
     }
     // If array length <= minItems, don't allow removing any items
-    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems ? false :
-      // For removable list items, allow removing any item
-      this.layoutNode.arrayItemType === 'list' ? true :
-        // For removable tuple items, only allow removing last item in list
-        this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
+    if (this.parentArray.items.length - 1 <= this.parentArray.options.minItems) {
+      return false;
+    }
+    // For removable list items, allow removing any item
+    if (this.layoutNode.arrayItemType === 'list') { return true; }
+    // For removable tuple items, only allow removing last item in list
+    return this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {
@@ -105,13 +107,14 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
 
       this.options.htmlClass =
         addClasses(this.options.htmlClass, 'schema-form-' + this.layoutNode.type);
-      this.options.htmlClass =
-        this.layoutNode.type === 'array' ?
-          addClasses(this.options.htmlClass, 'list-group') :
-          this.layoutNode.arrayItem && this.layoutNode.type !== '$ref' ?
-            addClasses(this.options.htmlClass, 'list-group-item') :
-            // Bootstrap 5 dropped .form-group in favour of margin utilities.
-            addClasses(this.options.htmlClass, 'mb-3');
+      if (this.layoutNode.type === 'array') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group');
+      } else if (this.layoutNode.arrayItem && this.layoutNode.type !== '$ref') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group-item');
+      } else {
+        // Bootstrap 5 dropped .form-group in favour of margin utilities.
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'mb-3');
+      }
       this.widgetOptions.htmlClass = '';
       this.options.labelHtmlClass =
         addClasses(this.options.labelHtmlClass, 'form-label');
@@ -145,22 +148,6 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
         case 'checkboxes':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'form-check');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-check-input');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
-          break;
-        case 'checkboxes-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'form-check form-check-inline');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-check-input');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
-          break;
-        // Radio controls
         case 'radio':
         case 'radios':
           this.widgetOptions.htmlClass = addClasses(
@@ -170,6 +157,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
+        case 'checkboxes-inline':
         case 'radios-inline':
           this.widgetOptions.htmlClass = addClasses(
             this.widgetOptions.htmlClass, 'form-check form-check-inline');
@@ -239,8 +227,7 @@ export class Bootstrap5FrameworkComponent implements OnInit, OnChanges {
         this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
 
         if (this.options.debug) {
-          const vars: any[] = [];
-          this.debugOutput = vars.map(thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
+          this.debugOutput = '';
         }
       }
       this.frameworkInitialized = true;

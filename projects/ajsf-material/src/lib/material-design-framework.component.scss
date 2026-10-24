@@ -9,12 +9,16 @@
 }
 
 .close-button {
+  background: transparent;
+  border: 0;
   cursor: pointer;
+  padding: 0;
   position: absolute;
   top: 6px;
   right: 6px;
   fill: rgba(0, 0, 0, .4);
-  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   z-index: 500;
 }
 
@@ -22,8 +26,10 @@
   fill: rgba(0, 0, 0, .8);
 }
 
-.array-item:hover > .close-button {
-  visibility: visible;
+.array-item:hover > .close-button,
+.array-item:focus-within > .close-button {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .spacer {

@@ -96,12 +96,16 @@ export function _mergeObjects(...objects) {
       for (const key of Object.keys(currentObject)) {
         const currentValue = currentObject[key];
         const mergedValue = mergedObject[key];
-        mergedObject[key] = !isDefined(mergedValue) ? currentValue :
-          key === 'not' && isBoolean(mergedValue, 'strict') &&
-            isBoolean(currentValue, 'strict') ? xor(mergedValue, currentValue) :
-          getType(mergedValue) === 'object' && getType(currentValue) === 'object' ?
-            _mergeObjects(mergedValue, currentValue) :
-            currentValue;
+        if (!isDefined(mergedValue)) {
+          mergedObject[key] = currentValue;
+        } else if (key === 'not' && isBoolean(mergedValue, 'strict') &&
+          isBoolean(currentValue, 'strict')) {
+          mergedObject[key] = xor(mergedValue, currentValue);
+        } else if (getType(mergedValue) === 'object' && getType(currentValue) === 'object') {
+          mergedObject[key] = _mergeObjects(mergedValue, currentValue);
+        } else {
+          mergedObject[key] = currentValue;
+        }
       }
     }
   }
@@ -402,11 +406,11 @@ export function toJavaScriptType(value, types, strictIntegers = true)  {
   if (isString(types)) { types = [types]; }
   if (strictIntegers && inArray('integer', types)) {
     if (isInteger(value, 'strict')) { return value; }
-    if (isInteger(value)) { return parseInt(value, 10); }
+    if (isInteger(value)) { return Number.parseInt(value, 10); }
   }
   if (inArray('number', types) || (!strictIntegers && inArray('integer', types))) {
     if (isNumber(value, 'strict')) { return value; }
-    if (isNumber(value)) { return parseFloat(value); }
+    if (isNumber(value)) { return Number.parseFloat(value); }
   }
   if (inArray('string', types)) {
     if (isString(value)) { return value; }
@@ -512,11 +516,11 @@ export function toSchemaType(value, types) {
     if (value === false || value === null || value === '') { return 0; }
   }
   if ((<SchemaPrimitiveType[]>types).includes('number')) { // Convert mixed string to number
-    const testValue = parseFloat(<string>value);
+    const testValue = Number.parseFloat(<string>value);
     if (!!testValue) { return testValue; }
   }
   if ((<SchemaPrimitiveType[]>types).includes('integer')) { // Convert string or number to integer
-    const testValue = parseInt(<string>value, 10);
+    const testValue = Number.parseInt(<string>value, 10);
     if (!!testValue) { return testValue; }
   }
   if ((<SchemaPrimitiveType[]>types).includes('boolean')) { // Convert anything to boolean
@@ -592,9 +596,8 @@ export function toObservable(object): Observable<any> {
  */
 export function inArray(item, array, allIn = false) {
   if (!isDefined(item) || !isArray(array)) { return false; }
-  return isArray(item) ?
-    item[allIn ? 'every' : 'some'](subItem => array.includes(subItem)) :
-    array.includes(item);
+  if (!isArray(item)) { return array.includes(item); }
+  return item[allIn ? 'every' : 'some'](subItem => array.includes(subItem));
 }
 
 /**

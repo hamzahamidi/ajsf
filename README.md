@@ -374,6 +374,10 @@ Note: If you prefer brackets around all your attributes, the following is functi
 
 With this syntax, include the nested quotes (`"'` and `'"`) around language and framework names. Without the inner quotes, Angular reads the values as variables instead of strings. Attributes without brackets are read as strings and do not need inner quotes.
 
+#### Layout conditions
+
+A layout item's `condition` can be a JSON Pointer string or a function supplied by application code. A serializable `functionBody` supports one `return` expression that compares a `model` property path or an `arrayIndices[n]` value with a primitive literal using `===` or `!==`. For custom logic, pass a function from application code. Other `functionBody` expressions are not evaluated, and the item remains visible. Existing layouts that used arbitrary JavaScript in `functionBody` must migrate to a condition function before upgrading.
+
 #### Single-input mode
 
 You may also combine all your inputs into one compound object and include it as a `form` input, like so:

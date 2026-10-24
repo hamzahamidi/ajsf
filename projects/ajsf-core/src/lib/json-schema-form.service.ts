@@ -51,6 +51,176 @@ export interface ErrorMessages {
   }[];
 }
 
+type ConditionValue = { supported: true; value: unknown } | { supported: false };
+
+const UNSUPPORTED_CONDITION: ConditionValue = { supported: false };
+
+function splitConditionComparison(expression: string) {
+  let inString = false;
+  let escaped = false;
+  for (let index = 0; index < expression.length - 2; index += 1) {
+    const character = expression[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+    const operator = expression.slice(index, index + 3);
+    if (operator === '===' || operator === '!==') {
+      return {
+        left: expression.slice(0, index).trim(),
+        operator,
+        right: expression.slice(index + 3).trim()
+      };
+    }
+  }
+  return null;
+}
+
+function parseConditionLiteral(source: string): ConditionValue {
+  if (source === 'true') { return { supported: true, value: true }; }
+  if (source === 'false') { return { supported: true, value: false }; }
+  if (source === 'null') { return { supported: true, value: null }; }
+  if (source === 'undefined') { return { supported: true, value: undefined }; }
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(source)) {
+    return { supported: true, value: Number(source) };
+  }
+  if (source.startsWith('"') && source.endsWith('"')) {
+    try {
+      return { supported: true, value: JSON.parse(source) };
+    } catch {
+      return UNSUPPORTED_CONDITION;
+    }
+  }
+  return UNSUPPORTED_CONDITION;
+}
+
+function readConditionReference(
+  source: string, model: unknown, arrayIndices: number[]
+): ConditionValue {
+  if (source.startsWith('model.')) return readModelReference(source, model);
+  if (source.startsWith('arrayIndices[') && source.endsWith(']')) {
+    return readArrayIndexReference(source, arrayIndices);
+  }
+  return UNSUPPORTED_CONDITION;
+}
+
+function readModelReference(source: string, model: unknown): ConditionValue {
+  const keys = source.slice('model.'.length).split('.');
+  if (keys.some(key =>
+    !/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) && !/^\d+$/.test(key)
+  )) {
+    return UNSUPPORTED_CONDITION;
+  }
+  let value: any = model;
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    if (value === null || typeof value !== 'object') {
+      return UNSUPPORTED_CONDITION;
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor) {
+      return index === keys.length - 1
+        ? { supported: true, value: undefined }
+        : UNSUPPORTED_CONDITION;
+    }
+    if (!Object.hasOwn(descriptor, 'value')) return UNSUPPORTED_CONDITION;
+    value = descriptor.value;
+  }
+  return { supported: true, value };
+}
+
+function readArrayIndexReference(source: string, arrayIndices: number[]): ConditionValue {
+  const indexSource = source.slice('arrayIndices['.length, -1);
+  if (!/^\d+$/.test(indexSource)) return UNSUPPORTED_CONDITION;
+  return { supported: true, value: arrayIndices?.[Number(indexSource)] };
+}
+
+function evaluateConditionFunctionBody(
+  source: string, model: unknown, arrayIndices: number[]
+): ConditionValue {
+  let expression = source.trim();
+  if (!expression.startsWith('return ')) { return UNSUPPORTED_CONDITION; }
+  expression = expression.slice('return '.length).trim();
+  if (expression.endsWith(';')) { expression = expression.slice(0, -1).trim(); }
+  const comparison = splitConditionComparison(expression);
+  if (!comparison) { return UNSUPPORTED_CONDITION; }
+  const actual = readConditionReference(comparison.left, model, arrayIndices);
+  const expected = parseConditionLiteral(comparison.right);
+  if (!actual.supported || !expected.supported) { return UNSUPPORTED_CONDITION; }
+  return {
+    supported: true,
+    value: comparison.operator === '==='
+      ? actual.value === expected.value
+      : actual.value !== expected.value
+  };
+}
+
+function splitExpressionOutsideQuotes(
+  expression: string,
+  delimiter: string
+): string[] {
+  const parts: string[] = [];
+  let quote = '';
+  let escaped = false;
+  let start = 0;
+  for (let index = 0; index < expression.length; index++) {
+    const character = expression[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === quote) {
+        quote = '';
+      }
+      continue;
+    }
+    if (character === "'" || character === '"') {
+      quote = character;
+      continue;
+    }
+    if (expression.startsWith(delimiter, index)) {
+      parts.push(expression.slice(start, index));
+      index += delimiter.length - 1;
+      start = index + 1;
+    }
+  }
+  if (parts.length === 0) {
+    return [expression];
+  }
+  parts.push(expression.slice(start));
+  return parts;
+}
+
+function isQuotedLiteral(expression: string): boolean {
+  const quote = expression[0];
+  if ((quote !== "'" && quote !== '"') || expression.at(-1) !== quote) {
+    return false;
+  }
+  let escaped = false;
+  for (let index = 1; index < expression.length - 1; index++) {
+    const character = expression[index];
+    if (escaped) {
+      escaped = false;
+    } else if (character === '\\') {
+      escaped = true;
+    } else if (character === quote) {
+      return false;
+    }
+  }
+  return true;
+}
+
 @Injectable()
 export class JsonSchemaFormService {
   JsonFormCompatibility = false;
@@ -380,6 +550,20 @@ export class JsonSchemaFormService {
     );
   }
 
+  private resolveTextPointer(pointer, value, values, tpldata) {
+    const path = pointer.slice(1);
+    if (pointer[0] === 'value' && JsonPointer.has(value, path)) {
+      return JsonPointer.get(value, path);
+    }
+    if (pointer[0] === 'values' && JsonPointer.has(values, path)) {
+      return JsonPointer.get(values, path);
+    }
+    if (pointer[0] === 'tpldata' && JsonPointer.has(tpldata, path)) {
+      return JsonPointer.get(tpldata, path);
+    }
+    return JsonPointer.has(values, pointer) ? JsonPointer.get(values, pointer) : '';
+  }
+
   parseExpression(
     expression = '',
     value: any = {},
@@ -392,55 +576,23 @@ export class JsonSchemaFormService {
     }
     const index = typeof key === 'number' ? key + 1 + '' : key || '';
     expression = expression.trim();
-    if (
-      (expression[0] === "'" || expression[0] === '"') &&
-      expression[0] === expression[expression.length - 1] &&
-      expression.slice(1, expression.length - 1).indexOf(expression[0]) === -1
-    ) {
-      return expression.slice(1, expression.length - 1);
-    }
     if (expression === 'idx' || expression === '$index') {
       return index;
     }
     if (expression === 'value' && !hasOwn(values, 'value')) {
       return value;
     }
-    if (
-      ['"', "'", ' ', '||', '&&', '+'].every(
-        delim => expression.indexOf(delim) === -1
-      )
-    ) {
-      const pointer = JsonPointer.parseObjectPath(expression);
-      return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1))
-        ? JsonPointer.get(value, pointer.slice(1))
-        : pointer[0] === 'values' && JsonPointer.has(values, pointer.slice(1))
-          ? JsonPointer.get(values, pointer.slice(1))
-          : pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1))
-            ? JsonPointer.get(tpldata, pointer.slice(1))
-            : JsonPointer.has(values, pointer)
-              ? JsonPointer.get(values, pointer)
-              : '';
+    const orTerms = splitExpressionOutsideQuotes(expression, '||');
+    if (orTerms.length > 1) {
+      return orTerms.reduce(
+        (all, term) =>
+          all || this.parseExpression(term, value, values, key, tpldata),
+        ''
+      );
     }
-    if (expression.indexOf('[idx]') > -1) {
-      expression = expression.replace(/\[idx\]/g, <string>index);
-    }
-    if (expression.indexOf('[$index]') > -1) {
-      expression = expression.replace(/\[$index\]/g, <string>index);
-    }
-    // TODO: Improve expression evaluation by parsing quoted strings first
-    // let expressionArray = expression.match(/([^"']+|"[^"]+"|'[^']+')/g);
-    if (expression.indexOf('||') > -1) {
-      return expression
-        .split('||')
-        .reduce(
-          (all, term) =>
-            all || this.parseExpression(term, value, values, key, tpldata),
-          ''
-        );
-    }
-    if (expression.indexOf('&&') > -1) {
-      return expression
-        .split('&&')
+    const andTerms = splitExpressionOutsideQuotes(expression, '&&');
+    if (andTerms.length > 1) {
+      return andTerms
         .reduce(
           (all, term) =>
             all && this.parseExpression(term, value, values, key, tpldata),
@@ -448,11 +600,28 @@ export class JsonSchemaFormService {
         )
         .trim();
     }
-    if (expression.indexOf('+') > -1) {
-      return expression
-        .split('+')
+    const additionTerms = splitExpressionOutsideQuotes(expression, '+');
+    if (additionTerms.length > 1) {
+      return additionTerms
         .map(term => this.parseExpression(term, value, values, key, tpldata))
         .join('');
+    }
+    if (isQuotedLiteral(expression)) {
+      return expression.slice(1, -1);
+    }
+    if (expression.includes('[idx]')) {
+      expression = expression.replaceAll('[idx]', <string>index);
+    }
+    if (expression.includes('[$index]')) {
+      expression = expression.replace(/\[$index\]/g, <string>index);
+    }
+    if (
+      !expression.includes(' ') &&
+      !expression.includes("'") &&
+      !expression.includes('"')
+    ) {
+      const pointer = JsonPointer.parseObjectPath(expression);
+      return this.resolveTextPointer(pointer, value, values, tpldata);
     }
     return '';
   }
@@ -503,9 +672,9 @@ export class JsonSchemaFormService {
   }
 
   evaluateCondition(layoutNode: any, dataIndex: number[]): boolean {
-    const arrayIndex = dataIndex && dataIndex[dataIndex.length - 1];
+    const arrayIndex = dataIndex?.at(-1);
     let result = true;
-    if (hasValue((layoutNode.options || {}).condition)) {
+    if (hasValue(layoutNode.options?.condition)) {
       if (typeof layoutNode.options.condition === 'string') {
         let pointer = layoutNode.options.condition;
         if (hasValue(arrayIndex)) {
@@ -521,18 +690,14 @@ export class JsonSchemaFormService {
       } else if (
         typeof layoutNode.options.condition.functionBody === 'string'
       ) {
-        try {
-          const dynFn = new Function(
-            'model',
-            'arrayIndices',
-            layoutNode.options.condition.functionBody
-          );
-          result = dynFn(this.data, dataIndex);
-        } catch (e) {
-          result = true;
+        const functionBody = layoutNode.options.condition.functionBody;
+        const evaluation = evaluateConditionFunctionBody(functionBody, this.data, dataIndex);
+        if (evaluation.supported) {
+          result = !!evaluation.value;
+        } else {
           console.error(
-            'condition functionBody errored out on evaluation: ' +
-            layoutNode.options.condition.functionBody
+            'condition functionBody is not a supported comparison expression: ' +
+            functionBody
           );
         }
       }
@@ -545,7 +710,7 @@ export class JsonSchemaFormService {
       return false;
     }
     if (isEmpty(ctx.options)) {
-      ctx.options = !isEmpty((ctx.layoutNode || {}).options)
+      ctx.options = !isEmpty(ctx.layoutNode?.options)
         ? ctx.layoutNode.options
         : cloneDeep(this.formOptions);
     }
@@ -605,19 +770,42 @@ export class JsonSchemaFormService {
       string[0].toUpperCase() +
       (string.slice(1) || '')
         .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/_/g, ' ');
-    const formatError = error =>
-      typeof error === 'object'
-        ? Object.keys(error)
-          .map(key =>
-            error[key] === true
-              ? addSpaces(key)
-              : error[key] === false
-                ? 'Not ' + addSpaces(key)
-                : addSpaces(key) + ': ' + formatError(error[key])
-          )
-          .join(', ')
-        : addSpaces(error.toString());
+        .replaceAll('_', ' ');
+    const formatErrorValue = (key, error) => {
+      if (error === true) { return addSpaces(key); }
+      if (error === false) { return 'Not ' + addSpaces(key); }
+      return addSpaces(key) + ': ' + formatError(error);
+    };
+    const formatError = error => {
+      if (typeof error !== 'object') { return addSpaces(error.toString()); }
+      return Object.keys(error).map(key => formatErrorValue(key, error[key])).join(', ');
+    };
+    const messageForError = errorKey => {
+      if (typeof validationMessages === 'string') { return validationMessages; }
+      const validationMessage = validationMessages[errorKey];
+      if (typeof validationMessage === 'function') {
+        return validationMessage(errors[errorKey]);
+      }
+      if (typeof validationMessage !== 'string') {
+        return addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey]);
+      }
+      const errorProperties = errors[errorKey];
+      if (
+        !validationMessage.includes('{{') ||
+        !validationMessage.includes('}}') ||
+        errorProperties == null
+      ) {
+        return validationMessage;
+      }
+      return Object.keys(errorProperties).reduce(
+        (errorMessage, errorProperty) =>
+          errorMessage.replaceAll(
+            '{{' + errorProperty + '}}',
+            errorProperties[errorProperty]
+          ),
+        validationMessage
+      );
+    };
     const messages = [];
     return (
       Object.keys(errors)
@@ -626,30 +814,7 @@ export class JsonSchemaFormService {
           errorKey =>
             errorKey !== 'required' || Object.keys(errors).length === 1
         )
-        .map(errorKey =>
-          // If validationMessages is a string, return it
-          typeof validationMessages === 'string'
-            ? validationMessages
-            : // If custom error message is a function, return function result
-            typeof validationMessages[errorKey] === 'function'
-              ? validationMessages[errorKey](errors[errorKey])
-              : // If custom error message is a string, replace placeholders and return
-              typeof validationMessages[errorKey] === 'string'
-                ? // Does error message have any {{property}} placeholders?
-                !/{{.+?}}/.test(validationMessages[errorKey])
-                  ? validationMessages[errorKey]
-                  : // Replace {{property}} placeholders with values
-                  Object.keys(errors[errorKey]).reduce(
-                    (errorMessage, errorProperty) =>
-                      errorMessage.replace(
-                        new RegExp('{{' + errorProperty + '}}', 'g'),
-                        errors[errorKey][errorProperty]
-                      ),
-                    validationMessages[errorKey]
-                  )
-                : // If no custom error message, return formatted error data instead
-                addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey])
-        )
+        .map(messageForError)
         .join('<br>')
     );
   }

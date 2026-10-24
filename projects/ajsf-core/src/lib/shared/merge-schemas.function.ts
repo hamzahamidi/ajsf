@@ -6,6 +6,44 @@ import {
 import { hasOwn, uniqueItems, commonItems } from './utility.functions';
 import { JsonPointer, Pointer } from './jsonpointer.functions';
 
+function decimalPlaces(value: number): number {
+  const [mantissa, exponentText] = value.toString().toLowerCase().split('e');
+  const exponent = exponentText ? Number(exponentText) : 0;
+  return Math.max(0, (mantissa.split('.')[1]?.length || 0) - exponent);
+}
+
+function greatestCommonDivisor(left: number, right: number): number {
+  while (right) {
+    [left, right] = [right, left % right];
+  }
+  return left;
+}
+
+function leastCommonMultipleOfDecimals(left: number, right: number): number|null {
+  const numericLeft = Number(left);
+  const numericRight = Number(right);
+  if (
+    !Number.isFinite(numericLeft) ||
+    !Number.isFinite(numericRight) ||
+    numericLeft <= 0 ||
+    numericRight <= 0
+  ) {
+    return null;
+  }
+  const scale = 10 ** Math.max(decimalPlaces(numericLeft), decimalPlaces(numericRight));
+  if (!Number.isSafeInteger(scale)) { return null; }
+  const scaledLeft = Math.round(numericLeft * scale);
+  const scaledRight = Math.round(numericRight * scale);
+  if (!Number.isSafeInteger(scaledLeft) || !Number.isSafeInteger(scaledRight)) {
+    return null;
+  }
+  const commonMultiple = (scaledLeft / greatestCommonDivisor(scaledLeft, scaledRight)) *
+    scaledRight;
+  if (!Number.isSafeInteger(commonMultiple)) { return null; }
+  const result = commonMultiple / scale;
+  return Number.isFinite(result) && result > 0 ? result : null;
+}
+
 /**
  * 'mergeSchemas' function
  *
@@ -179,12 +217,13 @@ export function mergeSchemas(...schemas) {
             }
           break;
           case 'multipleOf':
-            // TODO: Adjust to correctly handle decimal values
-            // If numbers, set to least common multiple
             if (isNumber(combinedValue) && isNumber(schemaValue)) {
-              const gcd = (x, y) => !y ? x : gcd(y, x % y);
-              const lcm = (x, y) => (x * y) / gcd(x, y);
-              combinedSchema.multipleOf = lcm(combinedValue, schemaValue);
+              const multipleOf = leastCommonMultipleOfDecimals(combinedValue, schemaValue);
+              if (multipleOf !== null) {
+                combinedSchema.multipleOf = multipleOf;
+              } else {
+                return { allOf: [ ...schemas ] };
+              }
             } else {
               return { allOf: [ ...schemas ] };
             }
@@ -217,8 +256,10 @@ export function mergeSchemas(...schemas) {
                     [ ...notAnyOfArray, ...notSchema.anyOf ] :
                     [ ...notAnyOfArray, notSchema ]
                 , []);
-              // TODO: Remove duplicate items from array
-              combinedSchema.not = { anyOf: notAnyOf };
+              const uniqueNotAnyOf = notAnyOf.filter((notSchema, index) =>
+                notAnyOf.findIndex(candidate => deepEqual(candidate, notSchema)) === index
+              );
+              combinedSchema.not = { anyOf: uniqueNotAnyOf };
             } else {
               return { allOf: [ ...schemas ] };
             }
@@ -261,7 +302,7 @@ export function mergeSchemas(...schemas) {
               // property.
               const newAdditional = hasOwn(schema, 'additionalProperties') ?
                 schema.additionalProperties : undefined;
-              const priorForbids = priorAdditional.indexOf(false) > -1;
+              const priorForbids = priorAdditional.includes(false);
               const priorConstraint = priorAdditional.filter(isObject)[0];
 
               // A key the new schema does not declare is governed by its

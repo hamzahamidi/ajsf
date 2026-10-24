@@ -19,8 +19,12 @@ export const zhValidationMessages: any = { // Chinese error messages
         return '必须为 IPv4 地址, 比如 "127.0.0.1"';
       case 'ipv6':
         return '必须为 IPv6 地址, 比如 "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return '必须为 URI 格式，例如 "https://example.com/resource"';
+      case 'uri-reference':
+        return '必须为 URI 引用格式，例如 "../resource"';
+      case 'uri-template':
+        return '必须为 URI 模板格式，例如 "https://example.com/users/{id}"';
       case 'url':
         return '必须为 url, 比如 "http://www.example.com/page.html"';
       case 'uuid':
@@ -32,7 +36,7 @@ export const zhValidationMessages: any = { // Chinese error messages
       case 'relative-json-pointer':
         return '必须为相对的 JSON Pointer, 比如 "2/pointer/to/something"';
       case 'regex':
-        return '必须为正则表达式, 比如 "(1-)?\\d{3}-\\d{3}-\\d{4}"';
+        return String.raw`必须为正则表达式, 比如 "(1-)?\d{3}-\d{3}-\d{4}"`;
       default:
         return '必须为格式正确的 ' + error.requiredFormat;
     }

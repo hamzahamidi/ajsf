@@ -16,8 +16,6 @@ import { mergeSchemas } from './merge-schemas.function';
 /**
  * JSON Schema function library:
  *
- * buildSchemaFromLayout:   TODO: Write this function
- *
  * buildSchemaFromData:
  *
  * getFromSchema:
@@ -119,6 +117,19 @@ export function buildSchemaFromData(
   return newSchema;
 }
 
+function hasSchemaShape(schema, type) {
+  if (type === 'object') return hasOwn(schema, 'properties');
+  if (type === 'array') return hasOwn(schema, 'items') || hasOwn(schema, 'additionalItems');
+  return true;
+}
+
+function getUnionSchemaType(schema, schemaTypes) {
+  for (const type of ['object', 'array', 'string', 'number', 'integer', 'boolean']) {
+    if (inArray(type, schemaTypes) && hasSchemaShape(schema, type)) return type;
+  }
+  return 'unknown';
+}
+
 /**
  * 'getFromSchema' function
  *
@@ -145,7 +156,7 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
   let subSchema = schema;
   const schemaPointer = [];
   const length = dataPointerArray.length;
-  if (returnType.slice(0, 6) === 'parent') { dataPointerArray.length--; }
+  if (returnType.startsWith('parent')) { dataPointerArray.length--; }
   for (let i = 0; i < length; ++i) {
     const parentSchema = subSchema;
     const key = dataPointerArray[i];
@@ -156,14 +167,14 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       console.error(dataPointer);
       return null;
     }
-    if (subSchema.type === 'array' && (!isNaN(key) || key === '-')) {
+    if (subSchema.type === 'array' && (!Number.isNaN(Number(key)) || key === '-')) {
       if (hasOwn(subSchema, 'items')) {
         if (isObject(subSchema.items)) {
           subSchemaFound = true;
           subSchema = subSchema.items;
           schemaPointer.push('items');
         } else if (isArray(subSchema.items)) {
-          if (!isNaN(key) && subSchema.items.length >= +key) {
+          if (!Number.isNaN(Number(key)) && subSchema.items.length >= +key) {
             subSchemaFound = true;
             subSchema = subSchema.items[+key];
             schemaPointer.push('items', key);
@@ -201,7 +212,7 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       return;
     }
   }
-  return returnType.slice(-7) === 'Pointer' ? schemaPointer : subSchema;
+  return returnType.endsWith('Pointer') ? schemaPointer : subSchema;
 }
 
 /**
@@ -233,7 +244,7 @@ export function removeRecursiveReferences(
   if (!pointer) { return ''; }
   let genericPointer =
     JsonPointer.toGenericPointer(JsonPointer.compile(pointer), arrayMap);
-  if (genericPointer.indexOf('/') === -1) { return genericPointer; }
+  if (!genericPointer.includes('/')) { return genericPointer; }
   let possibleReferences = true;
   while (possibleReferences) {
     possibleReferences = false;
@@ -272,14 +283,7 @@ export function getInputType(schema, layoutNode: any = null) {
   let schemaType = schema.type;
   if (schemaType) {
     if (isArray(schemaType)) { // If multiple types listed, use most inclusive type
-      schemaType =
-        inArray('object', schemaType) && hasOwn(schema, 'properties') ? 'object' :
-        inArray('array', schemaType) && hasOwn(schema, 'items') ? 'array' :
-        inArray('array', schemaType) && hasOwn(schema, 'additionalItems') ? 'array' :
-        inArray('string', schemaType) ? 'string' :
-        inArray('number', schemaType) ? 'number' :
-        inArray('integer', schemaType) ? 'integer' :
-        inArray('boolean', schemaType) ? 'boolean' : 'unknown';
+      schemaType = getUnionSchemaType(schema, schemaType);
     }
     if (schemaType === 'boolean') { return 'checkbox'; }
     if (schemaType === 'object') {
@@ -336,7 +340,7 @@ export function getInputType(schema, layoutNode: any = null) {
  */
 export function checkInlineType(controlType, schema, layoutNode: any = null) {
   if (!isString(controlType) || (
-    controlType.slice(0, 8) !== 'checkbox' && controlType.slice(0, 5) !== 'radio'
+    !controlType.startsWith('checkbox') && !controlType.startsWith('radio')
   )) {
     return controlType;
   }
@@ -355,7 +359,7 @@ export function checkInlineType(controlType, schema, layoutNode: any = null) {
       [schema, '/widget/component/options/inline'],
     ]) === true
   ) {
-    return controlType.slice(0, 5) === 'radio' ?
+    return controlType.startsWith('radio') ?
       'radios-inline' : 'checkboxes-inline';
   } else {
     return controlType;
@@ -380,7 +384,7 @@ export function isInputRequired(schema, schemaPointer) {
   if (isArray(listPointerArray)) {
     if (!listPointerArray.length) { return schema.required === true; }
     const keyName = listPointerArray.pop();
-    const nextToLastKey = listPointerArray[listPointerArray.length - 1];
+    const nextToLastKey = listPointerArray.at(-1);
     if (['properties', 'additionalProperties', 'patternProperties', 'items', 'additionalItems']
       .includes(nextToLastKey)
     ) {
@@ -490,7 +494,7 @@ export function getTitleMapFromOneOf(
 
     // if flatList !== false and some items have colons, make grouped map
     if (flatList !== false && (titleMap || [])
-      .filter(title => ((title || {}).name || '').indexOf(': ')).length > 1
+      .filter(title => (title?.name || '').indexOf(': ')).length > 1
     ) {
 
       // Split name on first colon to create grouped map (name -> group: name)
@@ -521,8 +525,11 @@ export function getControlValidators(schema) {
   const validators: any = { };
   // A nullable type is an array, for example ['string', 'null'], which matched no
   // case at all and so produced no validators. Each named type contributes its own.
-  const schemaTypes: any[] = hasOwn(schema, 'type') ?
-    (isArray(schema.type) ? schema.type : [schema.type]) : [];
+  const schemaTypes: any[] = [];
+  if (hasOwn(schema, 'type')) {
+    if (isArray(schema.type)) { schemaTypes.push(...schema.type); }
+    else { schemaTypes.push(schema.type); }
+  }
   for (const schemaType of schemaTypes) {
     switch (schemaType) {
       case 'string':
@@ -803,8 +810,9 @@ export function combineAllOf(schema) {
  */
 export function fixRequiredArrayProperties(schema) {
   if (schema.type === 'array' && isArray(schema.required)) {
-    const itemsObject = hasOwn(schema.items, 'properties') ? 'items' :
-      hasOwn(schema.additionalItems, 'properties') ? 'additionalItems' : null;
+    let itemsObject = null;
+    if (hasOwn(schema.items, 'properties')) { itemsObject = 'items'; }
+    else if (hasOwn(schema.additionalItems, 'properties')) { itemsObject = 'additionalItems'; }
     if (itemsObject && !hasOwn(schema[itemsObject], 'required') && (
       hasOwn(schema[itemsObject], 'additionalProperties') ||
       schema.required.every(key => hasOwn(schema[itemsObject].properties, key))

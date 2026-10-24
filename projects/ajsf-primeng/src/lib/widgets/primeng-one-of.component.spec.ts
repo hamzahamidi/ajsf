@@ -30,7 +30,7 @@ describe('PrimengOneOfComponent', () => {
         },
       });
       expect(component.isFieldset).toBe(false);
-      expect(component.selectList.length).toBe(2);
+      expect(component.selectList).toHaveLength(2);
       expect(component.selectList[0].name).toBe('Option A');
     });
 
@@ -39,7 +39,7 @@ describe('PrimengOneOfComponent', () => {
         type: 'one-of',
         options: { enum: ['x', 'y'], required: true },
       });
-      expect(component.selectList.length).toBe(2);
+      expect(component.selectList).toHaveLength(2);
     });
 
     it('passes !readonly to initializeControl', () => {
@@ -77,7 +77,7 @@ describe('PrimengOneOfComponent', () => {
 
     it('builds selectList from items legends', () => {
       const { component } = make(unkeyedNode);
-      expect(component.selectList.length).toBe(2);
+      expect(component.selectList).toHaveLength(2);
       expect(component.selectList[0]).toEqual({ name: 'Search by text', value: 0 });
       expect(component.selectList[1]).toEqual({ name: 'Search by category', value: 1 });
     });
@@ -160,7 +160,7 @@ describe('PrimengOneOfComponent', () => {
         ],
       });
       expect(component.isFieldset).toBe(true);
-      expect(component.selectList.length).toBe(2);
+      expect(component.selectList).toHaveLength(2);
       expect(component.selectList[0].value).toBe('text');
       expect(j.initializeControl).toHaveBeenCalled();
     });
@@ -199,7 +199,7 @@ describe('PrimengOneOfComponent', () => {
         items: [{ type: 'section', options: {} }, { type: 'section', options: {} }],
       };
       c.ngOnInit();
-      expect(c.selectList.length).toBe(3);
+      expect(c.selectList).toHaveLength(3);
       c.boundControl = true;
       c.formControl = { value: 'text' } as any;
       expect(c.selectedItem).toBe(0);
@@ -274,10 +274,10 @@ describe('PrimengOneOfComponent (TestBed)', () => {
       expect(oneOf).toBeTruthy();
       const comp = oneOf.componentInstance as PrimengOneOfComponent;
       expect(comp.isFieldset).toBe(true);
-      expect(comp.selectList.length).toBe(2);
+      expect(comp.selectList).toHaveLength(2);
       const el = oneOf.nativeElement as HTMLElement;
       const fwWidgets = el.querySelectorAll('select-framework-widget');
-      expect(fwWidgets.length).toBe(1);
+      expect(fwWidgets).toHaveLength(1);
     });
 
     it('switches rendered child after selectChild', async () => {

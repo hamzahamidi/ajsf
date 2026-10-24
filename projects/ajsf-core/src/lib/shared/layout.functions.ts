@@ -27,6 +27,27 @@ import { TitleMapItem } from '../json-schema-form.service';
 
 let idCounter = 0;
 
+const legacyValidationMessageCodes: ReadonlyMap<string, string> = new Map<string, string>([
+  ['0', 'type'],
+  ['1', 'enum'],
+  ['100', 'multipleOf'],
+  ['101', 'minimum'],
+  ['102', 'exclusiveMinimum'],
+  ['103', 'maximum'],
+  ['104', 'exclusiveMaximum'],
+  ['200', 'minLength'],
+  ['201', 'maxLength'],
+  ['202', 'pattern'],
+  ['300', 'minProperties'],
+  ['301', 'maxProperties'],
+  ['302', 'required'],
+  ['304', 'dependencies'],
+  ['400', 'minItems'],
+  ['401', 'maxItems'],
+  ['402', 'uniqueItems'],
+  ['500', 'format'],
+]);
+
 const uniqueId = () => String(++idCounter);
 
 
@@ -95,25 +116,7 @@ export function buildLayout(jsf, widgetLibrary) {
             newNode.options.validationMessages = {};
             Object.keys(newNode.options.validationMessage).forEach(key => {
               const code = key + '';
-              const newKey =
-                code === '0' ? 'type' :
-                  code === '1' ? 'enum' :
-                    code === '100' ? 'multipleOf' :
-                      code === '101' ? 'minimum' :
-                        code === '102' ? 'exclusiveMinimum' :
-                          code === '103' ? 'maximum' :
-                            code === '104' ? 'exclusiveMaximum' :
-                              code === '200' ? 'minLength' :
-                                code === '201' ? 'maxLength' :
-                                  code === '202' ? 'pattern' :
-                                    code === '300' ? 'minProperties' :
-                                      code === '301' ? 'maxProperties' :
-                                        code === '302' ? 'required' :
-                                          code === '304' ? 'dependencies' :
-                                            code === '400' ? 'minItems' :
-                                              code === '401' ? 'maxItems' :
-                                                code === '402' ? 'uniqueItems' :
-                                                  code === '500' ? 'format' : code + '';
+              const newKey = legacyValidationMessageCodes.get(code) ?? code;
               newNode.options.validationMessages[newKey] = newNode.options.validationMessage[key];
             });
           }
@@ -147,7 +150,7 @@ export function buildLayout(jsf, widgetLibrary) {
           if (hasOwn(items, 'dataPointer')) { return items.dataPointer; }
           if (isArray(items.items)) {
             for (const item of items.items) {
-              if (hasOwn(item, 'dataPointer') && item.dataPointer.indexOf('/-') !== -1) {
+              if (hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-')) {
                 return item.dataPointer;
               }
               if (hasOwn(item, 'items')) {
@@ -170,7 +173,7 @@ export function buildLayout(jsf, widgetLibrary) {
         return buildLayoutFromSchema(jsf, widgetLibrary, jsf.formValues);
       }
       const nodeValue =
-        JsonPointer.get(jsf.formValues, newNode.dataPointer.replace(/\/-/g, '/1'));
+        JsonPointer.get(jsf.formValues, newNode.dataPointer.replaceAll('/-', '/1'));
 
       // TODO: Create function getFormValues(jsf, dataPointer, forRefLibrary)
       // check formOptions.setSchemaDefaults and formOptions.setLayoutDefaults
@@ -384,20 +387,22 @@ export function buildLayout(jsf, widgetLibrary) {
         }
 
         if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
-          const lastItem = newNode.items[newNode.items.length - 1];
+          const lastItem = newNode.items.at(-1);
           // The last existing item is only a template for a new one when it is
           // itself a list item. On a tuple array it is a fixed slot, so cloning
           // it gave every added item that slot's schema, title and pointer.
-          const listItemSchemaPointer = isArray(nodeSchema && nodeSchema.items) ?
-            (isObject(nodeSchema.additionalItems) ?
-              schemaPointer + '/additionalItems' : null) :
-            (isObject(nodeSchema && nodeSchema.items) ?
-              schemaPointer + '/items' : null);
+          let listItemSchemaPointer: string | null = null;
+          if (isArray(nodeSchema?.items)) {
+            listItemSchemaPointer = isObject(nodeSchema.additionalItems) ?
+              schemaPointer + '/additionalItems' : null;
+          } else if (isObject(nodeSchema?.items)) {
+            listItemSchemaPointer = schemaPointer + '/items';
+          }
 
-          if (lastItem && lastItem.arrayItemType === 'tuple' && listItemSchemaPointer) {
+          if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
             // Set to null first to prevent a recursive reference from looping.
             jsf.layoutRefLibrary[itemRefPointer] = null;
-            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
               jsf, widgetLibrary, null,
               removeRecursiveReferences(
                 listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap
@@ -446,7 +451,7 @@ export function buildLayout(jsf, widgetLibrary) {
         // If needed, add button to add items to array
         if (newNode.options.addable !== false &&
           newNode.options.minItems < newNode.options.maxItems &&
-          (newNode.items[newNode.items.length - 1] || {}).type !== '$ref'
+          newNode.items.at(-1)?.type !== '$ref'
         ) {
           let buttonText = 'Add';
           if (newNode.options.title) {
@@ -470,7 +475,7 @@ export function buildLayout(jsf, widgetLibrary) {
               buttonText += ' to ' + parentSchema.title;
             } else {
               const pointerArray = JsonPointer.parse(newNode.dataPointer);
-              buttonText += ' to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+              buttonText += ' to ' + fixTitle(pointerArray.at(-2));
             }
           }
           newNode.items.push({
@@ -492,7 +497,7 @@ export function buildLayout(jsf, widgetLibrary) {
             $ref: itemRefPointer,
           });
           if (isString(JsonPointer.get(newNode, '/style/add'))) {
-            newNode.items[newNode.items.length - 1].options.fieldStyle =
+            newNode.items.at(-1).options.fieldStyle =
               newNode.style.add;
             delete newNode.style.add;
             if (isEmpty(newNode.style)) { delete newNode.style; }
@@ -517,7 +522,7 @@ export function buildLayout(jsf, widgetLibrary) {
   });
   if (jsf.hasRootReference) {
     const fullLayout = cloneDeep(formLayout);
-    if (fullLayout[fullLayout.length - 1].type === 'submit') { fullLayout.pop(); }
+    if (fullLayout.at(-1).type === 'submit') { fullLayout.pop(); }
     jsf.layoutRefLibrary[''] = {
       _id: null,
       dataPointer: '',
@@ -710,7 +715,7 @@ export function buildLayoutFromSchema(
           if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
             // Set to null first to prevent recursive reference from causing endless loop
             jsf.layoutRefLibrary[itemRefPointer] = null;
-            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
               jsf, widgetLibrary, isArray(nodeValue) ? nodeValue[i] : null,
               schemaPointer + '/items/' + i,
               itemRecursive ? '' : dataPointer + '/' + i,
@@ -759,7 +764,7 @@ export function buildLayoutFromSchema(
       if (itemRefPointer.length && !hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
         // Set to null first to prevent recursive reference from causing endless loop
         jsf.layoutRefLibrary[itemRefPointer] = null;
-        jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+        jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
           jsf, widgetLibrary, null,
           itemSchemaPointer,
           itemRecursive ? '' : dataPointer + '/-',
@@ -791,10 +796,10 @@ export function buildLayoutFromSchema(
       // If needed, add button to add items to array
       if (newNode.options.addable !== false &&
         newNode.options.minItems < newNode.options.maxItems &&
-        (newNode.items[newNode.items.length - 1] || {}).type !== '$ref'
+        newNode.items.at(-1)?.type !== '$ref'
       ) {
         let buttonText =
-          ((jsf.layoutRefLibrary[itemRefPointer] || {}).options || {}).title;
+          jsf.layoutRefLibrary[itemRefPointer]?.options?.title;
         const prefix = buttonText ? 'Add ' : 'Add to ';
         if (!buttonText) {
           buttonText = schema.title || fixTitle(JsonPointer.toKey(dataPointer));
@@ -841,7 +846,7 @@ export function buildLayoutFromSchema(
         buttonText = 'Add to ' + parentSchema.title;
       } else {
         const pointerArray = JsonPointer.parse(newNode.dataPointer);
-        buttonText = 'Add to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+        buttonText = 'Add to ' + fixTitle(pointerArray.at(-2));
       }
     }
     Object.assign(newNode, {

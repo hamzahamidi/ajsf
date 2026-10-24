@@ -23,7 +23,11 @@ export function addClasses(
   const badType = i => !isSet(i) && !isArray(i) && !isString(i);
   if (badType(newClasses)) { return oldClasses; }
   if (badType(oldClasses)) { oldClasses = ''; }
-  const toSet = i => isSet(i) ? i : isArray(i) ? new Set(i) : new Set(i.split(' '));
+  const toSet = i => {
+    if (isSet(i)) { return i; }
+    if (isArray(i)) { return new Set(i); }
+    return new Set(i.split(' '));
+  };
   const combinedSet: Set<any> = toSet(oldClasses);
   const newSet: Set<any> = toSet(newClasses);
   newSet.forEach(c => combinedSet.add(c));
@@ -181,11 +185,11 @@ export enum ExpressionType {
  * // {expressionCandidate} expressionCandidate - potential expression
  */
 export function getExpressionType(expressionCandidate: string): ExpressionType {
-  if (expressionCandidate.indexOf('==') !== -1) {
+  if (expressionCandidate.includes('==')) {
     return ExpressionType.EQUALS;
   }
 
-  if (expressionCandidate.toString().indexOf('!=') !== -1) {
+  if (expressionCandidate.toString().includes('!=')) {
     return ExpressionType.NOT_EQUALS;
   }
 
@@ -222,7 +226,7 @@ export function getKeyAndValueByExpressionType(expressionType: ExpressionType, k
   return null;
 }
 
-export function cleanValueOfQuotes(keyAndValue): String {
+export function cleanValueOfQuotes(keyAndValue): string {
   if (keyAndValue.charAt(0) === '\'' && keyAndValue.charAt(keyAndValue.length - 1) === '\'') {
     return keyAndValue.replace('\'', '').replace('\'', '');
   }
@@ -307,7 +311,7 @@ export function commonItems(...arrays): string[] {
  * // {string} -
  */
 export function fixTitle(name: string): string {
-  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' '));
+  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replaceAll('_', ' '));
 }
 
 /**

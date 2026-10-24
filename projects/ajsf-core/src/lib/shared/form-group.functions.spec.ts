@@ -368,7 +368,7 @@ describe('form-group.functions', () => {
         makeJsf({ type: 'array', items: { type: 'string' } }), ['a', 'b']
       );
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
       expect(result.controls[0].value).toEqual({ value: 'a', disabled: false });
       expect(result.controls[1].value).toEqual({ value: 'b', disabled: false });
     });
@@ -379,7 +379,7 @@ describe('form-group.functions', () => {
         [{ n: 'x' }]
       );
 
-      expect(result.controls.length).toBe(1);
+      expect(result.controls).toHaveLength(1);
       expect(result.controls[0].controlType).toBe('FormGroup');
       expect(result.controls[0].controls.n.value).toEqual({ value: 'x', disabled: false });
     });
@@ -400,7 +400,7 @@ describe('form-group.functions', () => {
         makeJsf({ type: 'array', items: { type: 'string' }, maxItems: 1 }), ['a', 'b', 'c']
       );
 
-      expect(result.controls.length).toBe(1);
+      expect(result.controls).toHaveLength(1);
       expect(result.controls[0].value).toEqual({ value: 'a', disabled: false });
     });
 
@@ -419,7 +419,7 @@ describe('form-group.functions', () => {
         makeJsf({ type: 'array', items: { type: 'string' } }, { dataMap })
       );
 
-      expect(result.controls.length).toBe(3);
+      expect(result.controls).toHaveLength(3);
       expect(result.controls[0]).toEqual({
         controlType: 'FormControl', value: { value: null, disabled: false }, validators: {},
       });
@@ -432,7 +432,7 @@ describe('form-group.functions', () => {
         makeJsf({ type: 'array', items: { type: 'string' } }, { dataMap })
       );
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
     });
 
     it('fills a recursive array from the supplied data', () => {
@@ -444,7 +444,7 @@ describe('form-group.functions', () => {
       );
       const result: any = buildFormGroupTemplate(jsf, ['a', 'b']);
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['']);
     });
 
@@ -472,7 +472,7 @@ describe('form-group.functions', () => {
       const jsf = makeJsf({ type: 'array', items: [{ type: 'string' }, { type: 'number' }] });
       const result: any = buildFormGroupTemplate(jsf);
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
       expect(result.controls[0].validators).toEqual({});
       expect(result.controls[1].validators).toEqual({ type: ['number'] });
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['/0', '/1']);
@@ -484,7 +484,7 @@ describe('form-group.functions', () => {
       });
       const result: any = buildFormGroupTemplate(jsf);
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['/1']);
     });
 
@@ -504,7 +504,7 @@ describe('form-group.functions', () => {
       );
       const result: any = buildFormGroupTemplate(jsf);
 
-      expect(result.controls.length).toBe(2);
+      expect(result.controls).toHaveLength(2);
       expect(result.controls[1]).toBeNull();
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['/0', '']);
     });
@@ -515,7 +515,7 @@ describe('form-group.functions', () => {
       });
       const result: any = buildFormGroupTemplate(jsf);
 
-      expect(result.controls.length).toBe(1);
+      expect(result.controls).toHaveLength(1);
       expect(Object.keys(jsf.templateRefLibrary)).toEqual(['/0', '/-']);
     });
 
@@ -709,7 +709,7 @@ describe('form-group.functions', () => {
         controlType: 'FormControl', value: { value: 'x', disabled: false }, validators: {},
       });
 
-      expect(control instanceof UntypedFormControl).toBe(true);
+      expect(control).toBeInstanceOf(UntypedFormControl);
       expect(control.value).toBe('x');
       expect(control.valid).toBe(true);
     });
@@ -786,7 +786,7 @@ describe('form-group.functions', () => {
         validators: {},
       });
 
-      expect(group instanceof UntypedFormGroup).toBe(true);
+      expect(group).toBeInstanceOf(UntypedFormGroup);
       expect(group.value).toEqual({ a: 'A', b: 2 });
     });
 
@@ -841,8 +841,8 @@ describe('form-group.functions', () => {
         validators: {},
       });
 
-      expect(array instanceof UntypedFormArray).toBe(true);
-      expect(array.length).toBe(2);
+      expect(array).toBeInstanceOf(UntypedFormArray);
+      expect(array).toHaveLength(2);
       expect(array.value).toEqual(['x', 'y']);
     });
 
@@ -857,7 +857,7 @@ describe('form-group.functions', () => {
         validators: {},
       });
 
-      expect(array.length).toBe(1);
+      expect(array).toHaveLength(1);
       expect(array.value).toEqual(['y']);
     });
 
@@ -908,7 +908,7 @@ describe('form-group.functions', () => {
       const template = buildFormGroupTemplate(jsf, { a: 'hello', b: [1, 2] });
       const group: any = buildFormGroup(template);
 
-      expect(group instanceof UntypedFormGroup).toBe(true);
+      expect(group).toBeInstanceOf(UntypedFormGroup);
       expect(group.value).toEqual({ a: 'hello', b: [1, 2] });
       expect(group.valid).toBe(true);
     });
@@ -990,7 +990,7 @@ describe('form-group.functions', () => {
       const result: any = mergeValues([{ a: 1 }], { c: 3 });
 
       expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0]).toEqual({ a: 1 });
       expect(result.c).toBe(3);
     });
@@ -1313,7 +1313,7 @@ describe('form-group.functions', () => {
     it('returns a top level control of a real FormGroup', () => {
       const control: any = getControl(group, '/a');
 
-      expect(control instanceof UntypedFormControl).toBe(true);
+      expect(control).toBeInstanceOf(UntypedFormControl);
       expect(control.value).toBe('A');
     });
 
@@ -1324,7 +1324,7 @@ describe('form-group.functions', () => {
     it('returns the containing group when returnGroup is true', () => {
       const control: any = getControl(group, '/g/b', true);
 
-      expect(control instanceof UntypedFormGroup).toBe(true);
+      expect(control).toBeInstanceOf(UntypedFormGroup);
       expect(control.value).toEqual({ b: 'B' });
     });
 

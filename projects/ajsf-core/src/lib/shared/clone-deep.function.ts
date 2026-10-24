@@ -7,7 +7,7 @@ function isRegExp(item: any): boolean {
 function clone(value: any, seen: WeakMap<any, any>): any {
   if (value === null || typeof value !== 'object') { return value; }
   if (seen.has(value)) { return seen.get(value); }
-  if (isDate(value)) { return new Date(value.getTime()); }
+  if (isDate(value)) { return new Date(value); }
   if (isRegExp(value)) {
     const pattern = new RegExp(value.source, value.flags);
     pattern.lastIndex = value.lastIndex;

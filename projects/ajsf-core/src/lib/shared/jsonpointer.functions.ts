@@ -56,25 +56,13 @@ export class JsonPointer {
       if (startSlice <= -keyArray.length) { startSlice = 0; }
       if (!isDefined(endSlice) || endSlice >= keyArray.length) { endSlice = keyArray.length; }
       keyArray = keyArray.slice(startSlice, endSlice);
-      for (let key of keyArray) {
-        if (key === '-' && isArray(subObject) && subObject.length) {
-          key = subObject.length - 1;
+      for (const key of keyArray) {
+        const result = this.getValueAtKey(subObject, key);
+        if (!result.found) {
+          this.logErrors(errors, result.key, pointer, object);
+          return getBoolean ? false : undefined;
         }
-        if (isMap(subObject) && subObject.has(key)) {
-          subObject = subObject.get(key);
-        } else if (typeof subObject === 'object' && subObject !== null &&
-          hasOwn(subObject, key)
-        ) {
-          subObject = subObject[key];
-        } else {
-          const evaluatedExpression = JsonPointer.evaluateExpression(subObject, key);
-          if (evaluatedExpression.passed) {
-            subObject = evaluatedExpression.key ? subObject[evaluatedExpression.key] : subObject;
-          } else {
-            this.logErrors(errors, key, pointer, object);
-            return getBoolean ? false : undefined;
-          }
-        }
+        subObject = result.value;
       }
       return getBoolean ? true : subObject;
     }
@@ -86,6 +74,24 @@ export class JsonPointer {
       console.error(object);
     }
     return getBoolean ? false : undefined;
+  }
+
+  private static getValueAtKey(subObject, key) {
+    if (key === '-' && isArray(subObject) && subObject.length) {
+      key = subObject.length - 1;
+    }
+    if (isMap(subObject) && subObject.has(key)) {
+      return {found: true, value: subObject.get(key), key};
+    }
+    if (typeof subObject === 'object' && subObject !== null && hasOwn(subObject, key)) {
+      return {found: true, value: subObject[key], key};
+    }
+    const evaluatedExpression = JsonPointer.evaluateExpression(subObject, key);
+    if (evaluatedExpression.passed) {
+      const value = evaluatedExpression.key ? subObject[evaluatedExpression.key] : subObject;
+      return {found: true, value, key};
+    }
+    return {found: false, value: undefined, key};
   }
 
   private static logErrors(errors, key, pointer, object) {
@@ -137,7 +143,7 @@ export class JsonPointer {
    * // { subObject } subObject - the object with properties values
    * // { keysAndExpression } keysAndExpression - an object holding the expressions with
    */
-  private static performExpressionOnValue(keysAndExpression: any, cleanedValue: String, subObject: Object) {
+  private static performExpressionOnValue(keysAndExpression: any, cleanedValue: string, subObject: Object) {
     const propertyByKey = subObject[keysAndExpression.keyAndValue[0]];
     if (this.doComparisonByExpressionType(keysAndExpression.expressionType, propertyByKey, cleanedValue)) {
       return {passed: true, key: keysAndExpression.keyAndValue[0]};
@@ -146,7 +152,7 @@ export class JsonPointer {
     return null;
   }
 
-  private static doComparisonByExpressionType(expressionType: ExpressionType, propertyByKey, cleanedValue: String): Boolean {
+  private static doComparisonByExpressionType(expressionType: ExpressionType, propertyByKey, cleanedValue: string): boolean {
     if (isEqual(expressionType)) {
       return propertyByKey === cleanedValue;
     }
@@ -193,7 +199,7 @@ export class JsonPointer {
       return null;
     }
     const keyAndValue = getKeyAndValueByExpressionType(expressionType, key);
-    if (!keyAndValue || !keyAndValue[0] || !keyAndValue[1]) {
+    if (!keyAndValue?.[0] || !keyAndValue[1]) {
       return null;
     }
     return {expressionType: expressionType, keyAndValue: keyAndValue};
@@ -240,35 +246,41 @@ export class JsonPointer {
   static getFirst(items, defaultValue: any = null, getCopy = false) {
     if (isEmpty(items)) { return; }
     if (isArray(items)) {
-      for (const item of items) {
-        if (isEmpty(item)) { continue; }
-        if (isArray(item) && item.length >= 2) {
-          if (isEmpty(item[0]) || isEmpty(item[1])) { continue; }
-          const value = getCopy ?
-            this.getCopy(item[0], item[1]) :
-            this.get(item[0], item[1]);
-          if (value) { return value; }
-          continue;
-        }
-        console.error('getFirst error: Input not in correct format.\n' +
-          'Should be: [ [ object1, pointer1 ], [ object 2, pointer2 ], etc... ]');
-        return;
-      }
-      return defaultValue;
+      return this.getFirstFromArray(items, defaultValue, getCopy);
     }
     if (isMap(items)) {
-      for (const [object, pointer] of items) {
-        if (object === null || !this.isJsonPointer(pointer)) { continue; }
-        const value = getCopy ?
-          this.getCopy(object, pointer) :
-          this.get(object, pointer);
-        if (value) { return value; }
-      }
-      return defaultValue;
+      return this.getFirstFromMap(items, defaultValue, getCopy);
     }
+    this.logGetFirstFormatError();
+    return defaultValue;
+  }
+
+  private static getFirstFromArray(items, defaultValue, getCopy) {
+    for (const item of items) {
+      if (isEmpty(item)) { continue; }
+      if (!isArray(item) || item.length < 2) {
+        this.logGetFirstFormatError();
+        return;
+      }
+      if (isEmpty(item[0]) || isEmpty(item[1])) { continue; }
+      const value = getCopy ? this.getCopy(item[0], item[1]) : this.get(item[0], item[1]);
+      if (value) { return value; }
+    }
+    return defaultValue;
+  }
+
+  private static getFirstFromMap(items, defaultValue, getCopy) {
+    for (const [object, pointer] of items) {
+      if (object === null || !this.isJsonPointer(pointer)) { continue; }
+      const value = getCopy ? this.getCopy(object, pointer) : this.get(object, pointer);
+      if (value) { return value; }
+    }
+    return defaultValue;
+  }
+
+  private static logGetFirstFormatError() {
     console.error('getFirst error: Input not in correct format.\n' +
       'Should be: [ [ object1, pointer1 ], [ object 2, pointer2 ], etc... ]');
-    return defaultValue;
   }
 
   /**
@@ -306,34 +318,11 @@ export class JsonPointer {
    * //  { boolean } insert - insert value?
    * // { object } - The original object, modified with the set value
    */
-  static set(object, pointer, value, insert = false) {
+  static set(object, pointer, value, insert = false) { // NOSONAR: Returns the mutated object by contract.
     const keyArray = this.parse(pointer);
-    if (keyArray !== null && keyArray.length) {
-      let subObject = object;
-      for (let i = 0; i < keyArray.length - 1; ++i) {
-        let key = keyArray[i];
-        if (key === '-' && isArray(subObject)) {
-          key = subObject.length;
-        }
-        if (isMap(subObject) && subObject.has(key)) {
-          subObject = subObject.get(key);
-        } else {
-          if (!hasOwn(subObject, key)) {
-            subObject[key] = (keyArray[i + 1].match(/^(\d+|-)$/)) ? [] : {};
-          }
-          subObject = subObject[key];
-        }
-      }
-      const lastKey = keyArray[keyArray.length - 1];
-      if (isArray(subObject) && lastKey === '-') {
-        subObject.push(value);
-      } else if (insert && isArray(subObject) && !isNaN(+lastKey)) {
-        subObject.splice(lastKey, 0, value);
-      } else if (isMap(subObject)) {
-        subObject.set(lastKey, value);
-      } else {
-        subObject[lastKey] = value;
-      }
+    if (keyArray?.length) {
+      const target = this.getWriteTarget(object, keyArray, false);
+      this.writeAtKey(target, keyArray.at(-1) ?? '', value, insert);
       return object;
     }
     console.error(`set error: Invalid JSON Pointer: ${pointer}`);
@@ -358,41 +347,49 @@ export class JsonPointer {
    */
   static setCopy(object, pointer, value, insert = false) {
     const keyArray = this.parse(pointer);
-    // set() carries the same length guard: without it an empty pointer leaves
-    // lastKey undefined and writes a property literally named 'undefined'.
-    if (keyArray !== null && keyArray.length) {
+    if (keyArray?.length) {
       const newObject = copy(object);
-      let subObject = newObject;
-      for (let i = 0; i < keyArray.length - 1; ++i) {
-        let key = keyArray[i];
-        if (key === '-' && isArray(subObject)) {
-          key = subObject.length;
-        }
-        if (isMap(subObject) && subObject.has(key)) {
-          subObject.set(key, copy(subObject.get(key)));
-          subObject = subObject.get(key);
-        } else {
-          if (!hasOwn(subObject, key)) {
-            subObject[key] = (keyArray[i + 1].match(/^(\d+|-)$/)) ? [] : {};
-          }
-          subObject[key] = copy(subObject[key]);
-          subObject = subObject[key];
-        }
-      }
-      const lastKey = keyArray[keyArray.length - 1];
-      if (isArray(subObject) && lastKey === '-') {
-        subObject.push(value);
-      } else if (insert && isArray(subObject) && !isNaN(+lastKey)) {
-        subObject.splice(lastKey, 0, value);
-      } else if (isMap(subObject)) {
-        subObject.set(lastKey, value);
-      } else {
-        subObject[lastKey] = value;
-      }
+      const target = this.getWriteTarget(newObject, keyArray, true);
+      this.writeAtKey(target, keyArray.at(-1) ?? '', value, insert);
       return newObject;
     }
     console.error(`setCopy error: Invalid JSON Pointer: ${pointer}`);
     return object;
+  }
+
+  private static getWriteTarget(object, keyArray, copyPath) {
+    let target = object;
+    for (let index = 0; index < keyArray.length - 1; index++) {
+      const nextKey = keyArray[index + 1];
+      const key = keyArray[index] === '-' && isArray(target) ? target.length : keyArray[index];
+      target = this.getWriteTargetStep(target, key, nextKey, copyPath);
+    }
+    return target;
+  }
+
+  private static getWriteTargetStep(target, key, nextKey, copyPath) {
+    if (isMap(target) && target.has(key)) {
+      if (copyPath) { target.set(key, copy(target.get(key))); }
+      return target.get(key);
+    }
+
+    if (!hasOwn(target, key)) {
+      target[key] = (nextKey.match(/^(\d+|-)$/)) ? [] : {};
+    }
+    if (copyPath) { target[key] = copy(target[key]); }
+    return target[key];
+  }
+
+  private static writeAtKey(target, key, value, insert) {
+    if (isArray(target) && key === '-') {
+      target.push(value);
+    } else if (insert && isArray(target) && !Number.isNaN(+key)) {
+      target.splice(key, 0, value);
+    } else if (isMap(target)) {
+      target.set(key, value);
+    } else {
+      target[key] = value;
+    }
   }
 
   /**
@@ -436,7 +433,7 @@ export class JsonPointer {
    */
   static remove(object, pointer) {
     const keyArray = this.parse(pointer);
-    if (keyArray !== null && keyArray.length) {
+    if (keyArray?.length) {
       let lastKey = keyArray.pop();
       const parentObject = this.get(object, keyArray);
       if (isArray(parentObject)) {
@@ -580,7 +577,7 @@ export class JsonPointer {
    * // { string } - escaped key
    */
   static escape(key) {
-    const escaped = key.toString().replace(/~/g, '~0').replace(/\//g, '~1');
+    const escaped = key.toString().replaceAll('~', '~0').replaceAll('/', '~1');
     return escaped;
   }
 
@@ -593,7 +590,7 @@ export class JsonPointer {
    * // { string } - unescaped key
    */
   static unescape(key) {
-    const unescaped = key.toString().replace(/~1/g, '/').replace(/~0/g, '~');
+    const unescaped = key.toString().replaceAll('~1', '/').replaceAll('~0', '~');
     return unescaped;
   }
 
@@ -614,7 +611,7 @@ export class JsonPointer {
     }
     if (isArray(pointer)) { return <string[]>pointer; }
     if (typeof pointer === 'string') {
-      if ((<string>pointer)[0] === '#') { pointer = pointer.slice(1); }
+      if ((<string>pointer).startsWith('#')) { pointer = pointer.slice(1); }
       if (<string>pointer === '' || <string>pointer === '/') { return []; }
       return (<string>pointer).slice(1).split('/').map(this.unescape);
     }
@@ -646,7 +643,7 @@ export class JsonPointer {
       ).join('/');
     }
     if (typeof pointer === 'string') {
-      if (pointer[0] === '#') { pointer = pointer.slice(1); }
+      if (pointer.startsWith('#')) { pointer = pointer.slice(1); }
       return pointer;
     }
   }
@@ -664,7 +661,7 @@ export class JsonPointer {
     const keyArray = this.parse(pointer, errors);
     if (keyArray === null) { return null; }
     if (!keyArray.length) { return ''; }
-    return keyArray[keyArray.length - 1];
+    return keyArray.at(-1) ?? '';
   }
 
   /**
@@ -682,7 +679,7 @@ export class JsonPointer {
       return value.every(key => typeof key === 'string');
     } else if (isString(value)) {
       if (value === '' || value === '#') { return true; }
-      if (value[0] === '/' || value.slice(0, 2) === '#/') {
+      if (value.startsWith('/') || value.startsWith('#/')) {
         return !/(~[^01]|~$)/g.test(value);
       }
     }
@@ -740,7 +737,7 @@ export class JsonPointer {
       let indexedPointer = this.compile(genericPointer);
       if (isMap(arrayMap)) {
         let arrayIndex = 0;
-        return indexedPointer.replace(/\/\-(?=\/|$)/g, (key, stringIndex) =>
+        return indexedPointer.replace(/\/-(?=\/|$)/g, (key, stringIndex) =>
           arrayMap.has((<string>indexedPointer).slice(0, stringIndex)) ?
             '/' + indexArray[arrayIndex++] : key
         );
@@ -797,7 +794,7 @@ export class JsonPointer {
       console.error(`toGenericPointer error: invalid JSON Pointer: ${indexedPointer}`);
     }
     if (!isMap(arrayMap)) {
-      console.error(`toGenericPointer error: invalid arrayMap: ${arrayMap}`);
+      console.error('toGenericPointer error: invalid arrayMap:', arrayMap);
     }
   }
 
@@ -861,7 +858,7 @@ export class JsonPointer {
       if (!pointerArray.length) { return ''; }
       const firstKey = pointerArray.shift();
       if (schema.type === 'object' || schema.properties || schema.additionalProperties) {
-        if ((schema.properties || {})[firstKey]) {
+        if (schema.properties?.[firstKey]) {
           return `/properties/${this.escape(firstKey)}` +
             this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
         } else  if (schema.additionalProperties) {

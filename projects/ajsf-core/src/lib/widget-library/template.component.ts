@@ -26,7 +26,7 @@ export class TemplateComponent implements OnInit, OnChanges {
     widgetContainer: ViewContainerRef;
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

@@ -710,7 +710,7 @@ describe('buildLayoutFromSchema', () => {
       expect(jsf.dataMap.get('/name').get('inputType')).toEqual('text');
       expect(jsf.dataMap.get('/name').get('widget')).toEqual('widget:text');
       expect(jsf.dataMap.get('/name').get('schemaPointer')).toEqual('/properties/name');
-      expect(jsf.dataMap.get('').get('required')).toEqual(undefined);
+      expect(jsf.dataMap.get('').get('required')).toBeUndefined();
     });
 
     it('stores the schema required list in the parent dataMap entry', () => {
@@ -1075,7 +1075,7 @@ describe('buildLayout', () => {
         makeJsf({ schema: objectSchema, layout: [42, 'name'] }), widgetLibrary
       );
 
-      expect(result.length).toEqual(1);
+      expect(result).toHaveLength(1);
       expect(result[0].dataPointer).toEqual('/name');
     });
 
@@ -1285,7 +1285,7 @@ describe('buildLayout', () => {
       });
       const result: any = buildLayout(jsf, widgetLibrary);
 
-      expect(result.length).toEqual(1);
+      expect(result).toHaveLength(1);
       expect(result[0].type).toEqual('fieldset');
       expect(result[0].widget).toEqual('widget:fieldset');
       expect(result[0].arrayItem).toBe(false);
@@ -1430,7 +1430,7 @@ describe('buildLayout', () => {
     });
 
     it('throws for a root reference over an empty layout', () => {
-      // BUG: fullLayout[fullLayout.length - 1] is undefined for an empty
+      // BUG: fullLayout.at(-1) is undefined for an empty
       // layout, and `.type` is read from it without a guard.
       const jsf: any = makeJsf({ schema: objectSchema, layout: [], hasRootReference: true });
 
@@ -1497,7 +1497,7 @@ describe('buildTitleMap, recurring group names', () => {
       { group: 'A', name: 'a1', value: 1 },
       { group: 'A', name: 'a2', value: 2 },
     ], null, true, false);
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(result[0].items.map((i: any) => i.value)).toEqual([1, 2]);
   });
 
@@ -1507,7 +1507,7 @@ describe('buildTitleMap, recurring group names', () => {
       { name: 'plain', value: 2 },
       { group: 'A', name: 'a2', value: 3 },
     ], null, true, false);
-    expect(result.length).toBe(2);
+    expect(result).toHaveLength(2);
     expect(result[0].items.map((i: any) => i.value)).toEqual([1, 3]);
     expect(result[1]).toEqual({ name: 'plain', value: 2 });
   });
@@ -1563,7 +1563,7 @@ describe('buildLayout, array named by key with no items in the layout', () => {
       widgetLibrary
     );
 
-    expect(result.length).toBe(1);
+    expect(result).toHaveLength(1);
     expect(Array.isArray(result[0].items)).toBe(true);
     expect(result[0].items.length).toBeGreaterThan(0);
   });
@@ -1638,7 +1638,7 @@ describe('buildLayout, tuple slots versus list items', () => {
     const slots: any[] = result[0].items
       .filter((item: any) => item.arrayItem && item.type !== '$ref');
     const past = slots.filter((slot: any) => slot.arrayItemType === 'list');
-    expect(past.length).toBe(1);
+    expect(past).toHaveLength(1);
     expect(past[0].removable).toBe(true);
   });
 

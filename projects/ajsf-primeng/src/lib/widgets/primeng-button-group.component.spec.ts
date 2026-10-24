@@ -15,7 +15,7 @@ describe('PrimengButtonGroupComponent', () => {
 
   it('builds radiosList from enum', () => {
     const { component } = make({ enum: ['opt1', 'opt2', 'opt3'] });
-    expect(component.radiosList.length).toBe(3);
+    expect(component.radiosList).toHaveLength(3);
     expect(component.radiosList[0].name).toBe('opt1');
     expect(component.radiosList[0].value).toBe('opt1');
   });

@@ -398,6 +398,41 @@ describe('JsonValidators', () => {
       expect(JsonValidators.format('relative-json-pointer')(ctrl('/foo'))).not.toBeNull();
     });
 
+    it('accepts well-formed URLs with supported schemes, credentials, ports, and public IP literals', () => {
+      const validator = JsonValidators.format('url');
+
+      expect(validator(ctrl('https://example.com/path'))).toBeNull();
+      expect(validator(ctrl('FTP://user:pass@example.com:8080/path'))).toBeNull();
+      expect(validator(ctrl('http://8.8.8.8'))).toBeNull();
+    });
+
+    it('rejects malformed URLs, localhost, private IPv4, and reserved IPv4 literals', () => {
+      const validator = JsonValidators.format('url');
+      const invalidUrls = [
+        'example.com',
+        'https://[invalid',
+        'https://example.com/a b',
+        'https://example.com:8',
+        'https://example.c',
+        'https://example.com.',
+        'https://localhost',
+        'https://[::1]/',
+        'http://0.0.0.1',
+        'http://8.8.8.0',
+        'http://8.8.8.255',
+        'http://10.0.0.1',
+        'http://127.0.0.1',
+        'http://169.254.0.1',
+        'http://172.16.0.1',
+        'http://192.168.0.1',
+        'http://224.0.0.1',
+      ];
+
+      for (const value of invalidUrls) {
+        expect(validator(ctrl(value))).not.toBeNull();
+      }
+    });
+
     it('uses the function based test for the regex format', () => {
       expect(JsonValidators.format('regex')(ctrl('^abc$'))).toBeNull();
       // 'a\Z' hits the /[^\\]\\Z/ guard inside the regex format test.
@@ -1193,7 +1228,7 @@ describe('JsonValidators', () => {
 
       expect(typeof validator).toEqual('function');
       const result: any = validator(ctrl('abc'));
-      expect(result instanceof Observable).toBe(true);
+      expect(result).toBeInstanceOf(Observable);
 
       let emitted: any = 'not emitted';
       result.subscribe(value => emitted = value);

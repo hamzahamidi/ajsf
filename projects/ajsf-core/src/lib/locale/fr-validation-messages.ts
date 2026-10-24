@@ -19,8 +19,12 @@ export const frValidationMessages: any = { // French error messages
         return 'Doit être une adresse IPv4, tel que "127.0.0.1"';
       case 'ipv6':
         return 'Doit être une adresse IPv6, tel que "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return 'Doit être un URI, tel que "https://example.com/resource"';
+      case 'uri-reference':
+        return 'Doit être une référence URI, telle que "../resource"';
+      case 'uri-template':
+        return 'Doit être un modèle URI, tel que "https://example.com/users/{id}"';
       case 'url':
         return 'Doit être une URL, tel que "http://www.example.com/page.html"';
       case 'uuid':
@@ -32,7 +36,7 @@ export const frValidationMessages: any = { // French error messages
       case 'relative-json-pointer':
         return 'Doit être un relative JSON Pointer, tel que "2/pointer/to/something"';
       case 'regex':
-        return 'Doit être une expression régulière, tel que "(1-)?\\d{3}-\\d{3}-\\d{4}"';
+        return String.raw`Doit être une expression régulière, tel que "(1-)?\d{3}-\d{3}-\d{4}"`;
       default:
         return 'Doit être avoir le format correct: ' + error.requiredFormat;
     }

@@ -1,5 +1,7 @@
 # @ajsf/material
 
+[![Repository coverage, SonarQube Cloud](https://sonarcloud.io/api/project_badges/measure?project=hamzahamidi_ajsf&metric=coverage)](https://sonarcloud.io/summary/new_code?id=hamzahamidi_ajsf)
+
 Angular Material framework for [AJSF](https://github.com/hamzahamidi/ajsf#readme), which builds Angular forms from JSON Schema.
 
 ## Getting started

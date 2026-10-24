@@ -15,8 +15,8 @@ import 'zone.js';
 // components only need the constructor and its methods to exist.
 if (!('ResizeObserver' in globalThis)) {
   (globalThis as any).ResizeObserver = class {
-    observe(): void {}
-    unobserve(): void {}
-    disconnect(): void {}
+    observe(): void {} // NOSONAR The test stub does not observe layout.
+    unobserve(): void {} // NOSONAR The test stub has no observed targets.
+    disconnect(): void {} // NOSONAR The test stub has no observed targets.
   };
 }

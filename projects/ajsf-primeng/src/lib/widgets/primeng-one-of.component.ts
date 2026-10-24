@@ -91,12 +91,12 @@ export class PrimengOneOfComponent implements OnInit {
   isFieldset = false;
   selectedValue: any = 0;
   private _selectedItem = 0;
-  private fieldsetValueMap: Map<any, number> = new Map();
+  private readonly fieldsetValueMap: Map<any, number> = new Map();
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(private jsf: JsonSchemaFormService) {}
+  constructor(private readonly jsf: JsonSchemaFormService) {}
 
   get selectedItem(): number {
     if (this.isFieldset && this.boundControl) {

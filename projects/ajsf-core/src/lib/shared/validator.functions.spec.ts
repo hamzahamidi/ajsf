@@ -47,8 +47,8 @@ describe("Validator functions", () => {
       expect(toJavaScriptType("10", "integer")).toEqual(10);
       expect(toJavaScriptType(10, "integer")).toEqual(10);
       expect(toJavaScriptType(10, "string")).toEqual("10");
-      expect(toJavaScriptType("10.5", "integer")).toEqual(null);
-      expect(toJavaScriptType(10.5, "integer")).toEqual(null);
+      expect(toJavaScriptType("10.5", "integer")).toBeNull();
+      expect(toJavaScriptType(10.5, "integer")).toBeNull();
     });
   });
   describe("toSchemaType", () => {
@@ -785,7 +785,7 @@ describe("Validator functions", () => {
     });
 
     it("converts an observable to a promise", () => {
-      expect(_toPromise(of(1)) instanceof Promise).toBe(true);
+      expect(_toPromise(of(1))).toBeInstanceOf(Promise);
     });
 
     it("throws for anything that is neither a promise nor an observable", () => {
@@ -801,13 +801,13 @@ describe("Validator functions", () => {
     });
 
     it("converts a promise to an observable", () => {
-      expect(toObservable(Promise.resolve(1)) instanceof Observable).toBe(true);
+      expect(toObservable(Promise.resolve(1))).toBeInstanceOf(Observable);
     });
 
     it("logs an error and returns an empty observable for other input", () => {
       vi.spyOn(console, "error");
 
-      expect(toObservable({}) instanceof Observable).toBe(true);
+      expect(toObservable({})).toBeInstanceOf(Observable);
       expect(console.error).toHaveBeenCalled();
     });
 

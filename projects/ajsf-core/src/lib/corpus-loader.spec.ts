@@ -17,11 +17,11 @@ describe('corpus loader', () => {
   it('skips exactly the four schemas that are not valid JSON', () => {
     const names = loadCorpus().map(e => e.name);
     SKIPPED_NOT_JSON.forEach(skipped => expect(names).not.toContain(skipped));
-    expect(SKIPPED_NOT_JSON.length).toEqual(4);
+    expect(SKIPPED_NOT_JSON).toHaveLength(4);
   });
 
   it('covers the schemas the demo can actually load as JSON', () => {
     // 78 files on disk, 4 of which embed JavaScript and are eval'd by the demo.
-    expect(loadCorpus().length).toEqual(74);
+    expect(loadCorpus()).toHaveLength(74);
   });
 });

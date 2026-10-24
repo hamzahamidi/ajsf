@@ -146,9 +146,11 @@ export class WidgetLibraryService {
   }
 
   setActiveWidgets(): boolean {
-    this.activeWidgets = Object.assign(
-      { }, this.widgetLibrary, this.frameworkWidgets, this.registeredWidgets
-    );
+    this.activeWidgets = {
+      ...this.widgetLibrary,
+      ...this.frameworkWidgets,
+      ...this.registeredWidgets,
+    };
     for (const widgetName of Object.keys(this.activeWidgets)) {
       let widget: any = this.activeWidgets[widgetName];
       // Resolve aliases

@@ -92,7 +92,7 @@ describe('Validation messages', () => {
         .map(({ name }) => name);
 
       expect(mismatches).toEqual([]);
-      expect(expectedKeys.length).toEqual(15);
+      expect(expectedKeys).toHaveLength(15);
     });
 
     it('format and multipleOf are the only function valued messages', () => {
@@ -188,7 +188,7 @@ describe('Validation messages', () => {
       it('falls through to the default branch for uri, which has no case', () => {
         const result = messages.format({ requiredFormat: 'uri' });
 
-        expect(result).toContain('uri');
+        expect(result.toLowerCase()).toContain('uri');
       });
 
       it('interpolates the string "undefined" when requiredFormat is missing', () => {

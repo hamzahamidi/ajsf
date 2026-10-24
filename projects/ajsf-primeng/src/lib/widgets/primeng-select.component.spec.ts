@@ -15,7 +15,7 @@ describe('PrimengSelectComponent', () => {
 
   it('builds a flat selectList from enum', () => {
     const { component } = make({ enum: ['a', 'b', 'c'], required: true });
-    expect(component.selectList.length).toBe(3);
+    expect(component.selectList).toHaveLength(3);
     expect(component.selectList[0].name).toBe('a');
     expect(component.selectList[0].value).toBe('a');
     expect(component.hasGroups).toBe(false);

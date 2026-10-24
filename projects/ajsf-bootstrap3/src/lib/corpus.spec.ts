@@ -20,4 +20,4 @@ class Bootstrap3CorpusHost implements CorpusHost {
   valid: boolean | null = null;
 }
 
-runCorpus('bootstrap-3', Bootstrap3CorpusHost);
+runCorpus('bootstrap-3', Bootstrap3CorpusHost); // NOSONAR The shared harness declares this file's tests.

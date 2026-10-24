@@ -21,7 +21,7 @@ export class SelectWidgetComponent implements OnChanges, OnInit {
     widgetContainer: ViewContainerRef;
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {
@@ -33,7 +33,7 @@ export class SelectWidgetComponent implements OnChanges, OnInit {
   }
 
   updateComponent() {
-    if (this.widgetContainer && !this.newComponent && (this.layoutNode || {}).widget) {
+    if (this.widgetContainer && !this.newComponent && this.layoutNode?.widget) {
       this.newComponent = this.widgetContainer.createComponent(this.layoutNode.widget);
     }
     if (this.newComponent) {

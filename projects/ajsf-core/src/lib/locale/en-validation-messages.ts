@@ -19,8 +19,12 @@ export const enValidationMessages: any = { // Default English error messages
         return 'Must be an IPv4 address, like "127.0.0.1"';
       case 'ipv6':
         return 'Must be an IPv6 address, like "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return 'Must be a URI, like "https://example.com/resource"';
+      case 'uri-reference':
+        return 'Must be a URI reference, like "../resource"';
+      case 'uri-template':
+        return 'Must be a URI template, like "https://example.com/users/{id}"';
       case 'url':
         return 'Must be a url, like "http://www.example.com/page.html"';
       case 'uuid':
@@ -32,7 +36,7 @@ export const enValidationMessages: any = { // Default English error messages
       case 'relative-json-pointer':
         return 'Must be a relative JSON Pointer, like "2/pointer/to/something"';
       case 'regex':
-        return 'Must be a regular expression, like "(1-)?\\d{3}-\\d{3}-\\d{4}"';
+        return String.raw`Must be a regular expression, like "(1-)?\d{3}-\d{3}-\d{4}"`;
       default:
         return 'Must be a correctly formatted ' + error.requiredFormat;
     }

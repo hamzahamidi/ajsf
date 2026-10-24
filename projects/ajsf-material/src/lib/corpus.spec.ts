@@ -20,4 +20,4 @@ class MaterialCorpusHost implements CorpusHost {
   valid: boolean | null = null;
 }
 
-runCorpus('material-design', MaterialCorpusHost);
+runCorpus('material-design', MaterialCorpusHost); // NOSONAR The shared harness declares this file's tests.
