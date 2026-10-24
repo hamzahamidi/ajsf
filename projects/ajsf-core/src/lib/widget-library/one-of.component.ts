@@ -147,9 +147,12 @@ export class OneOfComponent implements OnInit {
     if (!this.isFieldset || !this.hasExplicitFieldsetOptions()) { return; }
     let itemIndex = 0;
     for (const entry of this.selectList) {
-      if (entry.value == null) { continue; }
-      if (itemIndex === 0) { this.selectedValue = entry.value; }
-      this.fieldsetValueMap.set(entry.value, itemIndex++);
+      const items = Array.isArray(entry.items) ? entry.items : [entry];
+      for (const item of items) {
+        if (item.value == null) { continue; }
+        if (itemIndex === 0) { this.selectedValue = item.value; }
+        this.fieldsetValueMap.set(item.value, itemIndex++);
+      }
     }
   }
 

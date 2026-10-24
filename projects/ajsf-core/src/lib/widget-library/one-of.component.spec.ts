@@ -86,6 +86,21 @@ describe('OneOfComponent', () => {
     expect(component.selectedItem).toBe(1);
   });
 
+  it('maps grouped options to their fieldset children', () => {
+    const { component } = make({
+      type: 'selectfieldset',
+      options: {
+        titleMap: [
+          { group: 'Group', name: 'First', value: 'first' },
+          { group: 'Group', name: 'Second', value: 'second' },
+        ],
+      },
+      items: [{}, {}],
+    }, 'second');
+
+    expect(component.selectedItem).toBe(1);
+  });
+
   it('uses a numeric fieldset value as its child index when it is not in the value map', () => {
     const { component } = make({
       type: 'selectfieldset',
