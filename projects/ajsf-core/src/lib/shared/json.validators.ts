@@ -150,7 +150,7 @@ export class JsonValidators {
   static required(input?: boolean): IValidatorFn;
 
   static required(input?: AbstractControl|boolean): ValidationErrors|null|IValidatorFn {
-    if (input === undefined) { input = true; }
+    input ??= true;
     switch (input) {
       case true: // Return required function (do not execute it yet)
         return (control: AbstractControl, invert = false): ValidationErrors|null => {
