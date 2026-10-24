@@ -160,12 +160,12 @@
     "valid": true
   },
   "bootstrap-3/jsf-fields-selectfieldset": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "bootstrap-3/jsf-fields-selectfieldset-key": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
@@ -530,12 +530,12 @@
     "valid": true
   },
   "bootstrap-4/jsf-fields-selectfieldset": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "bootstrap-4/jsf-fields-selectfieldset-key": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
@@ -900,12 +900,12 @@
     "valid": true
   },
   "bootstrap-5/jsf-fields-selectfieldset": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "bootstrap-5/jsf-fields-selectfieldset-key": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
