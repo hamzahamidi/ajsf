@@ -132,32 +132,9 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
       }
       // Set miscelaneous styles and settings for each control type
       switch (this.layoutNode.type) {
-        // Checkbox controls
+        // Checkbox and radio controls
         case 'checkbox':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'form-check');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-check-input');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
-          break;
         case 'checkboxes':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'form-check');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-check-input');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
-          break;
-        case 'checkboxes-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'form-check form-check-inline');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-check-input');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
-          break;
-        // Radio controls
         case 'radio':
         case 'radios':
           this.widgetOptions.htmlClass = addClasses(
@@ -167,6 +144,7 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
           this.widgetOptions.itemLabelHtmlClass = addClasses(
             this.widgetOptions.itemLabelHtmlClass, 'form-check-label');
           break;
+        case 'checkboxes-inline':
         case 'radios-inline':
           this.widgetOptions.htmlClass = addClasses(
             this.widgetOptions.htmlClass, 'form-check form-check-inline');

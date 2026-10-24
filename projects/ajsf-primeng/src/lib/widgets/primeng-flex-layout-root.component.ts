@@ -33,7 +33,7 @@ export class PrimengFlexLayoutRootComponent {
   @Input() isFlexItem = false;
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   removeItem(item) {

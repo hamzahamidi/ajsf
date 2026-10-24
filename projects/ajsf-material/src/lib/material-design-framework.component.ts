@@ -23,8 +23,8 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
   @Input() dataIndex: number[];
 
   constructor(
-    private changeDetector: ChangeDetectorRef,
-    private jsf: JsonSchemaFormService
+    private readonly changeDetector: ChangeDetectorRef,
+    private readonly jsf: JsonSchemaFormService
   ) {
   }
 

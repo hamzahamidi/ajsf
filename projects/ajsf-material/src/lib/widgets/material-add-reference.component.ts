@@ -33,7 +33,7 @@ export class MaterialAddReferenceComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

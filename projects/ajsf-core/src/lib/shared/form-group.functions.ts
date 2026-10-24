@@ -110,7 +110,7 @@ export function buildFormGroupTemplate(
   const validators = getControlValidators(schema);
   switch (controlType) {
 
-    case 'FormGroup':
+    case 'FormGroup': {
       controls = {};
       if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties')) {
         const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
@@ -138,6 +138,7 @@ export function buildFormGroupTemplate(
         jsf.formOptions.fieldsRequired = setRequiredFields(schema, controls);
       }
       return { controlType, controls, validators };
+    }
 
     case 'FormArray': {
       controls = [];
