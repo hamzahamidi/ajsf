@@ -90,7 +90,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
   formValuesInput: string; // Name of the input providing the form data
   previousInputs: { // Previous input values, to detect which input triggers onChanges
-    schema: any, layout: any[], data: any, options: any, framework: any | string,
+    schema: any, layout: any[], data: any, options: any, framework: any,
     widgets: any, form: any, model: any, JSONSchema: any, UISchema: any,
     formData: any, loadExternalAssets: boolean, debug: boolean,
   } = {
@@ -104,7 +104,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   @Input() layout: any[]; // The form layout
   @Input() data: any; // The form data
   @Input() options: any; // The global form options
-  @Input() framework: any | string; // The framework to load
+  @Input() framework: any; // The framework to load
   @Input() widgets: any; // Any custom widgets to load
 
   // Alternate combined single input
