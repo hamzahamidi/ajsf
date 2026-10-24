@@ -393,9 +393,9 @@ function buildPrimitiveFormGroupTemplate(context: FormGroupTemplateContext): any
  * // {AbstractControl}
 */
 export function buildFormGroup(template: any): AbstractControl {
+  if (!hasOwn(template, 'controlType')) return null;
   const validatorFns = buildValidatorFunctions(template);
   const validatorFn = getContainerValidator(template.controlType, validatorFns);
-  if (!hasOwn(template, 'controlType')) return null;
   switch (template.controlType) {
     case 'FormGroup':
       return new UntypedFormGroup(buildGroupControls(template), validatorFn);
