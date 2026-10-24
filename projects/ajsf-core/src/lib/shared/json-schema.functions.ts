@@ -16,8 +16,6 @@ import { mergeSchemas } from './merge-schemas.function';
 /**
  * JSON Schema function library:
  *
- * buildSchemaFromLayout:   TODO: Write this function
- *
  * buildSchemaFromData:
  *
  * getFromSchema:

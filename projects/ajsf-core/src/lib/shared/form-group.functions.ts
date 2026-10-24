@@ -41,7 +41,6 @@ import { JsonValidators } from './json.validators';
  *
  * getControl:
  *
- * ---- TODO: ----
  * TODO: add buildFormGroupTemplateFromLayout function
  * buildFormGroupTemplateFromLayout: Builds a FormGroupTemplate from a form layout
  */
