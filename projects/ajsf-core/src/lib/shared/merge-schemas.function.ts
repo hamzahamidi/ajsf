@@ -20,13 +20,20 @@ function greatestCommonDivisor(left: number, right: number): number {
 }
 
 function leastCommonMultipleOfDecimals(left: number, right: number): number|null {
-  if (!Number.isFinite(left) || !Number.isFinite(right) || left <= 0 || right <= 0) {
+  const numericLeft = Number(left);
+  const numericRight = Number(right);
+  if (
+    !Number.isFinite(numericLeft) ||
+    !Number.isFinite(numericRight) ||
+    numericLeft <= 0 ||
+    numericRight <= 0
+  ) {
     return null;
   }
-  const scale = 10 ** Math.max(decimalPlaces(left), decimalPlaces(right));
+  const scale = 10 ** Math.max(decimalPlaces(numericLeft), decimalPlaces(numericRight));
   if (!Number.isSafeInteger(scale)) { return null; }
-  const scaledLeft = Math.round(left * scale);
-  const scaledRight = Math.round(right * scale);
+  const scaledLeft = Math.round(numericLeft * scale);
+  const scaledRight = Math.round(numericRight * scale);
   if (!Number.isSafeInteger(scaledLeft) || !Number.isSafeInteger(scaledRight)) {
     return null;
   }
