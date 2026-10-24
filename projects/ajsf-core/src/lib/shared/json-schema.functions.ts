@@ -147,6 +147,51 @@ function getUnionSchemaType(schema, schemaTypes) {
  * //  { string = 'schema' } returnType - what to return?
  * //  - The located sub-schema
  */
+function findArraySchemaChild(subSchema, key, schemaPointer) {
+  let subSchemaFound = false;
+  if (hasOwn(subSchema, 'items')) {
+    if (isObject(subSchema.items)) {
+      subSchemaFound = true;
+      subSchema = subSchema.items;
+      schemaPointer.push('items');
+    } else if (isArray(subSchema.items) && !Number.isNaN(Number(key)) &&
+      subSchema.items.length >= +key
+    ) {
+      subSchemaFound = true;
+      subSchema = subSchema.items[+key];
+      schemaPointer.push('items', key);
+    }
+  }
+  if (!subSchemaFound && isObject(subSchema.additionalItems)) {
+    subSchemaFound = true;
+    subSchema = subSchema.additionalItems;
+    schemaPointer.push('additionalItems');
+  } else if (subSchema.additionalItems !== false) {
+    subSchemaFound = true;
+    subSchema = {};
+    schemaPointer.push('additionalItems');
+  }
+  return { subSchema, subSchemaFound };
+}
+
+function findObjectSchemaChild(subSchema, key, schemaPointer) {
+  let subSchemaFound = false;
+  if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
+    subSchemaFound = true;
+    subSchema = subSchema.properties[key];
+    schemaPointer.push('properties', key);
+  } else if (isObject(subSchema.additionalProperties)) {
+    subSchemaFound = true;
+    subSchema = subSchema.additionalProperties;
+    schemaPointer.push('additionalProperties');
+  } else if (subSchema.additionalProperties !== false) {
+    subSchemaFound = true;
+    subSchema = {};
+    schemaPointer.push('additionalProperties');
+  }
+  return { subSchema, subSchemaFound };
+}
+
 export function getFromSchema(schema, dataPointer, returnType = 'schema') {
   const dataPointerArray: any[] = JsonPointer.parse(dataPointer);
   if (dataPointerArray === null) {
@@ -167,42 +212,13 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       return null;
     }
     if (subSchema.type === 'array' && (!Number.isNaN(Number(key)) || key === '-')) {
-      if (hasOwn(subSchema, 'items')) {
-        if (isObject(subSchema.items)) {
-          subSchemaFound = true;
-          subSchema = subSchema.items;
-          schemaPointer.push('items');
-        } else if (isArray(subSchema.items)) {
-          if (!Number.isNaN(Number(key)) && subSchema.items.length >= +key) {
-            subSchemaFound = true;
-            subSchema = subSchema.items[+key];
-            schemaPointer.push('items', key);
-          }
-        }
-      }
-      if (!subSchemaFound && isObject(subSchema.additionalItems)) {
-        subSchemaFound = true;
-        subSchema = subSchema.additionalItems;
-        schemaPointer.push('additionalItems');
-      } else if (subSchema.additionalItems !== false) {
-        subSchemaFound = true;
-        subSchema = { };
-        schemaPointer.push('additionalItems');
-      }
+      const result = findArraySchemaChild(subSchema, key, schemaPointer);
+      subSchema = result.subSchema;
+      subSchemaFound = result.subSchemaFound;
     } else if (subSchema.type === 'object') {
-      if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
-        subSchemaFound = true;
-        subSchema = subSchema.properties[key];
-        schemaPointer.push('properties', key);
-      } else if (isObject(subSchema.additionalProperties)) {
-        subSchemaFound = true;
-        subSchema = subSchema.additionalProperties;
-        schemaPointer.push('additionalProperties');
-      } else if (subSchema.additionalProperties !== false) {
-        subSchemaFound = true;
-        subSchema = { };
-        schemaPointer.push('additionalProperties');
-      }
+      const result = findObjectSchemaChild(subSchema, key, schemaPointer);
+      subSchema = result.subSchema;
+      subSchemaFound = result.subSchemaFound;
     }
     if (!subSchemaFound) {
       console.error(`getFromSchema error: Unable to find "${key}" item in schema.`);
@@ -268,6 +284,58 @@ export function removeRecursiveReferences(
  * //  { any = null } layoutNode
  * // { string }
  */
+function getObjectInputType(schema) {
+  if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+    return 'section';
+  }
+  // TODO: Figure out how to handle additionalProperties
+  if (hasOwn(schema, '$ref')) { return '$ref'; }
+}
+
+function getArrayInputType(schema, layoutNode) {
+  const itemsObject = JsonPointer.getFirst([
+    [schema, '/items'],
+    [schema, '/additionalItems']
+  ]) || {};
+  return hasOwn(itemsObject, 'enum') && schema.maxItems !== 1 ?
+    checkInlineType('checkboxes', schema, layoutNode) : 'array';
+}
+
+function hasSelectableInput(schema, layoutNode) {
+  return JsonPointer.has(layoutNode, '/options/titleMap') ||
+    hasOwn(schema, 'enum') || getTitleMapFromOneOf(schema, null, true);
+}
+
+function getNumericInputType(schema, schemaType) {
+  return (schemaType === 'integer' || hasOwn(schema, 'multipleOf')) &&
+    hasOwn(schema, 'maximum') && hasOwn(schema, 'minimum') ? 'range' : schemaType;
+}
+
+function getStringInputType(schema) {
+  return {
+    'color': 'color',
+    'date': 'date',
+    'date-time': 'datetime-local',
+    'email': 'email',
+    'uri': 'url',
+  }[schema.format] || 'text';
+}
+
+function getTypedInputType(schema, layoutNode, schemaType) {
+  if (schemaType === 'boolean') { return 'checkbox'; }
+  if (schemaType === 'object') {
+    const inputType = getObjectInputType(schema);
+    if (inputType) { return inputType; }
+  }
+  if (schemaType === 'array') { return getArrayInputType(schema, layoutNode); }
+  if (schemaType === 'null') { return 'none'; }
+  if (hasSelectableInput(schema, layoutNode)) { return 'select'; }
+  if (schemaType === 'number' || schemaType === 'integer') {
+    return getNumericInputType(schema, schemaType);
+  }
+  if (schemaType === 'string') { return getStringInputType(schema); }
+}
+
 export function getInputType(schema, layoutNode: any = null) {
   // x-schema-form = Angular Schema Form compatibility
   // widget & component = React Jsonschema Form compatibility
@@ -284,39 +352,8 @@ export function getInputType(schema, layoutNode: any = null) {
     if (isArray(schemaType)) { // If multiple types listed, use most inclusive type
       schemaType = getUnionSchemaType(schema, schemaType);
     }
-    if (schemaType === 'boolean') { return 'checkbox'; }
-    if (schemaType === 'object') {
-      if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
-        return 'section';
-      }
-      // TODO: Figure out how to handle additionalProperties
-      if (hasOwn(schema, '$ref')) { return '$ref'; }
-    }
-    if (schemaType === 'array') {
-      const itemsObject = JsonPointer.getFirst([
-        [schema, '/items'],
-        [schema, '/additionalItems']
-      ]) || {};
-      return hasOwn(itemsObject, 'enum') && schema.maxItems !== 1 ?
-        checkInlineType('checkboxes', schema, layoutNode) : 'array';
-    }
-    if (schemaType === 'null') { return 'none'; }
-    if (JsonPointer.has(layoutNode, '/options/titleMap') ||
-      hasOwn(schema, 'enum') || getTitleMapFromOneOf(schema, null, true)
-    ) { return 'select'; }
-    if (schemaType === 'number' || schemaType === 'integer') {
-      return (schemaType === 'integer' || hasOwn(schema, 'multipleOf')) &&
-        hasOwn(schema, 'maximum') && hasOwn(schema, 'minimum') ? 'range' : schemaType;
-    }
-    if (schemaType === 'string') {
-      return {
-        'color': 'color',
-        'date': 'date',
-        'date-time': 'datetime-local',
-        'email': 'email',
-        'uri': 'url',
-      }[schema.format] || 'text';
-    }
+    const inputType = getTypedInputType(schema, layoutNode, schemaType);
+    if (inputType) { return inputType; }
   }
   if (hasOwn(schema, '$ref')) { return '$ref'; }
   if (isArray(schema.oneOf) || isArray(schema.anyOf)) { return 'one-of'; }
