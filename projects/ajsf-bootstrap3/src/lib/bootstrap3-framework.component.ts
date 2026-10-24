@@ -71,70 +71,75 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
   }
 
   initializeFramework() {
-    if (this.layoutNode) {
-      this.options = cloneDeep(this.layoutNode.options);
-      this.widgetLayoutNode = {
-        ...this.layoutNode,
-        options: cloneDeep(this.layoutNode.options)
-      };
-      this.widgetOptions = this.widgetLayoutNode.options;
-      this.formControl = this.jsf.getFormControl(this);
+    if (!this.layoutNode) { return; }
+    this.options = cloneDeep(this.layoutNode.options);
+    this.widgetLayoutNode = {
+      ...this.layoutNode,
+      options: cloneDeep(this.layoutNode.options)
+    };
+    this.widgetOptions = this.widgetLayoutNode.options;
+    this.formControl = this.jsf.getFormControl(this);
+    this.setInputWidget();
+    this.options.title = this.setTitle();
+    this.setLayoutClasses();
+    this.widgetOptions.htmlClass = '';
+    this.options.labelHtmlClass =
+      addClasses(this.options.labelHtmlClass, 'control-label');
+    this.widgetOptions.activeClass =
+      addClasses(this.widgetOptions.activeClass, 'active');
+    this.options.fieldAddonLeft =
+      this.options.fieldAddonLeft || this.options.prepend;
+    this.options.fieldAddonRight =
+      this.options.fieldAddonRight || this.options.append;
+    this.markRequiredTitle();
+    this.applyWidgetStyles();
+    this.subscribeToControlEvents();
+    this.frameworkInitialized = true;
+  }
 
-      this.options.isInputWidget = inArray(this.layoutNode.type, [
-        'button', 'checkbox', 'checkboxes-inline', 'checkboxes', 'color',
-        'date', 'datetime-local', 'datetime', 'email', 'file', 'hidden',
-        'image', 'integer', 'month', 'number', 'password', 'radio',
-        'radiobuttons', 'radios-inline', 'radios', 'range', 'reset', 'search',
-        'select', 'submit', 'tel', 'text', 'textarea', 'time', 'url', 'week'
-      ]);
+  private setInputWidget() {
+    this.options.isInputWidget = inArray(this.layoutNode.type, [
+      'button', 'checkbox', 'checkboxes-inline', 'checkboxes', 'color',
+      'date', 'datetime-local', 'datetime', 'email', 'file', 'hidden',
+      'image', 'integer', 'month', 'number', 'password', 'radio',
+      'radiobuttons', 'radios-inline', 'radios', 'range', 'reset', 'search',
+      'select', 'submit', 'tel', 'text', 'textarea', 'time', 'url', 'week'
+    ]);
+  }
 
-      this.options.title = this.setTitle();
-
-      this.options.htmlClass =
-        addClasses(this.options.htmlClass, 'schema-form-' + this.layoutNode.type);
-      if (this.layoutNode.type !== 'flex') {
-        if (this.layoutNode.type === 'array') {
-          this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group');
-        } else if (this.layoutNode.arrayItem && this.layoutNode.type !== '$ref') {
-          this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group-item');
-        } else {
-          this.options.htmlClass = addClasses(this.options.htmlClass, 'form-group');
-        }
+  private setLayoutClasses() {
+    this.options.htmlClass =
+      addClasses(this.options.htmlClass, 'schema-form-' + this.layoutNode.type);
+    if (this.layoutNode.type !== 'flex') {
+      if (this.layoutNode.type === 'array') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group');
+      } else if (this.layoutNode.arrayItem && this.layoutNode.type !== '$ref') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group-item');
+      } else {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'form-group');
       }
-      this.widgetOptions.htmlClass = '';
-      this.options.labelHtmlClass =
-        addClasses(this.options.labelHtmlClass, 'control-label');
-      this.widgetOptions.activeClass =
-        addClasses(this.widgetOptions.activeClass, 'active');
-      this.options.fieldAddonLeft =
-        this.options.fieldAddonLeft || this.options.prepend;
-      this.options.fieldAddonRight =
-        this.options.fieldAddonRight || this.options.append;
-
-      // Named types only: submit also has a null title here, and its widget
-      // uses the title as an input value, where markup would render literally.
-      const titled = this.layoutNode.type === 'array' || this.layoutNode.type === 'fieldset'
-        ? this.widgetOptions : this.options;
-      if (titled.title && this.layoutNode.type !== 'tab' &&
-        !this.options.notitle && this.options.required &&
-        !titled.title.includes('*')
-      ) {
-        titled.title += ' <strong class="text-danger">*</strong>';
-      }
-      this.applyWidgetStyles();
-
-      if (this.formControl) {
-        this.updateHelpBlock(this.formControl.status);
-        // events, not statusChanges: a blur marks the control touched without changing its status.
-        this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
-
-        if (this.options.debug) {
-          this.debugOutput = '';
-        }
-      }
-      this.frameworkInitialized = true;
     }
+  }
 
+  private markRequiredTitle() {
+    const titled = this.layoutNode.type === 'array' || this.layoutNode.type === 'fieldset'
+      ? this.widgetOptions : this.options;
+    if (titled.title && this.layoutNode.type !== 'tab' &&
+      !this.options.notitle && this.options.required &&
+      !titled.title.includes('*')
+    ) {
+      titled.title += ' <strong class="text-danger">*</strong>';
+    }
+  }
+
+  private subscribeToControlEvents() {
+    if (!this.formControl) { return; }
+    this.updateHelpBlock(this.formControl.status);
+    // events, not statusChanges: a blur marks the control touched without changing its status.
+    this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
+    if (this.options.debug) {
+      this.debugOutput = '';
+    }
   }
 
   private applyWidgetStyles() {

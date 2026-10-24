@@ -597,8 +597,6 @@ export function buildLayoutFromSchema(
   const shortDataPointer = removeRecursiveReferences(
     dataPointerPrefix + dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap
   );
-  const recursive = !shortDataPointer.length ||
-    shortDataPointer !== dataPointerPrefix + dataPointer;
   if (!jsf.dataMap.has(shortDataPointer)) {
     jsf.dataMap.set(shortDataPointer, new Map());
   }
