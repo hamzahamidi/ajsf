@@ -16,30 +16,6 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="tojavascripttype"><span class="tsd-kind-call-signature">toJavaScriptType</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">types</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">strictIntegers</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#tojavascripttype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>'toJavaScriptType' function</p>
-<p>Converts an input (probably string) value to a JavaScript primitive type -
-'string', 'number', 'boolean', or 'null' - before storing in a JSON object.</p>
-<p>Does not coerce values (other than null), and only converts the types
-of values that would otherwise be valid.</p>
-<p>If the optional third parameter 'strictIntegers' is TRUE, and the
-JSON Schema type 'integer' is specified, it also verifies the input value
-is an integer and, if it is, returns it as a JaveScript number.
-If 'strictIntegers' is FALSE (or not set) the type 'integer' is treated
-exactly the same as 'number', and allows decimals.</p>
-<p>Valid Examples:
-toJavaScriptType('10',   'number' ) = 10   // '10'   is a number
-toJavaScriptType('10',   'integer') = 10   // '10'   is also an integer
-toJavaScriptType( 10,    'integer') = 10   //  10    is still an integer
-toJavaScriptType( 10,    'string' ) = '10' //  10    can be made into a string
-toJavaScriptType('10.5', 'number' ) = 10.5 // '10.5' is a number</p>
-<p>Invalid Examples:
-toJavaScriptType('10.5', 'integer') = null // '10.5' is not an integer
-toJavaScriptType( 10.5,  'integer') = null //  10.5  is still not an integer</p>
-<p>//  { PrimitiveValue } value - value to convert
-//  { SchemaPrimitiveType | SchemaPrimitiveType[] } types - types to convert to
-//  { boolean = false } strictIntegers - if FALSE, treat integers as numbers
-// { PrimitiveValue }</p>
-</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -48,7 +24,7 @@ toJavaScriptType( 10.5,  'integer') = null //  10.5  is still not an integer</p>
 <li><span><span class="tsd-kind-parameter">strictIntegers</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/hamzahamidi/ajsf/blob/c6249a5acf7490e3f19b4af624a878b73044f6ef/projects/ajsf-core/src/lib/shared/validator.functions.ts#L404">ajsf-core/src/lib/shared/validator.functions.ts:404</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/hamzahamidi/ajsf/blob/f65d1dac0b611820c833ff1c9093b5d428f44234/projects/ajsf-core/src/lib/shared/validator.functions.ts#L438">ajsf-core/src/lib/shared/validator.functions.ts:438</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

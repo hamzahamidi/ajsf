@@ -16,44 +16,6 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="toschematype"><span class="tsd-kind-call-signature">toSchemaType</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">types</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#toschematype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>'toSchemaType' function</p>
-<p>Converts an input (probably string) value to the &quot;best&quot; JavaScript
-equivalent available from an allowed list of JSON Schema types, which may
-contain 'string', 'number', 'integer', 'boolean', and/or 'null'.
-If necssary, it does progressively agressive type coersion.
-It will not return null unless null is in the list of allowed types.</p>
-<p>Number conversion examples:
-toSchemaType('10', ['number','integer','string']) = 10 // integer
-toSchemaType('10', ['number','string']) = 10 // number
-toSchemaType('10', ['string']) = '10' // string
-toSchemaType('10.5', ['number','integer','string']) = 10.5 // number
-toSchemaType('10.5', ['integer','string']) = '10.5' // string
-toSchemaType('10.5', ['integer']) = 10 // integer
-toSchemaType(10.5, ['null','boolean','string']) = '10.5' // string
-toSchemaType(10.5, ['null','boolean']) = true // boolean</p>
-<p>String conversion examples:
-toSchemaType('1.5x', ['boolean','number','integer','string']) = '1.5x' // string
-toSchemaType('1.5x', ['boolean','number','integer']) = '1.5' // number
-toSchemaType('1.5x', ['boolean','integer']) = '1' // integer
-toSchemaType('1.5x', ['boolean']) = true // boolean
-toSchemaType('xyz', ['number','integer','boolean','null']) = true // boolean
-toSchemaType('xyz', ['number','integer','null']) = null // null
-toSchemaType('xyz', ['number','integer']) = 0 // number</p>
-<p>Boolean conversion examples:
-toSchemaType('1', ['integer','number','string','boolean']) = 1 // integer
-toSchemaType('1', ['number','string','boolean']) = 1 // number
-toSchemaType('1', ['string','boolean']) = '1' // string
-toSchemaType('1', ['boolean']) = true // boolean
-toSchemaType('true', ['number','string','boolean']) = 'true' // string
-toSchemaType('true', ['boolean']) = true // boolean
-toSchemaType('true', ['number']) = 0 // number
-toSchemaType(true, ['number','string','boolean']) = true // boolean
-toSchemaType(true, ['number','string']) = 'true' // string
-toSchemaType(true, ['number']) = 1 // number</p>
-<p>//  { PrimitiveValue } value - value to convert
-//  { SchemaPrimitiveType | SchemaPrimitiveType[] } types - allowed types to convert to
-// { PrimitiveValue }</p>
-</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -61,7 +23,7 @@ toSchemaType(true, ['number']) = 1 // number</p>
 <li><span><span class="tsd-kind-parameter">types</span>: <span class="tsd-signature-type">any</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/hamzahamidi/ajsf/blob/c6249a5acf7490e3f19b4af624a878b73044f6ef/projects/ajsf-core/src/lib/shared/validator.functions.ts#L479">ajsf-core/src/lib/shared/validator.functions.ts:479</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/hamzahamidi/ajsf/blob/f65d1dac0b611820c833ff1c9093b5d428f44234/projects/ajsf-core/src/lib/shared/validator.functions.ts#L577">ajsf-core/src/lib/shared/validator.functions.ts:577</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
