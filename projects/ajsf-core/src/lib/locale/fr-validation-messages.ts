@@ -57,6 +57,7 @@ export const frValidationMessages: any = { // French error messages
   maxProperties: 'Doit comporter au maximum {{maximumProperties}} éléments (actuellement: {{currentProperties}})',
   minItems: 'Doit comporter au minimum {{minimumItems}} éléments (actuellement: {{currentItems}})',
   maxItems: 'Doit comporter au maximum {{maximumItems}} éléments (actuellement: {{currentItems}})',
+  contains: 'Doit contenir au moins un élément correspondant au schéma',
   uniqueItems: 'Tous les éléments doivent être uniques',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

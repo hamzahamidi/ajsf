@@ -6,6 +6,7 @@ import { JsonSchemaFormModule } from './json-schema-form.module';
 import { JsonSchemaFormService } from './json-schema-form.service';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
 import { convertSchemaToDraft6, resolveSchemaReferences } from './shared';
+import { enValidationMessages } from './locale/en-validation-messages';
 
 /**
  * Characterization tests for JsonSchemaFormService.
@@ -909,6 +910,11 @@ describe('JsonSchemaFormService', () => {
     it('returns a plain string message unchanged', () => {
       expect(jsf.formatErrors({ minLength: {} }, { minLength: 'Too short' }))
         .toEqual('Too short');
+    });
+
+    it('shows the default contains message', () => {
+      expect(jsf.formatErrors({ contains: { requiredItem: { type: 'string' }, currentItems: [] } },
+        enValidationMessages)).toEqual('Must contain at least one item matching the schema');
     });
 
     it('substitutes {{property}} placeholders from the error data', () => {

@@ -57,6 +57,7 @@ export const itValidationMessages: any = { // Default Italian error messages
   maxProperties: 'Deve avere {{maximumProperties}} o meno elementi (elementi correnti: {{currentProperties}})',
   minItems: 'Deve avere {{minimumItems}} o più elementi (elementi correnti: {{currentItems}})',
   maxItems: 'Deve avere {{maximumItems}} o meno elementi (elementi correnti: {{currentItems}})',
+  contains: 'Deve contenere almeno un elemento corrispondente allo schema',
   uniqueItems: 'Tutti gli elementi devono essere unici',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

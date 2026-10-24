@@ -57,6 +57,7 @@ export const zhValidationMessages: any = { // Chinese error messages
   maxProperties: '项目数必须小于或者等于 {{maximumProperties}} (当前项目数: {{currentProperties}})',
   minItems: '项目数必须大于或者等于 {{minimumItems}} (当前项目数: {{currentItems}})',
   maxItems: '项目数必须小于或者等于 {{maximumItems}} (当前项目数: {{currentItems}})',
+  contains: '必须至少包含一个符合此架构的项目',
   uniqueItems: '所有项目必须是唯一的',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };
