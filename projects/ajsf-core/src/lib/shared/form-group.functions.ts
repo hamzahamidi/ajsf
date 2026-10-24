@@ -473,6 +473,56 @@ export function formatFormData(
   return formattedData;
 }
 
+function getControlFromInvalidInput(formGroup: any, dataPointer: Pointer): any {
+  if (!JsonPointer.isJsonPointer(dataPointer)) {
+    // If dataPointer input is not a valid JSON pointer, check to
+    // see if it is instead a valid object path, using dot notation.
+    if (typeof dataPointer === 'string') {
+      const formControl = formGroup.get(dataPointer);
+      if (formControl) { return formControl; }
+    }
+    console.error(`getControl error: Invalid JSON Pointer: ${dataPointer}`);
+  }
+  if (!isObject(formGroup)) {
+    console.error(`getControl error: Invalid formGroup: ${formGroup}`);
+  }
+  return null;
+}
+
+function getAngularFormControl(formGroup: any, dataPointerArray: string[]): any {
+  // If formGroup input is a real formGroup (not a formGroup template)
+  // try using formGroup.get() to return the control
+  if (typeof formGroup.get === 'function' &&
+    dataPointerArray.every(key => !key.includes('.'))
+  ) {
+    return formGroup.get(dataPointerArray.join('.'));
+  }
+  return null;
+}
+
+function getControlFromTemplate(
+  formGroup: any, dataPointerArray: string[], dataPointer: Pointer
+): any {
+  // If formGroup input is a formGroup template,
+  // or formGroup.get() failed to return the control,
+  // search the formGroup object for dataPointer's control
+  let subGroup = formGroup;
+  for (const key of dataPointerArray) {
+    if (hasOwn(subGroup, 'controls')) { subGroup = subGroup.controls; }
+    if (isArray(subGroup) && (key === '-')) {
+      subGroup = subGroup[subGroup.length - 1];
+    } else if (hasOwn(subGroup, key)) {
+      subGroup = subGroup[key];
+    } else {
+      console.error(`getControl error: Unable to find "${key}" item in FormGroup.`);
+      console.error(dataPointer);
+      console.error(formGroup);
+      return;
+    }
+  }
+  return subGroup;
+}
+
 /**
  * 'getControl' function
  *
@@ -492,48 +542,11 @@ export function getControl(
   formGroup: any, dataPointer: Pointer, returnGroup = false
 ): any {
   if (!isObject(formGroup) || !JsonPointer.isJsonPointer(dataPointer)) {
-    if (!JsonPointer.isJsonPointer(dataPointer)) {
-      // If dataPointer input is not a valid JSON pointer, check to
-      // see if it is instead a valid object path, using dot notaion
-      if (typeof dataPointer === 'string') {
-        const formControl = formGroup.get(dataPointer);
-        if (formControl) { return formControl; }
-      }
-      console.error(`getControl error: Invalid JSON Pointer: ${dataPointer}`);
-    }
-    if (!isObject(formGroup)) {
-      console.error(`getControl error: Invalid formGroup: ${formGroup}`);
-    }
-    return null;
+    return getControlFromInvalidInput(formGroup, dataPointer);
   }
   let dataPointerArray = JsonPointer.parse(dataPointer);
   if (returnGroup) { dataPointerArray = dataPointerArray.slice(0, -1); }
-
-  // If formGroup input is a real formGroup (not a formGroup template)
-  // try using formGroup.get() to return the control
-  if (typeof formGroup.get === 'function' &&
-    dataPointerArray.every(key => !key.includes('.'))
-  ) {
-    const formControl = formGroup.get(dataPointerArray.join('.'));
-    if (formControl) { return formControl; }
-  }
-
-  // If formGroup input is a formGroup template,
-  // or formGroup.get() failed to return the control,
-  // search the formGroup object for dataPointer's control
-  let subGroup = formGroup;
-  for (const key of dataPointerArray) {
-    if (hasOwn(subGroup, 'controls')) { subGroup = subGroup.controls; }
-    if (isArray(subGroup) && (key === '-')) {
-      subGroup = subGroup[subGroup.length - 1];
-    } else if (hasOwn(subGroup, key)) {
-      subGroup = subGroup[key];
-    } else {
-      console.error(`getControl error: Unable to find "${key}" item in FormGroup.`);
-      console.error(dataPointer);
-      console.error(formGroup);
-      return;
-    }
-  }
-  return subGroup;
+  const formControl = getAngularFormControl(formGroup, dataPointerArray);
+  if (formControl) { return formControl; }
+  return getControlFromTemplate(formGroup, dataPointerArray, dataPointer);
 }
