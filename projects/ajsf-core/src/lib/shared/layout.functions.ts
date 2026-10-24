@@ -27,6 +27,27 @@ import { TitleMapItem } from '../json-schema-form.service';
 
 let idCounter = 0;
 
+const legacyValidationMessageCodes: ReadonlyMap<string, string> = new Map<string, string>([
+  ['0', 'type'],
+  ['1', 'enum'],
+  ['100', 'multipleOf'],
+  ['101', 'minimum'],
+  ['102', 'exclusiveMinimum'],
+  ['103', 'maximum'],
+  ['104', 'exclusiveMaximum'],
+  ['200', 'minLength'],
+  ['201', 'maxLength'],
+  ['202', 'pattern'],
+  ['300', 'minProperties'],
+  ['301', 'maxProperties'],
+  ['302', 'required'],
+  ['304', 'dependencies'],
+  ['400', 'minItems'],
+  ['401', 'maxItems'],
+  ['402', 'uniqueItems'],
+  ['500', 'format'],
+]);
+
 const uniqueId = () => String(++idCounter);
 
 
@@ -95,25 +116,7 @@ export function buildLayout(jsf, widgetLibrary) {
             newNode.options.validationMessages = {};
             Object.keys(newNode.options.validationMessage).forEach(key => {
               const code = key + '';
-              const newKey =
-                code === '0' ? 'type' :
-                  code === '1' ? 'enum' :
-                    code === '100' ? 'multipleOf' :
-                      code === '101' ? 'minimum' :
-                        code === '102' ? 'exclusiveMinimum' :
-                          code === '103' ? 'maximum' :
-                            code === '104' ? 'exclusiveMaximum' :
-                              code === '200' ? 'minLength' :
-                                code === '201' ? 'maxLength' :
-                                  code === '202' ? 'pattern' :
-                                    code === '300' ? 'minProperties' :
-                                      code === '301' ? 'maxProperties' :
-                                        code === '302' ? 'required' :
-                                          code === '304' ? 'dependencies' :
-                                            code === '400' ? 'minItems' :
-                                              code === '401' ? 'maxItems' :
-                                                code === '402' ? 'uniqueItems' :
-                                                  code === '500' ? 'format' : code + '';
+              const newKey = legacyValidationMessageCodes.get(code) ?? code;
               newNode.options.validationMessages[newKey] = newNode.options.validationMessage[key];
             });
           }
@@ -388,11 +391,13 @@ export function buildLayout(jsf, widgetLibrary) {
           // The last existing item is only a template for a new one when it is
           // itself a list item. On a tuple array it is a fixed slot, so cloning
           // it gave every added item that slot's schema, title and pointer.
-          const listItemSchemaPointer = isArray(nodeSchema?.items) ?
-            (isObject(nodeSchema.additionalItems) ?
-              schemaPointer + '/additionalItems' : null) :
-            (isObject(nodeSchema?.items) ?
-              schemaPointer + '/items' : null);
+          let listItemSchemaPointer: string | null = null;
+          if (isArray(nodeSchema?.items)) {
+            listItemSchemaPointer = isObject(nodeSchema.additionalItems) ?
+              schemaPointer + '/additionalItems' : null;
+          } else if (isObject(nodeSchema?.items)) {
+            listItemSchemaPointer = schemaPointer + '/items';
+          }
 
           if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
             // Set to null first to prevent a recursive reference from looping.
