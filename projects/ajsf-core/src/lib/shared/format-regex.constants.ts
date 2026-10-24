@@ -27,7 +27,7 @@ function isUrl(value: string): boolean {
       return false;
     }
 
-    const octets = labels.map(label => Number(label));
+    const octets = labels.map(Number);
     const isIpv4 = labels.length === 4 && labels.every(label => /^\d{1,3}$/.test(label));
     if (isIpv4) {
       const [first, second, , fourth] = octets;
@@ -42,7 +42,7 @@ function isUrl(value: string): boolean {
       );
     }
 
-    return labels[labels.length - 1].length >= 2 && labels.every(label =>
+    return labels.at(-1)!.length >= 2 && labels.every(label =>
       label.length <= 63 &&
       /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label)
     );

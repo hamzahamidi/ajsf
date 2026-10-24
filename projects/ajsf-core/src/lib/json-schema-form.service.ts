@@ -107,36 +107,40 @@ function parseConditionLiteral(source: string): ConditionValue {
 function readConditionReference(
   source: string, model: unknown, arrayIndices: number[]
 ): ConditionValue {
-  if (source.startsWith('model.')) {
-    const keys = source.slice('model.'.length).split('.');
-    if (!keys.length || keys.some(key =>
-      !/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) && !/^\d+$/.test(key)
-    )) {
+  if (source.startsWith('model.')) return readModelReference(source, model);
+  if (source.startsWith('arrayIndices[') && source.endsWith(']')) {
+    return readArrayIndexReference(source, arrayIndices);
+  }
+  return UNSUPPORTED_CONDITION;
+}
+
+function readModelReference(source: string, model: unknown): ConditionValue {
+  const keys = source.slice('model.'.length).split('.');
+  if (keys.some(key =>
+    !/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) && !/^\d+$/.test(key)
+  )) {
+    return UNSUPPORTED_CONDITION;
+  }
+  let value: any = model;
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    if (value === null || (typeof value !== 'object' && typeof value !== 'function')) {
       return UNSUPPORTED_CONDITION;
     }
-    let value: any = model;
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      if (value === null || (typeof value !== 'object' && typeof value !== 'function')) {
-        return UNSUPPORTED_CONDITION;
-      }
-      if (!Object.hasOwn(value, key)) {
-        return index === keys.length - 1
-          ? { supported: true, value: undefined }
-          : UNSUPPORTED_CONDITION;
-      }
-      value = value[key];
+    if (!Object.hasOwn(value, key)) {
+      return index === keys.length - 1
+        ? { supported: true, value: undefined }
+        : UNSUPPORTED_CONDITION;
     }
-    return { supported: true, value };
+    value = value[key];
   }
+  return { supported: true, value };
+}
 
-  if (source.startsWith('arrayIndices[') && source.endsWith(']')) {
-    const indexSource = source.slice('arrayIndices['.length, -1);
-    if (!/^\d+$/.test(indexSource)) { return UNSUPPORTED_CONDITION; }
-    return { supported: true, value: arrayIndices?.[Number(indexSource)] };
-  }
-
-  return UNSUPPORTED_CONDITION;
+function readArrayIndexReference(source: string, arrayIndices: number[]): ConditionValue {
+  const indexSource = source.slice('arrayIndices['.length, -1);
+  if (!/^\d+$/.test(indexSource)) return UNSUPPORTED_CONDITION;
+  return { supported: true, value: arrayIndices?.[Number(indexSource)] };
 }
 
 function evaluateConditionFunctionBody(
@@ -611,7 +615,7 @@ export class JsonSchemaFormService {
   }
 
   evaluateCondition(layoutNode: any, dataIndex: number[]): boolean {
-    const arrayIndex = dataIndex?.[dataIndex.length - 1];
+    const arrayIndex = dataIndex?.at(-1);
     let result = true;
     if (hasValue(layoutNode.options?.condition)) {
       if (typeof layoutNode.options.condition === 'string') {
@@ -634,7 +638,6 @@ export class JsonSchemaFormService {
         if (evaluation.supported) {
           result = !!evaluation.value;
         } else {
-          result = true;
           console.error(
             'condition functionBody is not a supported comparison expression: ' +
             functionBody
