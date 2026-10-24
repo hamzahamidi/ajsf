@@ -147,6 +147,51 @@ function getUnionSchemaType(schema, schemaTypes) {
  * //  { string = 'schema' } returnType - what to return?
  * //  - The located sub-schema
  */
+function findArraySchemaChild(subSchema, key, schemaPointer) {
+  let subSchemaFound = false;
+  if (hasOwn(subSchema, 'items')) {
+    if (isObject(subSchema.items)) {
+      subSchemaFound = true;
+      subSchema = subSchema.items;
+      schemaPointer.push('items');
+    } else if (isArray(subSchema.items) && !Number.isNaN(Number(key)) &&
+      subSchema.items.length >= +key
+    ) {
+      subSchemaFound = true;
+      subSchema = subSchema.items[+key];
+      schemaPointer.push('items', key);
+    }
+  }
+  if (!subSchemaFound && isObject(subSchema.additionalItems)) {
+    subSchemaFound = true;
+    subSchema = subSchema.additionalItems;
+    schemaPointer.push('additionalItems');
+  } else if (subSchema.additionalItems !== false) {
+    subSchemaFound = true;
+    subSchema = {};
+    schemaPointer.push('additionalItems');
+  }
+  return { subSchema, subSchemaFound };
+}
+
+function findObjectSchemaChild(subSchema, key, schemaPointer) {
+  let subSchemaFound = false;
+  if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
+    subSchemaFound = true;
+    subSchema = subSchema.properties[key];
+    schemaPointer.push('properties', key);
+  } else if (isObject(subSchema.additionalProperties)) {
+    subSchemaFound = true;
+    subSchema = subSchema.additionalProperties;
+    schemaPointer.push('additionalProperties');
+  } else if (subSchema.additionalProperties !== false) {
+    subSchemaFound = true;
+    subSchema = {};
+    schemaPointer.push('additionalProperties');
+  }
+  return { subSchema, subSchemaFound };
+}
+
 export function getFromSchema(schema, dataPointer, returnType = 'schema') {
   const dataPointerArray: any[] = JsonPointer.parse(dataPointer);
   if (dataPointerArray === null) {
@@ -167,42 +212,13 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       return null;
     }
     if (subSchema.type === 'array' && (!Number.isNaN(Number(key)) || key === '-')) {
-      if (hasOwn(subSchema, 'items')) {
-        if (isObject(subSchema.items)) {
-          subSchemaFound = true;
-          subSchema = subSchema.items;
-          schemaPointer.push('items');
-        } else if (isArray(subSchema.items)) {
-          if (!Number.isNaN(Number(key)) && subSchema.items.length >= +key) {
-            subSchemaFound = true;
-            subSchema = subSchema.items[+key];
-            schemaPointer.push('items', key);
-          }
-        }
-      }
-      if (!subSchemaFound && isObject(subSchema.additionalItems)) {
-        subSchemaFound = true;
-        subSchema = subSchema.additionalItems;
-        schemaPointer.push('additionalItems');
-      } else if (subSchema.additionalItems !== false) {
-        subSchemaFound = true;
-        subSchema = { };
-        schemaPointer.push('additionalItems');
-      }
+      const result = findArraySchemaChild(subSchema, key, schemaPointer);
+      subSchema = result.subSchema;
+      subSchemaFound = result.subSchemaFound;
     } else if (subSchema.type === 'object') {
-      if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
-        subSchemaFound = true;
-        subSchema = subSchema.properties[key];
-        schemaPointer.push('properties', key);
-      } else if (isObject(subSchema.additionalProperties)) {
-        subSchemaFound = true;
-        subSchema = subSchema.additionalProperties;
-        schemaPointer.push('additionalProperties');
-      } else if (subSchema.additionalProperties !== false) {
-        subSchemaFound = true;
-        subSchema = { };
-        schemaPointer.push('additionalProperties');
-      }
+      const result = findObjectSchemaChild(subSchema, key, schemaPointer);
+      subSchema = result.subSchema;
+      subSchemaFound = result.subSchemaFound;
     }
     if (!subSchemaFound) {
       console.error(`getFromSchema error: Unable to find "${key}" item in schema.`);
