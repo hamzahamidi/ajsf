@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { JsonValidators } from './json.validators';
 
 // Helper returning `any` so validators typed against AbstractControl accept it
@@ -1256,6 +1256,107 @@ describe('JsonValidators', () => {
       let emitted: any = 'not emitted';
       result.subscribe(value => emitted = value);
       expect(emitted).toBeNull();
+    });
+  });
+
+  describe('async validator compositions', () => {
+    it('composes anyOf validators and merges errors when all branches fail', async () => {
+      const validator = JsonValidators.composeAnyOfAsync([
+        () => of({ minimum: true }),
+        () => Promise.resolve({ maximum: true })
+      ]);
+
+      expect(await firstValueFrom(validator(ctrl('abc')))).toEqual({
+        minimum: true,
+        maximum: true,
+        anyOf: true
+      });
+    });
+
+    it('passes anyOf when a branch passes and supports inversion', async () => {
+      const validator = JsonValidators.composeAnyOfAsync([
+        () => of({ minimum: true }),
+        () => of(null)
+      ]);
+
+      expect(await firstValueFrom(validator(ctrl('abc')))).toBeNull();
+      expect(await firstValueFrom(validator(ctrl('abc'), true))).toEqual({ anyOf: false });
+      const noPassingBranches = JsonValidators.composeAnyOfAsync([
+        () => of({ minimum: true }),
+        () => of({ maximum: true })
+      ]);
+      expect(await firstValueFrom(noPassingBranches(ctrl('abc'), true))).toBeNull();
+    });
+
+    it('composes oneOf only when exactly one branch passes', async () => {
+      const onePassing = JsonValidators.composeOneOfAsync([
+        () => of({ minimum: true }),
+        () => Promise.resolve(null)
+      ]);
+      const nonePassing = JsonValidators.composeOneOfAsync([
+        () => of({ minimum: true }),
+        () => of({ maximum: true })
+      ]);
+      const bothPassing = JsonValidators.composeOneOfAsync([
+        () => of(null),
+        () => of(null)
+      ]);
+
+      expect(await firstValueFrom(onePassing(ctrl('abc')))).toBeNull();
+      expect(await firstValueFrom(nonePassing(ctrl('abc')))).toEqual({
+        minimum: true,
+        maximum: true,
+        oneOf: true
+      });
+      expect(await firstValueFrom(bothPassing(ctrl('abc')))).toEqual({ oneOf: true });
+      expect(await firstValueFrom(nonePassing(ctrl('abc'), true))).toBeNull();
+      expect(await firstValueFrom(onePassing(ctrl('abc'), true))).toEqual({
+        minimum: true,
+        oneOf: false
+      });
+    });
+
+    it('composes allOf and reports inverted failures', async () => {
+      const allPassing = JsonValidators.composeAllOfAsync([
+        () => of(null),
+        () => Promise.resolve(null)
+      ]);
+      const oneFailing = JsonValidators.composeAllOfAsync([
+        () => of(null),
+        () => of({ minimum: true })
+      ]);
+
+      expect(await firstValueFrom(allPassing(ctrl('abc')))).toBeNull();
+      expect(await firstValueFrom(oneFailing(ctrl('abc')))).toEqual({
+        minimum: true,
+        allOf: true
+      });
+      expect(await firstValueFrom(allPassing(ctrl('abc'), true))).toEqual({ allOf: false });
+      expect(await firstValueFrom(oneFailing(ctrl('abc'), true))).toBeNull();
+    });
+
+    it('inverts an async validator and lets the invert argument restore it', async () => {
+      const validator = JsonValidators.composeNotAsync(() => of(null));
+      const wrappedFailure = JsonValidators.composeNotAsync(() => of({ invalid: true }));
+
+      expect(await firstValueFrom(validator(ctrl('abc')))).toEqual({ not: true });
+      expect(await firstValueFrom(validator(ctrl('abc'), true))).toBeNull();
+      expect(await firstValueFrom(validator(ctrl(null)))).toBeNull();
+      expect(await firstValueFrom(wrappedFailure(ctrl('abc')))).toBeNull();
+      expect(await firstValueFrom(wrappedFailure(ctrl('abc'), true))).toEqual({
+        invalid: true,
+        not: false
+      });
+    });
+
+    it('returns null when async compositions have no validators', () => {
+      expect(JsonValidators.composeAnyOfAsync(null)).toBeNull();
+      expect(JsonValidators.composeAnyOfAsync([])).toBeNull();
+      expect(JsonValidators.composeOneOfAsync(undefined)).toBeNull();
+      expect(JsonValidators.composeOneOfAsync([null])).toBeNull();
+      expect(JsonValidators.composeAllOfAsync(null)).toBeNull();
+      expect(JsonValidators.composeAllOfAsync(undefined)).toBeNull();
+      expect(JsonValidators.composeNotAsync(null)).toBeNull();
     });
   });
 
