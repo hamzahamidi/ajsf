@@ -86,7 +86,7 @@ export class MaterialTextareaComponent implements OnInit {
 
   constructor(
     @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

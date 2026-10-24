@@ -145,7 +145,7 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
   let subSchema = schema;
   const schemaPointer = [];
   const length = dataPointerArray.length;
-  if (returnType.slice(0, 6) === 'parent') { dataPointerArray.length--; }
+  if (returnType.startsWith('parent')) { dataPointerArray.length--; }
   for (let i = 0; i < length; ++i) {
     const parentSchema = subSchema;
     const key = dataPointerArray[i];
@@ -156,14 +156,14 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       console.error(dataPointer);
       return null;
     }
-    if (subSchema.type === 'array' && (!isNaN(key) || key === '-')) {
+    if (subSchema.type === 'array' && (!Number.isNaN(Number(key)) || key === '-')) {
       if (hasOwn(subSchema, 'items')) {
         if (isObject(subSchema.items)) {
           subSchemaFound = true;
           subSchema = subSchema.items;
           schemaPointer.push('items');
         } else if (isArray(subSchema.items)) {
-          if (!isNaN(key) && subSchema.items.length >= +key) {
+          if (!Number.isNaN(Number(key)) && subSchema.items.length >= +key) {
             subSchemaFound = true;
             subSchema = subSchema.items[+key];
             schemaPointer.push('items', key);
@@ -201,7 +201,7 @@ export function getFromSchema(schema, dataPointer, returnType = 'schema') {
       return;
     }
   }
-  return returnType.slice(-7) === 'Pointer' ? schemaPointer : subSchema;
+  return returnType.endsWith('Pointer') ? schemaPointer : subSchema;
 }
 
 /**
@@ -233,7 +233,7 @@ export function removeRecursiveReferences(
   if (!pointer) { return ''; }
   let genericPointer =
     JsonPointer.toGenericPointer(JsonPointer.compile(pointer), arrayMap);
-  if (genericPointer.indexOf('/') === -1) { return genericPointer; }
+  if (!genericPointer.includes('/')) { return genericPointer; }
   let possibleReferences = true;
   while (possibleReferences) {
     possibleReferences = false;
@@ -336,7 +336,7 @@ export function getInputType(schema, layoutNode: any = null) {
  */
 export function checkInlineType(controlType, schema, layoutNode: any = null) {
   if (!isString(controlType) || (
-    controlType.slice(0, 8) !== 'checkbox' && controlType.slice(0, 5) !== 'radio'
+    !controlType.startsWith('checkbox') && !controlType.startsWith('radio')
   )) {
     return controlType;
   }
@@ -355,7 +355,7 @@ export function checkInlineType(controlType, schema, layoutNode: any = null) {
       [schema, '/widget/component/options/inline'],
     ]) === true
   ) {
-    return controlType.slice(0, 5) === 'radio' ?
+    return controlType.startsWith('radio') ?
       'radios-inline' : 'checkboxes-inline';
   } else {
     return controlType;
@@ -380,7 +380,7 @@ export function isInputRequired(schema, schemaPointer) {
   if (isArray(listPointerArray)) {
     if (!listPointerArray.length) { return schema.required === true; }
     const keyName = listPointerArray.pop();
-    const nextToLastKey = listPointerArray[listPointerArray.length - 1];
+    const nextToLastKey = listPointerArray.at(-1);
     if (['properties', 'additionalProperties', 'patternProperties', 'items', 'additionalItems']
       .includes(nextToLastKey)
     ) {
@@ -490,7 +490,7 @@ export function getTitleMapFromOneOf(
 
     // if flatList !== false and some items have colons, make grouped map
     if (flatList !== false && (titleMap || [])
-      .filter(title => ((title || {}).name || '').indexOf(': ')).length > 1
+      .filter(title => (title?.name || '').indexOf(': ')).length > 1
     ) {
 
       // Split name on first colon to create grouped map (name -> group: name)

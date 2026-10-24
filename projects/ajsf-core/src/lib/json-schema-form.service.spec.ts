@@ -419,7 +419,7 @@ describe('JsonSchemaFormService', () => {
       expect(jsf.isValid).toBe(false);
       expect(jsf.validData).toBeNull();
       expect(Object.keys(jsf.validationErrors)).toEqual(['/name']);
-      expect(jsf.validationErrors['/name'].length).toEqual(1);
+      expect(jsf.validationErrors['/name']).toHaveLength(1);
       expect(Array.isArray(jsf.ajvErrors)).toBe(true);
       // ajv 8 renamed dataPath to instancePath. Both are JSON pointers, so the
       // validationErrors keys above are unchanged, but the raw error objects
@@ -528,7 +528,7 @@ describe('JsonSchemaFormService', () => {
     it('builds one item node per array value plus a trailing $ref add button', () => {
       buildForm(personSchema, null, { name: 'Bob', tags: ['x', 'y'] });
       const tags: any = jsf.layout[nodeIndex('tags')];
-      expect(tags.items.length).toEqual(3);
+      expect(tags.items).toHaveLength(3);
       expect(tags.items.map((item: any) => item.type)).toEqual(['text', 'text', '$ref']);
       expect(tags.items.every((item: any) => item.arrayItem === true)).toBe(true);
       expect(tags.items[2].$ref).toEqual('/tags/-');
@@ -557,9 +557,9 @@ describe('JsonSchemaFormService', () => {
 
     it('builds a real FormGroup carrying the supplied values', () => {
       buildForm(personSchema, null, { name: 'Bob', age: 42, tags: ['x', 'y'] });
-      expect(jsf.formGroup instanceof UntypedFormGroup).toBe(true);
+      expect(jsf.formGroup).toBeInstanceOf(UntypedFormGroup);
       expect(jsf.formGroup.value).toEqual({ name: 'Bob', age: 42, tags: ['x', 'y'] });
-      expect(jsf.formGroup.get('tags') instanceof UntypedFormArray).toBe(true);
+      expect(jsf.formGroup.get('tags')).toBeInstanceOf(UntypedFormArray);
     });
 
     it('applies schema defaults when no form values are supplied', () => {
@@ -647,8 +647,8 @@ describe('JsonSchemaFormService', () => {
     });
 
     it('returns the layout array and the parent node for a top level node', () => {
-      expect(jsf.getLayoutArray(ctxFor('name')).length).toEqual(4);
-      expect(jsf.getParentNode(ctxFor('name')).length).toEqual(4);
+      expect(jsf.getLayoutArray(ctxFor('name'))).toHaveLength(4);
+      expect(jsf.getParentNode(ctxFor('name'))).toHaveLength(4);
     });
 
     it('returns the array node as the parent of an array item', () => {
@@ -659,7 +659,7 @@ describe('JsonSchemaFormService', () => {
         layoutIndex: [tagsIndex, 0],
       };
       expect(jsf.getParentNode(itemCtx).name).toEqual('tags');
-      expect(jsf.getLayoutArray(itemCtx).length).toEqual(3);
+      expect(jsf.getLayoutArray(itemCtx)).toHaveLength(3);
     });
 
     it('returns null from every accessor when the context has no layoutNode', () => {
@@ -1125,7 +1125,7 @@ describe('JsonSchemaFormService', () => {
       expect(condition).toHaveBeenCalledWith(jsf.data);
     });
 
-    it('compiles and runs a functionBody condition', () => {
+    it('evaluates safe functionBody comparison conditions', () => {
       expect(jsf.evaluateCondition(
         { options: { condition: { functionBody: 'return model.name === "Bob";' } } }, []
       )).toBe(true);
@@ -1140,7 +1140,7 @@ describe('JsonSchemaFormService', () => {
       )).toBe(true);
     });
 
-    it('falls back to true and logs when the functionBody throws', () => {
+    it('falls back to true and logs unsupported functionBody expressions', () => {
       const consoleError = vi.spyOn(console, 'error');
       expect(jsf.evaluateCondition(
         { options: { condition: { functionBody: 'return nope.nope;' } } }, []
@@ -1360,7 +1360,7 @@ describe('JsonSchemaFormService', () => {
     it('pushes a new control onto the formArray and a new node into the layout', () => {
       expect(jsf.addItem(refCtx())).toBe(true);
       expect(jsf.formGroup.get('tags').value).toEqual(['x', 'y', null]);
-      expect(tagsNode().items.length).toEqual(4);
+      expect(tagsNode().items).toHaveLength(4);
     });
 
     it('copies arrayItem and arrayItemType onto the new layout node', () => {
@@ -1398,7 +1398,7 @@ describe('JsonSchemaFormService', () => {
     it('moves an item in both the formArray and the layout', () => {
       expect(jsf.moveArrayItem(itemCtx(0), 0, 1)).toBe(true);
       expect(jsf.formGroup.get('tags').value).toEqual(['y', 'x']);
-      expect(tagsNode().items.length).toEqual(3);
+      expect(tagsNode().items).toHaveLength(3);
     });
 
     it('rejects a removeItem call with an incomplete context', () => {
@@ -1411,7 +1411,7 @@ describe('JsonSchemaFormService', () => {
     it('removes an array item from both the formArray and the layout', () => {
       expect(jsf.removeItem(itemCtx(0))).toBe(true);
       expect(jsf.formGroup.get('tags').value).toEqual(['y']);
-      expect(tagsNode().items.length).toEqual(2);
+      expect(tagsNode().items).toHaveLength(2);
     });
   });
 

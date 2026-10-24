@@ -136,7 +136,7 @@ export function buildFormGroupTemplate(
       }
       return { controlType, controls, validators };
 
-    case 'FormArray':
+    case 'FormArray': {
       controls = [];
       const minItems =
         Math.max(schema.minItems || 0, nodeOptions.get('minItems') || 0);
@@ -239,8 +239,9 @@ export function buildFormGroupTemplate(
         }
       }
       return { controlType, controls, validators };
+    }
 
-    case '$ref':
+    case '$ref': {
       const schemaRef = JsonPointer.compile(schema.$ref);
       const dataRef = JsonPointer.toDataPointer(schemaRef, schema);
       const refPointer = removeRecursiveReferences(
@@ -257,13 +258,15 @@ export function buildFormGroupTemplate(
         }
       }
       return null;
+    }
 
-    case 'FormControl':
+    case 'FormControl': {
       const value = {
         value: setValues && isPrimitive(nodeValue) ? nodeValue : null,
         disabled: nodeOptions.get('disabled') || false
       };
       return { controlType, value, validators };
+    }
 
     default:
       return null;
@@ -294,13 +297,14 @@ export function buildFormGroup(template: any): AbstractControl {
   }
   if (hasOwn(template, 'controlType')) {
     switch (template.controlType) {
-      case 'FormGroup':
+      case 'FormGroup': {
         const groupControls: { [key: string]: AbstractControl } = {};
         forEach(template.controls, (controls, key) => {
           const newControl: AbstractControl = buildFormGroup(controls);
           if (newControl) { groupControls[key] = newControl; }
         });
         return new UntypedFormGroup(groupControls, validatorFn);
+      }
       case 'FormArray':
         return new UntypedFormArray(
           (template.controls || [])
@@ -500,7 +504,7 @@ export function getControl(
   // If formGroup input is a real formGroup (not a formGroup template)
   // try using formGroup.get() to return the control
   if (typeof formGroup.get === 'function' &&
-    dataPointerArray.every(key => key.indexOf('.') === -1)
+    dataPointerArray.every(key => !key.includes('.'))
   ) {
     const formControl = formGroup.get(dataPointerArray.join('.'));
     if (formControl) { return formControl; }

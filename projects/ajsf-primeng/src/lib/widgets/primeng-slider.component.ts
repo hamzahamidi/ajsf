@@ -64,7 +64,7 @@ export class PrimengSliderComponent implements OnInit {
   get minValue() { return effectiveMinimum(this.options?.minimum, this.options?.exclusiveMinimum); }
   get maxValue() { return effectiveMaximum(this.options?.maximum, this.options?.exclusiveMaximum); }
 
-  constructor(private jsf: JsonSchemaFormService) {}
+  constructor(private readonly jsf: JsonSchemaFormService) {}
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};

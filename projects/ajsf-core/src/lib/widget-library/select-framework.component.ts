@@ -23,7 +23,7 @@ export class SelectFrameworkComponent implements OnChanges, OnInit {
     widgetContainer: ViewContainerRef;
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

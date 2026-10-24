@@ -88,7 +88,7 @@ describe('Utility functions', () => {
     it('returns a Set when oldClasses is a Set', () => {
       const result: any = addClasses(new Set(['a']), new Set(['b']));
 
-      expect(result instanceof Set).toBe(true);
+      expect(result).toBeInstanceOf(Set);
       expect(Array.from(result)).toEqual(['a', 'b']);
     });
 
@@ -156,7 +156,7 @@ describe('Utility functions', () => {
       const original = new Map([['a', 1]]);
       const result = copy(original);
 
-      expect(result instanceof Map).toBe(true);
+      expect(result).toBeInstanceOf(Map);
       expect(result).not.toBe(original);
       expect(result.get('a')).toEqual(1);
       expect(result.size).toEqual(1);
@@ -166,7 +166,7 @@ describe('Utility functions', () => {
       const original = new Set(['a']);
       const result = copy(original);
 
-      expect(result instanceof Set).toBe(true);
+      expect(result).toBeInstanceOf(Set);
       expect(result).not.toBe(original);
       expect(result.has('a')).toBe(true);
     });
@@ -182,8 +182,8 @@ describe('Utility functions', () => {
       // A Date has no own enumerable properties, so the object spread yields {}.
       const result = copy(new Date());
 
-      expect(result instanceof Date).toBe(false);
-      expect(Object.keys(result).length).toEqual(0);
+      expect(result).not.toBeInstanceOf(Date);
+      expect(Object.keys(result)).toHaveLength(0);
     });
 
     it('behaves the same when the errors flag is set', () => {
@@ -300,7 +300,7 @@ describe('Utility functions', () => {
       const roots: any[] = [];
       forEach(root, (v, k, c, rc) => roots.push(rc), 'top-down');
 
-      expect(roots.length).toEqual(2);
+      expect(roots).toHaveLength(2);
       expect(roots.every(r => r === root)).toBe(true);
     });
 
@@ -733,7 +733,7 @@ describe('Utility functions', () => {
       const result: any = mergeFilteredObject(target, { 0: 'x' });
 
       expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toEqual(1);
+      expect(result).toHaveLength(1);
       expect(result[0]).toEqual('x');
     });
   });
@@ -757,11 +757,11 @@ describe('Utility functions', () => {
     });
 
     it('collapses repeated undefineds', () => {
-      expect(uniqueItems(undefined, undefined).length).toEqual(1);
+      expect(uniqueItems(undefined, undefined)).toHaveLength(1);
     });
 
     it('collapses repeated NaN, because includes uses SameValueZero', () => {
-      expect(uniqueItems(NaN, NaN).length).toEqual(1);
+      expect(uniqueItems(NaN, NaN)).toHaveLength(1);
     });
 
     it('does not conflate a number with its string form', () => {
@@ -771,13 +771,13 @@ describe('Utility functions', () => {
     });
 
     it('keeps distinct object references apart', () => {
-      expect(uniqueItems([], []).length).toEqual(2);
+      expect(uniqueItems([], [])).toHaveLength(2);
     });
 
     it('collapses the same object reference', () => {
       const shared: any = { a: 1 };
 
-      expect(uniqueItems(shared, shared).length).toEqual(1);
+      expect(uniqueItems(shared, shared)).toHaveLength(1);
     });
   });
 

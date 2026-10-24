@@ -261,7 +261,7 @@ export function mergeSchemas(...schemas) {
               // property.
               const newAdditional = hasOwn(schema, 'additionalProperties') ?
                 schema.additionalProperties : undefined;
-              const priorForbids = priorAdditional.indexOf(false) > -1;
+              const priorForbids = priorAdditional.includes(false);
               const priorConstraint = priorAdditional.filter(isObject)[0];
 
               // A key the new schema does not declare is governed by its

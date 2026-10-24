@@ -32,7 +32,7 @@ export const deValidationMessages: any = { // Default German error messages
       case 'relative-json-pointer':
         return 'Kein gültiger relativer JSON-Pointer (z. B. "2/pointer/to/something")';
       case 'regex':
-        return 'Kein gültiger regulärer Ausdruck (z. B. "(1-)?\\d{3}-\\d{3}-\\d{4}")';
+        return String.raw`Kein gültiger regulärer Ausdruck (z. B. "(1-)?\d{3}-\d{3}-\d{4}")`;
       default:
         return 'Muss diesem Format entsprechen: ' + error.requiredFormat;
     }

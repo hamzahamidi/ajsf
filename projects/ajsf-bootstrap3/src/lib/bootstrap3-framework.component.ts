@@ -48,7 +48,7 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
       // For removable list items, allow removing any item
       this.layoutNode.arrayItemType === 'list' ? true :
         // For removable tuple items, only allow removing last item in list
-        this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
+        this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {
@@ -203,10 +203,6 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
         // events, not statusChanges: a blur marks the control touched without changing its status.
         this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
 
-        if (this.options.debug) {
-          const vars: any[] = [];
-          this.debugOutput = vars.map(thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
-        }
       }
       this.frameworkInitialized = true;
     }

@@ -15,7 +15,7 @@ describe('PrimengRadiosComponent', () => {
 
   it('builds radiosList from enum', () => {
     const { component } = make({ enum: ['yes', 'no'] });
-    expect(component.radiosList.length).toBe(2);
+    expect(component.radiosList).toHaveLength(2);
     expect(component.radiosList[0].name).toBe('yes');
   });
 

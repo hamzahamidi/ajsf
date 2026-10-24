@@ -68,7 +68,7 @@ describe('Material widget integration', () => {
     it('displays initial values as chip rows', () => {
       create(tagsSchema, { tags: ['alpha', 'beta'] });
       const rows = fixture.nativeElement.querySelectorAll('mat-chip-row');
-      expect(rows.length).toBe(2);
+      expect(rows).toHaveLength(2);
       expect(rows[0].textContent).toContain('alpha');
       expect(rows[1].textContent).toContain('beta');
     });
@@ -76,11 +76,11 @@ describe('Material widget integration', () => {
     it('removes a chip and updates the form data', () => {
       create(tagsSchema, { tags: ['keep', 'remove'] });
       const removeButtons = fixture.nativeElement.querySelectorAll('button[matchipremove]');
-      expect(removeButtons.length).toBe(2);
+      expect(removeButtons).toHaveLength(2);
       removeButtons[1].click();
       fixture.detectChanges();
       const rows = fixture.nativeElement.querySelectorAll('mat-chip-row');
-      expect(rows.length).toBe(1);
+      expect(rows).toHaveLength(1);
       expect(rows[0].textContent).toContain('keep');
       expect(host.value.tags).toEqual(['keep']);
     });

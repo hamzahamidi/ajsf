@@ -1,6 +1,56 @@
 // updated from AJV fast format regular expressions:
 // https://github.com/epoberezkin/ajv/blob/master/lib/compile/formats.js
 
+function isUrl(value: string): boolean {
+  const scheme = /^(https?|ftp):\/\//i.exec(value)?.[1].toLowerCase();
+  if (!scheme || /\s/.test(value)) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    const authority = value.slice(value.indexOf('://') + 3).split(/[/?#]/, 1)[0];
+    const rawHost = authority.slice(authority.lastIndexOf('@') + 1);
+    const portSeparator = rawHost.lastIndexOf(':');
+    if (
+      !parsed.hostname ||
+      parsed.hostname.startsWith('[') ||
+      rawHost.startsWith('[') ||
+      (portSeparator !== -1 && !/^\d{2,5}$/.test(rawHost.slice(portSeparator + 1)))
+    ) {
+      return false;
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+    const labels = hostname.split('.');
+    if (hostname.endsWith('.') || labels.length < 2) {
+      return false;
+    }
+
+    const octets = labels.map(label => Number(label));
+    const isIpv4 = labels.length === 4 && labels.every(label => /^\d{1,3}$/.test(label));
+    if (isIpv4) {
+      const [first, second, , fourth] = octets;
+      const inPrivateRange =
+        first === 10 || first === 127 ||
+        (first === 169 && second === 254) ||
+        (first === 192 && second === 168) ||
+        (first === 172 && second >= 16 && second <= 31);
+      return (
+        octets.every(octet => Number.isInteger(octet) && octet >= 0 && octet <= 255) &&
+        first >= 1 && first <= 223 && fourth <= 254 && !inPrivateRange
+      );
+    }
+
+    return labels[labels.length - 1].length >= 2 && labels.every(label =>
+      label.length <= 63 &&
+      /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export const jsonSchemaFormatTests = {
 
   'date': /^\d\d\d\d-[0-1]\d-[0-3]\d$/,
@@ -37,7 +87,7 @@ export const jsonSchemaFormatTests = {
   // For test cases: https://mathiasbynens.be/demo/url-regex
   // @todo Delete current URL in favour of the commented out URL rule when this ajv issue is fixed https://github.com/eslint/eslint/issues/7983.
   // URL: /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u{00a1}-\u{ffff}0-9]+-?)*[a-z\u{00a1}-\u{ffff}0-9]+)(?:\.(?:[a-z\u{00a1}-\u{ffff}0-9]+-?)*[a-z\u{00a1}-\u{ffff}0-9]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/iu,
-  'url': /^(?:(?:http[s\u017F]?|ftp):\/\/)(?:(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+(?::(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*)?@)?(?:(?!10(?:\.[0-9]{1,3}){3})(?!127(?:\.[0-9]{1,3}){3})(?!169\.254(?:\.[0-9]{1,3}){2})(?!192\.168(?:\.[0-9]{1,3}){2})(?!172\.(?:1[6-9]|2[0-9]|3[01])(?:\.[0-9]{1,3}){2})(?:[1-9][0-9]?|1[0-9][0-9]|2[01][0-9]|22[0-3])(?:\.(?:1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])){2}(?:\.(?:[1-9][0-9]?|1[0-9][0-9]|2[0-4][0-9]|25[0-4]))|(?:(?:(?:[0-9KSa-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+-?)*(?:[0-9KSa-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+)(?:\.(?:(?:[0-9KSa-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+-?)*(?:[0-9KSa-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+)*(?:\.(?:(?:[KSa-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]){2,})))(?::[0-9]{2,5})?(?:\/(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*)?$/i,
+  'url': isUrl,
 
   // uuid: http://tools.ietf.org/html/rfc4122
   'uuid': /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i,
@@ -52,11 +102,7 @@ export const jsonSchemaFormatTests = {
 
   'regex': function (str) {
     if (/[^\\]\\Z/.test(str)) { return false; }
-    try {
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return true;
   }
 
 };

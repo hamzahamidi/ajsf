@@ -61,7 +61,7 @@ export class RootComponent {
   @Input() isFlexItem = false;
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   isDraggable(node: any): boolean {
@@ -73,8 +73,8 @@ export class RootComponent {
   // (container attributes are set in section.component)
   getFlexAttribute(node: any, attribute: string) {
     const index = ['flex-grow', 'flex-shrink', 'flex-basis'].indexOf(attribute);
-    return ((node.options || {}).flex || '').split(/\s+/)[index] ||
-      (node.options || {})[attribute] || ['1', '1', 'auto'][index];
+    return (node?.options?.flex || '').split(/\s+/)[index] ||
+      node?.options?.[attribute] || ['1', '1', 'auto'][index];
   }
 
   showWidget(layoutNode: any): boolean {

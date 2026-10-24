@@ -24,8 +24,8 @@ export class FrameworkLibraryService {
   frameworkLibrary: { [name: string]: Framework } = {};
 
   constructor(
-    @Optional() @Inject(Framework) private frameworks: any[],
-    @Inject(WidgetLibraryService) private widgetLibrary: WidgetLibraryService
+    @Optional() @Inject(Framework) private readonly frameworks: any[],
+    @Inject(WidgetLibraryService) private readonly widgetLibrary: WidgetLibraryService
   ) {
     // Root cannot see Framework when only a standalone component's imports provide it.
     this.frameworks = frameworks ?? [new NoFramework()];

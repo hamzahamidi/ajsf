@@ -16,7 +16,7 @@ describe('PrimengCheckboxesComponent', () => {
 
   it('builds checkboxList from enum', () => {
     const { component } = make({ enum: ['red', 'green', 'blue'] });
-    expect(component.checkboxList.length).toBe(3);
+    expect(component.checkboxList).toHaveLength(3);
     expect(component.checkboxList[0].name).toBe('red');
     expect(component.checkboxList[0].value).toBe('red');
   });

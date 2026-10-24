@@ -92,7 +92,7 @@ describe('Validation messages', () => {
         .map(({ name }) => name);
 
       expect(mismatches).toEqual([]);
-      expect(expectedKeys.length).toEqual(15);
+      expect(expectedKeys).toHaveLength(15);
     });
 
     it('format and multipleOf are the only function valued messages', () => {

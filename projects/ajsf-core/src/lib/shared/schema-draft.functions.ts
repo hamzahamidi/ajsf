@@ -191,7 +191,7 @@ function normaliseTypes(schema: any, draft: number, changed: boolean): DraftStat
         if (typeof newSchema.type.every === 'function') {
           // If array of strings, only allow standard types
           if (newSchema.type.every(type => typeof type === 'string')) {
-            newSchema.type = newSchema.type.some(type => type === 'any') ?
+            newSchema.type = newSchema.type.includes('any') ?
               newSchema.type = simpleTypes :
               newSchema.type.filter(type => simpleTypes.includes(type));
             // If type is an array with objects, convert the current schema to an 'anyOf' array

@@ -71,7 +71,7 @@ describe('cloneDeep', () => {
     const sparse = [1, , 3];
     sparse.length = 5;
     const copy = cloneDeep(sparse);
-    expect(copy.length).toBe(5);
+    expect(copy).toHaveLength(5);
     expect(1 in copy).toBe(false);
     expect(copy[2]).toBe(3);
   });
@@ -94,7 +94,7 @@ describe('cloneDeep', () => {
   it('keeps the prototype of a class instance', () => {
     class Point { constructor(public x = 1) { } }
     const copy = cloneDeep(new Point(5));
-    expect(copy instanceof Point).toBe(true);
+    expect(copy).toBeInstanceOf(Point);
     expect(copy.x).toBe(5);
   });
 });

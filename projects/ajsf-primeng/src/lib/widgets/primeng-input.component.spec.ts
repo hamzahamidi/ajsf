@@ -64,7 +64,7 @@ describe('PrimengInputComponent', () => {
       expect(datalist).toBeTruthy();
       expect(datalist.id).toBe('control42Autocomplete');
       const options = datalist.querySelectorAll('option');
-      expect(options.length).toBe(3);
+      expect(options).toHaveLength(3);
       expect(options[0].value).toBe('alpha');
       expect(options[2].value).toBe('charlie');
     });

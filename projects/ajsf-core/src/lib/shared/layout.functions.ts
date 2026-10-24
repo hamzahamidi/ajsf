@@ -147,7 +147,7 @@ export function buildLayout(jsf, widgetLibrary) {
           if (hasOwn(items, 'dataPointer')) { return items.dataPointer; }
           if (isArray(items.items)) {
             for (const item of items.items) {
-              if (hasOwn(item, 'dataPointer') && item.dataPointer.indexOf('/-') !== -1) {
+              if (hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-')) {
                 return item.dataPointer;
               }
               if (hasOwn(item, 'items')) {
@@ -170,7 +170,7 @@ export function buildLayout(jsf, widgetLibrary) {
         return buildLayoutFromSchema(jsf, widgetLibrary, jsf.formValues);
       }
       const nodeValue =
-        JsonPointer.get(jsf.formValues, newNode.dataPointer.replace(/\/-/g, '/1'));
+        JsonPointer.get(jsf.formValues, newNode.dataPointer.replaceAll('/-', '/1'));
 
       // TODO: Create function getFormValues(jsf, dataPointer, forRefLibrary)
       // check formOptions.setSchemaDefaults and formOptions.setLayoutDefaults
@@ -384,17 +384,17 @@ export function buildLayout(jsf, widgetLibrary) {
         }
 
         if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
-          const lastItem = newNode.items[newNode.items.length - 1];
+          const lastItem = newNode.items.at(-1);
           // The last existing item is only a template for a new one when it is
           // itself a list item. On a tuple array it is a fixed slot, so cloning
           // it gave every added item that slot's schema, title and pointer.
-          const listItemSchemaPointer = isArray(nodeSchema && nodeSchema.items) ?
+          const listItemSchemaPointer = isArray(nodeSchema?.items) ?
             (isObject(nodeSchema.additionalItems) ?
               schemaPointer + '/additionalItems' : null) :
-            (isObject(nodeSchema && nodeSchema.items) ?
+            (isObject(nodeSchema?.items) ?
               schemaPointer + '/items' : null);
 
-          if (lastItem && lastItem.arrayItemType === 'tuple' && listItemSchemaPointer) {
+          if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
             // Set to null first to prevent a recursive reference from looping.
             jsf.layoutRefLibrary[itemRefPointer] = null;
             jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
@@ -446,7 +446,7 @@ export function buildLayout(jsf, widgetLibrary) {
         // If needed, add button to add items to array
         if (newNode.options.addable !== false &&
           newNode.options.minItems < newNode.options.maxItems &&
-          (newNode.items[newNode.items.length - 1] || {}).type !== '$ref'
+          newNode.items.at(-1)?.type !== '$ref'
         ) {
           let buttonText = 'Add';
           if (newNode.options.title) {
@@ -470,7 +470,7 @@ export function buildLayout(jsf, widgetLibrary) {
               buttonText += ' to ' + parentSchema.title;
             } else {
               const pointerArray = JsonPointer.parse(newNode.dataPointer);
-              buttonText += ' to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+              buttonText += ' to ' + fixTitle(pointerArray.at(-2));
             }
           }
           newNode.items.push({
@@ -492,7 +492,7 @@ export function buildLayout(jsf, widgetLibrary) {
             $ref: itemRefPointer,
           });
           if (isString(JsonPointer.get(newNode, '/style/add'))) {
-            newNode.items[newNode.items.length - 1].options.fieldStyle =
+            newNode.items.at(-1).options.fieldStyle =
               newNode.style.add;
             delete newNode.style.add;
             if (isEmpty(newNode.style)) { delete newNode.style; }
@@ -517,7 +517,7 @@ export function buildLayout(jsf, widgetLibrary) {
   });
   if (jsf.hasRootReference) {
     const fullLayout = cloneDeep(formLayout);
-    if (fullLayout[fullLayout.length - 1].type === 'submit') { fullLayout.pop(); }
+    if (fullLayout.at(-1).type === 'submit') { fullLayout.pop(); }
     jsf.layoutRefLibrary[''] = {
       _id: null,
       dataPointer: '',
@@ -791,10 +791,10 @@ export function buildLayoutFromSchema(
       // If needed, add button to add items to array
       if (newNode.options.addable !== false &&
         newNode.options.minItems < newNode.options.maxItems &&
-        (newNode.items[newNode.items.length - 1] || {}).type !== '$ref'
+        newNode.items.at(-1)?.type !== '$ref'
       ) {
         let buttonText =
-          ((jsf.layoutRefLibrary[itemRefPointer] || {}).options || {}).title;
+          jsf.layoutRefLibrary[itemRefPointer]?.options?.title;
         const prefix = buttonText ? 'Add ' : 'Add to ';
         if (!buttonText) {
           buttonText = schema.title || fixTitle(JsonPointer.toKey(dataPointer));
@@ -841,7 +841,7 @@ export function buildLayoutFromSchema(
         buttonText = 'Add to ' + parentSchema.title;
       } else {
         const pointerArray = JsonPointer.parse(newNode.dataPointer);
-        buttonText = 'Add to ' + fixTitle(pointerArray[pointerArray.length - 2]);
+        buttonText = 'Add to ' + fixTitle(pointerArray.at(-2));
       }
     }
     Object.assign(newNode, {

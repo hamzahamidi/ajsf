@@ -81,7 +81,7 @@ export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
 })
 export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges, OnInit {
   // TODO: quickfix to avoid subscribing twice to the same emitters
-  private unsubscribeOnActivateForm$ = new Subject<void>();
+  private readonly unsubscribeOnActivateForm$ = new Subject<void>();
 
   debugOutput: any; // Debug information, if requested
   formValueSubscription: any = null;
@@ -158,9 +158,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   onTouched: Function;
 
   constructor(
-    private changeDetector: ChangeDetectorRef,
-    private frameworkLibrary: FrameworkLibraryService,
-    private widgetLibrary: WidgetLibraryService,
+    private readonly changeDetector: ChangeDetectorRef,
+    private readonly frameworkLibrary: FrameworkLibraryService,
+    private readonly widgetLibrary: WidgetLibraryService,
     public jsf: JsonSchemaFormService,
   ) { }
 
@@ -169,7 +169,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
   private loadScripts() {
     const scripts = this.frameworkLibrary.getFrameworkScripts();
-    scripts.map(script => {
+    scripts.forEach(script => {
       const scriptTag: HTMLScriptElement = document.createElement('script');
       scriptTag.src = script;
       scriptTag.type = 'text/javascript';
@@ -180,7 +180,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
   private loadStyleSheets() {
     const stylesheets = this.frameworkLibrary.getFrameworkStylesheets();
-    stylesheets.map(stylesheet => {
+    stylesheets.forEach(stylesheet => {
       const linkTag: HTMLLinkElement = document.createElement('link');
       linkTag.rel = 'stylesheet';
       linkTag.href = stylesheet;
@@ -255,7 +255,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
 
       // If only input values have changed, update the form values
       if (changedInput.length === 1 && changedInput[0] === this.formValuesInput) {
-        if (this.formValuesInput.indexOf('.') === -1) {
+        if (!this.formValuesInput.includes('.')) {
           this.setFormValues(this[this.formValuesInput], resetFirst);
         } else {
           const [input, key] = this.formValuesInput.split('.');
@@ -354,25 +354,8 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       // console.log('schemaRecursiveRefMap', this.jsf.schemaRecursiveRefMap);
       // console.log('dataRecursiveRefMap', this.jsf.dataRecursiveRefMap);
 
-      // Uncomment individual lines to output debugging information to browser:
-      // (These only work if the 'debug' option has also been set to 'true'.)
       if (this.debug || this.jsf.formOptions.debug) {
-        const vars: any[] = [];
-        // vars.push(this.jsf.schema);
-        // vars.push(this.jsf.layout);
-        // vars.push(this.options);
-        // vars.push(this.jsf.formValues);
-        // vars.push(this.jsf.formGroup.value);
-        // vars.push(this.jsf.formGroupTemplate);
-        // vars.push(this.jsf.formGroup);
-        // vars.push(this.jsf.schemaRefLibrary);
-        // vars.push(this.jsf.layoutRefLibrary);
-        // vars.push(this.jsf.templateRefLibrary);
-        // vars.push(this.jsf.dataMap);
-        // vars.push(this.jsf.arrayMap);
-        // vars.push(this.jsf.schemaRecursiveRefMap);
-        // vars.push(this.jsf.dataRecursiveRefMap);
-        this.debugOutput = vars.map(v => JSON.stringify(v, null, 2)).join('\n');
+        this.debugOutput = '';
       }
       this.formInitialized = true;
     }
@@ -632,9 +615,9 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     if (alternateLayout) {
       JsonPointer.forEachDeep(alternateLayout, (value, pointer) => {
         const schemaPointer = pointer
-          .replace(/\//g, '/properties/')
-          .replace(/\/properties\/items\/properties\//g, '/items/properties/')
-          .replace(/\/properties\/titleMap\/properties\//g, '/titleMap/properties/');
+          .replaceAll('/', '/properties/')
+          .replaceAll('/properties/items/properties/', '/items/properties/')
+          .replaceAll('/properties/titleMap/properties/', '/titleMap/properties/');
         if (hasValue(value) && hasValue(pointer)) {
           let key = JsonPointer.toKey(pointer);
           const groupPointer = (JsonPointer.parse(schemaPointer) || []).slice(0, -2);
@@ -730,7 +713,7 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
       // Subscribe to form changes to output live data, validation, and errors
       this.jsf.dataChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(data => {
         this.onChanges.emit(this.objectWrap ? data['1'] : data);
-        if (this.formValuesInput && this.formValuesInput.indexOf('.') === -1) {
+        if (this.formValuesInput?.length && !this.formValuesInput.includes('.')) {
           this[`${this.formValuesInput}Change`].emit(this.objectWrap ? data['1'] : data);
         }
       });

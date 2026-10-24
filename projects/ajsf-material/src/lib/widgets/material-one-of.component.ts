@@ -104,14 +104,14 @@ export class MaterialOneOfComponent implements OnInit {
   isFieldset = false;
   selectedValue: any = 0;
   private _selectedItem = 0;
-  private fieldsetValueMap: Map<any, number> = new Map();
+  private readonly fieldsetValueMap: Map<any, number> = new Map();
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
   constructor(
     @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) @Optional() public matFormFieldDefaultOptions,
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   get selectedItem(): number {

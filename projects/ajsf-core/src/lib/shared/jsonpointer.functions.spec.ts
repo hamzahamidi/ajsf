@@ -36,18 +36,18 @@ describe('JsonPointer', () => {
       const map = new Map<string, any>([['k', 1]]);
       const set = new Set<any>([1]);
       const copied: any = JsonPointer.forEachDeepCopy({ date, map, set, n: 1 });
-      expect(copied.date instanceof Date).toBe(true);
+      expect(copied.date).toBeInstanceOf(Date);
       expect(copied.date.getTime()).toBe(5);
-      expect(copied.map instanceof Map).toBe(true);
+      expect(copied.map).toBeInstanceOf(Map);
       expect(copied.map.get('k')).toBe(1);
-      expect(copied.set instanceof Set).toBe(true);
+      expect(copied.set).toBeInstanceOf(Set);
       expect(copied.n).toBe(1);
     });
 
     it('still walks plain objects and arrays', () => {
       const copied: any = JsonPointer.forEachDeepCopy({ a: { b: [1, 2] } });
       expect(copied).toEqual({ a: { b: [1, 2] } });
-      expect(copied.a).not.toBe(undefined);
+      expect(copied.a).toBeDefined();
     });
   });
 
@@ -944,13 +944,13 @@ describe('JsonPointer', () => {
 
     it('should return a Date whole rather than flattening it', () => {
       const copied: any = JsonPointer.forEachDeepCopy(new Date(0));
-      expect(copied instanceof Date).toBe(true);
+      expect(copied).toBeInstanceOf(Date);
       expect(copied.getTime()).toBe(0);
     });
 
     it('should return a Map whole rather than losing the entries', () => {
       const copied: any = JsonPointer.forEachDeepCopy(new Map([['a', 1]]));
-      expect(copied instanceof Map).toBe(true);
+      expect(copied).toBeInstanceOf(Map);
       expect(copied.get('a')).toBe(1);
     });
 

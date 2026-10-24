@@ -187,7 +187,7 @@ export class FlexLayoutSectionComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
-    private jsf: JsonSchemaFormService
+    private readonly jsf: JsonSchemaFormService
   ) { }
 
   get sectionTitle() {
@@ -232,7 +232,7 @@ export class FlexLayoutSectionComponent implements OnInit {
   };
 
   private fxAlign(position: number): string {
-    const value = `${(this.options || {}).fxLayoutAlign || ''}`.trim().split(/\s+/)[position];
+    const value = `${this.options?.fxLayoutAlign || ''}`.trim().split(/\s+/)[position];
     return FlexLayoutSectionComponent.ALIGN[value] || null;
   }
 
@@ -257,10 +257,11 @@ export class FlexLayoutSectionComponent implements OnInit {
         return flexActive;
       case 'display':
         return flexActive ? 'flex' : 'initial';
-      case 'flex-direction': case 'flex-wrap':
+      case 'flex-direction': case 'flex-wrap': {
         const index = ['flex-direction', 'flex-wrap'].indexOf(attribute);
         return (this.options['flex-flow'] || '').split(/\s+/)[index] ||
           this.options[attribute] || ['column', 'nowrap'][index];
+      }
       case 'justify-content': case 'align-items': case 'align-content':
         return this.options[attribute];
     }

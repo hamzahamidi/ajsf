@@ -90,7 +90,7 @@ export class PrimengInputComponent implements OnInit {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(private jsf: JsonSchemaFormService) {}
+  constructor(private readonly jsf: JsonSchemaFormService) {}
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};

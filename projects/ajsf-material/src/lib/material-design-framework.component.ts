@@ -23,8 +23,8 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
   @Input() dataIndex: number[];
 
   constructor(
-    private changeDetector: ChangeDetectorRef,
-    private jsf: JsonSchemaFormService
+    private readonly changeDetector: ChangeDetectorRef,
+    private readonly jsf: JsonSchemaFormService
   ) {
   }
 
@@ -45,7 +45,7 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
       // For removable list items, allow removing any item
       this.layoutNode.arrayItemType === 'list' ? true :
         // For removable tuple items, only allow removing last item in list
-        this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
+        this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {
@@ -111,7 +111,7 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
       this.dynamicTitle,
       this.jsf.getFormControlValue(this),
       this.jsf.getFormControlGroup(this).value,
-      this.dataIndex[this.dataIndex.length - 1]
+      this.dataIndex.at(-1)
     );
   }
 

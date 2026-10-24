@@ -181,11 +181,11 @@ export enum ExpressionType {
  * // {expressionCandidate} expressionCandidate - potential expression
  */
 export function getExpressionType(expressionCandidate: string): ExpressionType {
-  if (expressionCandidate.indexOf('==') !== -1) {
+  if (expressionCandidate.includes('==')) {
     return ExpressionType.EQUALS;
   }
 
-  if (expressionCandidate.toString().indexOf('!=') !== -1) {
+  if (expressionCandidate.toString().includes('!=')) {
     return ExpressionType.NOT_EQUALS;
   }
 
@@ -307,7 +307,7 @@ export function commonItems(...arrays): string[] {
  * // {string} -
  */
 export function fixTitle(name: string): string {
-  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' '));
+  return name && toTitleCase(name.replace(/([a-z])([A-Z])/g, '$1 $2').replaceAll('_', ' '));
 }
 
 /**

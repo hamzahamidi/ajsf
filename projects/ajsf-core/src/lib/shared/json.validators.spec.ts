@@ -1193,7 +1193,7 @@ describe('JsonValidators', () => {
 
       expect(typeof validator).toEqual('function');
       const result: any = validator(ctrl('abc'));
-      expect(result instanceof Observable).toBe(true);
+      expect(result).toBeInstanceOf(Observable);
 
       let emitted: any = 'not emitted';
       result.subscribe(value => emitted = value);

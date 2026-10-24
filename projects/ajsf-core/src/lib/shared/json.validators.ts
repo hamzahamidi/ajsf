@@ -486,7 +486,7 @@ export class JsonValidators {
       // and the library runs ajv over the same data, so the two must agree.
       const division = currentValue / multipleOfValue;
       const isValid = isNumber(currentValue) &&
-        division === parseInt(`${division}`, 10);
+        division === Number.parseInt(`${division}`, 10);
       return xor(isValid, invert) ?
         null : { 'multipleOf': { multipleOfValue, currentValue } };
     };
@@ -860,11 +860,11 @@ export class JsonValidators {
     return (control: AbstractControl): ValidationErrors|null => {
       // don't validate empty values to allow optional controls
       if (isEmpty(control.value) || isEmpty(min)) { return null; }
-      const value = parseFloat(control.value);
+      const value = Number.parseFloat(control.value);
       const actual = control.value;
       // Controls with NaN values after parsing should be treated as not having a
       // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
-      return isNaN(value) || value >= min ? null : { 'min': { min, actual } };
+      return Number.isNaN(value) || value >= min ? null : { 'min': { min, actual } };
     };
   }
 
@@ -876,11 +876,11 @@ export class JsonValidators {
     return (control: AbstractControl): ValidationErrors|null => {
       // don't validate empty values to allow optional controls
       if (isEmpty(control.value) || isEmpty(max)) { return null; }
-      const value = parseFloat(control.value);
+      const value = Number.parseFloat(control.value);
       const actual = control.value;
       // Controls with NaN values after parsing should be treated as not having a
       // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
-      return isNaN(value) || value <= max ? null : { 'max': { max, actual } };
+      return Number.isNaN(value) || value <= max ? null : { 'max': { max, actual } };
     };
   }
 

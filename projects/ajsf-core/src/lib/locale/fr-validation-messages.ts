@@ -32,7 +32,7 @@ export const frValidationMessages: any = { // French error messages
       case 'relative-json-pointer':
         return 'Doit être un relative JSON Pointer, tel que "2/pointer/to/something"';
       case 'regex':
-        return 'Doit être une expression régulière, tel que "(1-)?\\d{3}-\\d{3}-\\d{4}"';
+        return String.raw`Doit être une expression régulière, tel que "(1-)?\d{3}-\d{3}-\d{4}"`;
       default:
         return 'Doit être avoir le format correct: ' + error.requiredFormat;
     }
