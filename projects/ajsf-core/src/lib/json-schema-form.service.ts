@@ -124,15 +124,17 @@ function readModelReference(source: string, model: unknown): ConditionValue {
   let value: any = model;
   for (let index = 0; index < keys.length; index += 1) {
     const key = keys[index];
-    if (value === null || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (value === null || typeof value !== 'object') {
       return UNSUPPORTED_CONDITION;
     }
-    if (!Object.hasOwn(value, key)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor) {
       return index === keys.length - 1
         ? { supported: true, value: undefined }
         : UNSUPPORTED_CONDITION;
     }
-    value = value[key];
+    if (!Object.hasOwn(descriptor, 'value')) return UNSUPPORTED_CONDITION;
+    value = descriptor.value;
   }
   return { supported: true, value };
 }

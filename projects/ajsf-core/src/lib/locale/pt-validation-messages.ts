@@ -32,7 +32,7 @@ export const ptValidationMessages: any = { // Brazilian Portuguese error message
       case 'relative-json-pointer':
         return 'Tem que ser um JSON Pointer relativo, por exemplo "2/referencia/para/algo"';
       case 'regex':
-        return String.raw`Tem que ser uma expressão regular, por exemplo "(1-)?\d{3}-\d{3}-\d{4}"`;
+        return 'Tem que ser uma expressão regular, por exemplo "(1-)?\\d{3}-\\d{3}-\\d{4}"';
       default:
         return 'Tem que ser no formato: ' + error.requiredFormat;
     }

@@ -398,7 +398,7 @@ describe('JsonValidators', () => {
       expect(JsonValidators.format('relative-json-pointer')(ctrl('/foo'))).not.toBeNull();
     });
 
-    it('accepts public URLs with supported schemes, credentials, ports, and IP addresses', () => {
+    it('accepts well-formed URLs with supported schemes, credentials, ports, and public IP literals', () => {
       const validator = JsonValidators.format('url');
 
       expect(validator(ctrl('https://example.com/path'))).toBeNull();
@@ -406,7 +406,7 @@ describe('JsonValidators', () => {
       expect(validator(ctrl('http://8.8.8.8'))).toBeNull();
     });
 
-    it('rejects malformed, local, private, and unsupported URL hosts', () => {
+    it('rejects malformed URLs, localhost, private IPv4, and reserved IPv4 literals', () => {
       const validator = JsonValidators.format('url');
       const invalidUrls = [
         'example.com',

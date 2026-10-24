@@ -1185,6 +1185,18 @@ describe('JsonSchemaFormService', () => {
       expect(consoleError).toHaveBeenCalledTimes(2);
     });
 
+    it('does not invoke model getters while evaluating functionBody conditions', () => {
+      const readName = vi.fn(() => 'Bob');
+      const consoleError = vi.spyOn(console, 'error');
+      jsf.data = Object.defineProperty({}, 'name', { get: readName });
+
+      expect(jsf.evaluateCondition(
+        { options: { condition: { functionBody: 'return model.name === "Bob";' } } }, []
+      )).toBe(true);
+      expect(readName).not.toHaveBeenCalled();
+      expect(consoleError).toHaveBeenCalled();
+    });
+
     it('is true for a condition object with no functionBody', () => {
       expect(jsf.evaluateCondition({ options: { condition: { foo: 1 } } }, [])).toBe(true);
     });

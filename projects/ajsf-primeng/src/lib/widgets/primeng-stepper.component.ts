@@ -58,7 +58,7 @@ export class PrimengStepperComponent implements OnInit {
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
 
-  constructor(private readonly jsf: JsonSchemaFormService) {}
+  constructor(private jsf: JsonSchemaFormService) {}
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};

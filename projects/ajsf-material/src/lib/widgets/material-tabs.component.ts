@@ -49,7 +49,7 @@ export class MaterialTabsComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
-    private readonly jsf: JsonSchemaFormService
+    private jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

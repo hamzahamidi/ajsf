@@ -30,7 +30,7 @@ export const esValidationMessages: any = { // Default Spanish error messages
       case 'relative-json-pointer':
         return 'Debe ser un JSON Pointer relativo, ej "2/pointer/to/something"';
       case 'regex':
-        return String.raw`Debe ser una expresión regular, ej "(1-)?\d{3}-\d{3}-\d{4}"`;
+        return 'Debe ser una expresión regular, ej "(1-)?\\d{3}-\\d{3}-\\d{4}"';
       default:
         return 'Debe tener el formato correcto ' + error.requiredFormat;
     }

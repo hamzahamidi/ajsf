@@ -36,7 +36,7 @@ export class SubmitComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
-    private readonly jsf: JsonSchemaFormService
+    private jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {

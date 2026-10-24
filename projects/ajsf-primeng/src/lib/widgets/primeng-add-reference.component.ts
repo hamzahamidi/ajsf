@@ -32,7 +32,7 @@ export class PrimengAddReferenceComponent implements OnInit {
   @Input() dataIndex: number[];
 
   constructor(
-    private readonly jsf: JsonSchemaFormService
+    private jsf: JsonSchemaFormService
   ) { }
 
   ngOnInit() {
@@ -41,7 +41,7 @@ export class PrimengAddReferenceComponent implements OnInit {
 
   get showAddButton(): boolean {
     return !this.layoutNode.arrayItem ||
-      this.layoutIndex.at(-1) < this.options.maxItems;
+      this.layoutIndex[this.layoutIndex.length - 1] < this.options.maxItems;
   }
 
   addItem(event) {

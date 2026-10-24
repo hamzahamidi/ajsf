@@ -32,7 +32,7 @@ export const zhValidationMessages: any = { // Chinese error messages
       case 'relative-json-pointer':
         return '必须为相对的 JSON Pointer, 比如 "2/pointer/to/something"';
       case 'regex':
-        return String.raw`必须为正则表达式, 比如 "(1-)?\d{3}-\d{3}-\d{4}"`;
+        return '必须为正则表达式, 比如 "(1-)?\\d{3}-\\d{3}-\\d{4}"';
       default:
         return '必须为格式正确的 ' + error.requiredFormat;
     }

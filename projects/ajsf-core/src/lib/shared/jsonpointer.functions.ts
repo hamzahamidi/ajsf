@@ -193,7 +193,7 @@ export class JsonPointer {
       return null;
     }
     const keyAndValue = getKeyAndValueByExpressionType(expressionType, key);
-    if (!keyAndValue?.[0] || !keyAndValue?.[1]) {
+    if (!keyAndValue || !keyAndValue[0] || !keyAndValue[1]) {
       return null;
     }
     return {expressionType: expressionType, keyAndValue: keyAndValue};
@@ -308,7 +308,7 @@ export class JsonPointer {
    */
   static set(object, pointer, value, insert = false) {
     const keyArray = this.parse(pointer);
-    if (keyArray?.length) {
+    if (keyArray !== null && keyArray.length) {
       let subObject = object;
       for (let i = 0; i < keyArray.length - 1; ++i) {
         let key = keyArray[i];
@@ -324,10 +324,10 @@ export class JsonPointer {
           subObject = subObject[key];
         }
       }
-      const lastKey = keyArray.at(-1);
+      const lastKey = keyArray[keyArray.length - 1];
       if (isArray(subObject) && lastKey === '-') {
         subObject.push(value);
-      } else if (insert && isArray(subObject) && !Number.isNaN(+lastKey)) {
+      } else if (insert && isArray(subObject) && !isNaN(+lastKey)) {
         subObject.splice(lastKey, 0, value);
       } else if (isMap(subObject)) {
         subObject.set(lastKey, value);
@@ -360,7 +360,7 @@ export class JsonPointer {
     const keyArray = this.parse(pointer);
     // set() carries the same length guard: without it an empty pointer leaves
     // lastKey undefined and writes a property literally named 'undefined'.
-    if (keyArray?.length) {
+    if (keyArray !== null && keyArray.length) {
       const newObject = copy(object);
       let subObject = newObject;
       for (let i = 0; i < keyArray.length - 1; ++i) {
@@ -379,10 +379,10 @@ export class JsonPointer {
           subObject = subObject[key];
         }
       }
-      const lastKey = keyArray.at(-1);
+      const lastKey = keyArray[keyArray.length - 1];
       if (isArray(subObject) && lastKey === '-') {
         subObject.push(value);
-      } else if (insert && isArray(subObject) && !Number.isNaN(+lastKey)) {
+      } else if (insert && isArray(subObject) && !isNaN(+lastKey)) {
         subObject.splice(lastKey, 0, value);
       } else if (isMap(subObject)) {
         subObject.set(lastKey, value);
@@ -436,7 +436,7 @@ export class JsonPointer {
    */
   static remove(object, pointer) {
     const keyArray = this.parse(pointer);
-    if (keyArray?.length) {
+    if (keyArray !== null && keyArray.length) {
       let lastKey = keyArray.pop();
       const parentObject = this.get(object, keyArray);
       if (isArray(parentObject)) {
@@ -580,7 +580,7 @@ export class JsonPointer {
    * // { string } - escaped key
    */
   static escape(key) {
-    const escaped = key.toString().replaceAll('~', '~0').replaceAll('/', '~1');
+    const escaped = key.toString().replace(/~/g, '~0').replace(/\//g, '~1');
     return escaped;
   }
 
@@ -593,7 +593,7 @@ export class JsonPointer {
    * // { string } - unescaped key
    */
   static unescape(key) {
-    const unescaped = key.toString().replaceAll('~1', '/').replaceAll('~0', '~');
+    const unescaped = key.toString().replace(/~1/g, '/').replace(/~0/g, '~');
     return unescaped;
   }
 
@@ -614,7 +614,7 @@ export class JsonPointer {
     }
     if (isArray(pointer)) { return <string[]>pointer; }
     if (typeof pointer === 'string') {
-      if ((<string>pointer).startsWith('#')) { pointer = pointer.slice(1); }
+      if ((<string>pointer)[0] === '#') { pointer = pointer.slice(1); }
       if (<string>pointer === '' || <string>pointer === '/') { return []; }
       return (<string>pointer).slice(1).split('/').map(this.unescape);
     }
@@ -646,7 +646,7 @@ export class JsonPointer {
       ).join('/');
     }
     if (typeof pointer === 'string') {
-      if (pointer.startsWith('#')) { pointer = pointer.slice(1); }
+      if (pointer[0] === '#') { pointer = pointer.slice(1); }
       return pointer;
     }
   }
@@ -664,7 +664,7 @@ export class JsonPointer {
     const keyArray = this.parse(pointer, errors);
     if (keyArray === null) { return null; }
     if (!keyArray.length) { return ''; }
-    return keyArray.at(-1);
+    return keyArray[keyArray.length - 1];
   }
 
   /**
@@ -682,7 +682,7 @@ export class JsonPointer {
       return value.every(key => typeof key === 'string');
     } else if (isString(value)) {
       if (value === '' || value === '#') { return true; }
-      if (value.startsWith('/') || value.startsWith('#/')) {
+      if (value[0] === '/' || value.slice(0, 2) === '#/') {
         return !/(~[^01]|~$)/g.test(value);
       }
     }
@@ -861,7 +861,7 @@ export class JsonPointer {
       if (!pointerArray.length) { return ''; }
       const firstKey = pointerArray.shift();
       if (schema.type === 'object' || schema.properties || schema.additionalProperties) {
-        if (schema.properties?.[firstKey]) {
+        if ((schema.properties || {})[firstKey]) {
           return `/properties/${this.escape(firstKey)}` +
             this.toSchemaPointer(pointerArray, schema.properties[firstKey]);
         } else  if (schema.additionalProperties) {
