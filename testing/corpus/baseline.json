@@ -1640,12 +1640,12 @@
     "valid": true
   },
   "no-framework/jsf-fields-selectfieldset": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },
   "no-framework/jsf-fields-selectfieldset-key": {
-    "controls": 1,
+    "controls": 3,
     "error": null,
     "valid": true
   },

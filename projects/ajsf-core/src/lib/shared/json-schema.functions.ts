@@ -556,7 +556,7 @@ function getOneOfTitleMapType(oneOf) {
   if (oneOf.every(item => isArray(item.enum) && item.enum.length === 1)) {
     return 'enum';
   }
-  if (oneOf.every(item => item.const)) {
+  if (oneOf.every(item => hasOwn(item, 'const'))) {
     return 'const';
   }
   return null;
