@@ -221,6 +221,24 @@ function isQuotedLiteral(expression: string): boolean {
   return true;
 }
 
+function nextTemplateExpression(text: string, searchIndex: number): { start: number; end: number }|null {
+  let start = -1;
+  for (let index = searchIndex; index < text.length; index += 1) {
+    const character = text[index];
+    if (character === '\n' || character === '\r' || character === '\u2028' || character === '\u2029') {
+      start = -1;
+      continue;
+    }
+    if (start === -1 && character === '{' && text[index + 1] === '{') {
+      start = index;
+    } else if (start !== -1 && character === '}' && text[index + 1] === '}') {
+      if (index > start + 2) { return { start, end: index }; }
+      start = -1;
+    }
+  }
+  return null;
+}
+
 @Injectable()
 export class JsonSchemaFormService {
   JsonFormCompatibility = false;
@@ -542,12 +560,20 @@ export class JsonSchemaFormService {
     values: any = {},
     key: number | string = null
   ): string {
-    if (!text || !/{{.+?}}/.test(text)) {
-      return text;
+    if (!text) { return text; }
+    let expression = nextTemplateExpression(text, 0);
+    if (expression === null) { return text; }
+    let result = '';
+    let cursor = 0;
+    while (expression !== null) {
+      result += text.slice(cursor, expression.start);
+      result += this.parseExpression(
+        text.slice(expression.start + 2, expression.end), value, values, key, this.tpldata
+      );
+      cursor = expression.end + 2;
+      expression = nextTemplateExpression(text, cursor);
     }
-    return text.replace(/{{(.+?)}}/g, (...a) =>
-      this.parseExpression(a[1], value, values, key, this.tpldata)
-    );
+    return result + text.slice(cursor);
   }
 
   private resolveTextPointer(pointer, value, values, tpldata) {

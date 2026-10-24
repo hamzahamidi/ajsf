@@ -987,6 +987,11 @@ describe('JsonSchemaFormService', () => {
         .toEqual('A B');
     });
 
+    it('keeps empty and multiline placeholders literal while parsing later placeholders', () => {
+      expect(jsf.parseText('{{}}\n{{value}}', 'Bob')).toEqual('{{}}\nBob');
+      expect(jsf.parseText('{{value\n}}')).toEqual('{{value\n}}');
+    });
+
     it('reads from the surrounding values object, with or without the values prefix', () => {
       expect(jsf.parseText('{{values.other}}', {}, { other: 'X' })).toEqual('X');
       expect(jsf.parseText('{{other}}', {}, { other: 'X' })).toEqual('X');

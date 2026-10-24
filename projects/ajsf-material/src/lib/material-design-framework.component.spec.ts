@@ -36,4 +36,22 @@ describe('FwBootstrap4Component', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it.each([
+    ['plain title', false],
+    ['{{}}', false],
+    ['{{value\n}}', false],
+    ['{{}}\n{{value}}', true],
+  ])('detects template expressions in %s', (title, hasExpression) => {
+    const jsf = TestBed.inject(JsonSchemaFormService);
+    vi.spyOn(jsf, 'getFormControl').mockReturnValue(null as any);
+    vi.spyOn(jsf, 'getFormControlValue').mockReturnValue(null as any);
+    vi.spyOn(jsf, 'getFormControlGroup').mockReturnValue({ value: {} } as any);
+    vi.spyOn(jsf, 'parseText').mockReturnValue(title as string);
+    component.layoutNode = { type: 'text', options: { title } };
+
+    component.initializeFramework();
+
+    expect(component.dynamicTitle !== null).toBe(hasExpression);
+  });
 });
