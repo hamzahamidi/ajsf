@@ -170,72 +170,72 @@ function normaliseIdentifiers(newSchema: any, draft: number, changed: boolean): 
   return { newSchema, draft, changed };
 }
 
+function isLegacyType(type: any): boolean {
+  return typeof type.every === 'function'
+    ? !type.every(value => simpleTypes.includes(value))
+    : !simpleTypes.includes(type);
+}
+
+function typeSpecificKeys() {
+  const arrayKeys = ['additionalItems', 'items', 'maxItems', 'minItems', 'uniqueItems', 'contains'];
+  const numberKeys = ['multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum'];
+  const objectKeys = ['maxProperties', 'minProperties', 'required', 'additionalProperties',
+    'properties', 'patternProperties', 'dependencies', 'propertyNames'];
+  const stringKeys = ['maxLength', 'minLength', 'pattern', 'format'];
+  return {
+    'array': [...numberKeys, ...objectKeys, ...stringKeys],
+    'integer': [...arrayKeys, ...objectKeys, ...stringKeys],
+    'number': [...arrayKeys, ...objectKeys, ...stringKeys],
+    'object': [...arrayKeys, ...numberKeys, ...stringKeys],
+    'string': [...arrayKeys, ...numberKeys, ...objectKeys],
+    'all': [...arrayKeys, ...numberKeys, ...objectKeys, ...stringKeys],
+  };
+}
+
+function typeSchema(type: any, schema: any, filterKeys: any): any {
+  const newType = typeof type === 'string' ? { type } : { ...type };
+  const excluded = [...(filterKeys[newType.type] || filterKeys.all), 'type', 'default'];
+  for (const key of Object.keys(schema)) {
+    if (!newType.hasOwnProperty(key) && !excluded.includes(key)) {
+      newType[key] = schema[key];
+    }
+  }
+  return newType;
+}
+
+function anyOfSchema(schema: any, types: any[]): any {
+  const filterKeys = typeSpecificKeys();
+  const anyOf = types.map(type => typeSchema(type, schema, filterKeys));
+  return schema.hasOwnProperty('default') ? { anyOf, default: schema.default } : { anyOf };
+}
+
+function normaliseTypeArray(schema: any): any {
+  if (schema.type.every(type => typeof type === 'string')) {
+    schema.type = schema.type.includes('any')
+      ? simpleTypes
+      : schema.type.filter(type => simpleTypes.includes(type));
+  } else if (schema.type.length > 1) {
+    return anyOfSchema(schema, schema.type);
+  }
+  return schema;
+}
+
 /** Expands the draft 1 to 3 'any' and object type forms into the standard type list, or into an 'anyOf'. */
 function normaliseTypes(schema: any, draft: number, changed: boolean): DraftState {
   let newSchema = schema;
-    // Convert v1-v3 'any' and object types
-    if (newSchema.type && (typeof newSchema.type.every === 'function' ?
-      !newSchema.type.every(type => simpleTypes.includes(type)) :
-      !simpleTypes.includes(newSchema.type)
-    )) {
-      if (newSchema.type.length === 1) { newSchema.type = newSchema.type[0]; }
-      if (typeof newSchema.type === 'string') {
-        // Convert string 'any' type to array of all standard types
-        if (newSchema.type === 'any') {
-          newSchema.type = simpleTypes;
-          // Delete non-standard string type
-        } else {
-          delete newSchema.type;
-        }
-      } else if (typeof newSchema.type === 'object') {
-        if (typeof newSchema.type.every === 'function') {
-          // If array of strings, only allow standard types
-          if (newSchema.type.every(type => typeof type === 'string')) {
-            if (newSchema.type.includes('any')) {
-              newSchema.type = simpleTypes;
-            } else {
-              newSchema.type = newSchema.type.filter(type => simpleTypes.includes(type));
-            }
-            // If type is an array with objects, convert the current schema to an 'anyOf' array
-          } else if (newSchema.type.length > 1) {
-            const arrayKeys = ['additionalItems', 'items', 'maxItems', 'minItems', 'uniqueItems', 'contains'];
-            const numberKeys = ['multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum'];
-            const objectKeys = ['maxProperties', 'minProperties', 'required', 'additionalProperties',
-              'properties', 'patternProperties', 'dependencies', 'propertyNames'];
-            const stringKeys = ['maxLength', 'minLength', 'pattern', 'format'];
-            const filterKeys = {
-              'array': [...numberKeys, ...objectKeys, ...stringKeys],
-              'integer': [...arrayKeys, ...objectKeys, ...stringKeys],
-              'number': [...arrayKeys, ...objectKeys, ...stringKeys],
-              'object': [...arrayKeys, ...numberKeys, ...stringKeys],
-              'string': [...arrayKeys, ...numberKeys, ...objectKeys],
-              'all': [...arrayKeys, ...numberKeys, ...objectKeys, ...stringKeys],
-            };
-            const anyOf = [];
-            for (const type of newSchema.type) {
-              const newType = typeof type === 'string' ? { type } : { ...type };
-              Object.keys(newSchema)
-                .filter(key => !newType.hasOwnProperty(key) &&
-                  ![...(filterKeys[newType.type] || filterKeys.all), 'type', 'default']
-                    .includes(key)
-                )
-                .forEach(key => newType[key] = newSchema[key]);
-              anyOf.push(newType);
-            }
-            newSchema = newSchema.hasOwnProperty('default') ?
-              { anyOf, default: newSchema.default } : { anyOf };
-            // If type is an object, merge it with the current schema
-          } else {
-            const typeSchema = newSchema.type;
-            delete newSchema.type;
-            Object.assign(newSchema, typeSchema);
-          }
-        }
-      } else {
-        delete newSchema.type;
+  if (newSchema.type && isLegacyType(newSchema.type)) {
+    if (newSchema.type.length === 1) { newSchema.type = newSchema.type[0]; }
+    if (typeof newSchema.type === 'string') {
+      newSchema.type = newSchema.type === 'any' ? simpleTypes : undefined;
+      if (newSchema.type === undefined) { delete newSchema.type; }
+    } else if (typeof newSchema.type === 'object') {
+      if (typeof newSchema.type.every === 'function') {
+        newSchema = normaliseTypeArray(newSchema);
       }
+    } else {
+      delete newSchema.type;
     }
-
+  }
   return { newSchema, draft, changed };
 }
 
