@@ -34,8 +34,13 @@ describe('JsonPointer.evaluateExpression', () => {
     expect(result.passed).toBeFalsy();
   });
 
-  it('should return false when key corrupted', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name=\'abc\'');
+  it.each([
+    ['malformed expression', 'name=\'abc\''],
+    ['missing property with equality', 'somethingElse==\'abc\''],
+    ['missing property with a typo', 'eman==\'abc\''],
+    ['different property value', 'name==\'cba\''],
+  ])('should return false for a %s', (_case, expression) => {
+    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, expression);
 
     expect(result.passed).toBeFalsy();
   });
@@ -47,22 +52,10 @@ describe('JsonPointer.evaluateExpression', () => {
     expect(result.key).toEqual(key);
   });
 
-  it('should return the first part of key when key contains equals', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name==\'abc\'');
-
-    expect(result.key).toEqual('name');
-  });
-
   it('should not return the first part of key when key contains not equals', () => {
     const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name!=\'abc\'');
 
     expect(result.key).not.toEqual('name');
-  });
-
-  it('should return false when key equals does not correspond to the subObject property', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'somethingElse==\'abc\'');
-
-    expect(result.passed).toBeFalsy();
   });
 
   it('should return true when key not equals does not correspond to the subObject property', () => {
@@ -71,22 +64,13 @@ describe('JsonPointer.evaluateExpression', () => {
     expect(result.passed).toBeTruthy();
   });
 
-  it('should return the first part of key when key does not equal to the property value', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name!=\'cba\'');
+  it.each([
+    'name==\'abc\'',
+    'name!=\'cba\'',
+  ])('should return the property key for comparison %s', expression => {
+    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, expression);
 
     expect(result.key).toEqual('name');
-  });
-
-  it('should return the first part of key when key does equal to the property value', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name==\'abc\'');
-
-    expect(result.key).toEqual('name');
-  });
-
-  it('should return false when key is different', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'eman==\'abc\'');
-
-    expect(result.passed).toBeFalsy();
   });
 
   it('should return true when key is without quotes', () => {
@@ -95,9 +79,4 @@ describe('JsonPointer.evaluateExpression', () => {
     expect(result.passed).toEqual(true);
   });
 
-  it('should return false when key has different value', () => {
-    const result = JsonPointer.evaluateExpression(subObjectWithEvaluatedProperty, 'name==\'cba\'');
-
-    expect(result.passed).toBeFalsy();
-  });
 });

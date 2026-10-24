@@ -7,6 +7,24 @@ function isPlainObject(value: any): boolean {
   return Object.prototype.toString.call(value) === '[object Object]';
 }
 
+function deepEqualArrays(value1: any, value2: any): boolean {
+  if (!Array.isArray(value1) || !Array.isArray(value2)) { return false; }
+  if (value1.length !== value2.length) { return false; }
+  for (let i = 0; i < value1.length; i++) {
+    if (!deepEqual(value1[i], value2[i])) { return false; }
+  }
+  return true;
+}
+
+function deepEqualObjects(value1: any, value2: any): boolean {
+  if (!isPlainObject(value1) || !isPlainObject(value2)) { return false; }
+  const keys1 = Object.keys(value1);
+  if (keys1.length !== Object.keys(value2).length) { return false; }
+  return keys1.every(key =>
+    Object.hasOwn(value2, key) && deepEqual(value1[key], value2[key])
+  );
+}
+
 /**
  * 'deepEqual' function
  *
@@ -20,26 +38,11 @@ function isPlainObject(value: any): boolean {
  * // {boolean} - true if structurally equal
  */
 export function deepEqual(value1: any, value2: any): boolean {
-  if (value1 === value2) { return true; }
-  if (value1 !== value1 && value2 !== value2) { return true; }
+  if (value1 === value2 || (Number.isNaN(value1) && Number.isNaN(value2))) { return true; }
   if (isDate(value1) || isDate(value2)) {
     return isDate(value1) && isDate(value2) &&
       value1.getTime() === value2.getTime();
   }
-  const isArray1 = Array.isArray(value1);
-  if (isArray1 !== Array.isArray(value2)) { return false; }
-  if (isArray1) {
-    if (value1.length !== value2.length) { return false; }
-    for (let i = 0; i < value1.length; i++) {
-      if (!deepEqual(value1[i], value2[i])) { return false; }
-    }
-    return true;
-  }
-  if (!isPlainObject(value1) || !isPlainObject(value2)) { return false; }
-  const keys1 = Object.keys(value1);
-  if (keys1.length !== Object.keys(value2).length) { return false; }
-  return keys1.every(key =>
-    Object.prototype.hasOwnProperty.call(value2, key) &&
-    deepEqual(value1[key], value2[key])
-  );
+  if (Array.isArray(value1) || Array.isArray(value2)) return deepEqualArrays(value1, value2);
+  return deepEqualObjects(value1, value2);
 }
