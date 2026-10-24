@@ -20,4 +20,4 @@ class PrimengCorpusHost implements CorpusHost {
   valid: boolean | null = null;
 }
 
-runCorpus('primeng', PrimengCorpusHost);
+runCorpus('primeng', PrimengCorpusHost); // NOSONAR The shared harness declares this file's tests.

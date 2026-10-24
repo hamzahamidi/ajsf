@@ -21,4 +21,4 @@ class CoreCorpusHost implements CorpusHost {
   valid: boolean | null = null;
 }
 
-runCorpus('no-framework', CoreCorpusHost);
+runCorpus('no-framework', CoreCorpusHost); // NOSONAR The shared harness declares this file's tests.
