@@ -50,6 +50,22 @@ const legacyValidationMessageCodes: ReadonlyMap<string, string> = new Map<string
 
 const uniqueId = () => String(++idCounter);
 
+function findDataPointer(items) {
+  if (items === null || typeof items !== 'object') { return; }
+  if (hasOwn(items, 'dataPointer')) { return items.dataPointer; }
+  if (isArray(items.items)) {
+    for (const item of items.items) {
+      if (hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-')) {
+        return item.dataPointer;
+      }
+      if (hasOwn(item, 'items')) {
+        const searchItem = findDataPointer(item);
+        if (searchItem) { return searchItem; }
+      }
+    }
+  }
+}
+
 
 
 /**
@@ -145,21 +161,6 @@ export function buildLayout(jsf, widgetLibrary) {
 
         // If newNode is an array, search for dataPointer in child nodes
       } else if (hasOwn(newNode, 'type') && newNode.type.slice(-5) === 'array') {
-        const findDataPointer = (items) => {
-          if (items === null || typeof items !== 'object') { return; }
-          if (hasOwn(items, 'dataPointer')) { return items.dataPointer; }
-          if (isArray(items.items)) {
-            for (const item of items.items) {
-              if (hasOwn(item, 'dataPointer') && item.dataPointer.includes('/-')) {
-                return item.dataPointer;
-              }
-              if (hasOwn(item, 'items')) {
-                const searchItem = findDataPointer(item);
-                if (searchItem) { return searchItem; }
-              }
-            }
-          }
-        };
         const childDataPointer = findDataPointer(newNode);
         if (childDataPointer) {
           newNode.dataPointer =
