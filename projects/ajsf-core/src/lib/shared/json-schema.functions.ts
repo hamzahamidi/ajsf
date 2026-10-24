@@ -517,37 +517,48 @@ export function updateInputOptions(layoutNode, schema, jsf) {
 export function getTitleMapFromOneOf(
   schema: any = {}, flatList: boolean = null, validateOnly = false
 ) {
-  let titleMap = null;
   const oneOf = schema.oneOf || schema.anyOf || null;
-  if (isArray(oneOf) && oneOf.every(item => item.title)) {
-    if (oneOf.every(item => isArray(item.enum) && item.enum.length === 1)) {
-      if (validateOnly) { return true; }
-      titleMap = oneOf.map(item => ({ name: item.title, value: item.enum[0] }));
-    } else if (oneOf.every(item => item.const)) {
-      if (validateOnly) { return true; }
-      titleMap = oneOf.map(item => ({ name: item.title, value: item.const }));
-    }
+  if (!isArray(oneOf) || !oneOf.every(item => item.title)) {
+    return validateOnly ? false : null;
+  }
+  const titleMapType = getOneOfTitleMapType(oneOf);
+  if (validateOnly) { return titleMapType !== null; }
+  if (titleMapType === null) { return null; }
+  const titleMap = titleMapType === 'enum' ?
+    oneOf.map(item => ({ name: item.title, value: item.enum[0] })) :
+    oneOf.map(item => ({ name: item.title, value: item.const }));
+  return titleMap ? groupOneOfTitleMap(titleMap, flatList) : null;
+}
 
-    // if flatList !== false and some items have colons, make grouped map
-    if (flatList !== false && (titleMap || [])
-      .filter(title => (title?.name || '').indexOf(': ')).length > 1
-    ) {
+function getOneOfTitleMapType(oneOf) {
+  if (oneOf.every(item => isArray(item.enum) && item.enum.length === 1)) {
+    return 'enum';
+  }
+  if (oneOf.every(item => item.const)) {
+    return 'const';
+  }
+  return null;
+}
 
-      // Split name on first colon to create grouped map (name -> group: name)
-      const newTitleMap = titleMap.map(title => {
-        const [group, name] = title.name.split(/: (.+)/);
-        return group && name ? { ...title, group, name } : title;
-      });
+function groupOneOfTitleMap(titleMap, flatList) {
+  // if flatList !== false and some items have colons, make grouped map
+  if (flatList !== false && titleMap
+    .filter(title => (title?.name || '').indexOf(': ')).length > 1
+  ) {
+    // Split name on first colon to create grouped map (name -> group: name)
+    const groupedTitleMap = titleMap.map(title => {
+      const [group, name] = title.name.split(/: (.+)/);
+      return group && name ? { ...title, group, name } : title;
+    });
 
-      // If flatList === true or at least one group has multiple items, use grouped map
-      if (flatList === true || newTitleMap.some((title, index) => index &&
-        hasOwn(title, 'group') && title.group === newTitleMap[index - 1].group
-      )) {
-        titleMap = newTitleMap;
-      }
+    // If flatList === true or at least one group has multiple items, use grouped map
+    if (flatList === true || groupedTitleMap.some((title, index) => index &&
+      hasOwn(title, 'group') && title.group === groupedTitleMap[index - 1].group
+    )) {
+      return groupedTitleMap;
     }
   }
-  return validateOnly ? false : titleMap;
+  return titleMap;
 }
 
 /**
