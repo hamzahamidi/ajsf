@@ -13,18 +13,21 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         <input
           [formControl]="formControl"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
+          [indeterminate]="isIndeterminate"
         [class]="(options?.fieldHtmlClass || '') + (isChecked ?
           (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
           (' ' + (options?.style?.unselected || '')))"
           [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
           [name]="controlName"
           [readonly]="options?.readonly ? 'readonly' : null"
-          type="checkbox">
+          type="checkbox"
+          (click)="handleClick($event)">
       }
       @if (!boundControl) {
         <input
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
           [checked]="isChecked ? 'checked' : null"
+          [indeterminate]="isIndeterminate"
         [class]="(options?.fieldHtmlClass || '') + (isChecked ?
           (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
           (' ' + (options?.style?.unselected || '')))"
@@ -34,7 +37,8 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
           [readonly]="options?.readonly ? 'readonly' : null"
           [value]="controlValue"
           type="checkbox"
-          (change)="updateValue($event)">
+          (click)="handleClick($event)"
+          (change)="handleChange($event)">
       }
       @if (options?.title) {
         <span
@@ -70,7 +74,28 @@ export class CheckboxComponent implements OnInit {
 
   updateValue(event) {
     event.preventDefault();
+    if (this.options?.ternary) {
+      const currentValue = this.jsf.getFormControlValue(this);
+      const nextValue = currentValue === null || currentValue === undefined
+        ? this.trueValue
+        : currentValue === this.trueValue ? this.falseValue : null;
+      this.jsf.updateValue(this, nextValue);
+      return;
+    }
     this.jsf.updateValue(this, event.target.checked ? this.trueValue : this.falseValue);
+  }
+
+  handleClick(event): void {
+    if (this.options?.ternary) { this.updateValue(event); }
+  }
+
+  handleChange(event): void {
+    if (!this.options?.ternary) { this.updateValue(event); }
+  }
+
+  get isIndeterminate() {
+    const value = this.jsf.getFormControlValue(this);
+    return this.options?.ternary && (value === null || value === undefined);
   }
 
   get isChecked() {

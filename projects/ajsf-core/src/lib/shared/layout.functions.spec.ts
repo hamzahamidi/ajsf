@@ -620,6 +620,18 @@ describe('buildLayoutFromSchema', () => {
       });
     });
 
+    it('enables ternary checkboxes for nullable boolean schemas', () => {
+      const jsf: any = makeJsf({
+        schema: { type: 'object', properties: { enabled: { type: ['boolean', 'null'] } } },
+        layout: ['enabled'],
+      });
+
+      const result: any = buildLayout(jsf, widgetLibrary);
+
+      expect(result[0].type).toBe('checkbox');
+      expect(result[0].options.ternary).toBe(true);
+    });
+
     it('derives a title from the property name when the schema has none', () => {
       const result: any = buildLayoutFromSchema(
         makeJsf({ schema: { type: 'object', properties: { first_name: { type: 'string' } } } }),
