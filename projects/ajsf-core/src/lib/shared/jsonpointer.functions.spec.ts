@@ -12,6 +12,11 @@ import { JsonPointer } from './jsonpointer.functions';
  * given a pointer array), so every fixture is built inside the test that uses it.
  */
 describe('JsonPointer', () => {
+  // Many branches log to console.error on purpose. Silencing keeps the run readable.
+  beforeEach(() => {
+    vi.spyOn(console, 'error');
+  });
+
   describe('setCopy, remove and forEachDeepCopy edge cases', () => {
     it('rejects an empty pointer rather than writing a key named undefined', () => {
       const result = JsonPointer.setCopy({ a: 1 }, '', 'x');
@@ -77,11 +82,6 @@ describe('JsonPointer', () => {
   });
 
 
-
-  // Many branches log to console.error on purpose. Silencing keeps the run readable.
-  beforeEach(() => {
-    vi.spyOn(console, 'error');
-  });
 
   describe('parse', () => {
     it('should split a string pointer into an array of keys', () => {
