@@ -26,14 +26,12 @@ describe('classify', () => {
     expect(classify({ hits: 3, branches: [1, 2] })).toEqual(HIT);
   });
 
-  // This single rule is the whole reason local and Codecov disagreed.
+  // An untaken branch makes an executed line partial.
   it('calls an executed line with an untaken branch a partial', () => {
     expect(classify({ hits: 3, branches: [1, 0] })).toEqual(PARTIAL);
   });
 
-  // 225 lines in this repository are in this shape. Counting them as missed
-  // scores 53.36% against Codecov's 56.40%; counting them as executed
-  // reproduces its hit count exactly.
+  // Branch records still determine the score when a line record is absent.
   it('treats branch data with no execution record as executed', () => {
     expect(classify({ hits: 0, branches: [1, 0], hasExecutionRecord: false })).toEqual(PARTIAL);
     expect(classify({ hits: 0, branches: [1, 2], hasExecutionRecord: false })).toEqual(HIT);

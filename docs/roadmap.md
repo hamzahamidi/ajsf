@@ -43,14 +43,12 @@ title, described further down under Correctness, which still need a design
 pass before code because they change shared widget structure rather than one
 package's class list.
 
-### The Codecov project target has a floor
+### Coverage has a floor
 
-Done. `codecov.yml` had `project: auto` alone because coverage was 56 percent
-when it was written; the combined figure measured 77.22 percent on 2026-09-13,
-so a floor of 76 percent now sits beside the ratchet. `auto` catches one large
-drop, the floor catches slow erosion that every individual pull request would
-otherwise pass. Raise the floor in steps, and only ever to a figure already
-met.
+The combined branch-aware coverage report measured 77.22 percent on 2026-09-13.
+`npm run coverage` enforces a 76 percent project floor using partial-line
+scoring. SonarQube Cloud analyzes the LCOV reports from CI. Raise the floor in
+steps, and only to a figure the report already meets.
 
 ## Security
 
