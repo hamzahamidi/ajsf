@@ -19,8 +19,12 @@ export const deValidationMessages: any = { // Default German error messages
         return 'Keine gültige IPv4-Adresse (z. B. "127.0.0.1")';
       case 'ipv6':
         return 'Keine gültige IPv6-Adresse (z. B. "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0")';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return 'Keine gültige URI (z. B. "https://example.com/resource")';
+      case 'uri-reference':
+        return 'Keine gültige URI-Referenz (z. B. "../resource")';
+      case 'uri-template':
+        return 'Keine gültige URI-Vorlage (z. B. "https://example.com/users/{id}")';
       case 'url':
         return 'Keine gültige URL (z. B. "http://www.example.com/page.html")';
       case 'uuid':

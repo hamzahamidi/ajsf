@@ -19,8 +19,12 @@ export const frValidationMessages: any = { // French error messages
         return 'Doit être une adresse IPv4, tel que "127.0.0.1"';
       case 'ipv6':
         return 'Doit être une adresse IPv6, tel que "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return 'Doit être un URI, tel que "https://example.com/resource"';
+      case 'uri-reference':
+        return 'Doit être une référence URI, telle que "../resource"';
+      case 'uri-template':
+        return 'Doit être un modèle URI, tel que "https://example.com/users/{id}"';
       case 'url':
         return 'Doit être une URL, tel que "http://www.example.com/page.html"';
       case 'uuid':

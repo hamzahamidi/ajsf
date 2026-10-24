@@ -19,8 +19,12 @@ export const ptValidationMessages: any = { // Brazilian Portuguese error message
         return 'Tem que ser um endereço IPv4, por exemplo "127.0.0.1"';
       case 'ipv6':
         return 'Tem que ser um endereço IPv6, por exemplo "1234:5678:9ABC:DEF0:1234:5678:9ABC:DEF0"';
-      // TODO: add examples for 'uri', 'uri-reference', and 'uri-template'
-      // case 'uri': case 'uri-reference': case 'uri-template':
+      case 'uri':
+        return 'Tem que ser uma URI, por exemplo "https://example.com/resource"';
+      case 'uri-reference':
+        return 'Tem que ser uma referência URI, por exemplo "../resource"';
+      case 'uri-template':
+        return 'Tem que ser um modelo URI, por exemplo "https://example.com/users/{id}"';
       case 'url':
         return 'Tem que ser uma URL, por exemplo "http://www.exemplo.com.br/pagina.html"';
       case 'uuid':
