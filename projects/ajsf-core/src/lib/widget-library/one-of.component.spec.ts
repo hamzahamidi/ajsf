@@ -1,4 +1,9 @@
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { OneOfComponent } from './one-of.component';
+import { JsonSchemaFormService } from '../json-schema-form.service';
+import { WidgetLibraryModule } from './widget-library.module';
 
 describe('OneOfComponent', () => {
   const make = (layoutNode: any, initialValue?: any) => {
@@ -81,6 +86,16 @@ describe('OneOfComponent', () => {
     expect(component.selectedItem).toBe(1);
   });
 
+  it('uses a numeric fieldset value as its child index when it is not in the value map', () => {
+    const { component } = make({
+      type: 'selectfieldset',
+      options: { titleMap: [{ name: 'First', value: 'first' }] },
+      items: [{}, {}],
+    }, 1);
+
+    expect(component.selectedItem).toBe(1);
+  });
+
   it('disables control initialization for read only options', () => {
     const { initializeCalls } = make({
       type: 'one-of',
@@ -88,5 +103,96 @@ describe('OneOfComponent', () => {
     });
 
     expect(initializeCalls).toEqual([false]);
+  });
+});
+
+describe('OneOfComponent template', () => {
+  let fixture: ComponentFixture<OneOfComponent>;
+  let jsf: any;
+
+  beforeEach(async () => {
+    jsf = {
+      framework: null,
+      initializeControl: vi.fn((widget: any) => {
+        widget.boundControl = false;
+        widget.controlValue = null;
+        widget.controlName = 'choice';
+      }),
+      updateValue: vi.fn(),
+    };
+    await TestBed.configureTestingModule({
+      imports: [WidgetLibraryModule, FormsModule, ReactiveFormsModule],
+      providers: [{ provide: JsonSchemaFormService, useValue: jsf }],
+    }).compileComponents();
+  });
+
+  afterEach(() => fixture?.destroy());
+
+  const render = (layoutNode: any): ComponentFixture<OneOfComponent> => {
+    fixture = TestBed.createComponent(OneOfComponent);
+    fixture.componentInstance.layoutNode = layoutNode;
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  it('renders grouped options and the description for an unbound select', () => {
+    const view = render({
+      type: 'one-of',
+      _id: 'choice',
+      options: {
+        title: 'Choice',
+        titleMap: [
+          { group: 'Group', name: 'First', value: 'first' },
+          { group: 'Group', name: 'Second', value: 'second' },
+        ],
+        flatList: false,
+        description: 'Choose one value',
+      },
+    });
+
+    expect(view.nativeElement.querySelector('label').textContent).toContain('Choice');
+    expect(view.nativeElement.querySelectorAll('optgroup')).toHaveLength(1);
+    expect(view.nativeElement.querySelectorAll('optgroup option')).toHaveLength(2);
+    expect(view.nativeElement.querySelector('small').textContent).toContain('Choose one value');
+  });
+
+  it('renders grouped options and errors for a bound select and reveals errors on blur', () => {
+    jsf.initializeControl = vi.fn((widget: any) => {
+      widget.boundControl = true;
+      widget.formControl = new FormControl('first');
+      widget.controlName = 'choice';
+      widget.options.errorMessage = 'Choose a valid option';
+      widget.options.showErrors = false;
+    });
+    const view = render({
+      type: 'one-of',
+      _id: 'choice',
+      options: {
+        titleMap: [
+          { group: 'Group', name: 'First', value: 'first' },
+          { group: 'Group', name: 'Second', value: 'second' },
+        ],
+        flatList: false,
+      },
+    });
+
+    expect(view.nativeElement.querySelectorAll('optgroup option')).toHaveLength(2);
+    const select: HTMLSelectElement = view.nativeElement.querySelector('select');
+    select.dispatchEvent(new Event('blur'));
+    view.detectChanges();
+
+    expect(view.nativeElement.textContent).toContain('Choose a valid option');
+  });
+
+  it('renders the selected array fieldset child with its array data index', () => {
+    const view = render({
+      type: 'selectfieldset',
+      dataType: 'array',
+      dataPointer: '/items',
+      options: {},
+      items: [{ type: 'text', name: 'First' }],
+    });
+    expect(view.nativeElement.querySelectorAll('option')).toHaveLength(1);
+    expect(view.nativeElement.querySelector('select-framework-widget')).toBeTruthy();
   });
 });
