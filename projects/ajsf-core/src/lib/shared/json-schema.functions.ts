@@ -268,6 +268,58 @@ export function removeRecursiveReferences(
  * //  { any = null } layoutNode
  * // { string }
  */
+function getObjectInputType(schema) {
+  if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+    return 'section';
+  }
+  // TODO: Figure out how to handle additionalProperties
+  if (hasOwn(schema, '$ref')) { return '$ref'; }
+}
+
+function getArrayInputType(schema, layoutNode) {
+  const itemsObject = JsonPointer.getFirst([
+    [schema, '/items'],
+    [schema, '/additionalItems']
+  ]) || {};
+  return hasOwn(itemsObject, 'enum') && schema.maxItems !== 1 ?
+    checkInlineType('checkboxes', schema, layoutNode) : 'array';
+}
+
+function hasSelectableInput(schema, layoutNode) {
+  return JsonPointer.has(layoutNode, '/options/titleMap') ||
+    hasOwn(schema, 'enum') || getTitleMapFromOneOf(schema, null, true);
+}
+
+function getNumericInputType(schema, schemaType) {
+  return (schemaType === 'integer' || hasOwn(schema, 'multipleOf')) &&
+    hasOwn(schema, 'maximum') && hasOwn(schema, 'minimum') ? 'range' : schemaType;
+}
+
+function getStringInputType(schema) {
+  return {
+    'color': 'color',
+    'date': 'date',
+    'date-time': 'datetime-local',
+    'email': 'email',
+    'uri': 'url',
+  }[schema.format] || 'text';
+}
+
+function getTypedInputType(schema, layoutNode, schemaType) {
+  if (schemaType === 'boolean') { return 'checkbox'; }
+  if (schemaType === 'object') {
+    const inputType = getObjectInputType(schema);
+    if (inputType) { return inputType; }
+  }
+  if (schemaType === 'array') { return getArrayInputType(schema, layoutNode); }
+  if (schemaType === 'null') { return 'none'; }
+  if (hasSelectableInput(schema, layoutNode)) { return 'select'; }
+  if (schemaType === 'number' || schemaType === 'integer') {
+    return getNumericInputType(schema, schemaType);
+  }
+  if (schemaType === 'string') { return getStringInputType(schema); }
+}
+
 export function getInputType(schema, layoutNode: any = null) {
   // x-schema-form = Angular Schema Form compatibility
   // widget & component = React Jsonschema Form compatibility
@@ -284,39 +336,8 @@ export function getInputType(schema, layoutNode: any = null) {
     if (isArray(schemaType)) { // If multiple types listed, use most inclusive type
       schemaType = getUnionSchemaType(schema, schemaType);
     }
-    if (schemaType === 'boolean') { return 'checkbox'; }
-    if (schemaType === 'object') {
-      if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
-        return 'section';
-      }
-      // TODO: Figure out how to handle additionalProperties
-      if (hasOwn(schema, '$ref')) { return '$ref'; }
-    }
-    if (schemaType === 'array') {
-      const itemsObject = JsonPointer.getFirst([
-        [schema, '/items'],
-        [schema, '/additionalItems']
-      ]) || {};
-      return hasOwn(itemsObject, 'enum') && schema.maxItems !== 1 ?
-        checkInlineType('checkboxes', schema, layoutNode) : 'array';
-    }
-    if (schemaType === 'null') { return 'none'; }
-    if (JsonPointer.has(layoutNode, '/options/titleMap') ||
-      hasOwn(schema, 'enum') || getTitleMapFromOneOf(schema, null, true)
-    ) { return 'select'; }
-    if (schemaType === 'number' || schemaType === 'integer') {
-      return (schemaType === 'integer' || hasOwn(schema, 'multipleOf')) &&
-        hasOwn(schema, 'maximum') && hasOwn(schema, 'minimum') ? 'range' : schemaType;
-    }
-    if (schemaType === 'string') {
-      return {
-        'color': 'color',
-        'date': 'date',
-        'date-time': 'datetime-local',
-        'email': 'email',
-        'uri': 'url',
-      }[schema.format] || 'text';
-    }
+    const inputType = getTypedInputType(schema, layoutNode, schemaType);
+    if (inputType) { return inputType; }
   }
   if (hasOwn(schema, '$ref')) { return '$ref'; }
   if (isArray(schema.oneOf) || isArray(schema.anyOf)) { return 'one-of'; }
