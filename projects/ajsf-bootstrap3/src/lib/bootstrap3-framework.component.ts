@@ -121,85 +121,7 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
       ) {
         titled.title += ' <strong class="text-danger">*</strong>';
       }
-      // Set miscelaneous styles and settings for each control type
-      switch (this.layoutNode.type) {
-        // Checkbox controls
-        case 'checkbox':
-        case 'checkboxes':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
-          break;
-        case 'checkboxes-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'checkbox');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'checkbox-inline');
-          break;
-        // Radio controls
-        case 'radio':
-        case 'radios':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'radio');
-          break;
-        case 'radios-inline':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'radio');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'radio-inline');
-          break;
-        // Button sets - checkboxbuttons and radiobuttons
-        case 'checkboxbuttons':
-        case 'radiobuttons':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'btn-group');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, 'btn');
-          this.widgetOptions.itemLabelHtmlClass = addClasses(
-            this.widgetOptions.itemLabelHtmlClass, this.options.style || 'btn-default');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'sr-only');
-          break;
-        // Single button controls
-        case 'button':
-        case 'submit':
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'btn');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, this.options.style || 'btn-info');
-          break;
-        // Containers - arrays and fieldsets
-        case 'array':
-        case 'fieldset':
-        case 'section':
-        case 'conditional':
-        case 'advancedfieldset':
-        case 'authfieldset':
-        case 'selectfieldset':
-        case 'optionfieldset':
-          this.options.messageLocation = 'top';
-          break;
-        case 'tabarray':
-        case 'tabs':
-          this.widgetOptions.htmlClass = addClasses(
-            this.widgetOptions.htmlClass, 'tab-content');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'tab-pane');
-          this.widgetOptions.labelHtmlClass = addClasses(
-            this.widgetOptions.labelHtmlClass, 'nav nav-tabs');
-          break;
-        // 'Add' buttons - references
-        case '$ref':
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'btn pull-right');
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, this.options.style || 'btn-default');
-          this.options.icon = 'glyphicon glyphicon-plus';
-          break;
-        // Default - including regular inputs
-        default:
-          this.widgetOptions.fieldHtmlClass = addClasses(
-            this.widgetOptions.fieldHtmlClass, 'form-control');
-      }
+      this.applyWidgetStyles();
 
       if (this.formControl) {
         this.updateHelpBlock(this.formControl.status);
@@ -213,6 +135,87 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
       this.frameworkInitialized = true;
     }
 
+  }
+
+  private applyWidgetStyles() {
+    switch (this.layoutNode.type) {
+      // Checkbox controls
+      case 'checkbox':
+      case 'checkboxes':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'checkbox');
+        break;
+      case 'checkboxes-inline':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'checkbox');
+        this.widgetOptions.itemLabelHtmlClass = addClasses(
+          this.widgetOptions.itemLabelHtmlClass, 'checkbox-inline');
+        break;
+      // Radio controls
+      case 'radio':
+      case 'radios':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'radio');
+        break;
+      case 'radios-inline':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'radio');
+        this.widgetOptions.itemLabelHtmlClass = addClasses(
+          this.widgetOptions.itemLabelHtmlClass, 'radio-inline');
+        break;
+      // Button sets - checkboxbuttons and radiobuttons
+      case 'checkboxbuttons':
+      case 'radiobuttons':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'btn-group');
+        this.widgetOptions.itemLabelHtmlClass = addClasses(
+          this.widgetOptions.itemLabelHtmlClass, 'btn');
+        this.widgetOptions.itemLabelHtmlClass = addClasses(
+          this.widgetOptions.itemLabelHtmlClass, this.options.style || 'btn-default');
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, 'sr-only');
+        break;
+      // Single button controls
+      case 'button':
+      case 'submit':
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, 'btn');
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, this.options.style || 'btn-info');
+        break;
+      // Containers - arrays and fieldsets
+      case 'array':
+      case 'fieldset':
+      case 'section':
+      case 'conditional':
+      case 'advancedfieldset':
+      case 'authfieldset':
+      case 'selectfieldset':
+      case 'optionfieldset':
+        this.options.messageLocation = 'top';
+        break;
+      case 'tabarray':
+      case 'tabs':
+        this.widgetOptions.htmlClass = addClasses(
+          this.widgetOptions.htmlClass, 'tab-content');
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, 'tab-pane');
+        this.widgetOptions.labelHtmlClass = addClasses(
+          this.widgetOptions.labelHtmlClass, 'nav nav-tabs');
+        break;
+      // 'Add' buttons - references
+      case '$ref':
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, 'btn pull-right');
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, this.options.style || 'btn-default');
+        this.options.icon = 'glyphicon glyphicon-plus';
+        break;
+      // Default - including regular inputs
+      default:
+        this.widgetOptions.fieldHtmlClass = addClasses(
+          this.widgetOptions.fieldHtmlClass, 'form-control');
+    }
   }
 
   updateHelpBlock(status) {
