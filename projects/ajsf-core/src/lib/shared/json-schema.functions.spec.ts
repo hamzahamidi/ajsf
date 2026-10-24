@@ -1048,6 +1048,14 @@ describe('JSON Schema functions', () => {
         .toEqual({ minItems: [1], maxItems: [3], uniqueItems: [true] });
     });
 
+    it('collects contains with the root schema and schema pointer', () => {
+      const schema = { type: 'array', contains: { type: 'number' } };
+
+      expect(getControlValidators(schema).contains).toEqual([
+        schema.contains, schema, '', null
+      ]);
+    });
+
     it('returns an empty object for a boolean or unrecognised type', () => {
       expect(getControlValidators({ type: 'boolean' })).toEqual({});
       expect(getControlValidators({ type: 'weird', minLength: 2 })).toEqual({});

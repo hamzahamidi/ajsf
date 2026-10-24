@@ -57,6 +57,7 @@ export const deValidationMessages: any = { // Default German error messages
   maxProperties: 'Maximal {{maximumProperties}} Attribute erlaubt (aktuell: {{currentProperties}})',
   minItems: 'Mindestens {{minimumItems}} Werte erforderlich (aktuell: {{currentItems}})',
   maxItems: 'Maximal {{maximumItems}} Werte erlaubt (aktuell: {{currentItems}})',
+  contains: 'Muss mindestens einen Eintrag enthalten, der dem Schema entspricht',
   uniqueItems: 'Alle Werte müssen eindeutig sein',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

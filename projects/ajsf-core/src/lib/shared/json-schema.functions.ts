@@ -589,7 +589,7 @@ function groupOneOfTitleMap(titleMap, flatList) {
  * //  schema
  * // { validators }
  */
-export function getControlValidators(schema) {
+export function getControlValidators(schema, rootSchema = schema, schemaPointer = '', ajv = null) {
   if (!isObject(schema)) { return null; }
   const validators: any = { };
   // A nullable type is an array, for example ['string', 'null'], which matched no
@@ -639,6 +639,9 @@ export function getControlValidators(schema) {
         forEach(['minItems', 'maxItems', 'uniqueItems'], (prop) => {
           if (hasOwn(schema, prop)) { validators[prop] = [schema[prop]]; }
         });
+        if (hasOwn(schema, 'contains')) {
+          validators.contains = [schema.contains, rootSchema, schemaPointer, ajv];
+        }
       break;
       }
   }

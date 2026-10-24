@@ -31,6 +31,7 @@ const expectedKeys: string[] = [
   'maxProperties',
   'minItems',
   'maxItems',
+  'contains',
   'uniqueItems',
 ];
 
@@ -92,7 +93,7 @@ describe('Validation messages', () => {
         .map(({ name }) => name);
 
       expect(mismatches).toEqual([]);
-      expect(expectedKeys).toHaveLength(15);
+      expect(expectedKeys).toHaveLength(16);
     });
 
     it('format and multipleOf are the only function valued messages', () => {

@@ -57,6 +57,7 @@ export const ptValidationMessages: any = { // Brazilian Portuguese error message
   maxProperties: 'Deve ter {{maximumProperties}} ou menos itens (itens até o momento: {{currentProperties}})',
   minItems: 'Deve ter {{minimumItems}} ou mais itens (itens até o momento: {{currentItems}})',
   maxItems: 'Deve ter {{maximumItems}} ou menos itens (itens até o momento: {{currentItems}})',
+  contains: 'Deve conter pelo menos um item que corresponda ao esquema',
   uniqueItems: 'Todos os itens devem ser únicos',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

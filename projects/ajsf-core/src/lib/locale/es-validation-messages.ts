@@ -51,5 +51,6 @@ export const esValidationMessages: any = { // Default Spanish error messages
   maxProperties: 'Debe tener {{maximumProperties}} o menos elementos (elementos actuales: {{currentProperties}})',
   minItems: 'Debe tener {{minimumItems}} o más elementos (elementos actuales: {{currentItems}})',
   maxItems: 'Debe tener {{maximumItems}} o menos elementos (elementos actuales: {{currentItems}})',
+  contains: 'Debe contener al menos un elemento que coincida con el esquema',
   uniqueItems: 'Todos los elementos deben ser únicos',
 };

@@ -57,6 +57,7 @@ export const enValidationMessages: any = { // Default English error messages
   maxProperties: 'Must have {{maximumProperties}} or fewer items (current items: {{currentProperties}})',
   minItems: 'Must have {{minimumItems}} or more items (current items: {{currentItems}})',
   maxItems: 'Must have {{maximumItems}} or fewer items (current items: {{currentItems}})',
+  contains: 'Must contain at least one item matching the schema',
   uniqueItems: 'All items must be unique',
   // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };

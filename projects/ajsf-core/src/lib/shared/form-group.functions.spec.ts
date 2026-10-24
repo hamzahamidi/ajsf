@@ -412,6 +412,33 @@ describe('form-group.functions', () => {
       expect(result.validators).toEqual({ minItems: [1], maxItems: [4], uniqueItems: [true] });
     });
 
+    it('validates contains against a local reference in the root schema', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        definitions: { positive: { type: 'integer', minimum: 1 } },
+        properties: {
+          values: {
+            type: 'array',
+            items: { type: 'number' },
+            contains: { $ref: '#/definitions/positive' }
+          }
+        }
+      });
+      const template = buildFormGroupTemplate(jsf, { values: [0, 2] });
+      const form: any = buildFormGroup(template);
+      const values = form.get('values') as UntypedFormArray;
+
+      expect(values.valid).toBe(true);
+      values.setValue([0, -1]);
+      expect(values.valid).toBe(false);
+      expect(values.errors).toEqual({
+        contains: {
+          requiredItem: { $ref: '#/definitions/positive' },
+          currentItems: [0, -1]
+        }
+      });
+    });
+
     it('seeds the array from tupleItems plus listItems held in the dataMap', () => {
       const dataMap = new Map<string, any>();
       dataMap.set('', new Map<string, any>([['tupleItems', 2], ['listItems', 1]]));
