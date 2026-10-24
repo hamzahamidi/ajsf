@@ -1,6 +1,24 @@
 import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {cloneDeep, isDefined, JsonSchemaFormService} from '@ajsf/core';
 
+function hasTemplateExpression(text: string): boolean {
+  let start = -1;
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    if (character === '\n' || character === '\r' || character === '\u2028' || character === '\u2029') {
+      start = -1;
+      continue;
+    }
+    if (start === -1 && character === '{' && text[index + 1] === '{') {
+      start = index;
+    } else if (start !== -1 && character === '}' && text[index + 1] === '}') {
+      if (index > start + 2) { return true; }
+      start = -1;
+    }
+  }
+  return false;
+}
+
 @Component({
     selector: 'material-design-framework',
     templateUrl: './material-design-framework.component.html',
@@ -85,7 +103,7 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
         !['$ref', 'advancedfieldset', 'authfieldset', 'button', 'card',
           'checkbox', 'expansion-panel', 'help', 'message', 'msg', 'section',
           'submit', 'tabarray', 'tabs'].includes(this.layoutNode.type) &&
-        /{{.+?}}/.test(this.widgetOptions.title || '')
+        hasTemplateExpression(this.widgetOptions.title || '')
       ) {
         this.dynamicTitle = this.widgetOptions.title;
         this.updateTitle();
