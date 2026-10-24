@@ -204,8 +204,7 @@ export class Bootstrap3FrameworkComponent implements OnInit, OnChanges {
         this.formControl.events.subscribe(() => this.updateHelpBlock(this.formControl.status));
 
         if (this.options.debug) {
-          const vars: any[] = [];
-          this.debugOutput = vars.map(thisVar => JSON.stringify(thisVar, null, 2)).join('\n');
+          this.debugOutput = '';
         }
       }
       this.frameworkInitialized = true;

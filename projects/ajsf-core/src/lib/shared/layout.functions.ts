@@ -397,7 +397,7 @@ export function buildLayout(jsf, widgetLibrary) {
           if (lastItem?.arrayItemType === 'tuple' && listItemSchemaPointer) {
             // Set to null first to prevent a recursive reference from looping.
             jsf.layoutRefLibrary[itemRefPointer] = null;
-            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
               jsf, widgetLibrary, null,
               removeRecursiveReferences(
                 listItemSchemaPointer, jsf.schemaRecursiveRefMap, jsf.arrayMap
@@ -710,7 +710,7 @@ export function buildLayoutFromSchema(
           if (!hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
             // Set to null first to prevent recursive reference from causing endless loop
             jsf.layoutRefLibrary[itemRefPointer] = null;
-            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+            jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
               jsf, widgetLibrary, isArray(nodeValue) ? nodeValue[i] : null,
               schemaPointer + '/items/' + i,
               itemRecursive ? '' : dataPointer + '/' + i,
@@ -759,7 +759,7 @@ export function buildLayoutFromSchema(
       if (itemRefPointer.length && !hasOwn(jsf.layoutRefLibrary, itemRefPointer)) {
         // Set to null first to prevent recursive reference from causing endless loop
         jsf.layoutRefLibrary[itemRefPointer] = null;
-        jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema(
+        jsf.layoutRefLibrary[itemRefPointer] = buildLayoutFromSchema( // NOSONAR
           jsf, widgetLibrary, null,
           itemSchemaPointer,
           itemRecursive ? '' : dataPointer + '/-',

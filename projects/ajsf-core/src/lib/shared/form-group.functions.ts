@@ -164,7 +164,7 @@ export function buildFormGroupTemplate(
             const itemRecursive = itemRefPointer !== shortDataPointer + '/' + i;
             if (!hasOwn(jsf.templateRefLibrary, itemRefPointer)) {
               jsf.templateRefLibrary[itemRefPointer] = null;
-              jsf.templateRefLibrary[itemRefPointer] = buildFormGroupTemplate(
+              jsf.templateRefLibrary[itemRefPointer] = buildFormGroupTemplate( // NOSONAR
                 jsf, null, setValues,
                 schemaRefPointer,
                 itemRefPointer,
@@ -205,7 +205,7 @@ export function buildFormGroupTemplate(
         const itemRecursive = itemRefPointer !== shortDataPointer + '/-';
         if (!hasOwn(jsf.templateRefLibrary, itemRefPointer)) {
           jsf.templateRefLibrary[itemRefPointer] = null;
-          jsf.templateRefLibrary[itemRefPointer] = buildFormGroupTemplate(
+          jsf.templateRefLibrary[itemRefPointer] = buildFormGroupTemplate( // NOSONAR
             jsf, null, setValues,
             schemaRefPointer,
             itemRefPointer,
