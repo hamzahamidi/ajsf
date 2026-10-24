@@ -22,7 +22,7 @@ import {
   } from './validator.functions';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { forEachCopy } from './utility.functions';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.constants';
 import { map } from 'rxjs/operators';
 
@@ -731,10 +731,8 @@ export class JsonValidators {
   /**
    * Validator transformation functions:
    * composeAnyOf, composeOneOf, composeAllOf, composeNot,
-   * compose, composeAsync
-   *
-   * TODO: Add composeAnyOfAsync, composeOneOfAsync,
-   *           composeAllOfAsync, composeNotAsync
+   * compose, composeAsync, composeAnyOfAsync, composeOneOfAsync,
+   * composeAllOfAsync, composeNotAsync
    */
 
   /**
@@ -790,6 +788,50 @@ export class JsonValidators {
   }
 
   /**
+   * Combines async validators and passes when at least one validator passes.
+   *
+   * When every validator fails, the result includes their errors and `anyOf: true`.
+   */
+  static composeAnyOfAsync(validators: AsyncIValidatorFn[]): AsyncIValidatorFn {
+    if (!validators) { return null; }
+    const presentValidators = validators.filter(isDefined);
+    if (presentValidators.length === 0) { return null; }
+    return (control: AbstractControl, invert = false) => {
+      const results = _executeAsyncValidators(control, presentValidators)
+        .map(toObservable);
+      return forkJoin(results).pipe(map(arrayOfErrors => {
+        const errors = (arrayOfErrors as Array<ValidationErrors|null>).filter(isDefined);
+        const isValid = presentValidators.length > errors.length;
+        if (xor(isValid, invert)) { return null; }
+        return invert ? { anyOf: false } : _mergeObjects(...errors, { anyOf: true });
+      }));
+    };
+  }
+
+  /**
+   * Combines async validators and passes when exactly one validator passes.
+   *
+   * When the number of passing validators is not one, the result includes the
+   * errors from failing validators and `oneOf: true`.
+   */
+  static composeOneOfAsync(validators: AsyncIValidatorFn[]): AsyncIValidatorFn {
+    if (!validators) { return null; }
+    const presentValidators = validators.filter(isDefined);
+    if (presentValidators.length === 0) { return null; }
+    return (control: AbstractControl, invert = false) => {
+      const results = _executeAsyncValidators(control, presentValidators)
+        .map(toObservable);
+      return forkJoin(results).pipe(map(arrayOfErrors => {
+        const errors = (arrayOfErrors as Array<ValidationErrors|null>).filter(isDefined);
+        const validCount = presentValidators.length - errors.length;
+        const isValid = validCount === 1;
+        if (xor(isValid, invert)) { return null; }
+        return _mergeObjects(...errors, { oneOf: !invert });
+      }));
+    };
+  }
+
+  /**
    * 'composeAllOf' validator combination function
    *
    * Accepts an array of validators and returns a single validator that
@@ -810,6 +852,27 @@ export class JsonValidators {
       const isValid = combinedErrors === null;
       return (xor(isValid, invert)) ?
         null : _mergeObjects(combinedErrors, { 'allOf': !invert });
+    };
+  }
+
+  /**
+   * Combines async validators and passes when every validator passes.
+   *
+   * When any validator fails, the result includes its errors and `allOf: true`.
+   */
+  static composeAllOfAsync(validators: AsyncIValidatorFn[]): AsyncIValidatorFn {
+    if (!validators) { return null; }
+    const presentValidators = validators.filter(isDefined);
+    if (presentValidators.length === 0) { return null; }
+    return (control: AbstractControl, invert = false) => {
+      const results = _executeAsyncValidators(control, presentValidators)
+        .map(toObservable);
+      return forkJoin(results).pipe(map(arrayOfErrors => {
+        const errors = (arrayOfErrors as Array<ValidationErrors|null>).filter(isDefined);
+        const isValid = errors.length === 0;
+        if (xor(isValid, invert)) { return null; }
+        return _mergeObjects(...errors, { allOf: !invert });
+      }));
     };
   }
 
@@ -865,6 +928,21 @@ export class JsonValidators {
       const observables =
         _executeAsyncValidators(control, presentValidators).map(toObservable);
       return forkJoin(observables).pipe(map(_mergeErrors));
+    };
+  }
+
+  /**
+   * Inverts an async validator and passes when the wrapped validator fails.
+   */
+  static composeNotAsync(validator: AsyncIValidatorFn): AsyncIValidatorFn {
+    if (!validator) { return null; }
+    return (control: AbstractControl, invert = false) => {
+      if (isEmpty(control.value)) { return of(null); }
+      return toObservable(validator(control)).pipe(map(error => {
+        const isValid = error !== null;
+        if (xor(isValid, invert)) { return null; }
+        return _mergeObjects(error, { not: !invert });
+      }));
     };
   }
 
