@@ -1010,7 +1010,8 @@ function titleMapFromArray(titleMap: any[], enumList: any, fieldRequired: boolea
   if (!enumList) {
     return {
       items: titleMap,
-      hasEmptyValue: !fieldRequired && titleMap.some(item => isEmptyTitleValue(item.value)),
+      hasEmptyValue: !fieldRequired && !!titleMap
+        .filter(item => isEmptyTitleValue(item.value)).length,
     };
   }
 
@@ -1073,7 +1074,9 @@ function flattenTitleGroups(titles: TitleMapItem[]): TitleMapState {
   for (const title of titles) {
     if (hasOwn(title, 'group')) {
       if (isArray(title.items)) {
-        items.push(...title.items.map(item => ({ ...item, name: `${title.group}: ${item.name}` })));
+        for (const item of title.items) {
+          items.push({ ...item, name: `${title.group}: ${item.name}` });
+        }
         hasEmptyValue ||= title.items.some(item => isEmptyTitleValue(item.value));
       }
       if (hasOwn(title, 'name') && hasOwn(title, 'value')) {
