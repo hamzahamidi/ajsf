@@ -138,8 +138,8 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   }
 
   // Outputs
-  @Output() onChanges = new EventEmitter<any>(); // Live unvalidated internal form data
-  @Output() onSubmit = new EventEmitter<any>(); // Complete validated form data
+  @Output() onChanges = new EventEmitter<any>(); // NOSONAR Existing binding name is public API; renaming needs a major release.
+  @Output() onSubmit = new EventEmitter<any>(); // NOSONAR Existing binding name is public API; renaming needs a major release.
   @Output() isValid = new EventEmitter<boolean>(); // Is current data valid?
   @Output() validationErrors = new EventEmitter<any>(); // Validation errors (if any)
   @Output() formSchema = new EventEmitter<any>(); // Final schema used to create form
