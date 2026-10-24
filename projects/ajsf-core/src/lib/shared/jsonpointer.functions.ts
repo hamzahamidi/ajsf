@@ -28,6 +28,68 @@ import {isArray, isDate, isDefined, isEmpty, isMap, isNumber, isObject, isSet, i
  */
 export type Pointer = string | string[];
 
+function parseObjectPathString(path: string): string[] {
+  let index = 0;
+  const parts: string[] = [];
+  while (index < path.length) {
+    const nextDot = path.indexOf('.', index);
+    const nextOpenBracket = path.indexOf('[', index);
+    if (nextDot === -1 && nextOpenBracket === -1) {
+      parts.push(path.slice(index));
+      index = path.length;
+    } else if (nextDot !== -1 && (nextDot < nextOpenBracket || nextOpenBracket === -1)) {
+      parts.push(path.slice(index, nextDot));
+      index = nextDot + 1;
+    } else {
+      index = parseBracketPathPart(path, index, nextOpenBracket, parts);
+    }
+  }
+  return parts;
+}
+
+function parseBracketPathPart(
+  path: string,
+  index: number,
+  openBracket: number,
+  parts: string[],
+): number {
+  if (openBracket > index) {
+    parts.push(path.slice(index, openBracket));
+    index = openBracket;
+  }
+  const quote = path.charAt(index + 1);
+  if (quote === '"' || quote === '\'') {
+    index = parseQuotedBracketPart(path, index, quote, parts);
+  } else {
+    index = parseUnquotedBracketPart(path, index, parts);
+  }
+  if (path.charAt(index) === '.') index++;
+  return index;
+}
+
+function parseQuotedBracketPart(
+  path: string,
+  openBracket: number,
+  quote: string,
+  parts: string[],
+): number {
+  let closeBracket = path.indexOf(quote + ']', openBracket);
+  while (closeBracket !== -1 && path.charAt(closeBracket - 1) === '\\') {
+    closeBracket = path.indexOf(quote + ']', closeBracket + 2);
+  }
+  if (closeBracket === -1) closeBracket = path.length;
+  parts.push(path.slice(openBracket + 2, closeBracket)
+    .replace(new RegExp('\\' + quote, 'g'), quote));
+  return closeBracket + 2;
+}
+
+function parseUnquotedBracketPart(path: string, openBracket: number, parts: string[]): number {
+  let closeBracket = path.indexOf(']', openBracket);
+  if (closeBracket === -1) closeBracket = path.length;
+  parts.push(path.slice(openBracket + 1, closeBracket));
+  return closeBracket + 1;
+}
+
 @Injectable()
 export class JsonPointer {
 
@@ -1014,44 +1076,7 @@ export class JsonPointer {
   static parseObjectPath(path) {
     if (isArray(path)) { return <string[]>path; }
     if (this.isJsonPointer(path)) { return this.parse(path); }
-    if (typeof path === 'string') {
-      let index = 0;
-      const parts: string[] = [];
-      while (index < path.length) {
-        const nextDot = path.indexOf('.', index);
-        const nextOB = path.indexOf('[', index); // next open bracket
-        if (nextDot === -1 && nextOB === -1) { // last item
-          parts.push(path.slice(index));
-          index = path.length;
-        } else if (nextDot !== -1 && (nextDot < nextOB || nextOB === -1)) { // dot notation
-          parts.push(path.slice(index, nextDot));
-          index = nextDot + 1;
-        } else { // bracket notation
-          if (nextOB > index) {
-            parts.push(path.slice(index, nextOB));
-            index = nextOB;
-          }
-          const quote = path.charAt(nextOB + 1);
-          if (quote === '"' || quote === '\'') { // enclosing quotes
-            let nextCB = path.indexOf(quote + ']', nextOB); // next close bracket
-            while (nextCB !== -1 && path.charAt(nextCB - 1) === '\\') {
-              nextCB = path.indexOf(quote + ']', nextCB + 2);
-            }
-            if (nextCB === -1) { nextCB = path.length; }
-            parts.push(path.slice(index + 2, nextCB)
-              .replace(new RegExp('\\' + quote, 'g'), quote));
-            index = nextCB + 2;
-          } else { // no enclosing quotes
-            let nextCB = path.indexOf(']', nextOB); // next close bracket
-            if (nextCB === -1) { nextCB = path.length; }
-            parts.push(path.slice(index + 1, nextCB));
-            index = nextCB + 1;
-          }
-          if (path.charAt(index) === '.') { index++; }
-        }
-      }
-      return parts;
-    }
+    if (typeof path === 'string') return parseObjectPathString(path);
     console.error('parseObjectPath error: Input object path must be a string.');
   }
 }
