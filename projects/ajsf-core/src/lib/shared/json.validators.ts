@@ -1,4 +1,7 @@
 import { deepEqual } from './deep-equal.function';
+import Ajv from 'ajv';
+import jsonDraft6 from 'ajv/dist/refs/json-schema-draft-06.json';
+import addFormats from 'ajv-formats';
 import {
   _executeAsyncValidators,
   _executeValidators,
@@ -28,6 +31,37 @@ import { map } from 'rxjs/operators';
 
 const emailLocalCharacters = "-!#$%&'*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz^_`{|}~";
 const emailDomainLabelPattern = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
+const containsRootSchemaIds = new WeakMap<object, string>();
+let nextContainsRootSchemaId = 0;
+
+function compileContainsSchema(
+  schema: any,
+  rootSchema: any,
+  schemaPointer: string,
+  ajv: any
+): (value: any) => boolean {
+  const validator = ajv || addFormats(new Ajv({ allErrors: false, strict: false }));
+  if (!ajv) { validator.addMetaSchema(jsonDraft6); }
+  if (!rootSchema || typeof rootSchema !== 'object') {
+    return validator.compile(schema);
+  }
+
+  let schemaId = rootSchema.$id || rootSchema.id || containsRootSchemaIds.get(rootSchema);
+  if (!schemaId) {
+    schemaId = `https://ajsf.invalid/schema-${++nextContainsRootSchemaId}`;
+    containsRootSchemaIds.set(rootSchema, schemaId);
+  }
+  schemaId = String(schemaId).replace(/#$/, '');
+
+  if (!validator.getSchema(schemaId)) {
+    const schemaWithId = rootSchema.$id === schemaId ? rootSchema :
+      { ...rootSchema, $id: schemaId };
+    validator.addSchema(schemaWithId, schemaId);
+  }
+
+  const pointer = `${schemaPointer || ''}/contains`;
+  return validator.compile({ $ref: `${schemaId}#${pointer}` });
+}
 
 function isValidEmailLocalPart(value: string): boolean {
   return value.split('.').every(part => part.length > 0 &&
@@ -698,24 +732,19 @@ export class JsonValidators {
   }
 
   /**
-   * 'contains' validator
-   *
-   * TODO: Complete this validator
-   *
-   * Requires values in a form array to be unique.
-   *
-   * // {boolean = true} unique? - true to validate, false to disable
-   * // {IValidatorFn}
+   * Requires an array to contain at least one item matching the supplied schema.
    */
-  static contains(requiredItem = true): IValidatorFn {
-    if (!requiredItem) { return JsonValidators.nullValidator; }
+  static contains(
+    requiredItem: any = true,
+    rootSchema: any = null,
+    schemaPointer = '',
+    ajv: any = null
+  ): IValidatorFn {
+    const validateItem = compileContainsSchema(requiredItem, rootSchema, schemaPointer, ajv);
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
-      if (isEmpty(control.value) || !isArray(control.value)) { return null; }
+      if (!isArray(control.value)) { return null; }
       const currentItems = control.value;
-      // const isValid = currentItems.some(item =>
-      //
-      // );
-      const isValid = true;
+      const isValid = currentItems.some(item => validateItem(item));
       return xor(isValid, invert) ?
         null : { 'contains': { requiredItem, currentItems } };
     };

@@ -1,6 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { JsonValidators } from './json.validators';
+import { getControlValidators } from './json-schema.functions';
 
 // Helper returning `any` so validators typed against AbstractControl accept it
 // and so arbitrary JSON values can be used as control values.
@@ -1006,24 +1007,63 @@ describe('JsonValidators', () => {
   });
 
   describe('contains', () => {
-    it('returns the no-op validator when the required item is falsy', () => {
-      expect(JsonValidators.contains(false)(ctrl([1, 2]))).toBeNull();
+    it('requires at least one item that matches the supplied schema', () => {
+      const schema = { type: 'number', minimum: 2 };
+      const validator = JsonValidators.contains(schema);
+
+      expect(validator(ctrl([1, 2]))).toBeNull();
+      expect(validator(ctrl([1, '2']))).toEqual({
+        contains: { requiredItem: schema, currentItems: [1, '2'] }
+      });
+      expect(validator(ctrl([]))).toEqual({
+        contains: { requiredItem: schema, currentItems: [] }
+      });
     });
 
-    it('passes empty or non-array values through untested', () => {
-      expect(JsonValidators.contains()(ctrl([]))).toBeNull();
+    it('passes non-array values through untested', () => {
       expect(JsonValidators.contains()(ctrl(null))).toBeNull();
       expect(JsonValidators.contains()(ctrl('abc'))).toBeNull();
     });
 
-    it('accepts any non-empty array because the check is unimplemented', () => {
+    it('supports boolean schemas and inverted validation', () => {
+      expect(JsonValidators.contains(true)(ctrl([]))).toEqual({
+        contains: { requiredItem: true, currentItems: [] }
+      });
       expect(JsonValidators.contains()(ctrl([1, 2]))).toBeNull();
-      expect(JsonValidators.contains(true)(ctrl(['a']))).toBeNull();
+      expect(JsonValidators.contains(false)(ctrl([1, 2]))).toEqual({
+        contains: { requiredItem: false, currentItems: [1, 2] }
+      });
+      expect(JsonValidators.contains({ const: 'match' })(ctrl(['other']), true)).toBeNull();
+      expect(JsonValidators.contains({ const: 'match' })(ctrl(['match']), true)).toEqual({
+        contains: { requiredItem: { const: 'match' }, currentItems: ['match'] }
+      });
     });
 
-    it('reports an error when inverted', () => {
-      expect(JsonValidators.contains()(ctrl([1, 2]), true))
-        .toEqual({ contains: { requiredItem: true, currentItems: [1, 2] } });
+    it('resolves local references from the root schema', () => {
+      const schema = {
+        type: 'object',
+        definitions: { positive: { type: 'integer', minimum: 1 } },
+        properties: {
+          values: {
+            type: 'array',
+            items: { type: 'number' },
+            contains: { $ref: '#/definitions/positive' }
+          }
+        }
+      };
+      const arraySchema = schema.properties.values;
+      const validators = getControlValidators(
+        arraySchema, schema, '/properties/values'
+      );
+      const validator = JsonValidators.contains(...validators.contains);
+
+      expect(validator(ctrl([0, 2]))).toBeNull();
+      expect(validator(ctrl([0, -1]))).toEqual({
+        contains: {
+          requiredItem: { $ref: '#/definitions/positive' },
+          currentItems: [0, -1]
+        }
+      });
     });
   });
 

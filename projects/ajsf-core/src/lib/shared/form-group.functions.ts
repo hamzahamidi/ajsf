@@ -108,7 +108,7 @@ export function buildFormGroupTemplate(
     templatePointer,
     shortDataPointer,
     nodeOptions,
-    validators: getControlValidators(schema)
+    validators: getControlValidators(schema, jsf.schema, schemaPointer, jsf.ajv)
   };
   return buildFormGroupTemplateForControl(context, schema, controlType);
 }
