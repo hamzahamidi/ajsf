@@ -41,11 +41,13 @@ export class MaterialDesignFrameworkComponent implements OnInit, OnChanges {
       return false;
     }
     // If array length <= minItems, don't allow removing any items
-    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems ? false :
-      // For removable list items, allow removing any item
-      this.layoutNode.arrayItemType === 'list' ? true :
-        // For removable tuple items, only allow removing last item in list
-        this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
+    if (this.parentArray.items.length - 1 <= this.parentArray.options.minItems) {
+      return false;
+    }
+    // For removable list items, allow removing any item
+    if (this.layoutNode.arrayItemType === 'list') { return true; }
+    // For removable tuple items, only allow removing last item in list
+    return this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {

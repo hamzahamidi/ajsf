@@ -23,7 +23,11 @@ export function addClasses(
   const badType = i => !isSet(i) && !isArray(i) && !isString(i);
   if (badType(newClasses)) { return oldClasses; }
   if (badType(oldClasses)) { oldClasses = ''; }
-  const toSet = i => isSet(i) ? i : isArray(i) ? new Set(i) : new Set(i.split(' '));
+  const toSet = i => {
+    if (isSet(i)) { return i; }
+    if (isArray(i)) { return new Set(i); }
+    return new Set(i.split(' '));
+  };
   const combinedSet: Set<any> = toSet(oldClasses);
   const newSet: Set<any> = toSet(newClasses);
   newSet.forEach(c => combinedSet.add(c));

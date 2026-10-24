@@ -96,12 +96,16 @@ export function _mergeObjects(...objects) {
       for (const key of Object.keys(currentObject)) {
         const currentValue = currentObject[key];
         const mergedValue = mergedObject[key];
-        mergedObject[key] = !isDefined(mergedValue) ? currentValue :
-          key === 'not' && isBoolean(mergedValue, 'strict') &&
-            isBoolean(currentValue, 'strict') ? xor(mergedValue, currentValue) :
-          getType(mergedValue) === 'object' && getType(currentValue) === 'object' ?
-            _mergeObjects(mergedValue, currentValue) :
-            currentValue;
+        if (!isDefined(mergedValue)) {
+          mergedObject[key] = currentValue;
+        } else if (key === 'not' && isBoolean(mergedValue, 'strict') &&
+          isBoolean(currentValue, 'strict')) {
+          mergedObject[key] = xor(mergedValue, currentValue);
+        } else if (getType(mergedValue) === 'object' && getType(currentValue) === 'object') {
+          mergedObject[key] = _mergeObjects(mergedValue, currentValue);
+        } else {
+          mergedObject[key] = currentValue;
+        }
       }
     }
   }
@@ -592,9 +596,8 @@ export function toObservable(object): Observable<any> {
  */
 export function inArray(item, array, allIn = false) {
   if (!isDefined(item) || !isArray(array)) { return false; }
-  return isArray(item) ?
-    item[allIn ? 'every' : 'some'](subItem => array.includes(subItem)) :
-    array.includes(item);
+  if (!isArray(item)) { return array.includes(item); }
+  return item[allIn ? 'every' : 'some'](subItem => array.includes(subItem));
 }
 
 /**

@@ -119,6 +119,19 @@ export function buildSchemaFromData(
   return newSchema;
 }
 
+function hasSchemaShape(schema, type) {
+  if (type === 'object') return hasOwn(schema, 'properties');
+  if (type === 'array') return hasOwn(schema, 'items') || hasOwn(schema, 'additionalItems');
+  return true;
+}
+
+function getUnionSchemaType(schema, schemaTypes) {
+  for (const type of ['object', 'array', 'string', 'number', 'integer', 'boolean']) {
+    if (inArray(type, schemaTypes) && hasSchemaShape(schema, type)) return type;
+  }
+  return 'unknown';
+}
+
 /**
  * 'getFromSchema' function
  *
@@ -272,14 +285,7 @@ export function getInputType(schema, layoutNode: any = null) {
   let schemaType = schema.type;
   if (schemaType) {
     if (isArray(schemaType)) { // If multiple types listed, use most inclusive type
-      schemaType =
-        inArray('object', schemaType) && hasOwn(schema, 'properties') ? 'object' :
-        inArray('array', schemaType) && hasOwn(schema, 'items') ? 'array' :
-        inArray('array', schemaType) && hasOwn(schema, 'additionalItems') ? 'array' :
-        inArray('string', schemaType) ? 'string' :
-        inArray('number', schemaType) ? 'number' :
-        inArray('integer', schemaType) ? 'integer' :
-        inArray('boolean', schemaType) ? 'boolean' : 'unknown';
+      schemaType = getUnionSchemaType(schema, schemaType);
     }
     if (schemaType === 'boolean') { return 'checkbox'; }
     if (schemaType === 'object') {
@@ -521,8 +527,11 @@ export function getControlValidators(schema) {
   const validators: any = { };
   // A nullable type is an array, for example ['string', 'null'], which matched no
   // case at all and so produced no validators. Each named type contributes its own.
-  const schemaTypes: any[] = hasOwn(schema, 'type') ?
-    (isArray(schema.type) ? schema.type : [schema.type]) : [];
+  const schemaTypes: any[] = [];
+  if (hasOwn(schema, 'type')) {
+    if (isArray(schema.type)) { schemaTypes.push(...schema.type); }
+    else { schemaTypes.push(schema.type); }
+  }
   for (const schemaType of schemaTypes) {
     switch (schemaType) {
       case 'string':
@@ -803,8 +812,9 @@ export function combineAllOf(schema) {
  */
 export function fixRequiredArrayProperties(schema) {
   if (schema.type === 'array' && isArray(schema.required)) {
-    const itemsObject = hasOwn(schema.items, 'properties') ? 'items' :
-      hasOwn(schema.additionalItems, 'properties') ? 'additionalItems' : null;
+    let itemsObject = null;
+    if (hasOwn(schema.items, 'properties')) { itemsObject = 'items'; }
+    else if (hasOwn(schema.additionalItems, 'properties')) { itemsObject = 'additionalItems'; }
     if (itemsObject && !hasOwn(schema[itemsObject], 'required') && (
       hasOwn(schema[itemsObject], 'additionalProperties') ||
       schema.required.every(key => hasOwn(schema[itemsObject].properties, key))

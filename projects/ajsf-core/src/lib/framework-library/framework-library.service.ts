@@ -44,12 +44,13 @@ export class FrameworkLibraryService {
     framework: string|Framework = this.defaultFramework,
     loadExternalAssets = this.loadExternalAssets
   ): boolean {
-    this.activeFramework =
-      typeof framework === 'string' && this.hasFramework(framework) ?
-        this.frameworkLibrary[framework] :
-      typeof framework === 'object' && hasOwn(framework, 'framework') ?
-        framework :
-        this.frameworkLibrary[this.defaultFramework];
+    if (typeof framework === 'string' && this.hasFramework(framework)) {
+      this.activeFramework = this.frameworkLibrary[framework];
+    } else if (typeof framework === 'object' && hasOwn(framework, 'framework')) {
+      this.activeFramework = framework;
+    } else {
+      this.activeFramework = this.frameworkLibrary[this.defaultFramework];
+    }
     return this.registerFrameworkWidgets(this.activeFramework);
   }
 

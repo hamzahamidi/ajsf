@@ -494,6 +494,20 @@ export class JsonSchemaFormService {
     );
   }
 
+  private resolveTextPointer(pointer, value, values, tpldata) {
+    const path = pointer.slice(1);
+    if (pointer[0] === 'value' && JsonPointer.has(value, path)) {
+      return JsonPointer.get(value, path);
+    }
+    if (pointer[0] === 'values' && JsonPointer.has(values, path)) {
+      return JsonPointer.get(values, path);
+    }
+    if (pointer[0] === 'tpldata' && JsonPointer.has(tpldata, path)) {
+      return JsonPointer.get(tpldata, path);
+    }
+    return JsonPointer.has(values, pointer) ? JsonPointer.get(values, pointer) : '';
+  }
+
   parseExpression(
     expression = '',
     value: any = {},
@@ -525,15 +539,7 @@ export class JsonSchemaFormService {
       )
     ) {
       const pointer = JsonPointer.parseObjectPath(expression);
-      return pointer[0] === 'value' && JsonPointer.has(value, pointer.slice(1))
-        ? JsonPointer.get(value, pointer.slice(1))
-        : pointer[0] === 'values' && JsonPointer.has(values, pointer.slice(1))
-          ? JsonPointer.get(values, pointer.slice(1))
-          : pointer[0] === 'tpldata' && JsonPointer.has(tpldata, pointer.slice(1))
-            ? JsonPointer.get(tpldata, pointer.slice(1))
-            : JsonPointer.has(values, pointer)
-              ? JsonPointer.get(values, pointer)
-              : '';
+      return this.resolveTextPointer(pointer, value, values, tpldata);
     }
     if (expression.includes('[idx]')) {
       expression = expression.replaceAll('[idx]', <string>index);
@@ -716,18 +722,34 @@ export class JsonSchemaFormService {
       (string.slice(1) || '')
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replaceAll('_', ' ');
-    const formatError = error =>
-      typeof error === 'object'
-        ? Object.keys(error)
-          .map(key =>
-            error[key] === true
-              ? addSpaces(key)
-              : error[key] === false
-                ? 'Not ' + addSpaces(key)
-                : addSpaces(key) + ': ' + formatError(error[key])
-          )
-          .join(', ')
-        : addSpaces(error.toString());
+    const formatErrorValue = (key, error) => {
+      if (error === true) { return addSpaces(key); }
+      if (error === false) { return 'Not ' + addSpaces(key); }
+      return addSpaces(key) + ': ' + formatError(error);
+    };
+    const formatError = error => {
+      if (typeof error !== 'object') { return addSpaces(error.toString()); }
+      return Object.keys(error).map(key => formatErrorValue(key, error[key])).join(', ');
+    };
+    const messageForError = errorKey => {
+      if (typeof validationMessages === 'string') { return validationMessages; }
+      const validationMessage = validationMessages[errorKey];
+      if (typeof validationMessage === 'function') {
+        return validationMessage(errors[errorKey]);
+      }
+      if (typeof validationMessage !== 'string') {
+        return addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey]);
+      }
+      if (!/{{.+?}}/.test(validationMessage)) { return validationMessage; }
+      return Object.keys(errors[errorKey]).reduce(
+        (errorMessage, errorProperty) =>
+          errorMessage.replace(
+            new RegExp('{{' + errorProperty + '}}', 'g'),
+            errors[errorKey][errorProperty]
+          ),
+        validationMessage
+      );
+    };
     const messages = [];
     return (
       Object.keys(errors)
@@ -736,30 +758,7 @@ export class JsonSchemaFormService {
           errorKey =>
             errorKey !== 'required' || Object.keys(errors).length === 1
         )
-        .map(errorKey =>
-          // If validationMessages is a string, return it
-          typeof validationMessages === 'string'
-            ? validationMessages
-            : // If custom error message is a function, return function result
-            typeof validationMessages[errorKey] === 'function'
-              ? validationMessages[errorKey](errors[errorKey])
-              : // If custom error message is a string, replace placeholders and return
-              typeof validationMessages[errorKey] === 'string'
-                ? // Does error message have any {{property}} placeholders?
-                !/{{.+?}}/.test(validationMessages[errorKey])
-                  ? validationMessages[errorKey]
-                  : // Replace {{property}} placeholders with values
-                  Object.keys(errors[errorKey]).reduce(
-                    (errorMessage, errorProperty) =>
-                      errorMessage.replace(
-                        new RegExp('{{' + errorProperty + '}}', 'g'),
-                        errors[errorKey][errorProperty]
-                      ),
-                    validationMessages[errorKey]
-                  )
-                : // If no custom error message, return formatted error data instead
-                addSpaces(errorKey) + ' Error: ' + formatError(errors[errorKey])
-        )
+        .map(messageForError)
         .join('<br>')
     );
   }

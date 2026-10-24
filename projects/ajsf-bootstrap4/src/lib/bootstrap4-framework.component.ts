@@ -53,11 +53,13 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
       return false;
     }
     // If array length <= minItems, don't allow removing any items
-    return this.parentArray.items.length - 1 <= this.parentArray.options.minItems ? false :
-      // For removable list items, allow removing any item
-      this.layoutNode.arrayItemType === 'list' ? true :
-        // For removable tuple items, only allow removing last item in list
-        this.layoutIndex[this.layoutIndex.length - 1] === this.parentArray.items.length - 2;
+    if (this.parentArray.items.length - 1 <= this.parentArray.options.minItems) {
+      return false;
+    }
+    // For removable list items, allow removing any item
+    if (this.layoutNode.arrayItemType === 'list') { return true; }
+    // For removable tuple items, only allow removing last item in list
+    return this.layoutIndex.at(-1) === this.parentArray.items.length - 2;
   }
 
   ngOnInit() {
@@ -100,12 +102,13 @@ export class Bootstrap4FrameworkComponent implements OnInit, OnChanges {
 
       this.options.htmlClass =
         addClasses(this.options.htmlClass, 'schema-form-' + this.layoutNode.type);
-      this.options.htmlClass =
-        this.layoutNode.type === 'array' ?
-          addClasses(this.options.htmlClass, 'list-group') :
-          this.layoutNode.arrayItem && this.layoutNode.type !== '$ref' ?
-            addClasses(this.options.htmlClass, 'list-group-item') :
-            addClasses(this.options.htmlClass, 'form-group');
+      if (this.layoutNode.type === 'array') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group');
+      } else if (this.layoutNode.arrayItem && this.layoutNode.type !== '$ref') {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'list-group-item');
+      } else {
+        this.options.htmlClass = addClasses(this.options.htmlClass, 'form-group');
+      }
       this.widgetOptions.htmlClass = '';
       // No label class. Bootstrap 4 styles a plain <label> in a stacked form,
       // and col-form-label, which the migration table offers as the rename,

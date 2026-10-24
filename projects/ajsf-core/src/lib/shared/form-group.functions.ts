@@ -79,12 +79,16 @@ export function buildFormGroupTemplate(
   }
   // TODO: If nodeValue still not set, check layout for default value
   const schemaType: string | string[] = JsonPointer.get(schema, '/type');
-  const controlType =
-    (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) &&
-      schemaType === 'object' ? 'FormGroup' :
-      (hasOwn(schema, 'items') || hasOwn(schema, 'additionalItems')) &&
-        schemaType === 'array' ? 'FormArray' :
-        !schemaType && hasOwn(schema, '$ref') ? '$ref' : 'FormControl';
+  let controlType = 'FormControl';
+  if ((hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) &&
+    schemaType === 'object') {
+    controlType = 'FormGroup';
+  } else if ((hasOwn(schema, 'items') || hasOwn(schema, 'additionalItems')) &&
+    schemaType === 'array') {
+    controlType = 'FormArray';
+  } else if (!schemaType && hasOwn(schema, '$ref')) {
+    controlType = '$ref';
+  }
   const shortDataPointer =
     removeRecursiveReferences(dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap);
   if (!jsf.dataMap.has(shortDataPointer)) {
@@ -171,17 +175,20 @@ export function buildFormGroupTemplate(
                 templatePointer + '/controls/' + i
               );
             }
-            controls.push(
-              isArray(nodeValue) ?
-                buildFormGroupTemplate(
-                  jsf, nodeValue[i], setValues,
-                  schemaPointer + '/items/' + i,
-                  dataPointer + '/' + i,
-                  templatePointer + '/controls/' + i
-                ) :
-                itemRecursive ?
-                  null : cloneDeep(jsf.templateRefLibrary[itemRefPointer])
-            );
+            let control;
+            if (isArray(nodeValue)) {
+              control = buildFormGroupTemplate(
+                jsf, nodeValue[i], setValues,
+                schemaPointer + '/items/' + i,
+                dataPointer + '/' + i,
+                templatePointer + '/controls/' + i
+              );
+            } else if (itemRecursive) {
+              control = null;
+            } else {
+              control = cloneDeep(jsf.templateRefLibrary[itemRefPointer]);
+            }
+            controls.push(control);
           }
         }
 
@@ -224,17 +231,20 @@ export function buildFormGroupTemplate(
             isArray(nodeValue) ? nodeValue.length : 0
           ), maxItems);
           for (let i = controls.length; i < arrayLength; i++) {
-            controls.push(
-              isArray(nodeValue) ?
-                buildFormGroupTemplate(
-                  jsf, nodeValue[i], setValues,
-                  schemaRefPointer,
-                  dataPointer + '/-',
-                  templatePointer + '/controls/-'
-                ) :
-                itemRecursive ?
-                  null : cloneDeep(jsf.templateRefLibrary[itemRefPointer])
-            );
+            let control;
+            if (isArray(nodeValue)) {
+              control = buildFormGroupTemplate(
+                jsf, nodeValue[i], setValues,
+                schemaRefPointer,
+                dataPointer + '/-',
+                templatePointer + '/controls/-'
+              );
+            } else if (itemRecursive) {
+              control = null;
+            } else {
+              control = cloneDeep(jsf.templateRefLibrary[itemRefPointer]);
+            }
+            controls.push(control);
           }
         }
       }
