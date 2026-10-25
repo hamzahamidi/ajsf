@@ -1,4 +1,7 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
+import { Subscription } from 'rxjs';
 import { JsonSchemaFormService } from '../json-schema-form.service';
 
 
@@ -13,9 +16,11 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnDestroy {
   options: any;
   message: string = null;
+  private messageTemplate: string;
+  private dataChangesSubscription: Subscription;
   @Input() layoutNode: any;
   @Input() layoutIndex: number[];
   @Input() dataIndex: number[];
@@ -26,7 +31,24 @@ export class MessageComponent implements OnInit {
 
   ngOnInit() {
     this.options = this.layoutNode.options || {};
-    this.message = this.options.help || this.options.helpvalue ||
+    this.messageTemplate = this.options.help || this.options.helpvalue ||
       this.options.msg || this.options.message;
+    this.updateMessage(this.jsf.data);
+    this.dataChangesSubscription = this.jsf.dataChanges.subscribe(
+      data => this.updateMessage(data)
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.dataChangesSubscription?.unsubscribe();
+  }
+
+  private updateMessage(data: any): void {
+    const localValue = this.jsf.getFormControlValue(this);
+    const localValues = this.jsf.getFormControlGroup(this)?.value;
+    const value = localValue ?? data ?? {};
+    const values = localValues ?? data ?? {};
+    const index = this.dataIndex?.at(-1);
+    this.message = this.jsf.parseText(this.messageTemplate, value, values, index ?? null);
   }
 }

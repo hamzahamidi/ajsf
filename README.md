@@ -365,6 +365,18 @@ For `framework`, pass a custom framework object or the name of a loaded framewor
 
 If you want more detailed output, you may provide additional functions for `onChanges` to read the values in real time as the form is being filled out, and you may implement your own custom validation indicators from the boolean `isValid` or the detailed `validationErrors` outputs.
 
+#### Dynamic message values
+
+Message widgets can interpolate current form values with `{{values.path}}`. The text refreshes when the form changes, and the displayed value stays out of the form data.
+
+```javascript
+const layout = [
+  'firstname',
+  'lastname',
+  { type: 'message', options: { message: 'Full name: {{values.firstname}} {{values.lastname}}' } },
+];
+```
+
 Here is an example:
 
 ```html
