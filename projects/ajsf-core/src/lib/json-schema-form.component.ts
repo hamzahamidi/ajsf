@@ -719,17 +719,6 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
         this.setFormValues(this.jsf.formValues);
       }
 
-      // TODO: Figure out how to display calculated values without changing object data
-      // See http://ulion.github.io/jsonform/playground/?example=templating-values
-      // Calculate references to other fields
-      // if (!isEmpty(this.jsf.formGroup.value)) {
-      //   forEach(this.jsf.formGroup.value, (value, key, object, rootObject) => {
-      //     if (typeof value === 'string') {
-      //       object[key] = this.jsf.parseText(value, value, rootObject, key);
-      //     }
-      //   }, 'top-down');
-      // }
-
       // Subscribe to form changes to output live data, validation, and errors
       this.jsf.dataChanges.pipe(takeUntil(this.unsubscribeOnActivateForm$)).subscribe(data => {
         this.onChanges.emit(this.objectWrap ? data['1'] : data);
