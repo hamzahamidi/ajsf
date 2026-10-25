@@ -50,8 +50,9 @@ function getLayoutOption(layoutItem: any, option: string): any {
 }
 
 function getLayoutPath(layoutItem: any): string[] {
-  const key = isString(layoutItem) ? layoutItem :
-    isObject(layoutItem) ? layoutItem.dataPointer || layoutItem.key : null;
+  let key = null;
+  if (isString(layoutItem)) { key = layoutItem; }
+  else if (isObject(layoutItem)) { key = layoutItem.dataPointer || layoutItem.key; }
   if (!isString(key) || !key || key === '*') { return []; }
   const path = JsonPointer.isJsonPointer(key)
     ? JsonPointer.parse(key)
@@ -100,35 +101,9 @@ function layoutSchemaFromItem(layoutItem: any): any {
   const widget = layoutItem.type || layoutItem.widget || '';
   const enumValues = layoutEnumValues(layoutItem);
   const types = [...new Set(enumValues.map(getLayoutValueType))];
-  const inferredType = types.length === 1 ? types[0] : types.length ? types : 'string';
-  let schema: any;
-  if (widget === 'section' || widget === 'fieldset' || widget === 'flex' || widget === 'object') {
-    schema = { type: 'object', properties: {} };
-  } else if (widget === 'array' || widget === 'tabarray') {
-    schema = { type: 'array', items: { type: 'object', properties: {} } };
-  } else if (widget === 'checkboxes' || widget === 'checkboxes-inline' || widget === 'checkboxbuttons') {
-    schema = { type: 'array', items: { type: inferredType, enum: enumValues } };
-  } else if (widget === 'checkbox') {
-    schema = { type: 'boolean' };
-  } else if (widget === 'number' || widget === 'range') {
-    schema = { type: 'number' };
-  } else if (widget === 'integer' || widget === 'updown') {
-    schema = { type: 'integer' };
-  } else if (widget === 'select' || widget === 'radios' || widget === 'radio' || widget === 'one-of') {
-    schema = { type: inferredType };
-  } else if (['email', 'url', 'date', 'datetime-local', 'date-time', 'alt-date', 'alt-datetime'].includes(widget)) {
-    schema = {
-      type: 'string',
-      format: {
-        email: 'email', url: 'uri', date: 'date', 'datetime-local': 'date-time',
-        'date-time': 'date-time', 'alt-date': 'date', 'alt-datetime': 'date-time'
-      }[widget]
-    };
-  } else if (['submit', 'reset', 'button', 'image', 'message', 'help', 'html', 'none', 'root', 'tabs', 'tab'].includes(widget)) {
-    return null;
-  } else {
-    schema = { type: 'string' };
-  }
+  const inferredType = types.length > 1 ? types : types[0] ?? 'string';
+  const schema = layoutWidgetSchema(widget, inferredType, enumValues);
+  if (!schema) { return null; }
   if (enumValues.length && schema.type !== 'array') { schema.enum = enumValues; }
   const metadata = ['title', 'description', 'default', 'minimum', 'maximum', 'exclusiveMinimum',
     'exclusiveMaximum', 'multipleOf', 'minLength', 'maxLength', 'pattern', 'minItems', 'maxItems',
@@ -140,42 +115,66 @@ function layoutSchemaFromItem(layoutItem: any): any {
   return schema;
 }
 
+const objectLayoutWidgets = new Set(['section', 'fieldset', 'flex', 'object']);
+const arrayLayoutWidgets = new Set(['array', 'tabarray']);
+const checkboxArrayLayoutWidgets = new Set(['checkboxes', 'checkboxes-inline', 'checkboxbuttons']);
+const inferredTypeLayoutWidgets = new Set(['select', 'radios', 'radio', 'one-of']);
+const ignoredLayoutWidgets = new Set(['submit', 'reset', 'button', 'image', 'message', 'help', 'html', 'none', 'root', 'tabs', 'tab']);
+const layoutWidgetFormats: Record<string, string> = {
+  email: 'email', url: 'uri', date: 'date', 'datetime-local': 'date-time',
+  'date-time': 'date-time', 'alt-date': 'date', 'alt-datetime': 'date-time'
+};
+
+function layoutWidgetSchema(widget: string, inferredType: any, enumValues: any[]): any {
+  if (objectLayoutWidgets.has(widget)) { return { type: 'object', properties: {} }; }
+  if (arrayLayoutWidgets.has(widget)) { return { type: 'array', items: { type: 'object', properties: {} } }; }
+  if (checkboxArrayLayoutWidgets.has(widget)) {
+    return { type: 'array', items: { type: inferredType, enum: enumValues } };
+  }
+  if (widget === 'checkbox') { return { type: 'boolean' }; }
+  if (widget === 'number' || widget === 'range') { return { type: 'number' }; }
+  if (widget === 'integer' || widget === 'updown') { return { type: 'integer' }; }
+  if (inferredTypeLayoutWidgets.has(widget)) { return { type: inferredType }; }
+  if (hasOwn(layoutWidgetFormats, widget)) { return { type: 'string', format: layoutWidgetFormats[widget] }; }
+  if (ignoredLayoutWidgets.has(widget)) { return null; }
+  return { type: 'string' };
+}
+
 function ensureLayoutSchemaNode(rootSchema: any, path: string[]): { node: any; parent: any; key: string } {
   let node = rootSchema;
   let parent: any = null;
   let key = '';
-  path.forEach(segment => {
-    parent = node;
-    key = segment;
-    if (segment === '-') {
-      node.type = 'array';
-      if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
-      node = node.items;
-    } else if (/^\d+$/.test(segment)) {
-      node.type = 'array';
-      if (!isArray(node.items)) { node.items = []; }
-      while (node.items.length <= Number(segment)) {
-        node.items.push({ type: 'object', properties: {} });
-      }
-      node = node.items[Number(segment)];
-    } else {
-      if (node.type === 'array') {
-        if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
-        parent = node;
-        key = segment;
-        node = node.items;
-      }
-      node.type = 'object';
-      if (!isObject(node.properties)) { node.properties = {}; }
-      if (!isObject(node.properties[segment])) {
-        node.properties[segment] = {};
-      }
-      parent = node;
-      key = segment;
-      node = node.properties[segment];
-    }
-  });
+  for (const segment of path) {
+    const next = ensureLayoutSchemaChild(node, segment);
+    node = next.node;
+    parent = next.parent;
+    key = next.key;
+  }
   return { node, parent, key };
+}
+
+function ensureLayoutSchemaChild(node: any, segment: string): { node: any; parent: any; key: string } {
+  if (segment === '-') {
+    node.type = 'array';
+    if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
+    return { node: node.items, parent: node, key: segment };
+  }
+  if (/^\d+$/.test(segment)) {
+    node.type = 'array';
+    if (!isArray(node.items)) { node.items = []; }
+    while (node.items.length <= Number(segment)) {
+      node.items.push({ type: 'object', properties: {} });
+    }
+    return { node: node.items[Number(segment)], parent: node, key: segment };
+  }
+  if (node.type === 'array') {
+    if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
+    node = node.items;
+  }
+  node.type = 'object';
+  if (!isObject(node.properties)) { node.properties = {}; }
+  if (!isObject(node.properties[segment])) { node.properties[segment] = {}; }
+  return { node: node.properties[segment], parent: node, key: segment };
 }
 
 function mergeLayoutSchema(target: any, schema: any): void {
@@ -241,9 +240,11 @@ export function buildSchemaFromLayout(layout: any[]) {
       }
       if (isObject(item) && isArray(item.items)) {
         const widget = item.type || item.widget;
-        const childPath = path.length
-          ? widget === 'array' || widget === 'tabarray' ? [...path, '-'] : path
-          : parentPath;
+        let childPath = parentPath;
+        if (path.length) {
+          childPath = path;
+          if (widget === 'array' || widget === 'tabarray') { childPath = [...path, '-']; }
+        }
         walk(item.items, childPath, required);
       }
     });
