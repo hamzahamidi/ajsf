@@ -405,6 +405,22 @@ Note: If you prefer brackets around all your attributes, the following is functi
 
 With this syntax, include the nested quotes (`"'` and `'"`) around language and framework names. Without the inner quotes, Angular reads the values as variables instead of strings. Attributes without brackets are read as strings and do not need inner quotes.
 
+#### Sequential wizard layouts
+
+The core `wizard` widget shows one layout item at a time with Previous and Next buttons. Each step uses its `title` or `legend` as the step label. Set `options.previousLabel`, `options.nextLabel`, or `options.buttonHtmlClass` to customize the navigation. Material Design and PrimeNG map `wizard` to their stepper widgets.
+
+```javascript
+const layout = [{
+  type: 'wizard',
+  options: { previousLabel: 'Back', nextLabel: 'Continue' },
+  items: [
+    { type: 'section', options: { title: 'Contact' }, items: ['first_name', 'email'] },
+    { type: 'section', options: { title: 'Profile' }, items: ['company'] },
+    { type: 'section', items: [{ type: 'submit' }] },
+  ],
+}];
+```
+
 #### Layout conditions
 
 A layout item's `condition` can be a JSON Pointer string or a function supplied by application code. A serializable `functionBody` supports one `return` expression that compares a `model` property path or an `arrayIndices[n]` value with a primitive literal using `===` or `!==`. For custom logic, pass a function from application code. Other `functionBody` expressions are not evaluated, and the item remains visible. Existing layouts that used arbitrary JavaScript in `functionBody` must migrate to a condition function before upgrading.
