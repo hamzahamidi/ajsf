@@ -466,6 +466,27 @@ Finally, Angular JSON Schema Form includes some additional inputs and outputs fo
 
 In addition to a large number of user-settable options, Angular JSON Schema Form also has the ability to load custom form control widgets and layout frameworks. All forms are constructed from these basic components. The default widget library includes all standard HTML 5 form controls, as well as several common layout patterns, such as multiple checkboxes and tab sets. The default framework library includes templates to style forms using Material Design, PrimeNG, Bootstrap 3, Bootstrap 4, or Bootstrap 5 (or plain HTML with no formatting, which is not useful in production, but can be helpful for development and debugging).
 
+### File fields
+
+Use the `file` widget on a string schema to store one selected file as a data URL. Use it on an array of strings to allow multiple files and store one data URL per file. Set `x-schema-form.options.accept` to filter the file types offered by the browser.
+
+```javascript
+const schema = {
+  type: 'object',
+  properties: {
+    document: {
+      type: 'string',
+      'x-schema-form': { type: 'file', options: { accept: '.pdf,application/pdf' } }
+    },
+    images: {
+      type: 'array',
+      items: { type: 'string' },
+      'x-schema-form': { type: 'file', options: { accept: 'image/*' } }
+    }
+  }
+};
+```
+
 ### User settings
 
 (TODO: List all available user settings, and configuration options for each.)
