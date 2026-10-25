@@ -13,6 +13,7 @@ import {
   getTitleMapFromOneOf,
   isInputRequired,
   removeRecursiveReferences,
+  resolveExternalSchemaReferences,
   resolveSchemaReferences,
   updateInputOptions,
 } from './json-schema.functions';
@@ -24,9 +25,263 @@ import {
  */
 describe('JSON Schema functions', () => {
 
+  describe('resolveExternalSchemaReferences', () => {
+    it('bundles a registered resource and resolves its pointer references', () => {
+      const schema = {
+        $id: 'https://example.test/root.json',
+        type: 'object',
+        properties: {
+          address: { $ref: 'schemas/address.json#/definitions/address' }
+        }
+      };
+      const externalSchemas = {
+        'https://example.test/schemas/address.json': {
+          $id: 'https://example.test/schemas/address.json',
+          definitions: {
+            address: {
+              type: 'object',
+              properties: { city: { type: 'string' } }
+            }
+          }
+        }
+      };
+
+      const result = resolveExternalSchemaReferences(schema, externalSchemas);
+
+      expect(result.properties.address.$ref)
+        .toBe('#/definitions/externalSchema0/definitions/address');
+      expect(result.definitions.externalSchema0.definitions.address.properties.city)
+        .toEqual({ type: 'string' });
+      expect(schema.properties.address.$ref)
+        .toBe('schemas/address.json#/definitions/address');
+    });
+
+    it('rewrites local references inside an external resource', () => {
+      const result = resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json' } }
+      }, {
+        'https://example.test/address.json': {
+          $id: 'https://example.test/address.json',
+          type: 'object',
+          properties: { city: { $ref: '#/definitions/city' } },
+          definitions: { city: { type: 'string' } }
+        }
+      });
+
+      expect(result.definitions.externalSchema0.properties.city.$ref)
+        .toBe('#/definitions/externalSchema0/definitions/city');
+    });
+
+    it('rewrites an absolute reference to the root schema as a local pointer', () => {
+      const result = resolveExternalSchemaReferences({
+        $id: 'https://example.test/root.json',
+        type: 'object',
+        properties: {
+          address: { $ref: 'https://example.test/root.json#/definitions/address' }
+        },
+        definitions: { address: { type: 'string' } }
+      });
+
+      expect(result.properties.address.$ref).toBe('#/definitions/address');
+    });
+
+    it('resolves references found in the root schema definitions', () => {
+      const result = resolveExternalSchemaReferences({
+        type: 'object',
+        definitions: {
+          address: { $ref: 'https://example.test/address.json' }
+        },
+        properties: { address: { $ref: '#/definitions/address' } }
+      }, {
+        'https://example.test/address.json': { type: 'string' }
+      });
+
+      expect(result.definitions.address.$ref).toBe('#/definitions/externalSchema0');
+      expect(result.properties.address.$ref).toBe('#/definitions/address');
+      expect(result.definitions.externalSchema0).toEqual({ type: 'string' });
+    });
+
+    it('reports a missing registered resource without fetching it', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json' } }
+      })).toThrowError('was not found in externalSchemas');
+    });
+
+    it('rejects non-HTTP external schemes', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'file:///etc/passwd' } }
+      })).toThrowError('must use HTTP(S) without credentials');
+    });
+
+    it('rejects anchor fragments that draft 7 cannot resolve', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json#Address' } }
+      }, { 'https://example.test/address.json': { type: 'string' } }))
+        .toThrowError('uses an unsupported anchor fragment');
+    });
+  });
+
   describe('buildSchemaFromLayout', () => {
-    it('returns undefined for a layout array (the function body is commented out)', () => {
-      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toBeUndefined();
+    it('infers a basic object schema from field keys and widget types', () => {
+      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: { name: { type: 'string' }, address: { type: 'string' } }
+      });
+    });
+
+    it('infers nested objects, array item layouts, and required fields', () => {
+      expect(buildSchemaFromLayout([
+        { type: 'section', required: true, items: ['name', { key: 'age', type: 'integer' }] },
+        { key: 'address.street', type: 'text' },
+        {
+          key: 'phone_numbers',
+          type: 'array',
+          items: ['phone_numbers[].number']
+        }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'integer' },
+          address: { type: 'object', properties: { street: { type: 'string' } } },
+          phone_numbers: {
+            type: 'array',
+            items: { type: 'object', properties: { number: { type: 'string' } } }
+          }
+        },
+        required: ['name', 'age']
+      });
+    });
+
+    it('uses choice values and form widget formats when inferring fields', () => {
+      expect(buildSchemaFromLayout([
+        { key: 'contact', type: 'email' },
+        { key: 'country', type: 'select', titleMap: { France: 'FR', Japan: 'JP' } }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          contact: { type: 'string', format: 'email' },
+          country: { type: 'string', enum: ['FR', 'JP'] }
+        }
+      });
+    });
+
+    it('reads layout options and joins relative child paths to their section', () => {
+      expect(buildSchemaFromLayout([
+        {
+          key: 'profile',
+          type: 'section',
+          items: [{ key: 'first_name', type: 'email', options: { required: true, description: 'Contact' } }]
+        },
+        { dataPointer: '/profile/age', type: 'integer', options: { minimum: 0 } }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          profile: {
+            type: 'object',
+            properties: {
+              first_name: { type: 'string', format: 'email', description: 'Contact' },
+              age: { type: 'integer', minimum: 0 }
+            },
+            required: ['first_name']
+          }
+        },
+        required: ['profile']
+      });
+    });
+
+    it('infers mixed choice value types from nested title maps', () => {
+      const schema: any = buildSchemaFromLayout([{
+        key: 'choice',
+        type: 'select',
+        titleMap: [
+          { items: [{ value: 2 }, { value: 'two' }] },
+          { value: null }, false, 1.5, [3], { value: { id: 4 } }
+        ]
+      }]);
+
+      expect(schema.properties.choice).toEqual({
+        type: ['integer', 'string', 'null', 'boolean', 'number', 'array', 'object'],
+        enum: [2, 'two', null, false, 1.5, [3], { id: 4 }]
+      });
+    });
+
+    it('infers checkbox lists and tuple item paths', () => {
+      expect(buildSchemaFromLayout([
+        { key: 'flags', type: 'checkboxes', enum: ['fast', 'safe'] },
+        { key: 'records.0.code', type: 'text' },
+        { key: 'amount', widget: 'range' },
+        { key: 'groups', type: 'tabarray', items: [{ key: 'label', type: 'text' }] }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          flags: { type: 'array', items: { type: 'string', enum: ['fast', 'safe'] } },
+          records: {
+            type: 'array',
+            items: [{ type: 'object', properties: { code: { type: 'string' } } }]
+          },
+          amount: { type: 'number' },
+          groups: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' } } } }
+        }
+      });
+    });
+
+    it('uses a supplied schema and handles required array item paths', () => {
+      expect(buildSchemaFromLayout([
+        {
+          key: 'rows',
+          type: 'array',
+          schema: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' } } } },
+          items: [{ key: 'name', type: 'text', required: true }]
+        },
+        { key: '/rows//active', type: 'checkbox', required: true }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          rows: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: { id: { type: 'integer' }, name: { type: 'string' }, active: { type: 'boolean' } },
+              required: ['name', 'active']
+            }
+          }
+        },
+        required: ['rows']
+      });
+    });
+
+    it('merges repeated object and array schemas at the same layout path', () => {
+      const schema: any = buildSchemaFromLayout([
+        { key: 'profile', schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] } },
+        { key: 'profile', schema: { type: 'object', properties: { age: { type: 'integer' } }, required: ['age'] } },
+        { key: 'entries', schema: { type: 'array', items: { type: 'object', properties: { first: { type: 'string' } }, required: ['first'] } } },
+        { key: 'entries', schema: { type: 'array', items: { type: 'object', properties: { second: { type: 'number' } }, required: ['second'] } } },
+        { key: 'tuple', schema: { type: 'array', items: [{ type: 'object', properties: { first: { type: 'string' } } }] } },
+        { key: 'tuple', schema: { type: 'array', items: [{ type: 'object', properties: { second: { type: 'number' } } }] } }
+      ]);
+
+      expect(schema.properties.profile.properties).toEqual({
+        name: { type: 'string' }, age: { type: 'integer' }
+      });
+      expect(schema.properties.entries.items.properties).toEqual({
+        first: { type: 'string' }, second: { type: 'number' }
+      });
+      expect(schema.properties.profile.required).toEqual(['name', 'age']);
+      expect(schema.properties.entries.items.required).toEqual(['first', 'second']);
+      expect(schema.properties.tuple.items[0].properties).toEqual({
+        first: { type: 'string' }, second: { type: 'number' }
+      });
     });
 
     it('returns undefined for null and undefined layouts', () => {
@@ -279,6 +534,41 @@ describe('JSON Schema functions', () => {
       )).toEqual(['additionalProperties']);
     });
 
+    it('uses a matching patternProperties schema before additionalProperties', () => {
+      const schema = {
+        type: 'object',
+        patternProperties: { '^name_': { type: 'string', minLength: 2 } },
+        additionalProperties: false,
+      };
+
+      expect(getFromSchema(schema, '/name_first')).toEqual({ type: 'string', minLength: 2 });
+      expect(getFromSchema(schema, '/name_first', 'schemaPointer'))
+        .toEqual(['patternProperties', '^name_']);
+      expect(getFromSchema(schema, '/other')).toBeUndefined();
+    });
+
+    it('combines all patternProperties schemas that match a property', () => {
+      const schema = {
+        type: 'object',
+        patternProperties: {
+          '^name_': { type: 'string', minLength: 2 },
+          '_first$': { type: 'string', pattern: '^[A-Z]' },
+        },
+      };
+
+      expect(getFromSchema(schema, '/name_first')).toEqual({
+        type: 'string', minLength: 2, pattern: '^[A-Z]'
+      });
+    });
+
+    it('matches a valid empty pattern', () => {
+      const schema = { type: 'object', patternProperties: { '': { type: 'string' } } };
+
+      expect(getFromSchema(schema, '/any')).toEqual({ type: 'string' });
+      expect(getFromSchema(schema, '/any', 'schemaPointer'))
+        .toEqual(['patternProperties', '']);
+    });
+
     it('returns an empty object when the key is missing and additionalProperties is absent', () => {
       expect(getFromSchema({ type: 'object', properties: { a: { type: 'string' } } }, '/b'))
         .toEqual({});
@@ -442,6 +732,7 @@ describe('JSON Schema functions', () => {
 
     it('maps an object with properties or additionalProperties to section', () => {
       expect(getInputType({ type: 'object', properties: { a: {} } })).toEqual('section');
+      expect(getInputType({ type: 'object', patternProperties: { '^a': {} } })).toEqual('section');
       expect(getInputType({ type: 'object', additionalProperties: true })).toEqual('section');
     });
 
@@ -917,6 +1208,20 @@ describe('JSON Schema functions', () => {
       )).toEqual([{ name: 'A', value: 'a' }, { name: 'B', value: 'b' }]);
     });
 
+    it('builds a title map when const values are falsy', () => {
+      expect(getTitleMapFromOneOf({
+        oneOf: [
+          { title: 'Zero', const: 0 },
+          { title: 'False', const: false },
+          { title: 'Empty', const: '' },
+        ],
+      })).toEqual([
+        { name: 'Zero', value: 0 },
+        { name: 'False', value: false },
+        { name: 'Empty', value: '' },
+      ]);
+    });
+
     it('returns null when any entry is missing a title', () => {
       expect(getTitleMapFromOneOf(
         { oneOf: [{ enum: ['a'] }, { title: 'B', enum: ['b'] }] }
@@ -1038,9 +1343,13 @@ describe('JSON Schema functions', () => {
     });
 
     it('collects the object validators', () => {
-      expect(getControlValidators(
-        { type: 'object', minProperties: 1, maxProperties: 3, dependencies: { a: ['b'] } }
-      )).toEqual({ minProperties: [1], maxProperties: [3], dependencies: [{ a: ['b'] }] });
+      const schema = { type: 'object', minProperties: 1, maxProperties: 3, dependencies: { a: ['b'] } };
+
+      expect(getControlValidators(schema)).toEqual({
+        minProperties: [1],
+        maxProperties: [3],
+        dependencies: [schema.dependencies, schema, '', null],
+      });
     });
 
     it('collects the array validators', () => {

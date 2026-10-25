@@ -24,15 +24,16 @@ import {
   xor
   } from './validator.functions';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { forEachCopy } from './utility.functions';
+import { forEachCopy, hasOwn } from './utility.functions';
 import { forkJoin, of } from 'rxjs';
 import { JsonSchemaFormatNames, jsonSchemaFormatTests } from './format-regex.constants';
 import { map } from 'rxjs/operators';
+import { JsonPointer } from './jsonpointer.functions';
 
 const emailLocalCharacters = "-!#$%&'*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz^_`{|}~";
 const emailDomainLabelPattern = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
-const containsRootSchemaIds = new WeakMap<object, string>();
-let nextContainsRootSchemaId = 0;
+const rootSchemaIds = new WeakMap<object, string>();
+let nextRootSchemaId = 0;
 
 function compileContainsSchema(
   schema: any,
@@ -46,21 +47,73 @@ function compileContainsSchema(
     return validator.compile(schema);
   }
 
-  let schemaId = rootSchema.$id || rootSchema.id || containsRootSchemaIds.get(rootSchema);
+  const schemaId = registerRootSchema(rootSchema, validator);
+  const pointer = `${schemaPointer || ''}/contains`;
+  return validator.compile({ $ref: `${schemaId}#${pointer}` });
+}
+
+function registerRootSchema(rootSchema: any, validator: any): string {
+  let schemaId = rootSchema.$id || rootSchema.id || rootSchemaIds.get(rootSchema);
   if (!schemaId) {
-    schemaId = `https://ajsf.invalid/schema-${++nextContainsRootSchemaId}`;
-    containsRootSchemaIds.set(rootSchema, schemaId);
+    schemaId = `https://ajsf.invalid/schema-${++nextRootSchemaId}`;
+    rootSchemaIds.set(rootSchema, schemaId);
   }
   schemaId = String(schemaId).replace(/#$/, '');
-
   if (!validator.getSchema(schemaId)) {
     const schemaWithId = rootSchema.$id === schemaId ? rootSchema :
       { ...rootSchema, $id: schemaId };
     validator.addSchema(schemaWithId, schemaId);
   }
+  return schemaId;
+}
 
-  const pointer = `${schemaPointer || ''}/contains`;
-  return validator.compile({ $ref: `${schemaId}#${pointer}` });
+function createJsonSchemaValidator(ajv: any): any {
+  if (ajv) { return ajv; }
+  const validator = addFormats(new Ajv({ allErrors: true, strict: false }));
+  validator.addMetaSchema(jsonDraft6);
+  return validator;
+}
+
+const simpleDependencyPropertyKeywords = new Set([
+  'type', 'enum', 'const', 'pattern', 'format', 'minLength', 'maxLength',
+  'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
+  'minItems', 'maxItems', 'uniqueItems'
+]);
+
+function supportsSimpleDependencyValidation(dependencySchema: any): boolean {
+  if (dependencySchema === true) { return true; }
+  if (!dependencySchema || typeof dependencySchema !== 'object' || Array.isArray(dependencySchema)) {
+    return false;
+  }
+  const schemaKeywords = Object.keys(dependencySchema);
+  if (schemaKeywords.some(keyword => keyword !== 'required' && keyword !== 'properties')) {
+    return false;
+  }
+  if (hasOwn(dependencySchema, 'required') &&
+    (!Array.isArray(dependencySchema.required) ||
+      !dependencySchema.required.every((key: any) => typeof key === 'string'))
+  ) { return false; }
+  if (!hasOwn(dependencySchema, 'properties')) { return true; }
+  if (!dependencySchema.properties || typeof dependencySchema.properties !== 'object' ||
+    Array.isArray(dependencySchema.properties)
+  ) { return false; }
+  return Object.values(dependencySchema.properties).every((propertySchema: any) =>
+    propertySchema && typeof propertySchema === 'object' && !Array.isArray(propertySchema) &&
+    Object.keys(propertySchema).every(keyword => simpleDependencyPropertyKeywords.has(keyword))
+  );
+}
+
+function compileSchemaDependency(
+  dependencySchema: any,
+  rootSchema: any,
+  dependencySchemaPointer: string,
+  validator: any
+): any {
+  if (rootSchema && typeof rootSchema === 'object' && dependencySchemaPointer) {
+    const schemaId = registerRootSchema(rootSchema, validator);
+    return validator.compile({ $ref: `${schemaId}#${dependencySchemaPointer}` });
+  }
+  return validator.compile(dependencySchema);
 }
 
 function isValidEmailLocalPart(value: string): boolean {
@@ -180,7 +233,6 @@ export class JsonValidators {
    * For formGroup objects:    minProperties, maxProperties, dependencies
    * For formArray arrays:     minItems, maxItems, uniqueItems, contains
    *
-   * TODO: finish dependencies validator
    */
 
   /**
@@ -604,27 +656,51 @@ export class JsonValidators {
    * // {any} dependencies - required dependencies
    * // {IValidatorFn}
    */
-  static dependencies(dependencies: any): IValidatorFn {
+  static dependencies(
+    dependencies: any,
+    rootSchema: any = null,
+    schemaPointer = '',
+    ajv: any = null
+  ): IValidatorFn {
     if (getType(dependencies) !== 'object' || isEmpty(dependencies)) {
       return JsonValidators.nullValidator;
     }
+    const dependencyValidators: Record<string, any> = {};
+    const schemaValidator = createJsonSchemaValidator(ajv);
+    for (const requiringField of Object.keys(dependencies)) {
+      const dependencySchema = dependencies[requiringField];
+      if (Array.isArray(dependencySchema) || supportsSimpleDependencyValidation(dependencySchema)) {
+        continue;
+      }
+      if (dependencySchema === null || typeof dependencySchema !== 'object' &&
+        typeof dependencySchema !== 'boolean'
+      ) { continue; }
+      const pointer = `${schemaPointer || ''}/dependencies/${JsonPointer.escape(requiringField)}`;
+      dependencyValidators[requiringField] = compileSchemaDependency(
+        dependencySchema, rootSchema, pointer, schemaValidator
+      );
+    }
     return (control: AbstractControl, invert = false): ValidationErrors|null => {
-      if (isEmpty(control.value)) { return null; }
+      if (!control.value || typeof control.value !== 'object' || Array.isArray(control.value)) {
+        return null;
+      }
       const allErrors = _mergeObjects(
         forEachCopy(dependencies, (value, requiringField) => {
-          if (!hasValue(control.value[requiringField])) { return null; }
+          if (!hasOwn(control.value, String(requiringField))) { return null; }
           let requiringFieldErrors: ValidationErrors = { };
-          let requiredFields: string[];
+          let requiredFields: string[] = [];
           let properties: ValidationErrors = { };
           if (getType(dependencies[requiringField]) === 'array') {
             requiredFields = dependencies[requiringField];
-          } else if (getType(dependencies[requiringField]) === 'object') {
+          } else if (supportsSimpleDependencyValidation(dependencies[requiringField]) &&
+            getType(dependencies[requiringField]) === 'object'
+          ) {
             requiredFields = dependencies[requiringField]['required'] || [];
             properties = dependencies[requiringField]['properties'] || { };
           }
 
           for (const requiredField of requiredFields) {
-            if (xor(!hasValue(control.value[requiredField]), invert)) {
+            if (xor(!hasOwn(control.value, requiredField), invert)) {
               requiringFieldErrors[requiredField] = { 'required': true };
             }
           }
@@ -655,6 +731,10 @@ export class JsonValidators {
               return isEmpty(requiredFieldErrors) ? null : requiredFieldErrors;
             }))
           );
+          const dependencyValidator = dependencyValidators[requiringField];
+          if (dependencyValidator && !dependencyValidator(control.value)) {
+            requiringFieldErrors.schema = dependencyValidator.errors || [];
+          }
           return isEmpty(requiringFieldErrors) ? null : requiringFieldErrors;
         })
       );

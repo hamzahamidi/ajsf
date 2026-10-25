@@ -820,6 +820,15 @@ describe('JsonValidators', () => {
       expect(validator(ctrl({ other: 'x' }))).toBeNull();
     });
 
+    it('uses property presence even when the dependent value is null', () => {
+      const validator = JsonValidators.dependencies({ credit_card: ['billing_address'] });
+
+      expect(validator(ctrl({ credit_card: null }))).toEqual({
+        credit_card: { billing_address: { required: true } }
+      });
+      expect(validator(ctrl({ credit_card: '1234', billing_address: null }))).toBeNull();
+    });
+
     it('merges required and properties errors under one requiring field', () => {
       const validator = JsonValidators.dependencies({
         credit_card: {
@@ -846,6 +855,35 @@ describe('JsonValidators', () => {
       });
       expect(validator(ctrl({ credit_card: '1234', billing_address: '1 Main St' })))
         .toBeNull();
+    });
+
+    it('validates schema dependency keywords beyond required and properties', () => {
+      const validator = JsonValidators.dependencies({ credit_card: { minProperties: 2 } });
+      const result: any = validator(ctrl({ credit_card: '1234' }));
+
+      expect(result.credit_card.schema[0].keyword).toBe('minProperties');
+    });
+
+    it('resolves references inside schema dependencies against the root schema', () => {
+      const rootSchema = {
+        $schema: 'http://json-schema.org/draft-06/schema#',
+        definitions: { billing: { required: ['billing_address'] } },
+        properties: {
+          order: {
+            type: 'object',
+            dependencies: { credit_card: { $ref: '#/definitions/billing' } },
+          },
+        },
+      };
+      const validator = JsonValidators.dependencies(
+        rootSchema.properties.order.dependencies,
+        rootSchema,
+        '/properties/order'
+      );
+      const result: any = validator(ctrl({ credit_card: '1234' }));
+
+      expect(result.credit_card.schema[0].keyword).toBe('required');
+      expect(result.credit_card.schema[0].params.missingProperty).toBe('billing_address');
     });
 
     it('treats a boolean exclusiveMaximum as the draft 4 modifier of maximum', () => {

@@ -196,6 +196,42 @@ describe('form-group.functions', () => {
       expect(result.controls).toEqual({});
     });
 
+    it('builds controls for data keys matching patternProperties', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        patternProperties: { '^name_': { type: 'string', minLength: 2 } },
+        additionalProperties: false,
+      });
+      const template: any = buildFormGroupTemplate(jsf, { name_first: 'A', ignored: 'value' });
+      const form: any = buildFormGroup(template);
+
+      expect(Object.keys(template.controls)).toEqual(['name_first']);
+      expect(template.controls.name_first.validators).toEqual({ minLength: [2] });
+      expect(jsf.dataMap.get('/name_first').get('schemaPointer'))
+        .toEqual('/properties/name_first');
+      expect(form.get('name_first').errors).toEqual({ minLength: { minimumLength: 2, currentLength: 1 } });
+    });
+
+    it('applies every matching patternProperties schema to one data field', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        patternProperties: {
+          '^name_': { type: 'string', minLength: 2 },
+          '_first$': { type: 'string', pattern: '^[A-Z]' },
+        },
+        additionalProperties: false,
+      });
+      const template: any = buildFormGroupTemplate(jsf, { name_first: 'a1' });
+      const form: any = buildFormGroup(template);
+
+      expect(template.controls.name_first.validators).toEqual({
+        pattern: ['^[A-Z]'], minLength: [2]
+      });
+      expect(form.get('name_first').errors).toEqual({
+        pattern: { requiredPattern: '^[A-Z]', currentValue: 'a1' }
+      });
+    });
+
     it('builds an additionalProperties control for a key named only in ui:order', () => {
       const result: any = buildFormGroupTemplate(makeJsf({
         type: 'object',
@@ -285,6 +321,56 @@ describe('form-group.functions', () => {
       ));
 
       expect(result.controls.a.value).toEqual({ value: null, disabled: false });
+    });
+
+    it('uses a layout default before a schema default when enabled', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        properties: { a: { type: 'string', default: 'schema' } },
+      }, {
+        formOptions: { setSchemaDefaults: true, setLayoutDefaults: true },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf);
+
+      expect(result.controls.a.value).toEqual({ value: 'layout', disabled: false });
+    });
+
+    it('skips a layout default when setLayoutDefaults is false', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        properties: { a: { type: 'string', default: 'schema' } },
+      }, {
+        formOptions: { setSchemaDefaults: true, setLayoutDefaults: false },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf);
+
+      expect(result.controls.a.value).toEqual({ value: 'schema', disabled: false });
+    });
+
+    it('keeps a supplied form value ahead of a layout default', () => {
+      const jsf = makeJsf({
+        type: 'object', properties: { a: { type: 'string' } },
+      }, {
+        formValues: { a: 'form' },
+        formOptions: { setLayoutDefaults: true },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf, jsf.formValues);
+
+      expect(result.controls.a.value).toEqual({ value: 'form', disabled: false });
+    });
+
+    it('uses layout defaults for addable controls when setLayoutDefaults is auto', () => {
+      const jsf = makeJsf({ type: 'string' }, {
+        formValues: { other: 'value' },
+        formOptions: { setLayoutDefaults: 'auto' },
+      });
+      jsf.dataMap.set('/items/-', new Map([['layoutDefault', 'new item']]));
+      const result: any = buildFormGroupTemplate(jsf, null, true, '', '/items/-', '/controls/-');
+
+      expect(result.value).toEqual({ value: 'new item', disabled: false });
     });
 
     it('discards the supplied nodeValue when setValues is false', () => {

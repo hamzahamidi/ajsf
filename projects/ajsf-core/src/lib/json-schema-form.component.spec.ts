@@ -152,6 +152,51 @@ describe('JsonSchemaFormComponent input updates', () => {
     fixture.destroy();
   });
 
+  it('builds a schema from a complete layout without a schema input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.layout = [
+      { type: 'section', required: true, items: ['first_name'] },
+      { key: 'age', type: 'integer' }
+    ];
+    component.data = { first_name: 'Ada', age: 38 };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.schema.properties).toEqual({
+      first_name: { type: 'string' },
+      age: { type: 'integer' }
+    });
+    expect(component.jsf.schema.required).toEqual(['first_name']);
+    expect(component.jsf.formGroup.value).toEqual({ first_name: 'Ada', age: 38 });
+  });
+
+  it('builds controls from schemas supplied for external references', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = {
+      $id: 'https://example.test/root.json',
+      type: 'object',
+      properties: {
+        address: { $ref: 'https://example.test/address.json' }
+      }
+    };
+    component.externalSchemas = {
+      'https://example.test/address.json': {
+        $id: 'https://example.test/address.json',
+        type: 'object',
+        properties: { city: { type: 'string', minLength: 2 } }
+      }
+    };
+    component.data = { address: { city: 'Paris' } };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.formGroup.get('address.city')).not.toBeNull();
+    expect(component.jsf.formGroup.value).toEqual({ address: { city: 'Paris' } });
+    expect(component.jsf.isValid).toBe(true);
+  });
+
   it('updates a data input without rebuilding the form', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
@@ -240,6 +285,19 @@ describe('JsonSchemaFormComponent input updates', () => {
     component.form = {};
 
     expect((component as any).initializeSchemaFromInputs()).toBe(false);
+    fixture.destroy();
+  });
+
+  it('loads a primitive root schema from a raw form input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.form = { type: 'string', minLength: 2 };
+
+    component.initializeForm();
+
+    expect(component.objectWrap).toBe(true);
+    expect(component.jsf.schema.properties['1']).toEqual({ type: 'string', minLength: 2 });
+    expect(component.jsf.formGroup.get('1')).toBeTruthy();
     fixture.destroy();
   });
 
