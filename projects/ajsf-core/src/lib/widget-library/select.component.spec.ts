@@ -132,11 +132,13 @@ describe('SelectComponent bound to a form control', () => {
     expect(data.count).toBe(3);
   });
 
-  it('shows the initial value as selected', () => {
+  it('shows the initial value as selected', async () => {
     render({
       type: 'object',
       properties: { color: { type: 'string', enum: ['red', 'blue'] } },
     }, { color: 'blue' });
+    await fixture.whenStable();
+    fixture.detectChanges();
     const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
     expect(select.selectedOptions[0].textContent).toContain('blue');
   });
