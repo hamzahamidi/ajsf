@@ -63,9 +63,12 @@ describe('package guards', () => {
     const core = readManifest('projects/ajsf-core/package.json').version;
     LIBRARIES.filter((lib) => !lib.endsWith('core')).forEach((lib) => {
       const range = readManifest(`${lib}/package.json`).dependencies['@ajsf/core'];
-      expect(range)
+      const unprefixedRange = range.startsWith('~') || range.startsWith('^')
+        ? range.slice(1)
+        : range;
+      expect(unprefixedRange)
         .withContext(`${lib} depends on @ajsf/core ${range} but core is ${core}`)
-        .toMatch(new RegExp(`^[~^]?${core.replace(/\./g, '\\.')}$`));
+        .toEqual(core);
     });
   });
 });
