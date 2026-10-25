@@ -73,7 +73,8 @@ function layoutEnumValues(layoutItem: any): any[] {
   if (isArray(titleMap)) {
     const values: any[] = [];
     const addValues = (items: any[]) => items.forEach(item => {
-      if (isObject(item) && isArray(item.items)) { addValues(item.items); }
+      if (isArray(item)) { values.push(item); }
+      else if (isObject(item) && isArray(item.items)) { addValues(item.items); }
       else if (isObject(item) && hasOwn(item, 'value')) { values.push(item.value); }
       else if (!isObject(item)) { values.push(item); }
     });
@@ -178,12 +179,30 @@ function ensureLayoutSchemaNode(rootSchema: any, path: string[]): { node: any; p
 }
 
 function mergeLayoutSchema(target: any, schema: any): void {
-  if (!schema) { return; }
   Object.keys(schema).forEach(key => {
-    if (key === 'properties' && isObject(target.properties)) {
-      target.properties = { ...target.properties, ...schema.properties };
-    } else if (key === 'items' && isObject(target.items) && isObject(schema.items)) {
-      target.items = { ...target.items, ...schema.items };
+    if (key === 'properties' && isObject(schema.properties)) {
+      if (!isObject(target.properties)) { target.properties = {}; }
+      Object.keys(schema.properties).forEach(property => {
+        if (isObject(target.properties[property]) && isObject(schema.properties[property])) {
+          mergeLayoutSchema(target.properties[property], schema.properties[property]);
+        } else {
+          target.properties[property] = cloneDeep(schema.properties[property]);
+        }
+      });
+    } else if (key === 'items' && isObject(target.items) && !isArray(target.items) &&
+      isObject(schema.items) && !isArray(schema.items)
+    ) {
+      mergeLayoutSchema(target.items, schema.items);
+    } else if (key === 'items' && isArray(target.items) && isArray(schema.items)) {
+      schema.items.forEach((item, index) => {
+        if (isObject(target.items[index]) && isObject(item)) {
+          mergeLayoutSchema(target.items[index], item);
+        } else {
+          target.items[index] = cloneDeep(item);
+        }
+      });
+    } else if (key === 'required' && isArray(schema.required)) {
+      target.required = [...new Set([...(isArray(target.required) ? target.required : []), ...schema.required])];
     } else if (key !== 'required') {
       target[key] = cloneDeep(schema[key]);
     }
