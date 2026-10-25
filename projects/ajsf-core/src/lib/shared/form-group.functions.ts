@@ -41,8 +41,7 @@ import { JsonValidators } from './json.validators';
  *
  * getControl:
  *
- * TODO: add buildFormGroupTemplateFromLayout function
- * buildFormGroupTemplateFromLayout: Builds a FormGroupTemplate from a form layout
+ * A layout without a schema first generates a schema from its field keys.
  */
 
 /**

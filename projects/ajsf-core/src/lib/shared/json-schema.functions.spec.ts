@@ -25,8 +25,51 @@ import {
 describe('JSON Schema functions', () => {
 
   describe('buildSchemaFromLayout', () => {
-    it('returns undefined for a layout array (the function body is commented out)', () => {
-      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toBeUndefined();
+    it('infers a basic object schema from field keys and widget types', () => {
+      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: { name: { type: 'string' }, address: { type: 'string' } }
+      });
+    });
+
+    it('infers nested objects, array item layouts, and required fields', () => {
+      expect(buildSchemaFromLayout([
+        { type: 'section', required: true, items: ['name', { key: 'age', type: 'integer' }] },
+        { key: 'address.street', type: 'text' },
+        {
+          key: 'phone_numbers',
+          type: 'array',
+          items: ['phone_numbers[].number']
+        }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'integer' },
+          address: { type: 'object', properties: { street: { type: 'string' } } },
+          phone_numbers: {
+            type: 'array',
+            items: { type: 'object', properties: { number: { type: 'string' } } }
+          }
+        },
+        required: ['name', 'age']
+      });
+    });
+
+    it('uses choice values and form widget formats when inferring fields', () => {
+      expect(buildSchemaFromLayout([
+        { key: 'contact', type: 'email' },
+        { key: 'country', type: 'select', titleMap: { France: 'FR', Japan: 'JP' } }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          contact: { type: 'string', format: 'email' },
+          country: { type: 'string', enum: ['FR', 'JP'] }
+        }
+      });
     });
 
     it('returns undefined for null and undefined layouts', () => {

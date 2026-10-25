@@ -676,18 +676,25 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * subscribe to changes,
    * and activate the form.
    */
+  private layoutContainsWildcard(layout: any[]): boolean {
+    return isArray(layout) && layout.some(item =>
+      item === '*' || (isObject(item) && (
+        item.key === '*' || item.dataPointer === '*' ||
+        this.layoutContainsWildcard(item.items)
+      ))
+    );
+  }
+
   private activateForm() {
     this.unsubscribeOnActivateForm$.next();
     // If 'schema' not initialized
     if (isEmpty(this.jsf.schema)) {
-
-      // TODO: If full layout input (with no '*'), build schema from layout
-      // if (!this.jsf.layout.includes('*')) {
-      //   this.jsf.buildSchemaFromLayout();
-      // } else
+      if (!this.layoutContainsWildcard(this.jsf.layout)) {
+        this.jsf.buildSchemaFromLayout();
+      }
 
       // If data input, build schema from data
-      if (!isEmpty(this.jsf.formValues)) {
+      if (isEmpty(this.jsf.schema) && !isEmpty(this.jsf.formValues)) {
         this.jsf.buildSchemaFromData();
       }
     }

@@ -5,6 +5,7 @@ import {
   hasValue,
   inArray,
   isArray,
+  isDefined,
   isNumber,
   isObject,
   isString
@@ -43,38 +44,193 @@ import { mergeSchemas } from './merge-schemas.function';
  * fixRequiredArrayProperties:
  */
 
-/**
- * 'buildSchemaFromLayout' function
- *
- * TODO: Build a JSON Schema from a JSON Form layout
- *
- * //   layout - The JSON Form layout
- * //  - The new JSON Schema
- */
-export function buildSchemaFromLayout(layout) {
-  return;
-  // let newSchema: any = { };
-  // const walkLayout = (layoutItems: any[], callback: Function): any[] => {
-  //   let returnArray: any[] = [];
-  //   for (let layoutItem of layoutItems) {
-  //     const returnItem: any = callback(layoutItem);
-  //     if (returnItem) { returnArray = returnArray.concat(callback(layoutItem)); }
-  //     if (layoutItem.items) {
-  //       returnArray = returnArray.concat(walkLayout(layoutItem.items, callback));
-  //     }
-  //   }
-  //   return returnArray;
-  // };
-  // walkLayout(layout, layoutItem => {
-  //   let itemKey: string;
-  //   if (typeof layoutItem === 'string') {
-  //     itemKey = layoutItem;
-  //   } else if (layoutItem.key) {
-  //     itemKey = layoutItem.key;
-  //   }
-  //   if (!itemKey) { return; }
-  //   //
-  // });
+function getLayoutOption(layoutItem: any, option: string): any {
+  if (hasOwn(layoutItem, option)) { return layoutItem[option]; }
+  return isObject(layoutItem.options) ? layoutItem.options[option] : undefined;
+}
+
+function getLayoutPath(layoutItem: any): string[] {
+  const key = isString(layoutItem) ? layoutItem :
+    isObject(layoutItem) ? layoutItem.dataPointer || layoutItem.key : null;
+  if (!isString(key) || !key || key === '*') { return []; }
+  const path = JsonPointer.isJsonPointer(key)
+    ? JsonPointer.parse(key)
+    : JsonPointer.parseObjectPath(key);
+  return (path || []).map(segment => segment === '' ? '-' : segment);
+}
+
+function combineLayoutPath(parentPath: string[], itemPath: string[]): string[] {
+  if (!parentPath.length || parentPath.every((segment, index) => itemPath[index] === segment)) {
+    return itemPath;
+  }
+  return [...parentPath, ...itemPath];
+}
+
+function layoutEnumValues(layoutItem: any): any[] {
+  const explicitEnum = getLayoutOption(layoutItem, 'enum');
+  if (isArray(explicitEnum)) { return explicitEnum; }
+  const titleMap = getLayoutOption(layoutItem, 'titleMap');
+  if (isArray(titleMap)) {
+    const values: any[] = [];
+    const addValues = (items: any[]) => items.forEach(item => {
+      if (isObject(item) && isArray(item.items)) { addValues(item.items); }
+      else if (isObject(item) && hasOwn(item, 'value')) { values.push(item.value); }
+      else if (!isObject(item)) { values.push(item); }
+    });
+    addValues(titleMap);
+    return values;
+  }
+  if (isObject(titleMap)) { return Object.values(titleMap); }
+  return [];
+}
+
+function getLayoutValueType(value: any): string {
+  if (value === null) { return 'null'; }
+  if (typeof value === 'boolean') { return 'boolean'; }
+  if (typeof value === 'number') { return Number.isInteger(value) ? 'integer' : 'number'; }
+  if (typeof value === 'string') { return 'string'; }
+  if (isArray(value)) { return 'array'; }
+  return 'object';
+}
+
+function layoutSchemaFromItem(layoutItem: any): any {
+  if (!isObject(layoutItem)) { return { type: 'string' }; }
+  if (isObject(layoutItem.schema)) { return cloneDeep(layoutItem.schema); }
+  const widget = layoutItem.type || layoutItem.widget || '';
+  const enumValues = layoutEnumValues(layoutItem);
+  const types = [...new Set(enumValues.map(getLayoutValueType))];
+  const inferredType = types.length === 1 ? types[0] : types.length ? types : 'string';
+  let schema: any;
+  if (widget === 'section' || widget === 'fieldset' || widget === 'flex' || widget === 'object') {
+    schema = { type: 'object', properties: {} };
+  } else if (widget === 'array' || widget === 'tabarray') {
+    schema = { type: 'array', items: { type: 'object', properties: {} } };
+  } else if (widget === 'checkboxes' || widget === 'checkboxes-inline' || widget === 'checkboxbuttons') {
+    schema = { type: 'array', items: { type: inferredType, enum: enumValues } };
+  } else if (widget === 'checkbox') {
+    schema = { type: 'boolean' };
+  } else if (widget === 'number' || widget === 'range') {
+    schema = { type: 'number' };
+  } else if (widget === 'integer' || widget === 'updown') {
+    schema = { type: 'integer' };
+  } else if (widget === 'select' || widget === 'radios' || widget === 'radio' || widget === 'one-of') {
+    schema = { type: inferredType };
+  } else if (['email', 'url', 'date', 'datetime-local', 'date-time', 'alt-date', 'alt-datetime'].includes(widget)) {
+    schema = {
+      type: 'string',
+      format: {
+        email: 'email', url: 'uri', date: 'date', 'datetime-local': 'date-time',
+        'date-time': 'date-time', 'alt-date': 'date', 'alt-datetime': 'date-time'
+      }[widget]
+    };
+  } else if (['submit', 'reset', 'button', 'image', 'message', 'help', 'html', 'none', 'root', 'tabs', 'tab'].includes(widget)) {
+    return null;
+  } else {
+    schema = { type: 'string' };
+  }
+  if (enumValues.length && schema.type !== 'array') { schema.enum = enumValues; }
+  const metadata = ['title', 'description', 'default', 'minimum', 'maximum', 'exclusiveMinimum',
+    'exclusiveMaximum', 'multipleOf', 'minLength', 'maxLength', 'pattern', 'minItems', 'maxItems',
+    'uniqueItems', 'minProperties', 'maxProperties', 'format'];
+  metadata.forEach(key => {
+    const value = getLayoutOption(layoutItem, key);
+    if (isDefined(value) && !hasOwn(schema, key)) { schema[key] = cloneDeep(value); }
+  });
+  return schema;
+}
+
+function ensureLayoutSchemaNode(rootSchema: any, path: string[]): { node: any; parent: any; key: string } {
+  let node = rootSchema;
+  let parent: any = null;
+  let key = '';
+  path.forEach(segment => {
+    parent = node;
+    key = segment;
+    if (segment === '-') {
+      node.type = 'array';
+      if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
+      node = node.items;
+    } else if (/^\d+$/.test(segment)) {
+      node.type = 'array';
+      if (!isArray(node.items)) { node.items = []; }
+      while (node.items.length <= Number(segment)) {
+        node.items.push({ type: 'object', properties: {} });
+      }
+      node = node.items[Number(segment)];
+    } else {
+      if (node.type === 'array') {
+        if (!isObject(node.items)) { node.items = { type: 'object', properties: {} }; }
+        parent = node;
+        key = segment;
+        node = node.items;
+      }
+      node.type = 'object';
+      if (!isObject(node.properties)) { node.properties = {}; }
+      if (!isObject(node.properties[segment])) {
+        node.properties[segment] = {};
+      }
+      parent = node;
+      key = segment;
+      node = node.properties[segment];
+    }
+  });
+  return { node, parent, key };
+}
+
+function mergeLayoutSchema(target: any, schema: any): void {
+  if (!schema) { return; }
+  Object.keys(schema).forEach(key => {
+    if (key === 'properties' && isObject(target.properties)) {
+      target.properties = { ...target.properties, ...schema.properties };
+    } else if (key === 'items' && isObject(target.items) && isObject(schema.items)) {
+      target.items = { ...target.items, ...schema.items };
+    } else if (key !== 'required') {
+      target[key] = cloneDeep(schema[key]);
+    }
+  });
+}
+
+function addLayoutRequiredPath(schema: any, path: string[]): void {
+  let node = schema;
+  path.forEach(segment => {
+    if (segment === '-') { node = node.items; return; }
+    if (/^\d+$/.test(segment)) { node = node.items[Number(segment)]; return; }
+    node.required = node.required || [];
+    if (!node.required.includes(segment)) { node.required.push(segment); }
+    node = node.properties[segment];
+  });
+}
+
+/** Builds a simple JSON Schema from a complete layout when no schema is supplied. */
+export function buildSchemaFromLayout(layout: any[]) {
+  if (!isArray(layout)) { return; }
+  const schema: any = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: {}
+  };
+  const walk = (items: any[], parentPath: string[] = [], requiredByParent = false) => {
+    items.forEach(item => {
+      const itemPath = getLayoutPath(item);
+      const path = itemPath.length ? combineLayoutPath(parentPath, itemPath) : [];
+      const itemSchema = layoutSchemaFromItem(item);
+      const required = requiredByParent || getLayoutOption(item, 'required') === true;
+      if (path.length && itemSchema) {
+        const target = ensureLayoutSchemaNode(schema, path);
+        mergeLayoutSchema(target.node, itemSchema);
+        if (required) { addLayoutRequiredPath(schema, path); }
+      }
+      if (isObject(item) && isArray(item.items)) {
+        const widget = item.type || item.widget;
+        const childPath = path.length
+          ? widget === 'array' || widget === 'tabarray' ? [...path, '-'] : path
+          : parentPath;
+        walk(item.items, childPath, required);
+      }
+    });
+  };
+  walk(layout);
+  return schema;
 }
 
 /**

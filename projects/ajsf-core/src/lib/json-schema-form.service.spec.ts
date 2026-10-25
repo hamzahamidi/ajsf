@@ -1498,17 +1498,17 @@ describe('JsonSchemaFormService', () => {
       expect(jsf.buildSchemaFromData({ z: true }, true).required).toEqual(['z']);
     });
 
-    it('wipes the schema, because buildSchemaFromLayout is an unfinished stub', () => {
-      // BUG: shared/json-schema.functions.ts buildSchemaFromLayout is a bare
-      // `return;` with its body commented out, so calling this method sets the
-      // service schema to undefined.
+    it('stores a schema inferred from the service layout', () => {
       jsf.layout = [{ key: 'a', type: 'text' }];
       jsf.buildSchemaFromLayout();
-      expect(jsf.schema).toBeUndefined();
+      expect(jsf.schema.properties).toEqual({ a: { type: 'string' } });
     });
 
-    it('returns undefined for an explicitly passed layout too', () => {
-      expect(jsf.buildSchemaFromLayout([{ key: 'q', type: 'number' }])).toBeUndefined();
+    it('returns an inferred schema without storing it when a layout is passed in', () => {
+      const before = jsf.schema;
+      const result = jsf.buildSchemaFromLayout([{ key: 'q', type: 'number' }]);
+      expect(result.properties).toEqual({ q: { type: 'number' } });
+      expect(jsf.schema).toBe(before);
     });
   });
 
