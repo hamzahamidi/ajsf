@@ -47,6 +47,26 @@ describe('Material widget integration', () => {
     fixture.detectChanges();
   }
 
+  describe('checkboxes', () => {
+    const flagsSchema = {
+      type: 'object',
+      properties: {
+        flags: { type: 'array', items: { type: 'string', enum: ['fast', 'safe'] } },
+      },
+    };
+
+    it('renders enum checkboxes as a Material selection list', () => {
+      create(flagsSchema, { flags: ['fast'] });
+
+      const list = fixture.nativeElement.querySelector('mat-selection-list');
+      const options = fixture.nativeElement.querySelectorAll('mat-list-option');
+
+      expect(list).toBeTruthy();
+      expect(options).toHaveLength(2);
+      expect(options[0].getAttribute('aria-selected')).toBe('true');
+    });
+  });
+
   describe('chip-list', () => {
     const tagsSchema = {
       type: 'object',

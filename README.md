@@ -655,6 +655,8 @@ uniqueItems      |  array    | duplicateItems
 
 To add a new widget or override an existing widget, either add an object containing your new widgets to the `widgets` input of the `<json-schema-form>` tag, or load the `WidgetLibraryService` and call `registerWidget(widgetType, widgetComponent)`, with a string type name and an Angular component to be used whenever a form needs that widget type.
 
+Use this registration point to integrate third-party controls. The core package does not bundle optional editor or date-picker dependencies.
+
 Example:
 
 ```javascript

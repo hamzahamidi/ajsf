@@ -20,6 +20,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -34,14 +35,14 @@ import {MATERIAL_FRAMEWORK_COMPONENTS} from './widgets/public_api';
 
 /**
  * unused @angular/material modules:
- * MatDialogModule, MatGridListModule, MatListModule, MatMenuModule,
+ * MatDialogModule, MatGridListModule, MatMenuModule,
  * MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
  * MatSidenavModule, MatSnackBarModule, MatSortModule, MatTableModule,
  * ,
  */
 export const ANGULAR_MATERIAL_MODULES = [
   MatAutocompleteModule, MatButtonModule, MatButtonToggleModule, MatCardModule,
-  MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatExpansionModule,
+  MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatExpansionModule, MatListModule,
   MatFormFieldModule, MatIconModule, MatInputModule, MatNativeDateModule,
   MatRadioModule, MatSelectModule, MatSliderModule, MatSlideToggleModule,
   MatStepperModule, MatTabsModule, MatTooltipModule,
