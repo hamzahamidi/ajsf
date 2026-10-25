@@ -6,6 +6,7 @@ describe('CheckboxComponent', () => {
     const jsf: any = {
       getFormControlValue: vi.fn()
         .mockReturnValueOnce(null)
+        .mockReturnValueOnce(undefined)
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false),
       updateValue: vi.fn(),
@@ -17,9 +18,10 @@ describe('CheckboxComponent', () => {
     component.updateValue(event);
     component.updateValue(event);
     component.updateValue(event);
+    component.updateValue(event);
 
-    expect(event.preventDefault).toHaveBeenCalledTimes(3);
-    expect(jsf.updateValue.mock.calls.map((call: any[]) => call[1])).toEqual([true, false, null]);
+    expect(event.preventDefault).toHaveBeenCalledTimes(4);
+    expect(jsf.updateValue.mock.calls.map((call: any[]) => call[1])).toEqual([true, true, false, null]);
   });
 
   it('renders null and undefined values as indeterminate', () => {
@@ -42,5 +44,24 @@ describe('CheckboxComponent', () => {
     component.updateValue({ preventDefault: vi.fn(), target: { checked: false } });
 
     expect(jsf.updateValue).toHaveBeenCalledWith(component, false);
+  });
+
+  it('routes ternary clicks and binary changes to the value handler', () => {
+    const jsf: any = { getFormControlValue: vi.fn(), updateValue: vi.fn() };
+    const component = new CheckboxComponent(jsf);
+    const updateValue = vi.spyOn(component, 'updateValue');
+    const event = { preventDefault: vi.fn(), target: { checked: true } };
+
+    component.options = { ternary: true };
+    component.handleClick(event);
+    component.handleChange(event);
+
+    component.options = { ternary: false };
+    component.handleClick(event);
+    component.handleChange(event);
+
+    expect(updateValue).toHaveBeenCalledTimes(2);
+    expect(updateValue).toHaveBeenNthCalledWith(1, event);
+    expect(updateValue).toHaveBeenNthCalledWith(2, event);
   });
 });
