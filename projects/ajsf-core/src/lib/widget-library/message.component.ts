@@ -48,7 +48,7 @@ export class MessageComponent implements OnInit, OnDestroy {
     const localValues = this.jsf.getFormControlGroup(this)?.value;
     const value = localValue ?? data ?? {};
     const values = localValues ?? data ?? {};
-    const index = this.dataIndex?.[this.dataIndex.length - 1];
+    const index = this.dataIndex?.at(-1);
     this.message = this.jsf.parseText(this.messageTemplate, value, values, index ?? null);
   }
 }
