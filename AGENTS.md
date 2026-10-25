@@ -166,13 +166,8 @@ without submitting an analysis.
 
 ## Linting
 
-⚠️ **Nothing is linted.** `npm run lint` runs `ng lint`, `angular.json` has no `lint`
-target, and the command exits with `Cannot find "lint" target`. tslint 6.1.3 is
-installed and never invoked, and tslint itself was deprecated in 2019.
-
-58 `tslint:disable-next-line` comments were removed in that light: they suppressed
-rules nothing was running, so they read as "linted, with exceptions" when the truth
-was "not linted at all".
+Nothing is linted. `angular.json` has no lint target, and no lint runner is configured.
+TSLint was deprecated in 2019, so this repository has no lint dependency or command.
 
 Whoever wires up `angular-eslint` should configure two things rather than suppress
 them per file, because both are deliberate:

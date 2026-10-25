@@ -16,8 +16,8 @@ name: Release
 # needs a PAT or a GitHub App, which reintroduces the long-lived credential
 # OIDC exists to remove. So the tag is an output here, not an input.
 #
-# This workflow fires after CI succeeds on main via workflow_run, so on that
-# path the suites have already run on this exact commit. `verify` runs them
+# This workflow fires after CI succeeds on main via workflow_run. It accepts
+# only the default branch commit that the workflow_run event names. `verify` runs them
 # again anyway, because `workflow_dispatch` reaches it with no CI run behind
 # it: dropping the step made the manual trigger a way to publish untested.
 # The duplicate run on the automatic path buys the manual path its safety.
@@ -42,22 +42,22 @@ permissions:
 jobs:
   decide:
     runs-on: ubuntu-latest
-    # The branches filter matches the head branch name, so a fork pull
-    # request from a branch called main passes it.
     if: >-
       (github.event_name == 'workflow_dispatch' &&
       github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_repository.full_name == github.repository)
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_sha == github.sha)
     outputs:
       version: ${{ steps.check.outputs.version }}
       publish: ${{ steps.check.outputs.publish }}
       dist-tag: ${{ steps.check.outputs.dist-tag }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 2   # need the previous commit to diff the version
 
       - name: Did this push change the version
@@ -110,12 +110,12 @@ jobs:
     if: needs.decide.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -172,7 +172,7 @@ jobs:
       # Publishing the artifact verify built, rather than rebuilding inside the
       # gated job, means what ships is exactly what passed.
       - name: Upload the verified packages
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ajsf-dist-${{ needs.decide.outputs.version }}
           path: dist/@ajsf/
@@ -193,26 +193,20 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
 
-      # Pinned rather than read from .nvmrc. This job publishes prebuilt
-      # tarballs and compiles nothing, but it needs an npm new enough for OIDC
-      # trusted publishing. The two agree today, since .nvmrc is also 24; the
-      # pin stays so a future .nvmrc that moves down cannot break publishing,
-      # which is how `npm i -g npm@latest` once failed with EBADENGINE.
+      # Pin Node so npm's OIDC publishing support does not depend on a mutable
+      # global npm install.
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24'
+          node-version: '24.21.0'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Use an npm that supports OIDC
-        run: npm i -g npm@latest
-
       - name: Download the verified packages
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ajsf-dist-${{ needs.decide.outputs.version }}
           path: dist/@ajsf/
