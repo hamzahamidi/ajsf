@@ -1,5 +1,6 @@
 import { cloneDeep } from './clone-deep.function';
 import {
+  applyPatternProperties,
   checkInlineType,
   getFromSchema,
   getInputType,
@@ -855,6 +856,7 @@ function buildObjectSchemaLayout(
   nodeDataMap: any
 ): any {
   const { jsf } = context;
+  applyPatternProperties(schema, nodeValue);
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
   }
@@ -867,7 +869,7 @@ function buildObjectSchemaLayout(
   const propertyKeys = schema['ui:order'] || Object.keys(properties);
   expandSchemaPropertyOrder(propertyKeys, properties);
   const matchingDataKeys = isObject(nodeValue)
-    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key))
+    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
     : [];
   for (const key of [...new Set([...propertyKeys, ...matchingDataKeys])]) {
     const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);

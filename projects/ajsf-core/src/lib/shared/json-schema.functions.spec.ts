@@ -292,6 +292,20 @@ describe('JSON Schema functions', () => {
       expect(getFromSchema(schema, '/other')).toBeUndefined();
     });
 
+    it('combines all patternProperties schemas that match a property', () => {
+      const schema = {
+        type: 'object',
+        patternProperties: {
+          '^name_': { type: 'string', minLength: 2 },
+          '_first$': { type: 'string', pattern: '^[A-Z]' },
+        },
+      };
+
+      expect(getFromSchema(schema, '/name_first')).toEqual({
+        type: 'string', minLength: 2, pattern: '^[A-Z]'
+      });
+    });
+
     it('matches a valid empty pattern', () => {
       const schema = { type: 'object', patternProperties: { '': { type: 'string' } } };
 

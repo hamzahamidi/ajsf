@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { forEach, hasOwn } from './utility.functions';
 import {
+  applyPatternProperties,
   getControlValidators,
   getMatchingPatternProperty,
   getObjectPropertySchemaPointer,
@@ -174,6 +175,7 @@ function buildObjectFormGroupTemplate(
   schema: any
 ): any {
   const controls: any = {};
+  applyPatternProperties(schema, context.nodeValue);
   if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties') ||
     hasOwn(schema, 'patternProperties')) {
     const propertyKeys = getOrderedSchemaPropertyKeys(schema, context.nodeValue);
@@ -207,7 +209,7 @@ function getOrderedSchemaPropertyKeys(schema: any, nodeValue: any): any[] {
     }
   }
   const matchingDataKeys = isObject(nodeValue)
-    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key))
+    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
     : [];
   return [...new Set([...propertyKeys, ...matchingDataKeys])];
 }

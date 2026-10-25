@@ -779,7 +779,18 @@ describe('buildLayoutFromSchema', () => {
       expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
         .toEqual([['name_first', '/name_first', 'text']]);
       expect(jsf.dataMap.get('/name_first').get('schemaPointer'))
-        .toEqual('/patternProperties/^name_');
+        .toEqual('/properties/name_first');
+    });
+
+    it('builds layout nodes for an empty patternProperties expression', () => {
+      const jsf: any = makeJsf({
+        schema: { type: 'object', patternProperties: { '': { type: 'string' } } },
+      });
+
+      const result = buildLayoutFromSchema(jsf, widgetLibrary, { any: 'value' });
+
+      expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['any', '/any', 'text']]);
     });
 
     it('skips a ui:order key that matches neither properties nor additionalProperties', () => {
