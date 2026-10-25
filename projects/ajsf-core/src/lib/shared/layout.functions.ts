@@ -302,6 +302,11 @@ function configureLayoutNodeFromSchema(
   } else if (node.dataType === 'array') {
     configureArrayOptions(node, nodeSchema, nodeValue, shortDataPointer, nodeDataMap, jsf);
   }
+  if (!hasOwn(node.options, 'ternary') && node.type === 'checkbox' &&
+    isArray(nodeSchema.type) && nodeSchema.type.includes('boolean') && nodeSchema.type.includes('null')
+  ) {
+    node.options.ternary = true;
+  }
   if (isInputRequired(jsf.schema, schemaPointer)) {
     node.options.required = true;
     jsf.fieldsRequired = true;

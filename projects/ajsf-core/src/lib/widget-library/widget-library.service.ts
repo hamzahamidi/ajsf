@@ -58,7 +58,7 @@ export class WidgetLibraryService {
 
   // Non-text HTML 'input' form control widgets <input type="...">
     // 'button': <input type="button"> not used, use <button> instead
-    'checkbox': CheckboxComponent, // TODO: Set ternary = true for 3-state ??
+    'checkbox': CheckboxComponent,
     'file': FileComponent,
     'hidden': 'text',
     'image': 'text', // TODO: Figure out how to handle these
