@@ -61,9 +61,9 @@ export class WidgetLibraryService {
     'checkbox': CheckboxComponent,
     'file': FileComponent,
     'hidden': 'text',
-    'image': 'text', // TODO: Figure out how to handle these
+    'image': SubmitComponent,
     'radio': 'radios',
-    'reset': 'submit', // TODO: Figure out how to handle these
+    'reset': SubmitComponent,
     'submit': SubmitComponent,
 
   // Other (non-'input') HTML form control widgets

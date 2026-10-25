@@ -110,6 +110,48 @@ describe('JsonSchemaFormComponent input updates', () => {
     properties: { name: { type: 'string' } },
   };
 
+  it('renders image input sources and alternative text', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = { type: 'object', properties: {} };
+    component.layout = [{ type: 'image', src: '/assets/save.png', alt: 'Save form' }];
+
+    fixture.detectChanges();
+
+    const image = fixture.nativeElement.querySelector('input[type="image"]');
+    expect(image).not.toBeNull();
+    expect(image.getAttribute('src')).toBe('/assets/save.png');
+    expect(image.getAttribute('alt')).toBe('Save form');
+    fixture.destroy();
+  });
+
+  it('resets an invalid form to its initial values without disabling the reset control', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = {
+      type: 'object',
+      properties: { name: { type: 'string', minLength: 3 } },
+      required: ['name']
+    };
+    component.data = { name: 'Ada' };
+    component.layout = ['name', { type: 'reset', title: 'Reset' }];
+
+    fixture.detectChanges();
+
+    const reset = fixture.nativeElement.querySelector('input[type="reset"]');
+    expect(reset).not.toBeNull();
+    expect(reset.disabled).toBe(false);
+
+    component.jsf.formGroup.patchValue({ name: 'A' });
+    expect(component.jsf.isValid).toBe(false);
+    expect(reset.disabled).toBe(false);
+    reset.click();
+
+    expect(component.jsf.formGroup.value).toEqual({ name: 'Ada' });
+    expect(component.jsf.isValid).toBe(true);
+    fixture.destroy();
+  });
+
   it('builds a schema from a complete layout without a schema input', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
