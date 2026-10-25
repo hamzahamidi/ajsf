@@ -284,6 +284,9 @@ function configureLayoutNodeFromSchema(
 ): void {
   const { jsf, widgetLibrary } = context;
   const { nodeSchema, schemaPointer, nodeDataMap, shortDataPointer, nodeValue } = nodeContext;
+  if (hasOwn(node.options, 'default')) {
+    nodeDataMap.set('layoutDefault', node.options.default);
+  }
   if (!nodeSchema) {
     updateInputOptions(node, {}, jsf);
     return;

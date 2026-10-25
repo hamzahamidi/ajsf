@@ -81,6 +81,7 @@ export function buildFormGroupTemplate(
   schemaPointer = '', dataPointer = '', templatePointer = ''
 ) {
   const schema = JsonPointer.get(jsf.schema, schemaPointer);
+  const hasProvidedValue = setValues && isDefined(nodeValue);
   if (setValues) {
     if (!isDefined(nodeValue) && (
       jsf.formOptions.setSchemaDefaults === true ||
@@ -91,7 +92,6 @@ export function buildFormGroupTemplate(
   } else {
     nodeValue = null;
   }
-  // TODO: If nodeValue still not set, check layout for default value
   const controlType = getFormGroupTemplateControlType(schema);
   const shortDataPointer =
     removeRecursiveReferences(dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap);
@@ -99,6 +99,11 @@ export function buildFormGroupTemplate(
     jsf.dataMap.set(shortDataPointer, new Map());
   }
   const nodeOptions = jsf.dataMap.get(shortDataPointer);
+  if (!hasProvidedValue && nodeOptions.has('layoutDefault') &&
+    shouldSetLayoutDefault(jsf, templatePointer)
+  ) {
+    nodeValue = nodeOptions.get('layoutDefault');
+  }
   registerFormGroupTemplateOptions(
     nodeOptions, schema, schemaPointer, templatePointer, controlType
   );
@@ -114,6 +119,12 @@ export function buildFormGroupTemplate(
     validators: getControlValidators(schema, jsf.schema, schemaPointer, jsf.ajv)
   };
   return buildFormGroupTemplateForControl(context, schema, controlType);
+}
+
+function shouldSetLayoutDefault(jsf: any, templatePointer: string): boolean {
+  return jsf.formOptions.setLayoutDefaults === true ||
+    (jsf.formOptions.setLayoutDefaults === 'auto' &&
+      (isEmpty(jsf.formValues) || templatePointer.endsWith('/controls/-')));
 }
 
 function getFormGroupTemplateControlType(schema: any): string {

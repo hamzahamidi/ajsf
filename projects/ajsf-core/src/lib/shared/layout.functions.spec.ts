@@ -5,6 +5,7 @@ import {
   getLayoutNode,
   mapLayout,
 } from './layout.functions';
+import { buildFormGroupTemplate } from './form-group.functions';
 
 /**
  * Characterization tests for the layout function library.
@@ -812,6 +813,22 @@ describe('buildLayoutFromSchema', () => {
 
       expect(result.dataType).toEqual('object');
       expect(result.items).toBeUndefined();
+    });
+  });
+
+  describe('layout defaults', () => {
+    it('applies a field default through the data map to its form control', () => {
+      const jsf: any = makeJsf({
+        schema: objectSchema,
+        layout: [{ key: 'name', default: 'Ada' }],
+        formOptions: { setLayoutDefaults: true },
+      });
+
+      buildLayout(jsf, widgetLibrary);
+      const template: any = buildFormGroupTemplate(jsf);
+
+      expect(jsf.dataMap.get('/name').get('layoutDefault')).toBe('Ada');
+      expect(template.controls.name.value).toEqual({ value: 'Ada', disabled: false });
     });
   });
 

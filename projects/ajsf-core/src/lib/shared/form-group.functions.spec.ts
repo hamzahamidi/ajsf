@@ -323,6 +323,56 @@ describe('form-group.functions', () => {
       expect(result.controls.a.value).toEqual({ value: null, disabled: false });
     });
 
+    it('uses a layout default before a schema default when enabled', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        properties: { a: { type: 'string', default: 'schema' } },
+      }, {
+        formOptions: { setSchemaDefaults: true, setLayoutDefaults: true },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf);
+
+      expect(result.controls.a.value).toEqual({ value: 'layout', disabled: false });
+    });
+
+    it('skips a layout default when setLayoutDefaults is false', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        properties: { a: { type: 'string', default: 'schema' } },
+      }, {
+        formOptions: { setSchemaDefaults: true, setLayoutDefaults: false },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf);
+
+      expect(result.controls.a.value).toEqual({ value: 'schema', disabled: false });
+    });
+
+    it('keeps a supplied form value ahead of a layout default', () => {
+      const jsf = makeJsf({
+        type: 'object', properties: { a: { type: 'string' } },
+      }, {
+        formValues: { a: 'form' },
+        formOptions: { setLayoutDefaults: true },
+      });
+      jsf.dataMap.set('/a', new Map([['layoutDefault', 'layout']]));
+      const result: any = buildFormGroupTemplate(jsf, jsf.formValues);
+
+      expect(result.controls.a.value).toEqual({ value: 'form', disabled: false });
+    });
+
+    it('uses layout defaults for addable controls when setLayoutDefaults is auto', () => {
+      const jsf = makeJsf({ type: 'string' }, {
+        formValues: { other: 'value' },
+        formOptions: { setLayoutDefaults: 'auto' },
+      });
+      jsf.dataMap.set('/items/-', new Map([['layoutDefault', 'new item']]));
+      const result: any = buildFormGroupTemplate(jsf, null, true, '', '/items/-', '/controls/-');
+
+      expect(result.value).toEqual({ value: 'new item', disabled: false });
+    });
+
     it('discards the supplied nodeValue when setValues is false', () => {
       const result: any = buildFormGroupTemplate(
         makeJsf({ type: 'object', properties: { a: { type: 'string', default: 'hello' } } }),
