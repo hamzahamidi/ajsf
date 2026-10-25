@@ -279,6 +279,41 @@ describe('JSON Schema functions', () => {
       )).toEqual(['additionalProperties']);
     });
 
+    it('uses a matching patternProperties schema before additionalProperties', () => {
+      const schema = {
+        type: 'object',
+        patternProperties: { '^name_': { type: 'string', minLength: 2 } },
+        additionalProperties: false,
+      };
+
+      expect(getFromSchema(schema, '/name_first')).toEqual({ type: 'string', minLength: 2 });
+      expect(getFromSchema(schema, '/name_first', 'schemaPointer'))
+        .toEqual(['patternProperties', '^name_']);
+      expect(getFromSchema(schema, '/other')).toBeUndefined();
+    });
+
+    it('combines all patternProperties schemas that match a property', () => {
+      const schema = {
+        type: 'object',
+        patternProperties: {
+          '^name_': { type: 'string', minLength: 2 },
+          '_first$': { type: 'string', pattern: '^[A-Z]' },
+        },
+      };
+
+      expect(getFromSchema(schema, '/name_first')).toEqual({
+        type: 'string', minLength: 2, pattern: '^[A-Z]'
+      });
+    });
+
+    it('matches a valid empty pattern', () => {
+      const schema = { type: 'object', patternProperties: { '': { type: 'string' } } };
+
+      expect(getFromSchema(schema, '/any')).toEqual({ type: 'string' });
+      expect(getFromSchema(schema, '/any', 'schemaPointer'))
+        .toEqual(['patternProperties', '']);
+    });
+
     it('returns an empty object when the key is missing and additionalProperties is absent', () => {
       expect(getFromSchema({ type: 'object', properties: { a: { type: 'string' } } }, '/b'))
         .toEqual({});
@@ -442,6 +477,7 @@ describe('JSON Schema functions', () => {
 
     it('maps an object with properties or additionalProperties to section', () => {
       expect(getInputType({ type: 'object', properties: { a: {} } })).toEqual('section');
+      expect(getInputType({ type: 'object', patternProperties: { '^a': {} } })).toEqual('section');
       expect(getInputType({ type: 'object', additionalProperties: true })).toEqual('section');
     });
 

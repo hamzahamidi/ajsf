@@ -7,7 +7,13 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import { forEach, hasOwn } from './utility.functions';
-import { getControlValidators, removeRecursiveReferences } from './json-schema.functions';
+import {
+  applyPatternProperties,
+  getControlValidators,
+  getMatchingPatternProperty,
+  getObjectPropertySchemaPointer,
+  removeRecursiveReferences,
+} from './json-schema.functions';
 import {
   hasValue,
   inArray,
@@ -49,9 +55,6 @@ import { JsonValidators } from './json.validators';
  * 'buildFormGroupTemplate' function
  *
  * Builds a template for an Angular FormGroup from a JSON Schema.
- *
- * TODO: add support for pattern properties
- * https://spacetelescope.github.io/understanding-json-schema/reference/object.html
  *
  * //  {any} jsf -
  * //  {any = null} nodeValue -
@@ -115,7 +118,8 @@ export function buildFormGroupTemplate(
 
 function getFormGroupTemplateControlType(schema: any): string {
   const schemaType: string | string[] = JsonPointer.get(schema, '/type');
-  if ((hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) &&
+  if ((hasOwn(schema, 'properties') || hasOwn(schema, 'patternProperties') ||
+    hasOwn(schema, 'additionalProperties')) &&
     schemaType === 'object') {
     return 'FormGroup';
   }
@@ -171,29 +175,32 @@ function buildObjectFormGroupTemplate(
   schema: any
 ): any {
   const controls: any = {};
-  if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties')) {
-    const propertyKeys = getOrderedSchemaPropertyKeys(schema);
-    propertyKeys
-      .filter(key => hasOwn(schema.properties, key) || hasOwn(schema, 'additionalProperties'))
-      .forEach(key => controls[key] = buildFormGroupTemplate(
+  applyPatternProperties(schema, context.nodeValue);
+  if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties') ||
+    hasOwn(schema, 'patternProperties')) {
+    const propertyKeys = getOrderedSchemaPropertyKeys(schema, context.nodeValue);
+    propertyKeys.forEach(key => {
+      const schemaPropertyPointer = getObjectPropertySchemaPointer(schema, key);
+      if (!schemaPropertyPointer) { return; }
+      controls[key] = buildFormGroupTemplate(
         context.jsf,
         JsonPointer.get(context.nodeValue, [<string>key]),
         context.setValues,
-        context.schemaPointer + (hasOwn(schema.properties, key) ?
-          '/properties/' + JsonPointer.escape(key) : '/additionalProperties'
-        ),
+        context.schemaPointer + schemaPropertyPointer,
         context.dataPointer + '/' + JsonPointer.escape(key),
         context.templatePointer + '/controls/' + JsonPointer.escape(key)
-      ));
+      );
+    });
     context.jsf.formOptions.fieldsRequired = setRequiredFields(schema, controls);
   }
   return { controlType: 'FormGroup', controls, validators: context.validators };
 }
 
-function getOrderedSchemaPropertyKeys(schema: any): any[] {
-  const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
-  if (propertyKeys.includes('*') && !hasOwn(schema.properties, '*')) {
-    const unnamedKeys = Object.keys(schema.properties)
+function getOrderedSchemaPropertyKeys(schema: any, nodeValue: any): any[] {
+  const properties = isObject(schema.properties) ? schema.properties : {};
+  const propertyKeys = schema['ui:order'] || Object.keys(properties);
+  if (propertyKeys.includes('*') && !hasOwn(properties, '*')) {
+    const unnamedKeys = Object.keys(properties)
       .filter(key => !propertyKeys.includes(key));
     for (let i = propertyKeys.length - 1; i >= 0; i--) {
       if (propertyKeys[i] === '*') {
@@ -201,7 +208,10 @@ function getOrderedSchemaPropertyKeys(schema: any): any[] {
       }
     }
   }
-  return propertyKeys;
+  const matchingDataKeys = isObject(nodeValue)
+    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
+    : [];
+  return [...new Set([...propertyKeys, ...matchingDataKeys])];
 }
 
 function buildArrayFormGroupTemplate(

@@ -176,10 +176,22 @@ function findArraySchemaChild(subSchema, key, schemaPointer) {
 
 function findObjectSchemaChild(subSchema, key, schemaPointer) {
   let subSchemaFound = false;
+  const patterns = getMatchingPatternProperties(subSchema, key);
   if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
     subSchemaFound = true;
-    subSchema = subSchema.properties[key];
+    subSchema = patterns.length
+      ? combinePatternPropertySchemas([
+        subSchema.properties[key],
+        ...patterns.map(pattern => subSchema.patternProperties[pattern])
+      ])
+      : subSchema.properties[key];
     schemaPointer.push('properties', key);
+  } else if (patterns.length) {
+    subSchemaFound = true;
+    subSchema = combinePatternPropertySchemas(
+      patterns.map(pattern => subSchema.patternProperties[pattern])
+    );
+    schemaPointer.push('patternProperties', patterns[0]);
   } else if (isObject(subSchema.additionalProperties)) {
     subSchemaFound = true;
     subSchema = subSchema.additionalProperties;
@@ -190,6 +202,81 @@ function findObjectSchemaChild(subSchema, key, schemaPointer) {
     schemaPointer.push('additionalProperties');
   }
   return { subSchema, subSchemaFound };
+}
+
+function combinePatternPropertySchemas(schemas: any[]): any {
+  if (schemas.includes(false)) { return false; }
+  const objectSchemas = schemas.filter(schema => isObject(schema) && !isArray(schema));
+  return objectSchemas.length ? mergeSchemas(...objectSchemas) : true;
+}
+
+export function getMatchingPatternProperty(schema: any, propertyName: string): string | null {
+  const matches = getMatchingPatternProperties(schema, propertyName);
+  return matches.length ? matches[0] : null;
+}
+
+export function getMatchingPatternProperties(schema: any, propertyName: string): string[] {
+  if (!isObject(schema?.patternProperties)) { return []; }
+  return Object.keys(schema.patternProperties).filter(pattern => {
+    try {
+      return new RegExp(pattern).test(propertyName);
+    } catch {
+      return false;
+    }
+  });
+}
+
+const appliedPatternProperties = new WeakMap<object, Set<string>>();
+
+export function applyPatternProperties(schema: any, nodeValue: any): void {
+  if (!isObject(schema) || !isObject(schema.patternProperties)) { return; }
+  const propertyNames = new Set([
+    ...(isObject(nodeValue) ? Object.keys(nodeValue) : []),
+    ...(isArray(schema['ui:order']) ? schema['ui:order'].filter(isString) : [])
+  ]);
+  const applied = appliedPatternProperties.get(schema) || new Set<string>();
+  for (const propertyName of propertyNames) {
+    applyPatternProperty(schema, propertyName, applied);
+  }
+  appliedPatternProperties.set(schema, applied);
+}
+
+function applyPatternProperty(schema: any, propertyName: string, applied: Set<string>): void {
+  const matches = getMatchingPatternProperties(schema, propertyName);
+  if (!matches.length || applied.has(propertyName)) { return; }
+  const sourceSchemas = [
+    ...(isObject(schema.properties) && hasOwn(schema.properties, propertyName)
+      ? [schema.properties[propertyName]] : []),
+    ...matches.map(pattern => schema.patternProperties[pattern])
+  ];
+  if (sourceSchemas.includes(false)) {
+    setPatternPropertySchema(schema, propertyName, false);
+    applied.add(propertyName);
+    return;
+  }
+  const propertySchemas = sourceSchemas.filter(isObject);
+  if (!propertySchemas.length) { return; }
+  setPatternPropertySchema(schema, propertyName, mergeSchemas(...propertySchemas));
+  applied.add(propertyName);
+}
+
+function setPatternPropertySchema(schema: any, propertyName: string, propertySchema: any): void {
+  if (!isObject(schema.properties)) { schema.properties = {}; }
+  schema.properties[propertyName] = propertySchema;
+}
+
+export function getObjectPropertySchemaPointer(schema: any, propertyName: string): string | null {
+  if (isObject(schema?.properties) && hasOwn(schema.properties, propertyName)) {
+    return '/properties/' + JsonPointer.escape(propertyName);
+  }
+  const pattern = getMatchingPatternProperty(schema, propertyName);
+  if (pattern !== null) {
+    return '/patternProperties/' + JsonPointer.escape(pattern);
+  }
+  if (hasOwn(schema, 'additionalProperties') && schema.additionalProperties === false) {
+    return null;
+  }
+  return hasOwn(schema, 'additionalProperties') ? '/additionalProperties' : null;
 }
 
 export function getFromSchema(schema, dataPointer, returnType = 'schema') {
@@ -285,10 +372,10 @@ export function removeRecursiveReferences(
  * // { string }
  */
 function getObjectInputType(schema) {
-  if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+  if (hasOwn(schema, 'properties') || hasOwn(schema, 'patternProperties') ||
+    hasOwn(schema, 'additionalProperties')) {
     return 'section';
   }
-  // TODO: Figure out how to handle additionalProperties
   if (hasOwn(schema, '$ref')) { return '$ref'; }
 }
 

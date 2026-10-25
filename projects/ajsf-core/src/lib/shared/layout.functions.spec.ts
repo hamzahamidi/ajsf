@@ -763,6 +763,36 @@ describe('buildLayoutFromSchema', () => {
         .toEqual([['a', '/a', 'text'], ['extra', '/extra', 'number']]);
     });
 
+    it('builds layout nodes for data keys matching patternProperties', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          patternProperties: { '^name_': { type: 'string', title: 'Name' } },
+          additionalProperties: false,
+        },
+      });
+
+      const result = buildLayoutFromSchema(
+        jsf, widgetLibrary, { name_first: 'Ada', ignored: 'value' }
+      );
+
+      expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['name_first', '/name_first', 'text']]);
+      expect(jsf.dataMap.get('/name_first').get('schemaPointer'))
+        .toEqual('/properties/name_first');
+    });
+
+    it('builds layout nodes for an empty patternProperties expression', () => {
+      const jsf: any = makeJsf({
+        schema: { type: 'object', patternProperties: { '': { type: 'string' } } },
+      });
+
+      const result = buildLayoutFromSchema(jsf, widgetLibrary, { any: 'value' });
+
+      expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['any', '/any', 'text']]);
+    });
+
     it('skips a ui:order key that matches neither properties nor additionalProperties', () => {
       const jsf: any = makeJsf({
         schema: { type: 'object', 'ui:order': ['a', 'ghost'], properties: { a: { type: 'string' } } },
