@@ -852,7 +852,6 @@ function buildObjectSchemaLayout(
   dataPointer: string,
   nodeDataMap: any
 ): any {
-  const { jsf } = context;
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
   }
@@ -860,29 +859,60 @@ function buildObjectSchemaLayout(
   const newSection: any[] = [];
   const properties = isObject(schema.properties) ? schema.properties : {};
   const propertyKeys = getSchemaPropertyKeys(schema, nodeValue, properties);
-  for (const key of propertyKeys.filter(key =>
-    hasOwn(properties, key) || isObject(schema.additionalProperties)
-  )) {
-    const keySchemaPointer = hasOwn(properties, key)
-      ? '/properties/' + JsonPointer.escape(key)
-      : '/additionalProperties';
-    const innerItem = buildSchemaLayout(
-      extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
-      isObject(nodeValue) ? nodeValue[key] : null,
-      schemaPointer + keySchemaPointer,
-      dataPointer + '/' + JsonPointer.escape(key)
-    );
-    if (!innerItem) continue;
-    if (isInputRequired(schema, '/' + JsonPointer.escape(key))) {
-      innerItem.options.required = true;
-      jsf.fieldsRequired = true;
-    }
-    newSection.push(innerItem);
-  }
+  newSection.push(...buildObjectSchemaSection(
+    context, schema, nodeValue, schemaPointer, dataPointer, properties, propertyKeys
+  ));
 
   if (dataPointer === '' && !context.forRefLibrary) return newSection;
   newNode.items = newSection;
   return newNode;
+}
+
+function buildObjectSchemaSection(
+  context: SchemaLayoutContext,
+  schema: any,
+  nodeValue: any,
+  schemaPointer: string,
+  dataPointer: string,
+  properties: Record<string, unknown>,
+  propertyKeys: string[]
+): any[] {
+  const section: any[] = [];
+  const hasAdditionalPropertiesSchema = isObject(schema.additionalProperties);
+  for (const key of propertyKeys) {
+    if (!hasOwn(properties, key) && !hasAdditionalPropertiesSchema) { continue; }
+    const item = buildObjectSchemaLayoutItem(
+      context, schema, nodeValue, schemaPointer, dataPointer, properties, key
+    );
+    if (item) { section.push(item); }
+  }
+  return section;
+}
+
+function buildObjectSchemaLayoutItem(
+  context: SchemaLayoutContext,
+  schema: any,
+  nodeValue: any,
+  schemaPointer: string,
+  dataPointer: string,
+  properties: Record<string, unknown>,
+  key: string
+): any {
+  const keySchemaPointer = hasOwn(properties, key)
+    ? '/properties/' + JsonPointer.escape(key)
+    : '/additionalProperties';
+  const innerItem = buildSchemaLayout(
+    extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
+    isObject(nodeValue) ? nodeValue[key] : null,
+    schemaPointer + keySchemaPointer,
+    dataPointer + '/' + JsonPointer.escape(key)
+  );
+  if (!innerItem) { return null; }
+  if (isInputRequired(schema, '/' + JsonPointer.escape(key))) {
+    innerItem.options.required = true;
+    context.jsf.fieldsRequired = true;
+  }
+  return innerItem;
 }
 
 function getSchemaPropertyKeys(schema: any, nodeValue: any, properties: Record<string, unknown>): any[] {
