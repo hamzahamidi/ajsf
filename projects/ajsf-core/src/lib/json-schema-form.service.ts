@@ -26,6 +26,7 @@ import {
   isObject,
   JsonPointer
 } from './shared';
+import { typeArrayBranchValue } from './shared/schema-draft.functions';
 import {
   deValidationMessages,
   enValidationMessages,
@@ -871,6 +872,46 @@ export class JsonSchemaFormService {
         }
       }
     }
+  }
+
+  changeTypeArrayBranch(ctx: any, branchIndex: number): AbstractControl {
+    const branch = ctx.layoutNode?.typeArrayBranches?.[branchIndex];
+    const dataPointer = this.getDataPointer(ctx);
+    if (!branch || !isDefined(dataPointer)) { return null; }
+    const shortDataPointer = removeRecursiveReferences(
+      dataPointer, this.dataRecursiveRefMap, this.arrayMap
+    );
+    const nodeOptions = this.dataMap.get(shortDataPointer);
+    const schemaPointer = nodeOptions?.get('typeArraySchemaPointer');
+    const templatePointer = nodeOptions?.get('templatePointer');
+    if (!schemaPointer || !nodeOptions) { return null; }
+
+    const unionSchema = JsonPointer.get(this.schema, schemaPointer);
+    const branchSchema = JsonPointer.get(this.schema, branch.schemaPointer);
+    const currentValue = this.getFormControlValue(ctx);
+    const branchValue = typeArrayBranchValue(unionSchema, branchSchema, currentValue);
+    nodeOptions.delete('schemaType');
+    const template = buildFormGroupTemplate(
+      this, branchValue, true, branch.schemaPointer, dataPointer, templatePointer
+    );
+    const newControl = buildFormGroup(template);
+    const parentControl = getControl(this.formGroup, dataPointer, true);
+    const key = JsonPointer.toKey(dataPointer);
+    if (parentControl instanceof UntypedFormGroup) {
+      parentControl.setControl(key, newControl);
+      parentControl.markAsDirty();
+    } else if (parentControl instanceof UntypedFormArray) {
+      parentControl.setControl(Number(key), newControl);
+      parentControl.markAsDirty();
+    } else {
+      return null;
+    }
+
+    nodeOptions.set('schemaPointer', schemaPointer);
+    nodeOptions.set('typeArraySchemaPointer', schemaPointer);
+    nodeOptions.set('typeArrayActiveBranch', branchIndex);
+    nodeOptions.set('schemaType', branch.type);
+    return newControl;
   }
 
   updateArrayCheckboxList(ctx: any, checkboxList: TitleMapItem[]): void {

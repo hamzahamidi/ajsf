@@ -2,6 +2,7 @@ import { AbstractControl } from '@angular/forms';
 import { buildTitleMap } from '../shared';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { JsonSchemaFormService } from '../json-schema-form.service';
+import { findTypeArrayBranchIndex } from '../shared/schema-draft.functions';
 
 @Component({
     selector: 'one-of-widget',
@@ -42,7 +43,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
       }
       @if (!boundControl) {
         <select
-          [ngModel]="isFieldset ? selectedValue : controlValue"
+          [ngModel]="isFieldset || isTypeUnion ? selectedValue : controlValue"
           [ngModelOptions]="{standalone: true}"
           [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
           [class]="options?.fieldHtmlClass || ''"
@@ -78,7 +79,7 @@ import { JsonSchemaFormService } from '../json-schema-form.service';
         [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></div>
       }
       @for (layoutItem of layoutNode?.items; track layoutItem; let i = $index) {
-        @if (isFieldset && selectedItem === i) {
+        @if ((isFieldset || isTypeUnion) && selectedItem === i) {
           <select-framework-widget
             [dataIndex]="layoutNode?.dataType === 'array' ? (dataIndex || []).concat(i) : dataIndex"
             [layoutIndex]="(layoutIndex || []).concat(i)"
@@ -98,6 +99,7 @@ export class OneOfComponent implements OnInit {
   options: any;
   selectList: any[] = [];
   isFieldset = false;
+  isTypeUnion = false;
   selectedValue: any = 0;
   private selectedItemIndex = 0;
   private readonly fieldsetValueMap: Map<any, number> = new Map();
@@ -120,6 +122,7 @@ export class OneOfComponent implements OnInit {
     this.isFieldset =
       (this.layoutNode.type === 'selectfieldset' || this.layoutNode.type === 'optionfieldset') &&
       Array.isArray(this.layoutNode.items) && this.layoutNode.items.length > 0;
+    this.isTypeUnion = this.options.typeArrayUnion === true;
 
     this.initializeSelectList();
     this.initializeFieldsetValueMap();
@@ -128,6 +131,13 @@ export class OneOfComponent implements OnInit {
   }
 
   private initializeSelectList() {
+    if (this.isTypeUnion) {
+      this.selectList = this.layoutNode.typeArrayBranches.map((branch: any, index: number) => ({
+        name: branch.type,
+        value: index,
+      }));
+      return;
+    }
     if (this.isFieldset && !this.hasExplicitFieldsetOptions()) {
       this.selectList = this.layoutNode.items.map((item, index) => ({
         name: item.options?.legend || item.options?.title || item.name || `Option ${index + 1}`,
@@ -157,12 +167,21 @@ export class OneOfComponent implements OnInit {
   }
 
   private initializeControl() {
-    if (!this.isFieldset || this.hasExplicitFieldsetOptions()) {
+    if (this.isTypeUnion) {
+      this.jsf.initializeControl(this, false);
+    } else if (!this.isFieldset || this.hasExplicitFieldsetOptions()) {
       this.jsf.initializeControl(this, !this.options.readonly);
     }
   }
 
   private selectInitialFieldsetValue() {
+    if (this.isTypeUnion) {
+      this.selectedItemIndex = findTypeArrayBranchIndex(
+        this.layoutNode.typeArrayBranches, this.controlValue
+      );
+      this.selectedValue = this.selectedItemIndex;
+      return;
+    }
     if (this.isFieldset && this.controlValue != null) {
       this.selectedValue = this.controlValue;
       this.selectedItemIndex = this.fieldsetValueMap.get(this.controlValue)
@@ -175,7 +194,17 @@ export class OneOfComponent implements OnInit {
   }
 
   onUnboundValueChange(value: any) {
-    if (this.isFieldset) {
+    if (this.isTypeUnion) {
+      const index = Number(value);
+      if (!Number.isInteger(index) || index < 0) { return; }
+      const control = this.jsf.changeTypeArrayBranch(this, index);
+      if (!control) { return; }
+      this.selectedValue = index;
+      this.selectedItemIndex = index;
+      this.formControl = control;
+      this.controlValue = control.value;
+      this.options.showErrors = true;
+    } else if (this.isFieldset) {
       this.selectChild(value);
     } else {
       this.updateValue(value);

@@ -605,6 +605,23 @@ describe('buildLayoutFromSchema', () => {
   });
 
   describe('scalar properties', () => {
+    it('builds selectable child layouts for a type array union', () => {
+      const schema = {
+        type: ['string', 'number'],
+        'x-ajsf-type-array': [{ type: 'string' }, { type: 'number' }],
+      };
+      const result: any = buildLayoutFromSchema(makeJsf({
+        schema: { type: 'object', properties: { value: schema } },
+      }), widgetLibrary, null, '/properties/value', '/value');
+
+      expect(result.type).toBe('one-of');
+      expect(result.options.typeArrayUnion).toBe(true);
+      expect(result.typeArrayBranches.map((branch: any) => branch.type))
+        .toEqual(['string', 'number']);
+      expect(result.items.map((item: any) => item.type)).toEqual(['text', 'number']);
+      expect(result.items.map((item: any) => item.dataPointer)).toEqual(['/value', '/value']);
+    });
+
     it('builds a text node for a string property', () => {
       expect(stripIds(buildLayoutFromSchema(
         makeJsf({ schema: { type: 'object', properties: { name: { type: 'string', title: 'Full Name' } } } }),

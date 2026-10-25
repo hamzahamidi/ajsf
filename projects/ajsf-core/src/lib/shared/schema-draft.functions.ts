@@ -1,4 +1,5 @@
 import { cloneDeep } from './clone-deep.function';
+import { deepEqual } from './deep-equal.function';
 
 /**
  * 'convertSchemaToDraft6' function
@@ -207,6 +208,60 @@ function anyOfSchema(schema: any, types: any[]): any {
   const filterKeys = typeSpecificKeys();
   const anyOf = types.map(type => typeSchema(type, schema, filterKeys));
   return schema.hasOwnProperty('default') ? { anyOf, default: schema.default } : { anyOf };
+}
+
+export function expandTypeArraySchema(schema: any): any {
+  if (!Array.isArray(schema?.type) || schema.type.length < 2 || schema['x-ajsf-type-array']) {
+    return schema;
+  }
+  const filterKeys = typeSpecificKeys();
+  return {
+    ...schema,
+    'x-ajsf-type-array': schema.type.map(type =>
+      typeSchema(type, schema, filterKeys)
+    ),
+  };
+}
+
+export function schemaTypeMatchesValue(value: any, type: string): boolean {
+  switch (type) {
+    case 'array': return Array.isArray(value);
+    case 'boolean': return typeof value === 'boolean';
+    case 'integer': return typeof value === 'number' && Number.isInteger(value);
+    case 'number': return typeof value === 'number';
+    case 'null': return value === null;
+    case 'object': return value !== null && typeof value === 'object' && !Array.isArray(value);
+    case 'string': return typeof value === 'string';
+    default: return false;
+  }
+}
+
+export function findTypeArrayBranchIndex(branches: any[], value: any): number {
+  const index = branches.findIndex(branch => schemaTypeMatchesValue(value, branch.type));
+  return index < 0 ? 0 : index;
+}
+
+export function typeArrayBranchValue(schema: any, branch: any, value: any): any {
+  if (Object.hasOwn(branch, 'const')) {
+    return schemaTypeMatchesValue(branch.const, branch.type) ? branch.const : null;
+  }
+  if (Array.isArray(branch.enum)) {
+    const enumValues = branch.enum.filter(item => schemaTypeMatchesValue(item, branch.type));
+    if (enumValues.some(item => deepEqual(item, value))) { return value; }
+    if (enumValues.some(item => deepEqual(item, schema.default))) { return schema.default; }
+    if (enumValues.length) { return enumValues[0]; }
+  }
+  if (schemaTypeMatchesValue(value, branch.type)) { return value; }
+  if (schemaTypeMatchesValue(schema.default, branch.type)) { return schema.default; }
+  switch (branch.type) {
+    case 'array': return [];
+    case 'boolean': return false;
+    case 'integer': case 'number': return 0;
+    case 'null': return null;
+    case 'object': return {};
+    case 'string': return '';
+    default: return null;
+  }
 }
 
 function normaliseTypeArray(schema: any): any {

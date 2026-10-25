@@ -29,6 +29,7 @@ import {
 } from './validator.functions';
 import { JsonPointer, Pointer } from './jsonpointer.functions';
 import { JsonValidators } from './json.validators';
+import { findTypeArrayBranchIndex } from './schema-draft.functions';
 
 
 
@@ -91,7 +92,6 @@ export function buildFormGroupTemplate(
   } else {
     nodeValue = null;
   }
-  const controlType = getFormGroupTemplateControlType(schema);
   const shortDataPointer =
     removeRecursiveReferences(dataPointer, jsf.dataRecursiveRefMap, jsf.arrayMap);
   if (!jsf.dataMap.has(shortDataPointer)) {
@@ -103,6 +103,13 @@ export function buildFormGroupTemplate(
   ) {
     nodeValue = nodeOptions.get('layoutDefault');
   }
+  if (isArray(schema?.['x-ajsf-type-array'])) {
+    return buildTypeArrayFormGroupTemplate(
+      jsf, schema, nodeValue, setValues, schemaPointer, dataPointer,
+      templatePointer, nodeOptions
+    );
+  }
+  const controlType = getFormGroupTemplateControlType(schema);
   registerFormGroupTemplateOptions(
     nodeOptions, schema, schemaPointer, templatePointer, controlType
   );
@@ -118,6 +125,29 @@ export function buildFormGroupTemplate(
     validators: getControlValidators(schema, jsf.schema, schemaPointer, jsf.ajv)
   };
   return buildFormGroupTemplateForControl(context, schema, controlType);
+}
+
+function buildTypeArrayFormGroupTemplate(
+  jsf: any,
+  schema: any,
+  nodeValue: any,
+  setValues: boolean,
+  schemaPointer: string,
+  dataPointer: string,
+  templatePointer: string,
+  nodeOptions: Map<string, any>
+): any {
+  const branches = schema['x-ajsf-type-array'];
+  const branchIndex = findTypeArrayBranchIndex(branches, nodeValue);
+  const branchSchemaPointer = schemaPointer + '/x-ajsf-type-array/' + branchIndex;
+  const template = buildFormGroupTemplate(
+    jsf, setValues ? nodeValue : null, setValues,
+    branchSchemaPointer, dataPointer, templatePointer
+  );
+  nodeOptions.set('schemaPointer', schemaPointer);
+  nodeOptions.set('typeArraySchemaPointer', schemaPointer);
+  nodeOptions.set('typeArrayActiveBranch', branchIndex);
+  return template;
 }
 
 function shouldSetLayoutDefault(jsf: any, templatePointer: string): boolean {

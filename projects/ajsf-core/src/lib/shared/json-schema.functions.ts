@@ -12,6 +12,7 @@ import {
   } from './validator.functions';
 import { JsonPointer } from './jsonpointer.functions';
 import { mergeSchemas } from './merge-schemas.function';
+import { expandTypeArraySchema } from './schema-draft.functions';
 
 
 /**
@@ -818,6 +819,7 @@ export function getInputType(schema, layoutNode: any = null) {
     [schema, '/widget']
   ]);
   if (isString(controlType)) { return checkInlineType(controlType, schema, layoutNode); }
+  if (isArray(schema['x-ajsf-type-array'])) { return 'one-of'; }
   let schemaType = schema.type;
   if (schemaType) {
     if (isArray(schemaType)) { // If multiple types listed, use most inclusive type
@@ -1314,8 +1316,10 @@ function processSubSchemaNode(subSchema, context) {
 
   const referencedSchema = replaceSubSchemaReference(subSchema, context);
   if (referencedSchema !== NO_SUBSCHEMA_REPLACEMENT) { return referencedSchema; }
-  // A type array is a union. Keep its any-match semantics instead of rewriting it as oneOf.
-  if (isArray(subSchema.allOf)) { return combineAllOf(subSchema); }
+  if (isArray(subSchema.allOf)) { subSchema = combineAllOf(subSchema); }
+  if (isArray(subSchema.type) && subSchema.type.length > 1) {
+    subSchema = expandTypeArraySchema(subSchema);
+  }
   if (subSchema.type === 'array' && isArray(subSchema.required)) {
     return fixRequiredArrayProperties(subSchema);
   }

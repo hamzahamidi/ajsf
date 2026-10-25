@@ -1334,6 +1334,47 @@ describe('JsonSchemaFormService', () => {
     });
   });
 
+  describe('changeTypeArrayBranch', () => {
+    it('replaces the form control with the selected union branch shape', () => {
+      buildForm({
+        type: 'object',
+        properties: {
+          choice: {
+            type: ['string', 'integer', 'number', 'object'],
+            minimum: 0,
+            properties: { name: { type: 'string' } },
+          },
+        },
+      }, null, { choice: 2.5 });
+      const ctx = ctxFor('choice');
+      jsf.initializeControl(ctx, false);
+
+      expect(jsf.formGroup.get('choice').value).toBe(2.5);
+      expect(jsf.dataMap.get('/choice').get('typeArrayActiveBranch')).toBe(2);
+      expect(jsf.validateFormData({ choice: 2.5 })).toBe(true);
+      expect(jsf.validateFormData({ choice: { name: 'Ada' } })).toBe(true);
+      expect(jsf.validateFormData({ choice: false })).toBe(false);
+
+      const integerControl = jsf.changeTypeArrayBranch(ctx, 1);
+
+      expect(integerControl.value).toBe(0);
+      expect(jsf.formGroup.get('choice').value).toBe(0);
+      expect(jsf.dataMap.get('/choice').get('schemaType')).toBe('integer');
+
+      const objectControl = jsf.changeTypeArrayBranch(ctx, 3);
+
+      expect(objectControl instanceof UntypedFormGroup).toBe(true);
+      expect(jsf.formGroup.get('choice.name')).toBeTruthy();
+      expect(jsf.formGroup.get('choice').value).toEqual({ name: null });
+
+      const stringControl = jsf.changeTypeArrayBranch(ctx, 0);
+
+      expect(stringControl.value).toBe('');
+      expect(jsf.formGroup.get('choice').value).toBe('');
+      expect(jsf.dataMap.get('/choice').get('schemaType')).toBe('string');
+    });
+  });
+
   // ---------------------------------------------------------------------------
   describe('updateArrayCheckboxList', () => {
     beforeEach(() => buildForm(personSchema, null, { name: 'Bob', tags: ['x', 'y'] }));

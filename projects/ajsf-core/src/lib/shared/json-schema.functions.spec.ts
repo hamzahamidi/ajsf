@@ -823,6 +823,10 @@ describe('JSON Schema functions', () => {
     it('maps an untyped schema with oneOf or anyOf to one-of', () => {
       expect(getInputType({ oneOf: [{ type: 'string' }] })).toEqual('one-of');
       expect(getInputType({ anyOf: [{ type: 'string' }] })).toEqual('one-of');
+      expect(getInputType({
+        type: ['string', 'number'],
+        'x-ajsf-type-array': [{ type: 'string' }, { type: 'number' }],
+      })).toEqual('one-of');
     });
 
     it('maps an empty schema to none', () => {
@@ -1607,10 +1611,16 @@ describe('JSON Schema functions', () => {
         .toEqual({ $ref: '#/definitions/thing' });
     });
 
-    it('preserves the any-match semantics of a schema type array', () => {
+    it('builds any-match form branches for a schema type array', () => {
       const schema = { type: ['string', 'number'] };
+      const result: any = getSubSchema(schema, '', {}, new Map());
 
-      expect(getSubSchema(schema, '', {}, new Map())).toEqual(schema);
+      expect(result.type).toEqual(schema.type);
+      expect(result['x-ajsf-type-array']).toEqual([
+        { type: 'string' },
+        { type: 'number' },
+      ]);
+      expect(result).not.toHaveProperty('oneOf');
     });
 
     it('returns a copy of the whole schema for an empty pointer and no library', () => {

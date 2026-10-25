@@ -805,6 +805,12 @@ function buildSchemaLayout(
     newNode.options.title = fixTitle(newNode.name);
   }
 
+  if (isArray(schema['x-ajsf-type-array']) && newNode.type === 'one-of') {
+    return buildTypeArraySchemaLayout(
+      context, newNode, schema, nodeValue, schemaPointer, dataPointer
+    );
+  }
+
   if (newNode.dataType === 'object') {
     return buildObjectSchemaLayout(context, newNode, schema, nodeValue, schemaPointer, dataPointer, data.nodeDataMap);
   }
@@ -814,6 +820,26 @@ function buildSchemaLayout(
   if (newNode.dataType === '$ref') {
     return buildReferenceSchemaLayout(context, newNode, schema, schemaPointer, dataPointer);
   }
+  return newNode;
+}
+
+function buildTypeArraySchemaLayout(
+  context: SchemaLayoutContext,
+  newNode: any,
+  schema: any,
+  nodeValue: any,
+  schemaPointer: string,
+  dataPointer: string
+): any {
+  const branches = schema['x-ajsf-type-array'];
+  newNode.options.typeArrayUnion = true;
+  newNode.typeArrayBranches = branches.map((branch: any, index: number) => ({
+    schemaPointer: schemaPointer + '/x-ajsf-type-array/' + index,
+    type: branch.type,
+  }));
+  newNode.items = newNode.typeArrayBranches.map((branch: any) =>
+    buildSchemaLayout(context, nodeValue, branch.schemaPointer, dataPointer)
+  );
   return newNode;
 }
 

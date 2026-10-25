@@ -13,12 +13,13 @@ describe('OneOfComponent', () => {
       initializeControl: (widget: any, enabled: boolean) => {
         initializeCalls.push(enabled);
         if (initialValue !== undefined) {
-          widget.boundControl = true;
+          widget.boundControl = enabled;
           widget.formControl = { value: initialValue };
           widget.controlValue = initialValue;
         }
       },
       updateValue: (_widget: any, value: any) => updates.push(value),
+      changeTypeArrayBranch: vi.fn((_widget: any, index: number) => ({ value: index })),
     };
     const component = new OneOfComponent(jsf as any);
     component.layoutNode = layoutNode;
@@ -67,6 +68,28 @@ describe('OneOfComponent', () => {
     expect(component.selectedItem).toBe(1);
     expect(updates).toEqual([]);
     expect(initializeCalls).toEqual([]);
+  });
+
+  it('selects and switches the active type array branch', () => {
+    const layoutNode = {
+      type: 'one-of',
+      options: { typeArrayUnion: true },
+      typeArrayBranches: [{ type: 'string' }, { type: 'number' }],
+      items: [{ type: 'text' }, { type: 'number' }],
+    };
+    const { component } = make(layoutNode, 'current');
+
+    expect(component.isTypeUnion).toBe(true);
+    expect(component.selectList).toEqual([
+      { name: 'string', value: 0 },
+      { name: 'number', value: 1 },
+    ]);
+    expect(component.selectedItem).toBe(0);
+
+    component.onUnboundValueChange('1');
+
+    expect(component.selectedItem).toBe(1);
+    expect(component.formControl.value).toBe(1);
   });
 
   it('selects the matching child from an explicitly keyed fieldset', () => {
@@ -208,6 +231,18 @@ describe('OneOfComponent template', () => {
       items: [{ type: 'text', name: 'First' }],
     });
     expect(view.nativeElement.querySelectorAll('option')).toHaveLength(1);
+    expect(view.nativeElement.querySelector('select-framework-widget')).toBeTruthy();
+  });
+
+  it('renders the selected type array branch', () => {
+    const view = render({
+      type: 'one-of',
+      options: { typeArrayUnion: true },
+      typeArrayBranches: [{ type: 'string' }, { type: 'number' }],
+      items: [{ type: 'text' }, { type: 'number' }],
+    });
+
+    expect(view.nativeElement.querySelectorAll('select option')).toHaveLength(2);
     expect(view.nativeElement.querySelector('select-framework-widget')).toBeTruthy();
   });
 });
