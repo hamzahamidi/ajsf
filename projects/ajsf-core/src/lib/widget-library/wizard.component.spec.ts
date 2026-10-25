@@ -154,4 +154,15 @@ describe('WizardComponent', () => {
     component.next();
     expect(component.selectedItem).toBe(0);
   });
+
+  it('respects a zero item limit for referenced steps', () => {
+    const component = new WizardComponent(null as any);
+    component.layoutNode = {
+      items: [{ type: 'section' }, { type: '$ref', options: { maxItems: 0 } }],
+    };
+    component.ngOnInit();
+
+    expect(component.showAddStep).toBe(false);
+    expect(component.hasNextVisible(0)).toBe(false);
+  });
 });

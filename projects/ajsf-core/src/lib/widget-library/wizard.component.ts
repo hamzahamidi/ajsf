@@ -83,7 +83,7 @@ export class WizardComponent implements OnInit {
     this.itemCount = Math.max(items.length - 1, 0);
     const lastItem = items[items.length - 1];
     this.showAddStep = lastItem?.type === '$ref' &&
-      this.itemCount < (lastItem.options?.maxItems || 1000);
+      this.itemCount < (lastItem.options?.maxItems ?? 1000);
   }
 
   hasNextVisible(currentIndex: number): boolean {
