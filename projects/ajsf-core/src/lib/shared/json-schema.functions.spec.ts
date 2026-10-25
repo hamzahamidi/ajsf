@@ -1607,6 +1607,12 @@ describe('JSON Schema functions', () => {
         .toEqual({ $ref: '#/definitions/thing' });
     });
 
+    it('preserves the any-match semantics of a schema type array', () => {
+      const schema = { type: ['string', 'number'] };
+
+      expect(getSubSchema(schema, '', {}, new Map())).toEqual(schema);
+    });
+
     it('returns a copy of the whole schema for an empty pointer and no library', () => {
       const schema = buildRefSchema();
       const result: any = getSubSchema(schema, '');

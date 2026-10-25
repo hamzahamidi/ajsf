@@ -1314,7 +1314,7 @@ function processSubSchemaNode(subSchema, context) {
 
   const referencedSchema = replaceSubSchemaReference(subSchema, context);
   if (referencedSchema !== NO_SUBSCHEMA_REPLACEMENT) { return referencedSchema; }
-  // TODO: Convert schemas with 'type' arrays to 'oneOf'
+  // A type array is a union. Keep its any-match semantics instead of rewriting it as oneOf.
   if (isArray(subSchema.allOf)) { return combineAllOf(subSchema); }
   if (subSchema.type === 'array' && isArray(subSchema.required)) {
     return fixRequiredArrayProperties(subSchema);

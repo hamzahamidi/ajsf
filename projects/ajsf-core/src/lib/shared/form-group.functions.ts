@@ -212,24 +212,36 @@ function buildObjectFormGroupTemplate(
 function getOrderedSchemaPropertyKeys(schema: any, nodeValue: any): any[] {
   const properties = isObject(schema.properties) ? schema.properties : {};
   const propertyKeys = schema['ui:order'] || Object.keys(properties);
-  if (propertyKeys.includes('*') && !hasOwn(properties, '*')) {
-    const unnamedKeys = Object.keys(properties)
-      .filter(key => !propertyKeys.includes(key));
-    for (let i = propertyKeys.length - 1; i >= 0; i--) {
-      if (propertyKeys[i] === '*') {
-        propertyKeys.splice(i, 1, ...unnamedKeys);
-      }
-    }
-  }
+  expandPropertyOrder(propertyKeys, properties);
   const orderedKeys = [...propertyKeys];
-  if (isObject(nodeValue)) {
-    for (const key of Object.keys(nodeValue)) {
-      const matchesPattern = getMatchingPatternProperty(schema, key) !== null;
-      const isAdditionalProperty = isObject(schema.additionalProperties) && !hasOwn(properties, key);
-      if ((matchesPattern || isAdditionalProperty) && !orderedKeys.includes(key)) orderedKeys.push(key);
+  appendDataPropertyKeys(orderedKeys, schema, properties, nodeValue);
+  return orderedKeys;
+}
+
+function expandPropertyOrder(propertyKeys: any[], properties: Record<string, unknown>): void {
+  if (!propertyKeys.includes('*') || hasOwn(properties, '*')) { return; }
+  const unnamedKeys = Object.keys(properties).filter(key => !propertyKeys.includes(key));
+  for (let i = propertyKeys.length - 1; i >= 0; i--) {
+    if (propertyKeys[i] === '*') { propertyKeys.splice(i, 1, ...unnamedKeys); }
+  }
+}
+
+function appendDataPropertyKeys(
+  orderedKeys: any[], schema: any, properties: Record<string, unknown>, nodeValue: any
+): void {
+  if (!isObject(nodeValue)) { return; }
+  for (const key of Object.keys(nodeValue)) {
+    if (isSchemaDataProperty(schema, properties, key) && !orderedKeys.includes(key)) {
+      orderedKeys.push(key);
     }
   }
-  return orderedKeys;
+}
+
+function isSchemaDataProperty(
+  schema: any, properties: Record<string, unknown>, key: string
+): boolean {
+  return getMatchingPatternProperty(schema, key) !== null ||
+    (isObject(schema.additionalProperties) && !hasOwn(properties, key));
 }
 
 function buildArrayFormGroupTemplate(
