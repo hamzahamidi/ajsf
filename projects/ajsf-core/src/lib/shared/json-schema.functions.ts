@@ -205,7 +205,7 @@ function findObjectSchemaChild(subSchema, key, schemaPointer) {
 }
 
 function combinePatternPropertySchemas(schemas: any[]): any {
-  if (schemas.some(schema => schema === false)) { return false; }
+  if (schemas.includes(false)) { return false; }
   const objectSchemas = schemas.filter(schema => isObject(schema) && !isArray(schema));
   return objectSchemas.length ? mergeSchemas(...objectSchemas) : true;
 }
@@ -236,26 +236,33 @@ export function applyPatternProperties(schema: any, nodeValue: any): void {
   ]);
   const applied = appliedPatternProperties.get(schema) || new Set<string>();
   for (const propertyName of propertyNames) {
-    const matches = getMatchingPatternProperties(schema, propertyName);
-    if (!matches.length || applied.has(propertyName)) { continue; }
-    const sourceSchemas = [
-      ...(isObject(schema.properties) && hasOwn(schema.properties, propertyName)
-        ? [schema.properties[propertyName]] : []),
-      ...matches.map(pattern => schema.patternProperties[pattern])
-    ];
-    if (sourceSchemas.includes(false)) {
-      if (!isObject(schema.properties)) { schema.properties = {}; }
-      schema.properties[propertyName] = false;
-      applied.add(propertyName);
-      continue;
-    }
-    const propertySchemas = sourceSchemas.filter(isObject);
-    if (!propertySchemas.length) { continue; }
-    if (!isObject(schema.properties)) { schema.properties = {}; }
-    schema.properties[propertyName] = mergeSchemas(...propertySchemas);
-    applied.add(propertyName);
+    applyPatternProperty(schema, propertyName, applied);
   }
   appliedPatternProperties.set(schema, applied);
+}
+
+function applyPatternProperty(schema: any, propertyName: string, applied: Set<string>): void {
+  const matches = getMatchingPatternProperties(schema, propertyName);
+  if (!matches.length || applied.has(propertyName)) { return; }
+  const sourceSchemas = [
+    ...(isObject(schema.properties) && hasOwn(schema.properties, propertyName)
+      ? [schema.properties[propertyName]] : []),
+    ...matches.map(pattern => schema.patternProperties[pattern])
+  ];
+  if (sourceSchemas.includes(false)) {
+    setPatternPropertySchema(schema, propertyName, false);
+    applied.add(propertyName);
+    return;
+  }
+  const propertySchemas = sourceSchemas.filter(isObject);
+  if (!propertySchemas.length) { return; }
+  setPatternPropertySchema(schema, propertyName, mergeSchemas(...propertySchemas));
+  applied.add(propertyName);
+}
+
+function setPatternPropertySchema(schema: any, propertyName: string, propertySchema: any): void {
+  if (!isObject(schema.properties)) { schema.properties = {}; }
+  schema.properties[propertyName] = propertySchema;
 }
 
 export function getObjectPropertySchemaPointer(schema: any, propertyName: string): string | null {

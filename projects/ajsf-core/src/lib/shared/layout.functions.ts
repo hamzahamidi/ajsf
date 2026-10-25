@@ -855,7 +855,6 @@ function buildObjectSchemaLayout(
   dataPointer: string,
   nodeDataMap: any
 ): any {
-  const { jsf } = context;
   applyPatternProperties(schema, nodeValue);
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
@@ -871,26 +870,54 @@ function buildObjectSchemaLayout(
   const matchingDataKeys = isObject(nodeValue)
     ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
     : [];
-  for (const key of [...new Set([...propertyKeys, ...matchingDataKeys])]) {
-    const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);
-    if (!keySchemaPointer) continue;
-    const innerItem = buildSchemaLayout(
-      extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
-      isObject(nodeValue) ? nodeValue[key] : null,
-      schemaPointer + keySchemaPointer,
-      dataPointer + '/' + JsonPointer.escape(key)
-    );
-    if (!innerItem) continue;
-    if (isInputRequired(schema, '/' + JsonPointer.escape(key))) {
-      innerItem.options.required = true;
-      jsf.fieldsRequired = true;
-    }
-    newSection.push(innerItem);
-  }
+  newSection.push(...buildPatternPropertySection(
+    context, schema, nodeValue, schemaPointer, dataPointer,
+    [...new Set([...propertyKeys, ...matchingDataKeys])]
+  ));
 
   if (dataPointer === '' && !context.forRefLibrary) return newSection;
   newNode.items = newSection;
   return newNode;
+}
+
+function buildPatternPropertySection(
+  context: SchemaLayoutContext,
+  schema: any,
+  nodeValue: any,
+  schemaPointer: string,
+  dataPointer: string,
+  propertyKeys: string[]
+): any[] {
+  const section: any[] = [];
+  for (const key of propertyKeys) {
+    const item = buildPatternPropertyLayoutItem(context, schema, nodeValue, schemaPointer, dataPointer, key);
+    if (item) { section.push(item); }
+  }
+  return section;
+}
+
+function buildPatternPropertyLayoutItem(
+  context: SchemaLayoutContext,
+  schema: any,
+  nodeValue: any,
+  schemaPointer: string,
+  dataPointer: string,
+  key: string
+): any {
+  const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);
+  if (!keySchemaPointer) { return null; }
+  const innerItem = buildSchemaLayout(
+    extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
+    isObject(nodeValue) ? nodeValue[key] : null,
+    schemaPointer + keySchemaPointer,
+    dataPointer + '/' + JsonPointer.escape(key)
+  );
+  if (!innerItem) { return null; }
+  if (isInputRequired(schema, '/' + JsonPointer.escape(key))) {
+    innerItem.options.required = true;
+    context.jsf.fieldsRequired = true;
+  }
+  return innerItem;
 }
 
 function expandSchemaPropertyOrder(propertyKeys: any, properties: Record<string, unknown>): void {
