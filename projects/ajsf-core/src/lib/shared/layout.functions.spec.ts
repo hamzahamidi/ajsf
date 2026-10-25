@@ -5,6 +5,7 @@ import {
   getLayoutNode,
   mapLayout,
 } from './layout.functions';
+import { buildFormGroupTemplate } from './form-group.functions';
 
 /**
  * Characterization tests for the layout function library.
@@ -620,6 +621,18 @@ describe('buildLayoutFromSchema', () => {
       });
     });
 
+    it('enables ternary checkboxes for nullable boolean schemas', () => {
+      const jsf: any = makeJsf({
+        schema: { type: 'object', properties: { enabled: { type: ['boolean', 'null'] } } },
+        layout: ['enabled'],
+      });
+
+      const result: any = buildLayout(jsf, widgetLibrary);
+
+      expect(result[0].type).toBe('checkbox');
+      expect(result[0].options.ternary).toBe(true);
+    });
+
     it('derives a title from the property name when the schema has none', () => {
       const result: any = buildLayoutFromSchema(
         makeJsf({ schema: { type: 'object', properties: { first_name: { type: 'string' } } } }),
@@ -791,6 +804,53 @@ describe('buildLayoutFromSchema', () => {
         .toEqual(['known', 'second', 'first']);
     });
 
+    it('uses pattern schemas before additionalProperties for matching data keys', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          patternProperties: { '^tag_': { type: 'string' } },
+          additionalProperties: { type: 'number' },
+        },
+      });
+
+      const result = buildLayoutFromSchema(jsf, widgetLibrary, { tag_name: 'release', count: 2 });
+
+      expect(result.map((item: any) => [item.name, item.type]))
+        .toEqual([['tag_name', 'text'], ['count', 'number']]);
+      expect(jsf.dataMap.get('/tag_name').get('schemaPointer')).toBe('/properties/tag_name');
+      expect(jsf.dataMap.get('/count').get('schemaPointer')).toBe('/additionalProperties');
+    });
+
+    it('builds layout nodes for data keys matching patternProperties', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          patternProperties: { '^name_': { type: 'string', title: 'Name' } },
+          additionalProperties: false,
+        },
+      });
+
+      const result = buildLayoutFromSchema(
+        jsf, widgetLibrary, { name_first: 'Ada', ignored: 'value' }
+      );
+
+      expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['name_first', '/name_first', 'text']]);
+      expect(jsf.dataMap.get('/name_first').get('schemaPointer'))
+        .toEqual('/properties/name_first');
+    });
+
+    it('builds layout nodes for an empty patternProperties expression', () => {
+      const jsf: any = makeJsf({
+        schema: { type: 'object', patternProperties: { '': { type: 'string' } } },
+      });
+
+      const result = buildLayoutFromSchema(jsf, widgetLibrary, { any: 'value' });
+
+      expect(result.map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['any', '/any', 'text']]);
+    });
+
     it('skips a ui:order key that matches neither properties nor additionalProperties', () => {
       const jsf: any = makeJsf({
         schema: { type: 'object', 'ui:order': ['a', 'ghost'], properties: { a: { type: 'string' } } },
@@ -810,6 +870,22 @@ describe('buildLayoutFromSchema', () => {
 
       expect(result.dataType).toEqual('object');
       expect(result.items).toBeUndefined();
+    });
+  });
+
+  describe('layout defaults', () => {
+    it('applies a field default through the data map to its form control', () => {
+      const jsf: any = makeJsf({
+        schema: objectSchema,
+        layout: [{ key: 'name', default: 'Ada' }],
+        formOptions: { setLayoutDefaults: true },
+      });
+
+      buildLayout(jsf, widgetLibrary);
+      const template: any = buildFormGroupTemplate(jsf);
+
+      expect(jsf.dataMap.get('/name').get('layoutDefault')).toBe('Ada');
+      expect(template.controls.name.value).toEqual({ value: 'Ada', disabled: false });
     });
   });
 

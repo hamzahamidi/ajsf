@@ -325,6 +325,24 @@ After displaying a form in this mode, use the `formSchema` and `formLayout` outp
 
 The `ngModel` input supports Angular's bidirectional data binding, so an `onSubmit` function is not always necessary.
 
+### Layout-only mode
+
+A complete `layout` can create a form without a `schema`. AJSF infers fields from their keys and types from their widgets and listed choices. A layout containing `*` needs a schema or data input because the wildcard expands fields from the schema.
+
+```javascript
+const layout = [
+  { key: 'name' },
+  { key: 'age', type: 'integer' }
+];
+```
+
+```html
+<json-schema-form
+  [layout]="layout"
+  [(data)]="person">
+</json-schema-form>
+```
+
 ### Advanced use
 
 #### Additional inputs and outputs
@@ -335,12 +353,37 @@ For more control over your form, you may provide these additional inputs:
 * `data` object to populate the form with default or previously submitted values
 * `options` object to set any global options for the form
 * `widgets` object to add custom widgets
+* `externalSchemas` object to resolve external `$ref` values from schemas supplied by your application
 * `language` string to set the error message language (currently supports `de`, `en`, `es`, `fr`, `it`, `pt`, and `zh`)
 * `framework` string or object to set which framework to use
+
+Index `externalSchemas` by each resource's absolute HTTP or HTTPS URI. The form resolves these references from the supplied objects and does not fetch URLs. Reference fragments can use JSON Pointer paths.
+
+```javascript
+const externalSchemas = {
+  'https://example.test/address.json': {
+    $id: 'https://example.test/address.json',
+    type: 'object',
+    properties: { city: { type: 'string' } }
+  }
+};
+```
 
 For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `primeng`, `bootstrap-3`, `bootstrap-4`, `bootstrap-5`, and `no-framework`.
 
 If you want more detailed output, you may provide additional functions for `onChanges` to read the values in real time as the form is being filled out, and you may implement your own custom validation indicators from the boolean `isValid` or the detailed `validationErrors` outputs.
+
+#### Dynamic message values
+
+Message widgets can interpolate current form values with `{{values.path}}`. The text refreshes when the form changes, and the displayed value stays out of the form data.
+
+```javascript
+const layout = [
+  'firstname',
+  'lastname',
+  { type: 'message', options: { message: 'Full name: {{values.firstname}} {{values.lastname}}' } },
+];
+```
 
 Here is an example:
 
@@ -381,6 +424,22 @@ Note: If you prefer brackets around all your attributes, the following is functi
 ```
 
 With this syntax, include the nested quotes (`"'` and `'"`) around language and framework names. Without the inner quotes, Angular reads the values as variables instead of strings. Attributes without brackets are read as strings and do not need inner quotes.
+
+#### Sequential wizard layouts
+
+The core `wizard` widget shows one layout item at a time with Previous and Next buttons. Each step uses its `title` or `legend` as the step label. Set `options.previousLabel`, `options.nextLabel`, or `options.buttonHtmlClass` to customize the navigation. Material Design and PrimeNG map `wizard` to their stepper widgets.
+
+```javascript
+const layout = [{
+  type: 'wizard',
+  options: { previousLabel: 'Back', nextLabel: 'Continue' },
+  items: [
+    { type: 'section', options: { title: 'Contact' }, items: ['first_name', 'email'] },
+    { type: 'section', options: { title: 'Profile' }, items: ['company'] },
+    { type: 'section', items: [{ type: 'submit' }] },
+  ],
+}];
+```
 
 #### Layout conditions
 

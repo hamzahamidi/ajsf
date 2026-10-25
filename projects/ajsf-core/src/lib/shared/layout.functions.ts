@@ -1,9 +1,12 @@
 import { cloneDeep } from './clone-deep.function';
 import {
+  applyPatternProperties,
   checkInlineType,
   getFromSchema,
   getInputType,
   isInputRequired,
+  getMatchingPatternProperty,
+  getObjectPropertySchemaPointer,
   removeRecursiveReferences,
   updateInputOptions
   } from './json-schema.functions';
@@ -281,6 +284,9 @@ function configureLayoutNodeFromSchema(
 ): void {
   const { jsf, widgetLibrary } = context;
   const { nodeSchema, schemaPointer, nodeDataMap, shortDataPointer, nodeValue } = nodeContext;
+  if (hasOwn(node.options, 'default')) {
+    nodeDataMap.set('layoutDefault', node.options.default);
+  }
   if (!nodeSchema) {
     updateInputOptions(node, {}, jsf);
     return;
@@ -295,6 +301,11 @@ function configureLayoutNodeFromSchema(
     updateInputOptions(node, nodeSchema.items, jsf);
   } else if (node.dataType === 'array') {
     configureArrayOptions(node, nodeSchema, nodeValue, shortDataPointer, nodeDataMap, jsf);
+  }
+  if (!hasOwn(node.options, 'ternary') && node.type === 'checkbox' &&
+    isArray(nodeSchema.type) && nodeSchema.type.includes('boolean') && nodeSchema.type.includes('null')
+  ) {
+    node.options.ternary = true;
   }
   if (isInputRequired(jsf.schema, schemaPointer)) {
     node.options.required = true;
@@ -852,16 +863,19 @@ function buildObjectSchemaLayout(
   dataPointer: string,
   nodeDataMap: any
 ): any {
+  applyPatternProperties(schema, nodeValue);
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
   }
-  if (!isObject(schema.properties) && !isObject(schema.additionalProperties)) return newNode;
-  const newSection: any[] = [];
   const properties = isObject(schema.properties) ? schema.properties : {};
+  const patternProperties = isObject(schema.patternProperties) ? schema.patternProperties : {};
+  if (!Object.keys(properties).length && !Object.keys(patternProperties).length &&
+    !isObject(schema.additionalProperties) && !isArray(schema['ui:order'])) return newNode;
+
   const propertyKeys = getSchemaPropertyKeys(schema, nodeValue, properties);
-  newSection.push(...buildObjectSchemaSection(
-    context, schema, nodeValue, schemaPointer, dataPointer, properties, propertyKeys
-  ));
+  const newSection = buildObjectSchemaSection(
+    context, schema, nodeValue, schemaPointer, dataPointer, propertyKeys
+  );
 
   if (dataPointer === '' && !context.forRefLibrary) return newSection;
   newNode.items = newSection;
@@ -874,16 +888,11 @@ function buildObjectSchemaSection(
   nodeValue: any,
   schemaPointer: string,
   dataPointer: string,
-  properties: Record<string, unknown>,
   propertyKeys: string[]
 ): any[] {
   const section: any[] = [];
-  const hasAdditionalPropertiesSchema = isObject(schema.additionalProperties);
   for (const key of propertyKeys) {
-    if (!hasOwn(properties, key) && !hasAdditionalPropertiesSchema) { continue; }
-    const item = buildObjectSchemaLayoutItem(
-      context, schema, nodeValue, schemaPointer, dataPointer, properties, key
-    );
+    const item = buildObjectSchemaLayoutItem(context, schema, nodeValue, schemaPointer, dataPointer, key);
     if (item) { section.push(item); }
   }
   return section;
@@ -895,12 +904,13 @@ function buildObjectSchemaLayoutItem(
   nodeValue: any,
   schemaPointer: string,
   dataPointer: string,
-  properties: Record<string, unknown>,
   key: string
 ): any {
-  const keySchemaPointer = hasOwn(properties, key)
-    ? '/properties/' + JsonPointer.escape(key)
-    : '/additionalProperties';
+  const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);
+  if (!keySchemaPointer) { return null; }
+  if (keySchemaPointer === '/additionalProperties' && !isObject(schema.additionalProperties)) {
+    return null;
+  }
   const innerItem = buildSchemaLayout(
     extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
     isObject(nodeValue) ? nodeValue[key] : null,
@@ -919,9 +929,11 @@ function getSchemaPropertyKeys(schema: any, nodeValue: any, properties: Record<s
   const propertyKeys = schema['ui:order'] || Object.keys(properties);
   expandSchemaPropertyOrder(propertyKeys, properties);
   const orderedKeys = [...propertyKeys];
-  if (isObject(schema.additionalProperties) && isObject(nodeValue)) {
+  if (isObject(nodeValue)) {
     for (const key of Object.keys(nodeValue)) {
-      if (!hasOwn(properties, key) && !orderedKeys.includes(key)) orderedKeys.push(key);
+      const matchesPattern = getMatchingPatternProperty(schema, key) !== null;
+      const isAdditionalProperty = isObject(schema.additionalProperties) && !hasOwn(properties, key);
+      if ((matchesPattern || isAdditionalProperty) && !orderedKeys.includes(key)) orderedKeys.push(key);
     }
   }
   return orderedKeys;

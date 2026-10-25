@@ -20,6 +20,7 @@ import { SubmitComponent } from './submit.component';
 import { TabsComponent } from './tabs.component';
 import { TemplateComponent } from './template.component';
 import { TextareaComponent } from './textarea.component';
+import { WizardComponent } from './wizard.component';
 
 @Injectable({
   providedIn: 'root',
@@ -58,12 +59,12 @@ export class WidgetLibraryService {
 
   // Non-text HTML 'input' form control widgets <input type="...">
     // 'button': <input type="button"> not used, use <button> instead
-    'checkbox': CheckboxComponent, // TODO: Set ternary = true for 3-state ??
+    'checkbox': CheckboxComponent,
     'file': FileComponent,
     'hidden': 'text',
-    'image': 'text', // TODO: Figure out how to handle these
+    'image': SubmitComponent,
     'radio': 'radios',
-    'reset': 'submit', // TODO: Figure out how to handle these
+    'reset': SubmitComponent,
     'submit': SubmitComponent,
 
   // Other (non-'input') HTML form control widgets
@@ -118,7 +119,7 @@ export class WidgetLibraryService {
     'alt-date': 'date',
 
   // Widgets included for compatibility with Angular Schema Form API
-    'wizard': 'section', // TODO: Sequential panels with "Next" and "Previous" buttons
+    'wizard': WizardComponent,
 
   // Widgets included for compatibility with other libraries
     'textline': 'text',

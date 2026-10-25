@@ -110,6 +110,93 @@ describe('JsonSchemaFormComponent input updates', () => {
     properties: { name: { type: 'string' } },
   };
 
+  it('renders image input sources and alternative text', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = { type: 'object', properties: {} };
+    component.layout = [{ type: 'image', src: '/assets/save.png', alt: 'Save form' }];
+
+    fixture.detectChanges();
+
+    const image = fixture.nativeElement.querySelector('input[type="image"]');
+    expect(image).not.toBeNull();
+    expect(image.getAttribute('src')).toBe('/assets/save.png');
+    expect(image.getAttribute('alt')).toBe('Save form');
+    fixture.destroy();
+  });
+
+  it('resets an invalid form to its initial values without disabling the reset control', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = {
+      type: 'object',
+      properties: { name: { type: 'string', minLength: 3 } },
+      required: ['name']
+    };
+    component.data = { name: 'Ada' };
+    component.layout = ['name', { type: 'reset', title: 'Reset' }];
+
+    fixture.detectChanges();
+
+    const reset = fixture.nativeElement.querySelector('input[type="reset"]');
+    expect(reset).not.toBeNull();
+    expect(reset.disabled).toBe(false);
+
+    component.jsf.formGroup.patchValue({ name: 'A' });
+    expect(component.jsf.isValid).toBe(false);
+    expect(reset.disabled).toBe(false);
+    reset.click();
+
+    expect(component.jsf.formGroup.value).toEqual({ name: 'Ada' });
+    expect(component.jsf.isValid).toBe(true);
+    fixture.destroy();
+  });
+
+  it('builds a schema from a complete layout without a schema input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.layout = [
+      { type: 'section', required: true, items: ['first_name'] },
+      { key: 'age', type: 'integer' }
+    ];
+    component.data = { first_name: 'Ada', age: 38 };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.schema.properties).toEqual({
+      first_name: { type: 'string' },
+      age: { type: 'integer' }
+    });
+    expect(component.jsf.schema.required).toEqual(['first_name']);
+    expect(component.jsf.formGroup.value).toEqual({ first_name: 'Ada', age: 38 });
+  });
+
+  it('builds controls from schemas supplied for external references', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = {
+      $id: 'https://example.test/root.json',
+      type: 'object',
+      properties: {
+        address: { $ref: 'https://example.test/address.json' }
+      }
+    };
+    component.externalSchemas = {
+      'https://example.test/address.json': {
+        $id: 'https://example.test/address.json',
+        type: 'object',
+        properties: { city: { type: 'string', minLength: 2 } }
+      }
+    };
+    component.data = { address: { city: 'Paris' } };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.formGroup.get('address.city')).not.toBeNull();
+    expect(component.jsf.formGroup.value).toEqual({ address: { city: 'Paris' } });
+    expect(component.jsf.isValid).toBe(true);
+  });
+
   it('updates a data input without rebuilding the form', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
@@ -198,6 +285,19 @@ describe('JsonSchemaFormComponent input updates', () => {
     component.form = {};
 
     expect((component as any).initializeSchemaFromInputs()).toBe(false);
+    fixture.destroy();
+  });
+
+  it('loads a primitive root schema from a raw form input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.form = { type: 'string', minLength: 2 };
+
+    component.initializeForm();
+
+    expect(component.objectWrap).toBe(true);
+    expect(component.jsf.schema.properties['1']).toEqual({ type: 'string', minLength: 2 });
+    expect(component.jsf.formGroup.get('1')).toBeTruthy();
     fixture.destroy();
   });
 
