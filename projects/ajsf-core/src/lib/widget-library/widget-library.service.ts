@@ -91,7 +91,6 @@ export class WidgetLibraryService {
 
   // Non-HTML layout widgets
     'one-of': OneOfComponent, // A select box that changes another input
-                              // TODO: Finish 'one-of' widget
     'array': 'section', // A list you can add, remove and reorder <fieldset>
     'tabarray': 'tabs', // A tabbed version of array
     'tab': 'section', // A tab group, similar to a fieldset or section <fieldset>

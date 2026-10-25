@@ -917,6 +917,20 @@ describe('JSON Schema functions', () => {
       )).toEqual([{ name: 'A', value: 'a' }, { name: 'B', value: 'b' }]);
     });
 
+    it('builds a title map when const values are falsy', () => {
+      expect(getTitleMapFromOneOf({
+        oneOf: [
+          { title: 'Zero', const: 0 },
+          { title: 'False', const: false },
+          { title: 'Empty', const: '' },
+        ],
+      })).toEqual([
+        { name: 'Zero', value: 0 },
+        { name: 'False', value: false },
+        { name: 'Empty', value: '' },
+      ]);
+    });
+
     it('returns null when any entry is missing a title', () => {
       expect(getTitleMapFromOneOf(
         { oneOf: [{ enum: ['a'] }, { title: 'B', enum: ['b'] }] }
