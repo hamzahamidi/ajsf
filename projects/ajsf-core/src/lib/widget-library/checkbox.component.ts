@@ -76,9 +76,12 @@ export class CheckboxComponent implements OnInit {
     event.preventDefault();
     if (this.options?.ternary) {
       const currentValue = this.jsf.getFormControlValue(this);
-      const nextValue = currentValue === null || currentValue === undefined
-        ? this.trueValue
-        : currentValue === this.trueValue ? this.falseValue : null;
+      let nextValue = null;
+      if (currentValue === null || currentValue === undefined) {
+        nextValue = this.trueValue;
+      } else if (currentValue === this.trueValue) {
+        nextValue = this.falseValue;
+      }
       this.jsf.updateValue(this, nextValue);
       return;
     }
