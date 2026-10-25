@@ -13,6 +13,7 @@ import {
   getTitleMapFromOneOf,
   isInputRequired,
   removeRecursiveReferences,
+  resolveExternalSchemaReferences,
   resolveSchemaReferences,
   updateInputOptions,
 } from './json-schema.functions';
@@ -23,6 +24,106 @@ import {
  * that are almost certainly bugs (see the comments marked BUG).
  */
 describe('JSON Schema functions', () => {
+
+  describe('resolveExternalSchemaReferences', () => {
+    it('bundles a registered resource and resolves its pointer references', () => {
+      const schema = {
+        $id: 'https://example.test/root.json',
+        type: 'object',
+        properties: {
+          address: { $ref: 'schemas/address.json#/definitions/address' }
+        }
+      };
+      const externalSchemas = {
+        'https://example.test/schemas/address.json': {
+          $id: 'https://example.test/schemas/address.json',
+          definitions: {
+            address: {
+              type: 'object',
+              properties: { city: { type: 'string' } }
+            }
+          }
+        }
+      };
+
+      const result = resolveExternalSchemaReferences(schema, externalSchemas);
+
+      expect(result.properties.address.$ref)
+        .toBe('#/definitions/externalSchema0/definitions/address');
+      expect(result.definitions.externalSchema0.definitions.address.properties.city)
+        .toEqual({ type: 'string' });
+      expect(schema.properties.address.$ref)
+        .toBe('schemas/address.json#/definitions/address');
+    });
+
+    it('rewrites local references inside an external resource', () => {
+      const result = resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json' } }
+      }, {
+        'https://example.test/address.json': {
+          $id: 'https://example.test/address.json',
+          type: 'object',
+          properties: { city: { $ref: '#/definitions/city' } },
+          definitions: { city: { type: 'string' } }
+        }
+      });
+
+      expect(result.definitions.externalSchema0.properties.city.$ref)
+        .toBe('#/definitions/externalSchema0/definitions/city');
+    });
+
+    it('rewrites an absolute reference to the root schema as a local pointer', () => {
+      const result = resolveExternalSchemaReferences({
+        $id: 'https://example.test/root.json',
+        type: 'object',
+        properties: {
+          address: { $ref: 'https://example.test/root.json#/definitions/address' }
+        },
+        definitions: { address: { type: 'string' } }
+      });
+
+      expect(result.properties.address.$ref).toBe('#/definitions/address');
+    });
+
+    it('resolves references found in the root schema definitions', () => {
+      const result = resolveExternalSchemaReferences({
+        type: 'object',
+        definitions: {
+          address: { $ref: 'https://example.test/address.json' }
+        },
+        properties: { address: { $ref: '#/definitions/address' } }
+      }, {
+        'https://example.test/address.json': { type: 'string' }
+      });
+
+      expect(result.definitions.address.$ref).toBe('#/definitions/externalSchema0');
+      expect(result.properties.address.$ref).toBe('#/definitions/address');
+      expect(result.definitions.externalSchema0).toEqual({ type: 'string' });
+    });
+
+    it('reports a missing registered resource without fetching it', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json' } }
+      })).toThrowError('was not found in externalSchemas');
+    });
+
+    it('rejects non-HTTP external schemes', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'file:///etc/passwd' } }
+      })).toThrowError('must use HTTP(S) without credentials');
+    });
+
+    it('rejects anchor fragments that draft 7 cannot resolve', () => {
+      expect(() => resolveExternalSchemaReferences({
+        type: 'object',
+        properties: { address: { $ref: 'https://example.test/address.json#Address' } }
+      }, { 'https://example.test/address.json': { type: 'string' } }))
+        .toThrowError('uses an unsupported anchor fragment');
+    });
+  });
 
   describe('buildSchemaFromLayout', () => {
     it('returns undefined for a layout array (the function body is commented out)', () => {
