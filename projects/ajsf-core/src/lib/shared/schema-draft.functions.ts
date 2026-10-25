@@ -238,7 +238,7 @@ export function schemaTypeMatchesValue(value: any, type: string): boolean {
 
 export function findTypeArrayBranchIndex(branches: any[], value: any): number {
   const index = branches.findIndex(branch => schemaTypeMatchesValue(value, branch.type));
-  return index < 0 ? 0 : index;
+  return Math.max(index, 0);
 }
 
 export function typeArrayBranchValue(schema: any, branch: any, value: any): any {

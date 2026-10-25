@@ -76,6 +76,17 @@ interface FormGroupTemplateContext {
   validators: any;
 }
 
+interface TypeArrayFormGroupTemplateContext {
+  jsf: any;
+  schema: any;
+  nodeValue: any;
+  setValues: boolean;
+  schemaPointer: string;
+  dataPointer: string;
+  templatePointer: string;
+  nodeOptions: Map<string, any>;
+}
+
 export function buildFormGroupTemplate(
   jsf: any, nodeValue: any = null, setValues = true,
   schemaPointer = '', dataPointer = '', templatePointer = ''
@@ -104,10 +115,16 @@ export function buildFormGroupTemplate(
     nodeValue = nodeOptions.get('layoutDefault');
   }
   if (isArray(schema?.['x-ajsf-type-array'])) {
-    return buildTypeArrayFormGroupTemplate(
-      jsf, schema, nodeValue, setValues, schemaPointer, dataPointer,
-      templatePointer, nodeOptions
-    );
+    return buildTypeArrayFormGroupTemplate({
+      jsf,
+      schema,
+      nodeValue,
+      setValues,
+      schemaPointer,
+      dataPointer,
+      templatePointer,
+      nodeOptions,
+    });
   }
   const controlType = getFormGroupTemplateControlType(schema);
   registerFormGroupTemplateOptions(
@@ -127,16 +144,16 @@ export function buildFormGroupTemplate(
   return buildFormGroupTemplateForControl(context, schema, controlType);
 }
 
-function buildTypeArrayFormGroupTemplate(
-  jsf: any,
-  schema: any,
-  nodeValue: any,
-  setValues: boolean,
-  schemaPointer: string,
-  dataPointer: string,
-  templatePointer: string,
-  nodeOptions: Map<string, any>
-): any {
+function buildTypeArrayFormGroupTemplate({
+  jsf,
+  schema,
+  nodeValue,
+  setValues,
+  schemaPointer,
+  dataPointer,
+  templatePointer,
+  nodeOptions,
+}: TypeArrayFormGroupTemplateContext): any {
   const branches = schema['x-ajsf-type-array'];
   const branchIndex = findTypeArrayBranchIndex(branches, nodeValue);
   const branchSchemaPointer = schemaPointer + '/x-ajsf-type-array/' + branchIndex;

@@ -1363,7 +1363,7 @@ describe('JsonSchemaFormService', () => {
 
       const objectControl = jsf.changeTypeArrayBranch(ctx, 3);
 
-      expect(objectControl instanceof UntypedFormGroup).toBe(true);
+      expect(objectControl).toBeInstanceOf(UntypedFormGroup);
       expect(jsf.formGroup.get('choice.name')).toBeTruthy();
       expect(jsf.formGroup.get('choice').value).toEqual({ name: null });
 
