@@ -288,7 +288,6 @@ function getObjectInputType(schema) {
   if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
     return 'section';
   }
-  // TODO: Figure out how to handle additionalProperties
   if (hasOwn(schema, '$ref')) { return '$ref'; }
 }
 

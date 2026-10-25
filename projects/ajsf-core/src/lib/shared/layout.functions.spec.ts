@@ -763,6 +763,34 @@ describe('buildLayoutFromSchema', () => {
         .toEqual([['a', '/a', 'text'], ['extra', '/extra', 'number']]);
     });
 
+    it('builds additional property fields from form data without declared properties', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          additionalProperties: { type: 'number', minimum: 0 },
+        },
+      });
+
+      expect(buildLayoutFromSchema(jsf, widgetLibrary, { score: 7 })
+        .map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['score', '/score', 'number']]);
+    });
+
+    it('keeps ui:order first and appends additional fields in data order', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          'ui:order': ['known'],
+          properties: { known: { type: 'string' } },
+          additionalProperties: { type: 'number' },
+        },
+      });
+
+      expect(buildLayoutFromSchema(jsf, widgetLibrary, { known: 'value', second: 2, first: 1 })
+        .map((item: any) => item.name))
+        .toEqual(['known', 'second', 'first']);
+    });
+
     it('skips a ui:order key that matches neither properties nor additionalProperties', () => {
       const jsf: any = makeJsf({
         schema: { type: 'object', 'ui:order': ['a', 'ghost'], properties: { a: { type: 'string' } } },

@@ -856,15 +856,14 @@ function buildObjectSchemaLayout(
   if (isArray(schema.required) && !nodeDataMap.has('required')) {
     nodeDataMap.set('required', schema.required);
   }
-  if (!isObject(schema.properties)) return newNode;
-
+  if (!isObject(schema.properties) && !isObject(schema.additionalProperties)) return newNode;
   const newSection: any[] = [];
-  const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
-  expandSchemaPropertyOrder(propertyKeys, schema.properties);
+  const properties = isObject(schema.properties) ? schema.properties : {};
+  const propertyKeys = getSchemaPropertyKeys(schema, nodeValue, properties);
   for (const key of propertyKeys.filter(key =>
-    hasOwn(schema.properties, key) || hasOwn(schema, 'additionalProperties')
+    hasOwn(properties, key) || isObject(schema.additionalProperties)
   )) {
-    const keySchemaPointer = hasOwn(schema.properties, key)
+    const keySchemaPointer = hasOwn(properties, key)
       ? '/properties/' + JsonPointer.escape(key)
       : '/additionalProperties';
     const innerItem = buildSchemaLayout(
@@ -884,6 +883,18 @@ function buildObjectSchemaLayout(
   if (dataPointer === '' && !context.forRefLibrary) return newSection;
   newNode.items = newSection;
   return newNode;
+}
+
+function getSchemaPropertyKeys(schema: any, nodeValue: any, properties: Record<string, unknown>): any[] {
+  const propertyKeys = schema['ui:order'] || Object.keys(properties);
+  expandSchemaPropertyOrder(propertyKeys, properties);
+  const orderedKeys = [...propertyKeys];
+  if (isObject(schema.additionalProperties) && isObject(nodeValue)) {
+    for (const key of Object.keys(nodeValue)) {
+      if (!hasOwn(properties, key) && !orderedKeys.includes(key)) orderedKeys.push(key);
+    }
+  }
+  return orderedKeys;
 }
 
 function expandSchemaPropertyOrder(propertyKeys: any, properties: Record<string, unknown>): void {

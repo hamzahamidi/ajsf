@@ -171,10 +171,11 @@ function buildObjectFormGroupTemplate(
   schema: any
 ): any {
   const controls: any = {};
-  if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties')) {
-    const propertyKeys = getOrderedSchemaPropertyKeys(schema);
+  if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+    const properties = isObject(schema.properties) ? schema.properties : {};
+    const propertyKeys = getOrderedSchemaPropertyKeys(schema, context.nodeValue, properties);
     propertyKeys
-      .filter(key => hasOwn(schema.properties, key) || hasOwn(schema, 'additionalProperties'))
+      .filter(key => hasOwn(properties, key) || isObject(schema.additionalProperties))
       .forEach(key => controls[key] = buildFormGroupTemplate(
         context.jsf,
         JsonPointer.get(context.nodeValue, [<string>key]),
@@ -190,10 +191,10 @@ function buildObjectFormGroupTemplate(
   return { controlType: 'FormGroup', controls, validators: context.validators };
 }
 
-function getOrderedSchemaPropertyKeys(schema: any): any[] {
-  const propertyKeys = schema['ui:order'] || Object.keys(schema.properties);
-  if (propertyKeys.includes('*') && !hasOwn(schema.properties, '*')) {
-    const unnamedKeys = Object.keys(schema.properties)
+function getOrderedSchemaPropertyKeys(schema: any, nodeValue: any, properties: any): any[] {
+  const propertyKeys = schema['ui:order'] || Object.keys(properties);
+  if (propertyKeys.includes('*') && !hasOwn(properties, '*')) {
+    const unnamedKeys = Object.keys(properties)
       .filter(key => !propertyKeys.includes(key));
     for (let i = propertyKeys.length - 1; i >= 0; i--) {
       if (propertyKeys[i] === '*') {
@@ -201,7 +202,13 @@ function getOrderedSchemaPropertyKeys(schema: any): any[] {
       }
     }
   }
-  return propertyKeys;
+  const orderedKeys = [...propertyKeys];
+  if (isObject(schema.additionalProperties) && isObject(nodeValue)) {
+    for (const key of Object.keys(nodeValue)) {
+      if (!hasOwn(properties, key) && !orderedKeys.includes(key)) orderedKeys.push(key);
+    }
+  }
+  return orderedKeys;
 }
 
 function buildArrayFormGroupTemplate(
