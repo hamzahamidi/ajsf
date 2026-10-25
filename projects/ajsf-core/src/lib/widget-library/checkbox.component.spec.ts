@@ -6,9 +6,9 @@ describe('CheckboxComponent', () => {
     const jsf: any = {
       getFormControlValue: vi.fn()
         .mockReturnValueOnce(null)
-        .mockReturnValueOnce(undefined)
         .mockReturnValueOnce(true)
-        .mockReturnValueOnce(false),
+        .mockReturnValueOnce(false)
+        .mockReturnValueOnce(undefined),
       updateValue: vi.fn(),
     };
     const component = new CheckboxComponent(jsf);
@@ -21,7 +21,7 @@ describe('CheckboxComponent', () => {
     component.updateValue(event);
 
     expect(event.preventDefault).toHaveBeenCalledTimes(4);
-    expect(jsf.updateValue.mock.calls.map((call: any[]) => call[1])).toEqual([true, true, false, null]);
+    expect(jsf.updateValue.mock.calls.map((call: any[]) => call[1])).toEqual([true, false, null, true]);
   });
 
   it('renders null and undefined values as indeterminate', () => {
