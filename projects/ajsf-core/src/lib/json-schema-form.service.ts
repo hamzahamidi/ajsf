@@ -874,10 +874,22 @@ export class JsonSchemaFormService {
   }
 
   updateArrayCheckboxList(ctx: any, checkboxList: TitleMapItem[]): void {
-    const formArray = <UntypedFormArray>this.getFormControl(ctx);
+    this.updateArrayValue(
+      ctx,
+      checkboxList.filter(item => item.checked).map(item => item.value)
+    );
+  }
 
-    // Remove all existing items
-    while (formArray.value.length) {
+  updateArrayValue(ctx: any, values: any[]): void {
+    const formArray = <UntypedFormArray>this.getFormControl(ctx);
+    ctx.controlValue = values;
+    ctx.layoutNode.value = values;
+
+    if (!formArray) {
+      return;
+    }
+
+    while (formArray.length) {
       formArray.removeAt(0);
     }
 
@@ -887,14 +899,12 @@ export class JsonSchemaFormService {
       this.dataRecursiveRefMap,
       this.arrayMap
     );
-    for (const checkboxItem of checkboxList) {
-      if (checkboxItem.checked) {
-        const newFormControl = buildFormGroup(
-          this.templateRefLibrary[refPointer]
-        );
-        newFormControl.setValue(checkboxItem.value);
-        formArray.push(newFormControl);
-      }
+    for (const value of values) {
+      const newFormControl = buildFormGroup(
+        this.templateRefLibrary[refPointer]
+      );
+      newFormControl.setValue(value);
+      formArray.push(newFormControl);
     }
     formArray.markAsDirty();
   }

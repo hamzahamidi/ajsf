@@ -345,8 +345,21 @@ For more control over your form, you may provide these additional inputs:
 * `data` object to populate the form with default or previously submitted values
 * `options` object to set any global options for the form
 * `widgets` object to add custom widgets
+* `externalSchemas` object to resolve external `$ref` values from schemas supplied by your application
 * `language` string to set the error message language (currently supports `de`, `en`, `es`, `fr`, `it`, `pt`, and `zh`)
 * `framework` string or object to set which framework to use
+
+Index `externalSchemas` by each resource's absolute HTTP or HTTPS URI. The form resolves these references from the supplied objects and does not fetch URLs. Reference fragments can use JSON Pointer paths.
+
+```javascript
+const externalSchemas = {
+  'https://example.test/address.json': {
+    $id: 'https://example.test/address.json',
+    type: 'object',
+    properties: { city: { type: 'string' } }
+  }
+};
+```
 
 For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `primeng`, `bootstrap-3`, `bootstrap-4`, `bootstrap-5`, and `no-framework`.
 
@@ -483,6 +496,27 @@ Finally, Angular JSON Schema Form includes some additional inputs and outputs fo
 ## Customizing
 
 In addition to a large number of user-settable options, Angular JSON Schema Form also has the ability to load custom form control widgets and layout frameworks. All forms are constructed from these basic components. The default widget library includes all standard HTML 5 form controls, as well as several common layout patterns, such as multiple checkboxes and tab sets. The default framework library includes templates to style forms using Material Design, PrimeNG, Bootstrap 3, Bootstrap 4, or Bootstrap 5 (or plain HTML with no formatting, which is not useful in production, but can be helpful for development and debugging).
+
+### File fields
+
+Use the `file` widget on a string schema to store one selected file as a data URL. Use it on an array of strings to allow multiple files and store one data URL per file. Set `x-schema-form.options.accept` to filter the file types offered by the browser.
+
+```javascript
+const schema = {
+  type: 'object',
+  properties: {
+    document: {
+      type: 'string',
+      'x-schema-form': { type: 'file', options: { accept: '.pdf,application/pdf' } }
+    },
+    images: {
+      type: 'array',
+      items: { type: 'string' },
+      'x-schema-form': { type: 'file', options: { accept: 'image/*' } }
+    }
+  }
+};
+```
 
 ### User settings
 

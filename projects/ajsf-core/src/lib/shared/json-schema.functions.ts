@@ -254,6 +254,214 @@ export function buildSchemaFromLayout(layout: any[]) {
 }
 
 /**
+ * Resolves external schema resources from an application supplied registry.
+ * The form component never fetches a URI found in a schema.
+ */
+export function resolveExternalSchemaReferences(schema: any, externalSchemas: Record<string, any> = {}) {
+  if (!isObject(schema)) { return schema; }
+  if (!isObject(externalSchemas)) {
+    throw new TypeError('externalSchemas must be an object indexed by absolute HTTP(S) resource URIs.');
+  }
+
+  const getResourceUrl = (value: string, baseUri?: string): URL => {
+    let url: URL;
+    try {
+      url = baseUri ? new URL(value, baseUri) : new URL(value);
+    } catch {
+      throw new Error(`External schema URI "${value}" must be absolute or have an absolute $id base.`);
+    }
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+      throw new Error(`External schema URI "${value}" must use HTTP(S) without credentials.`);
+    }
+    return url;
+  };
+  const resourceUri = (url: URL): string => {
+    const resource = new URL(url.href);
+    resource.hash = '';
+    return resource.href;
+  };
+  const getFragment = (url: URL): string => {
+    if (!url.hash) { return ''; }
+    let fragment: string;
+    try {
+      fragment = decodeURIComponent(url.hash.slice(1));
+    } catch {
+      throw new Error(`External schema reference "${url.href}" has an invalid fragment.`);
+    }
+    if (fragment && !fragment.startsWith('/')) {
+      throw new Error(`External schema reference "${url.href}" uses an unsupported anchor fragment.`);
+    }
+    return fragment;
+  };
+  const appendFragment = (prefix: string, fragment: string): string =>
+    fragment ? `${prefix}${fragment}` : prefix;
+  const escapePointerToken = (token: string): string =>
+    token.replaceAll('~', '~0').replaceAll('/', '~1');
+
+  const resources = new Map<string, { schema: any; uri: string }>();
+  const addResource = (uri: string, value: any): { schema: any; uri: string } => {
+    const url = getResourceUrl(uri);
+    if (url.hash) {
+      throw new Error(`externalSchemas key "${uri}" must identify a resource without a fragment.`);
+    }
+    const normalizedUri = resourceUri(url);
+    const resource = { schema: value, uri: normalizedUri };
+    const existing = resources.get(normalizedUri);
+    if (existing && existing.schema !== value) {
+      throw new Error(`externalSchemas contains multiple schemas for "${normalizedUri}".`);
+    }
+    resources.set(normalizedUri, existing || resource);
+    return existing || resource;
+  };
+
+  Object.keys(externalSchemas).forEach(uri => {
+    const resource = addResource(uri, externalSchemas[uri]);
+    const id = resource.schema && isObject(resource.schema) && resource.schema.$id;
+    if (isString(id)) {
+      const idUrl = getResourceUrl(id, resource.uri);
+      if (idUrl.hash) { throw new Error(`External schema $id "${id}" must not contain a fragment.`); }
+      const alias = resourceUri(idUrl);
+      const existing = resources.get(alias);
+      if (existing && existing.schema !== resource.schema) {
+        throw new Error(`externalSchemas contains conflicting schemas for "${alias}".`);
+      }
+      resources.set(alias, resource);
+    }
+  });
+
+  const result = cloneDeep(schema);
+  const rootId = isString(result.$id) ? getResourceUrl(result.$id) : null;
+  if (rootId?.hash) { throw new Error(`Root schema $id "${result.$id}" must not contain a fragment.`); }
+  const rootUri = rootId ? resourceUri(rootId) : null;
+  const definitions = isObject(result.definitions) ? result.definitions : {};
+  const externalDefinitionKeys = new Map<string, string>();
+  let nextDefinitionIndex = 0;
+
+  const getDefinitionKey = (uri: string): string => {
+    const entry = resources.get(uri);
+    if (!entry) { throw new Error(`External schema reference "${uri}" was not found in externalSchemas.`); }
+    const canonicalUri = entry.uri;
+    const existingKey = externalDefinitionKeys.get(canonicalUri);
+    if (existingKey) { return existingKey; }
+    let key: string;
+    do {
+      key = `externalSchema${nextDefinitionIndex++}`;
+    } while (hasOwn(definitions, key));
+    externalDefinitionKeys.set(canonicalUri, key);
+    definitions[key] = cloneDeep(entry.schema);
+    return key;
+  };
+
+  interface ReferenceContext {
+    baseUri?: string;
+    resourceUri?: string;
+    resourcePrefix: string;
+    localPointer: string;
+  }
+
+  const rewriteReference = (reference: string, context: ReferenceContext): string => {
+    if (reference.startsWith('#')) {
+      if (!context.resourcePrefix) { return reference; }
+      const localUrl = new URL(reference, context.baseUri || 'https://ajsf.invalid/');
+      return appendFragment(context.resourcePrefix, getFragment(localUrl));
+    }
+
+    const url = getResourceUrl(reference, context.baseUri);
+    const targetUri = resourceUri(url);
+    const fragment = getFragment(url);
+    if (targetUri === context.resourceUri) {
+      return appendFragment(context.resourcePrefix, fragment);
+    }
+    if (targetUri === rootUri) {
+      return appendFragment('#', fragment);
+    }
+    const key = getDefinitionKey(targetUri);
+    return appendFragment(`#/definitions/${key}`, fragment);
+  };
+
+  const rewriteNode = (value: any, context: ReferenceContext): any => {
+    if (isArray(value)) {
+      return value.map((child, index) => rewriteNode(child, {
+        ...context,
+        localPointer: `${context.localPointer}/${index}`
+      }));
+    }
+    if (!isObject(value)) { return value; }
+
+    const id = isString(value.$id) ? value.$id : null;
+    const currentBaseUri = id
+      ? getResourceUrl(id, context.baseUri).href
+      : context.baseUri;
+    if (id && getResourceUrl(id, context.baseUri).hash) {
+      throw new Error(`External schema $id "${id}" must not contain a fragment.`);
+    }
+    const currentUri = currentBaseUri
+      ? resourceUri(getResourceUrl(currentBaseUri))
+      : context.resourceUri;
+    let currentPrefix = context.resourcePrefix;
+    if (id) {
+      currentPrefix = context.localPointer;
+      if (!currentPrefix.startsWith('#')) { currentPrefix = `#${currentPrefix}`; }
+    }
+    const currentContext: ReferenceContext = {
+      baseUri: currentBaseUri,
+      resourceUri: currentUri,
+      resourcePrefix: currentPrefix,
+      localPointer: context.localPointer
+    };
+    const rewritten: any = {};
+    Object.keys(value).forEach(key => {
+      const child = value[key];
+      if (key === '$ref' && isString(child)) {
+        rewritten[key] = rewriteReference(child, currentContext);
+      } else {
+        rewritten[key] = rewriteNode(child, {
+          ...currentContext,
+          localPointer: `${context.localPointer}/${escapePointerToken(key)}`
+        });
+      }
+    });
+    return rewritten;
+  };
+
+  const removeEmbeddedIds = (value: any): any => {
+    if (isArray(value)) { return value.map(removeEmbeddedIds); }
+    if (!isObject(value)) { return value; }
+    const embedded: any = {};
+    Object.keys(value).forEach(key => {
+      if (key !== '$id') { embedded[key] = removeEmbeddedIds(value[key]); }
+    });
+    return embedded;
+  };
+
+  const rewrittenRoot = rewriteNode(result, {
+    baseUri: rootId?.href,
+    resourceUri: rootUri,
+    resourcePrefix: '#',
+    localPointer: ''
+  });
+  const bundledDefinitions = isObject(rewrittenRoot.definitions)
+    ? rewrittenRoot.definitions
+    : {};
+
+  externalDefinitionKeys.forEach((key, uri) => {
+    const entry = resources.get(uri);
+    const baseUrl = entry && isObject(entry.schema) && isString(entry.schema.$id)
+      ? getResourceUrl(entry.schema.$id, entry.uri)
+      : getResourceUrl(uri);
+    bundledDefinitions[key] = removeEmbeddedIds(rewriteNode(definitions[key], {
+      baseUri: baseUrl.href,
+      resourceUri: resourceUri(baseUrl),
+      resourcePrefix: `#/definitions/${key}`,
+      localPointer: `#/definitions/${key}`
+    }));
+  });
+
+  if (externalDefinitionKeys.size) { rewrittenRoot.definitions = bundledDefinitions; }
+  return rewrittenRoot;
+}
+
+/**
  * 'buildSchemaFromData' function
  *
  * Build a JSON Schema from a data object
@@ -352,10 +560,22 @@ function findArraySchemaChild(subSchema, key, schemaPointer) {
 
 function findObjectSchemaChild(subSchema, key, schemaPointer) {
   let subSchemaFound = false;
+  const patterns = getMatchingPatternProperties(subSchema, key);
   if (isObject(subSchema.properties) && hasOwn(subSchema.properties, key)) {
     subSchemaFound = true;
-    subSchema = subSchema.properties[key];
+    subSchema = patterns.length
+      ? combinePatternPropertySchemas([
+        subSchema.properties[key],
+        ...patterns.map(pattern => subSchema.patternProperties[pattern])
+      ])
+      : subSchema.properties[key];
     schemaPointer.push('properties', key);
+  } else if (patterns.length) {
+    subSchemaFound = true;
+    subSchema = combinePatternPropertySchemas(
+      patterns.map(pattern => subSchema.patternProperties[pattern])
+    );
+    schemaPointer.push('patternProperties', patterns[0]);
   } else if (isObject(subSchema.additionalProperties)) {
     subSchemaFound = true;
     subSchema = subSchema.additionalProperties;
@@ -366,6 +586,81 @@ function findObjectSchemaChild(subSchema, key, schemaPointer) {
     schemaPointer.push('additionalProperties');
   }
   return { subSchema, subSchemaFound };
+}
+
+function combinePatternPropertySchemas(schemas: any[]): any {
+  if (schemas.includes(false)) { return false; }
+  const objectSchemas = schemas.filter(schema => isObject(schema) && !isArray(schema));
+  return objectSchemas.length ? mergeSchemas(...objectSchemas) : true;
+}
+
+export function getMatchingPatternProperty(schema: any, propertyName: string): string | null {
+  const matches = getMatchingPatternProperties(schema, propertyName);
+  return matches.length ? matches[0] : null;
+}
+
+export function getMatchingPatternProperties(schema: any, propertyName: string): string[] {
+  if (!isObject(schema?.patternProperties)) { return []; }
+  return Object.keys(schema.patternProperties).filter(pattern => {
+    try {
+      return new RegExp(pattern).test(propertyName);
+    } catch {
+      return false;
+    }
+  });
+}
+
+const appliedPatternProperties = new WeakMap<object, Set<string>>();
+
+export function applyPatternProperties(schema: any, nodeValue: any): void {
+  if (!isObject(schema) || !isObject(schema.patternProperties)) { return; }
+  const propertyNames = new Set([
+    ...(isObject(nodeValue) ? Object.keys(nodeValue) : []),
+    ...(isArray(schema['ui:order']) ? schema['ui:order'].filter(isString) : [])
+  ]);
+  const applied = appliedPatternProperties.get(schema) || new Set<string>();
+  for (const propertyName of propertyNames) {
+    applyPatternProperty(schema, propertyName, applied);
+  }
+  appliedPatternProperties.set(schema, applied);
+}
+
+function applyPatternProperty(schema: any, propertyName: string, applied: Set<string>): void {
+  const matches = getMatchingPatternProperties(schema, propertyName);
+  if (!matches.length || applied.has(propertyName)) { return; }
+  const sourceSchemas = [
+    ...(isObject(schema.properties) && hasOwn(schema.properties, propertyName)
+      ? [schema.properties[propertyName]] : []),
+    ...matches.map(pattern => schema.patternProperties[pattern])
+  ];
+  if (sourceSchemas.includes(false)) {
+    setPatternPropertySchema(schema, propertyName, false);
+    applied.add(propertyName);
+    return;
+  }
+  const propertySchemas = sourceSchemas.filter(isObject);
+  if (!propertySchemas.length) { return; }
+  setPatternPropertySchema(schema, propertyName, mergeSchemas(...propertySchemas));
+  applied.add(propertyName);
+}
+
+function setPatternPropertySchema(schema: any, propertyName: string, propertySchema: any): void {
+  if (!isObject(schema.properties)) { schema.properties = {}; }
+  schema.properties[propertyName] = propertySchema;
+}
+
+export function getObjectPropertySchemaPointer(schema: any, propertyName: string): string | null {
+  if (isObject(schema?.properties) && hasOwn(schema.properties, propertyName)) {
+    return '/properties/' + JsonPointer.escape(propertyName);
+  }
+  const pattern = getMatchingPatternProperty(schema, propertyName);
+  if (pattern !== null) {
+    return '/patternProperties/' + JsonPointer.escape(pattern);
+  }
+  if (hasOwn(schema, 'additionalProperties') && schema.additionalProperties === false) {
+    return null;
+  }
+  return hasOwn(schema, 'additionalProperties') ? '/additionalProperties' : null;
 }
 
 export function getFromSchema(schema, dataPointer, returnType = 'schema') {
@@ -461,10 +756,10 @@ export function removeRecursiveReferences(
  * // { string }
  */
 function getObjectInputType(schema) {
-  if (hasOwn(schema, 'properties') || hasOwn(schema, 'additionalProperties')) {
+  if (hasOwn(schema, 'properties') || hasOwn(schema, 'patternProperties') ||
+    hasOwn(schema, 'additionalProperties')) {
     return 'section';
   }
-  // TODO: Figure out how to handle additionalProperties
   if (hasOwn(schema, '$ref')) { return '$ref'; }
 }
 
@@ -732,7 +1027,7 @@ function getOneOfTitleMapType(oneOf) {
   if (oneOf.every(item => isArray(item.enum) && item.enum.length === 1)) {
     return 'enum';
   }
-  if (oneOf.every(item => item.const)) {
+  if (oneOf.every(item => hasOwn(item, 'const'))) {
     return 'const';
   }
   return null;
@@ -807,9 +1102,12 @@ export function getControlValidators(schema, rootSchema = schema, schemaPointer 
         });
       break;
       case 'object':
-        forEach(['minProperties', 'maxProperties', 'dependencies'], (prop) => {
+        forEach(['minProperties', 'maxProperties'], (prop) => {
           if (hasOwn(schema, prop)) { validators[prop] = [schema[prop]]; }
         });
+        if (hasOwn(schema, 'dependencies')) {
+          validators.dependencies = [schema.dependencies, rootSchema, schemaPointer, ajv];
+        }
       break;
       case 'array':
         forEach(['minItems', 'maxItems', 'uniqueItems'], (prop) => {

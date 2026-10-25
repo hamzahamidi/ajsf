@@ -1360,6 +1360,30 @@ describe('JsonSchemaFormService', () => {
     });
   });
 
+  describe('updateArrayValue', () => {
+    beforeEach(() => buildForm(personSchema, null, { name: 'Bob', tags: ['x', 'y'] }));
+
+    it('replaces the formArray contents and updates the layout value', () => {
+      const ctx = ctxFor('tags');
+
+      jsf.updateArrayValue(ctx, ['a', 'c']);
+
+      expect(jsf.formGroup.get('tags').value).toEqual(['a', 'c']);
+      expect(ctx.layoutNode.value).toEqual(['a', 'c']);
+      expect(ctx.controlValue).toEqual(['a', 'c']);
+      expect(jsf.formGroup.get('tags').dirty).toBe(true);
+    });
+
+    it('updates an unbound array control in its context', () => {
+      const ctx: any = { layoutNode: { name: 'files' }, boundControl: false };
+
+      jsf.updateArrayValue(ctx, ['data:file']);
+
+      expect(ctx.controlValue).toEqual(['data:file']);
+      expect(ctx.layoutNode.value).toEqual(['data:file']);
+    });
+  });
+
   // ---------------------------------------------------------------------------
   describe('buildRemoteError', () => {
     beforeEach(() => buildForm(personSchema, null, { name: 'Bob' }));

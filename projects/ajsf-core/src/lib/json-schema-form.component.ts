@@ -28,8 +28,19 @@ import {
 } from './shared/validator.functions';
 import { JsonPointer } from './shared/jsonpointer.functions';
 import { JsonSchemaFormService } from './json-schema-form.service';
-import { resolveSchemaReferences } from './shared/json-schema.functions';
+import {
+  resolveExternalSchemaReferences,
+  resolveSchemaReferences
+} from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
+
+const jsonSchemaTypes = new Set(['array', 'boolean', 'integer', 'null', 'number', 'object', 'string']);
+
+function isJsonSchemaType(type: any): boolean {
+  return isArray(type)
+    ? type.length > 0 && type.every(schemaType => jsonSchemaTypes.has(schemaType))
+    : jsonSchemaTypes.has(type);
+}
 
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -92,15 +103,17 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
   previousInputs: { // Previous input values, to detect which input triggers onChanges
     schema: any, layout: any[], data: any, options: any, framework: any,
     widgets: any, form: any, model: any, JSONSchema: any, UISchema: any,
-    formData: any, loadExternalAssets: boolean, debug: boolean,
+    formData: any, externalSchemas: any, loadExternalAssets: boolean, debug: boolean,
   } = {
       schema: null, layout: null, data: null, options: null, framework: null,
       widgets: null, form: null, model: null, JSONSchema: null, UISchema: null,
-      formData: null, loadExternalAssets: null, debug: null,
+      formData: null, externalSchemas: null, loadExternalAssets: null, debug: null,
     };
 
   // Recommended inputs
   @Input() schema: any; // The JSON Schema
+  /** Schemas indexed by absolute HTTP(S) resource URI for external $ref values. */
+  @Input() externalSchemas: Record<string, any> = {};
   @Input() layout: any[]; // The form layout
   @Input() data: any; // The form data
   @Input() options: any; // The global form options
@@ -422,11 +435,12 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
    * 7. If data input - build schema from data
    */
   private initializeSchema() {
+    this.initializeSchemaFromInputs();
 
-    // TODO: update to allow non-object schemas
-
-    if (!this.initializeSchemaFromInputs() && isObject(this.form)) {
-      // TODO: Handle other types of form input
+    if (!isEmpty(this.jsf.schema)) {
+      this.jsf.schema = resolveExternalSchemaReferences(
+        this.jsf.schema, this.externalSchemas
+      );
     }
 
     if (!isEmpty(this.jsf.schema)) {
@@ -448,13 +462,6 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
         this.jsf.hasRootReference = true;
       }
 
-      // TODO: (?) Resolve external $ref links
-      // // Create schemaRefLibrary & schemaRecursiveRefMap
-      // this.parser.bundle(this.schema)
-      //   .then(schema => this.schema = resolveSchemaReferences(
-      //     schema, this.jsf.schemaRefLibrary,
-      //     this.jsf.schemaRecursiveRefMap, this.jsf.dataRecursiveRefMap
-      //   ));
     }
   }
 
@@ -476,6 +483,10 @@ export class JsonSchemaFormComponent implements ControlValueAccessor, OnChanges,
     if (hasOwn(this.form, 'JSONSchema') && isObject(this.form.JSONSchema)) {
       this.jsf.ReactJsonSchemaFormCompatibility = true;
       this.jsf.schema = cloneDeep(this.form.JSONSchema);
+      return true;
+    }
+    if (isObject(this.form) && isJsonSchemaType(this.form.type)) {
+      this.jsf.schema = cloneDeep(this.form);
       return true;
     }
     if (hasOwn(this.form, 'properties') && isObject(this.form.properties)) {

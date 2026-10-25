@@ -58,8 +58,8 @@ export class WidgetLibraryService {
 
   // Non-text HTML 'input' form control widgets <input type="...">
     // 'button': <input type="button"> not used, use <button> instead
-    'checkbox': CheckboxComponent, // TODO: Set ternary = true for 3-state ??
-    'file': FileComponent, // TODO: Finish 'file' widget
+    'checkbox': CheckboxComponent,
+    'file': FileComponent,
     'hidden': 'text',
     'image': 'text', // TODO: Figure out how to handle these
     'radio': 'radios',
@@ -91,7 +91,6 @@ export class WidgetLibraryService {
 
   // Non-HTML layout widgets
     'one-of': OneOfComponent, // A select box that changes another input
-                              // TODO: Finish 'one-of' widget
     'array': 'section', // A list you can add, remove and reorder <fieldset>
     'tabarray': 'tabs', // A tabbed version of array
     'tab': 'section', // A tab group, similar to a fieldset or section <fieldset>
