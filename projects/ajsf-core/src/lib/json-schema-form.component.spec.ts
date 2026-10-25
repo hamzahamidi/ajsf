@@ -110,6 +110,32 @@ describe('JsonSchemaFormComponent input updates', () => {
     properties: { name: { type: 'string' } },
   };
 
+  it('builds controls from schemas supplied for external references', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.schema = {
+      $id: 'https://example.test/root.json',
+      type: 'object',
+      properties: {
+        address: { $ref: 'https://example.test/address.json' }
+      }
+    };
+    component.externalSchemas = {
+      'https://example.test/address.json': {
+        $id: 'https://example.test/address.json',
+        type: 'object',
+        properties: { city: { type: 'string', minLength: 2 } }
+      }
+    };
+    component.data = { address: { city: 'Paris' } };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.formGroup.get('address.city')).not.toBeNull();
+    expect(component.jsf.formGroup.value).toEqual({ address: { city: 'Paris' } });
+    expect(component.jsf.isValid).toBe(true);
+  });
+
   it('updates a data input without rebuilding the form', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;

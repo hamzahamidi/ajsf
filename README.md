@@ -327,8 +327,21 @@ For more control over your form, you may provide these additional inputs:
 * `data` object to populate the form with default or previously submitted values
 * `options` object to set any global options for the form
 * `widgets` object to add custom widgets
+* `externalSchemas` object to resolve external `$ref` values from schemas supplied by your application
 * `language` string to set the error message language (currently supports `de`, `en`, `es`, `fr`, `it`, `pt`, and `zh`)
 * `framework` string or object to set which framework to use
+
+Index `externalSchemas` by each resource's absolute HTTP or HTTPS URI. The form resolves these references from the supplied objects and does not fetch URLs. Reference fragments can use JSON Pointer paths.
+
+```javascript
+const externalSchemas = {
+  'https://example.test/address.json': {
+    $id: 'https://example.test/address.json',
+    type: 'object',
+    properties: { city: { type: 'string' } }
+  }
+};
+```
 
 For `framework`, pass a custom framework object or the name of a loaded framework. The included names are `material-design`, `primeng`, `bootstrap-3`, `bootstrap-4`, `bootstrap-5`, and `no-framework`.
 
