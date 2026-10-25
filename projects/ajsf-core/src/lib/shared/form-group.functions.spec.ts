@@ -187,6 +187,34 @@ describe('form-group.functions', () => {
       expect(result.controls.a.value).toEqual({ value: 'given', disabled: false });
     });
 
+    it('builds controls and validators for additional properties present in nodeValue', () => {
+      const result: any = buildFormGroupTemplate(
+        makeJsf({
+          type: 'object',
+          additionalProperties: { type: 'number', minimum: 0 },
+        }),
+        { score: 7 }
+      );
+
+      expect(Object.keys(result.controls)).toEqual(['score']);
+      expect(result.controls.score.value).toEqual({ value: 7, disabled: false });
+      expect(result.controls.score.validators).toEqual({ minimum: [0], type: ['number'] });
+    });
+
+    it('orders additional property controls after ui:order entries', () => {
+      const result: any = buildFormGroupTemplate(
+        makeJsf({
+          type: 'object',
+          'ui:order': ['known'],
+          properties: { known: { type: 'string' } },
+          additionalProperties: { type: 'number' },
+        }),
+        { known: 'value', second: 2, first: 1 }
+      );
+
+      expect(Object.keys(result.controls)).toEqual(['known', 'second', 'first']);
+    });
+
     it('produces no controls for additionalProperties without properties', () => {
       const result: any = buildFormGroupTemplate(makeJsf({
         type: 'object', additionalProperties: { type: 'string' },
@@ -230,6 +258,21 @@ describe('form-group.functions', () => {
       expect(form.get('name_first').errors).toEqual({
         pattern: { requiredPattern: '^[A-Z]', currentValue: 'a1' }
       });
+    });
+
+    it('uses additionalProperties only for data keys without a pattern match', () => {
+      const jsf = makeJsf({
+        type: 'object',
+        patternProperties: { '^tag_': { type: 'string', minLength: 3 } },
+        additionalProperties: { type: 'number', minimum: 0 },
+      });
+      const template: any = buildFormGroupTemplate(jsf, { tag_name: 'release', count: 2 });
+
+      expect(Object.keys(template.controls)).toEqual(['tag_name', 'count']);
+      expect(template.controls.tag_name.validators).toEqual({ minLength: [3] });
+      expect(template.controls.count.validators).toEqual({ minimum: [0], type: ['number'] });
+      expect(jsf.dataMap.get('/tag_name').get('schemaPointer')).toBe('/properties/tag_name');
+      expect(jsf.dataMap.get('/count').get('schemaPointer')).toBe('/additionalProperties');
     });
 
     it('builds an additionalProperties control for a key named only in ui:order', () => {

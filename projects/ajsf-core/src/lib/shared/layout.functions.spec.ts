@@ -776,6 +776,51 @@ describe('buildLayoutFromSchema', () => {
         .toEqual([['a', '/a', 'text'], ['extra', '/extra', 'number']]);
     });
 
+    it('builds additional property fields from form data without declared properties', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          additionalProperties: { type: 'number', minimum: 0 },
+        },
+      });
+
+      expect(buildLayoutFromSchema(jsf, widgetLibrary, { score: 7 })
+        .map((item: any) => [item.name, item.dataPointer, item.type]))
+        .toEqual([['score', '/score', 'number']]);
+    });
+
+    it('keeps ui:order first and appends additional fields in data order', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          'ui:order': ['known'],
+          properties: { known: { type: 'string' } },
+          additionalProperties: { type: 'number' },
+        },
+      });
+
+      expect(buildLayoutFromSchema(jsf, widgetLibrary, { known: 'value', second: 2, first: 1 })
+        .map((item: any) => item.name))
+        .toEqual(['known', 'second', 'first']);
+    });
+
+    it('uses pattern schemas before additionalProperties for matching data keys', () => {
+      const jsf: any = makeJsf({
+        schema: {
+          type: 'object',
+          patternProperties: { '^tag_': { type: 'string' } },
+          additionalProperties: { type: 'number' },
+        },
+      });
+
+      const result = buildLayoutFromSchema(jsf, widgetLibrary, { tag_name: 'release', count: 2 });
+
+      expect(result.map((item: any) => [item.name, item.type]))
+        .toEqual([['tag_name', 'text'], ['count', 'number']]);
+      expect(jsf.dataMap.get('/tag_name').get('schemaPointer')).toBe('/properties/tag_name');
+      expect(jsf.dataMap.get('/count').get('schemaPointer')).toBe('/additionalProperties');
+    });
+
     it('builds layout nodes for data keys matching patternProperties', () => {
       const jsf: any = makeJsf({
         schema: {

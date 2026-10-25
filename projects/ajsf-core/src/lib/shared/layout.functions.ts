@@ -870,25 +870,19 @@ function buildObjectSchemaLayout(
   const properties = isObject(schema.properties) ? schema.properties : {};
   const patternProperties = isObject(schema.patternProperties) ? schema.patternProperties : {};
   if (!Object.keys(properties).length && !Object.keys(patternProperties).length &&
-    !isArray(schema['ui:order'])) return newNode;
+    !isObject(schema.additionalProperties) && !isArray(schema['ui:order'])) return newNode;
 
-  const newSection: any[] = [];
-  const propertyKeys = schema['ui:order'] || Object.keys(properties);
-  expandSchemaPropertyOrder(propertyKeys, properties);
-  const matchingDataKeys = isObject(nodeValue)
-    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
-    : [];
-  newSection.push(...buildPatternPropertySection(
-    context, schema, nodeValue, schemaPointer, dataPointer,
-    [...new Set([...propertyKeys, ...matchingDataKeys])]
-  ));
+  const propertyKeys = getSchemaPropertyKeys(schema, nodeValue, properties);
+  const newSection = buildObjectSchemaSection(
+    context, schema, nodeValue, schemaPointer, dataPointer, propertyKeys
+  );
 
   if (dataPointer === '' && !context.forRefLibrary) return newSection;
   newNode.items = newSection;
   return newNode;
 }
 
-function buildPatternPropertySection(
+function buildObjectSchemaSection(
   context: SchemaLayoutContext,
   schema: any,
   nodeValue: any,
@@ -898,13 +892,13 @@ function buildPatternPropertySection(
 ): any[] {
   const section: any[] = [];
   for (const key of propertyKeys) {
-    const item = buildPatternPropertyLayoutItem(context, schema, nodeValue, schemaPointer, dataPointer, key);
+    const item = buildObjectSchemaLayoutItem(context, schema, nodeValue, schemaPointer, dataPointer, key);
     if (item) { section.push(item); }
   }
   return section;
 }
 
-function buildPatternPropertyLayoutItem(
+function buildObjectSchemaLayoutItem(
   context: SchemaLayoutContext,
   schema: any,
   nodeValue: any,
@@ -914,6 +908,9 @@ function buildPatternPropertyLayoutItem(
 ): any {
   const keySchemaPointer = getObjectPropertySchemaPointer(schema, key);
   if (!keySchemaPointer) { return null; }
+  if (keySchemaPointer === '/additionalProperties' && !isObject(schema.additionalProperties)) {
+    return null;
+  }
   const innerItem = buildSchemaLayout(
     extendSchemaLayoutContext(context, { arrayItem: false, arrayItemType: null, removable: null }),
     isObject(nodeValue) ? nodeValue[key] : null,
@@ -926,6 +923,20 @@ function buildPatternPropertyLayoutItem(
     context.jsf.fieldsRequired = true;
   }
   return innerItem;
+}
+
+function getSchemaPropertyKeys(schema: any, nodeValue: any, properties: Record<string, unknown>): any[] {
+  const propertyKeys = schema['ui:order'] || Object.keys(properties);
+  expandSchemaPropertyOrder(propertyKeys, properties);
+  const orderedKeys = [...propertyKeys];
+  if (isObject(nodeValue)) {
+    for (const key of Object.keys(nodeValue)) {
+      const matchesPattern = getMatchingPatternProperty(schema, key) !== null;
+      const isAdditionalProperty = isObject(schema.additionalProperties) && !hasOwn(properties, key);
+      if ((matchesPattern || isAdditionalProperty) && !orderedKeys.includes(key)) orderedKeys.push(key);
+    }
+  }
+  return orderedKeys;
 }
 
 function expandSchemaPropertyOrder(propertyKeys: any, properties: Record<string, unknown>): void {

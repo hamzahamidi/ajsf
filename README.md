@@ -106,6 +106,14 @@ correctly.
 
 A schema without `$schema` is read as draft 7.
 
+For object schemas, set `additionalProperties` to a schema to render undeclared
+fields already present in form data. This also works when the object schema has
+no `properties` entry. Fields listed in `ui:order` stay in that order, and
+remaining additional fields follow their order in the data. With
+`additionalProperties: false`, undeclared fields are not rendered. AJSF discovers
+additional fields from existing data and does not add controls for creating new
+arbitrary keys.
+
 Two limits are worth knowing about before you rely on them.
 
 **Draft 7 conditionals validate, but the layout does not follow them.** `if`, `then` and

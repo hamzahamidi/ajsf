@@ -187,11 +187,14 @@ function buildObjectFormGroupTemplate(
   const controls: any = {};
   applyPatternProperties(schema, context.nodeValue);
   if (hasOwn(schema, 'ui:order') || hasOwn(schema, 'properties') ||
-    hasOwn(schema, 'patternProperties')) {
+    hasOwn(schema, 'patternProperties') || hasOwn(schema, 'additionalProperties')) {
     const propertyKeys = getOrderedSchemaPropertyKeys(schema, context.nodeValue);
     propertyKeys.forEach(key => {
       const schemaPropertyPointer = getObjectPropertySchemaPointer(schema, key);
       if (!schemaPropertyPointer) { return; }
+      if (schemaPropertyPointer === '/additionalProperties' && !isObject(schema.additionalProperties)) {
+        return;
+      }
       controls[key] = buildFormGroupTemplate(
         context.jsf,
         JsonPointer.get(context.nodeValue, [<string>key]),
@@ -218,10 +221,15 @@ function getOrderedSchemaPropertyKeys(schema: any, nodeValue: any): any[] {
       }
     }
   }
-  const matchingDataKeys = isObject(nodeValue)
-    ? Object.keys(nodeValue).filter(key => getMatchingPatternProperty(schema, key) !== null)
-    : [];
-  return [...new Set([...propertyKeys, ...matchingDataKeys])];
+  const orderedKeys = [...propertyKeys];
+  if (isObject(nodeValue)) {
+    for (const key of Object.keys(nodeValue)) {
+      const matchesPattern = getMatchingPatternProperty(schema, key) !== null;
+      const isAdditionalProperty = isObject(schema.additionalProperties) && !hasOwn(properties, key);
+      if ((matchesPattern || isAdditionalProperty) && !orderedKeys.includes(key)) orderedKeys.push(key);
+    }
+  }
+  return orderedKeys;
 }
 
 function buildArrayFormGroupTemplate(
