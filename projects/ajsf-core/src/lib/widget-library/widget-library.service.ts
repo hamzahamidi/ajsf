@@ -20,6 +20,7 @@ import { SubmitComponent } from './submit.component';
 import { TabsComponent } from './tabs.component';
 import { TemplateComponent } from './template.component';
 import { TextareaComponent } from './textarea.component';
+import { WizardComponent } from './wizard.component';
 
 @Injectable({
   providedIn: 'root',
@@ -119,7 +120,7 @@ export class WidgetLibraryService {
     'alt-date': 'date',
 
   // Widgets included for compatibility with Angular Schema Form API
-    'wizard': 'section', // TODO: Sequential panels with "Next" and "Previous" buttons
+    'wizard': WizardComponent,
 
   // Widgets included for compatibility with other libraries
     'textline': 'text',
