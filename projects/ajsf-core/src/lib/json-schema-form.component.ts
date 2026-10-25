@@ -31,12 +31,12 @@ import { JsonSchemaFormService } from './json-schema-form.service';
 import { resolveSchemaReferences } from './shared/json-schema.functions';
 import { WidgetLibraryService } from './widget-library/widget-library.service';
 
-const jsonSchemaTypes = ['array', 'boolean', 'integer', 'null', 'number', 'object', 'string'];
+const jsonSchemaTypes = new Set(['array', 'boolean', 'integer', 'null', 'number', 'object', 'string']);
 
 function isJsonSchemaType(type: any): boolean {
   return isArray(type)
-    ? type.length > 0 && type.every(schemaType => jsonSchemaTypes.includes(schemaType))
-    : jsonSchemaTypes.includes(type);
+    ? type.length > 0 && type.every(schemaType => jsonSchemaTypes.has(schemaType))
+    : jsonSchemaTypes.has(type);
 }
 
 export const JSON_SCHEMA_FORM_VALUE_ACCESSOR: any = {
