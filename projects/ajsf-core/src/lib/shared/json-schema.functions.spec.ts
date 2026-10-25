@@ -126,8 +126,162 @@ describe('JSON Schema functions', () => {
   });
 
   describe('buildSchemaFromLayout', () => {
-    it('returns undefined for a layout array (the function body is commented out)', () => {
-      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toBeUndefined();
+    it('infers a basic object schema from field keys and widget types', () => {
+      expect(buildSchemaFromLayout([{ key: 'name' }, 'address'])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: { name: { type: 'string' }, address: { type: 'string' } }
+      });
+    });
+
+    it('infers nested objects, array item layouts, and required fields', () => {
+      expect(buildSchemaFromLayout([
+        { type: 'section', required: true, items: ['name', { key: 'age', type: 'integer' }] },
+        { key: 'address.street', type: 'text' },
+        {
+          key: 'phone_numbers',
+          type: 'array',
+          items: ['phone_numbers[].number']
+        }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'integer' },
+          address: { type: 'object', properties: { street: { type: 'string' } } },
+          phone_numbers: {
+            type: 'array',
+            items: { type: 'object', properties: { number: { type: 'string' } } }
+          }
+        },
+        required: ['name', 'age']
+      });
+    });
+
+    it('uses choice values and form widget formats when inferring fields', () => {
+      expect(buildSchemaFromLayout([
+        { key: 'contact', type: 'email' },
+        { key: 'country', type: 'select', titleMap: { France: 'FR', Japan: 'JP' } }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          contact: { type: 'string', format: 'email' },
+          country: { type: 'string', enum: ['FR', 'JP'] }
+        }
+      });
+    });
+
+    it('reads layout options and joins relative child paths to their section', () => {
+      expect(buildSchemaFromLayout([
+        {
+          key: 'profile',
+          type: 'section',
+          items: [{ key: 'first_name', type: 'email', options: { required: true, description: 'Contact' } }]
+        },
+        { dataPointer: '/profile/age', type: 'integer', options: { minimum: 0 } }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          profile: {
+            type: 'object',
+            properties: {
+              first_name: { type: 'string', format: 'email', description: 'Contact' },
+              age: { type: 'integer', minimum: 0 }
+            },
+            required: ['first_name']
+          }
+        },
+        required: ['profile']
+      });
+    });
+
+    it('infers mixed choice value types from nested title maps', () => {
+      const schema: any = buildSchemaFromLayout([{
+        key: 'choice',
+        type: 'select',
+        titleMap: [
+          { items: [{ value: 2 }, { value: 'two' }] },
+          { value: null }, false, 1.5, [3], { value: { id: 4 } }
+        ]
+      }]);
+
+      expect(schema.properties.choice).toEqual({
+        type: ['integer', 'string', 'null', 'boolean', 'number', 'array', 'object'],
+        enum: [2, 'two', null, false, 1.5, [3], { id: 4 }]
+      });
+    });
+
+    it('infers checkbox lists and tuple item paths', () => {
+      expect(buildSchemaFromLayout([
+        { key: 'flags', type: 'checkboxes', enum: ['fast', 'safe'] },
+        { key: 'records.0.code', type: 'text' },
+        { key: 'amount', widget: 'range' },
+        { key: 'groups', type: 'tabarray', items: [{ key: 'label', type: 'text' }] }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          flags: { type: 'array', items: { type: 'string', enum: ['fast', 'safe'] } },
+          records: {
+            type: 'array',
+            items: [{ type: 'object', properties: { code: { type: 'string' } } }]
+          },
+          amount: { type: 'number' },
+          groups: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' } } } }
+        }
+      });
+    });
+
+    it('uses a supplied schema and handles required array item paths', () => {
+      expect(buildSchemaFromLayout([
+        {
+          key: 'rows',
+          type: 'array',
+          schema: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' } } } },
+          items: [{ key: 'name', type: 'text', required: true }]
+        },
+        { key: '/rows//active', type: 'checkbox', required: true }
+      ])).toEqual({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          rows: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: { id: { type: 'integer' }, name: { type: 'string' }, active: { type: 'boolean' } },
+              required: ['name', 'active']
+            }
+          }
+        },
+        required: ['rows']
+      });
+    });
+
+    it('merges repeated object and array schemas at the same layout path', () => {
+      const schema: any = buildSchemaFromLayout([
+        { key: 'profile', schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] } },
+        { key: 'profile', schema: { type: 'object', properties: { age: { type: 'integer' } }, required: ['age'] } },
+        { key: 'entries', schema: { type: 'array', items: { type: 'object', properties: { first: { type: 'string' } }, required: ['first'] } } },
+        { key: 'entries', schema: { type: 'array', items: { type: 'object', properties: { second: { type: 'number' } }, required: ['second'] } } },
+        { key: 'tuple', schema: { type: 'array', items: [{ type: 'object', properties: { first: { type: 'string' } } }] } },
+        { key: 'tuple', schema: { type: 'array', items: [{ type: 'object', properties: { second: { type: 'number' } } }] } }
+      ]);
+
+      expect(schema.properties.profile.properties).toEqual({
+        name: { type: 'string' }, age: { type: 'integer' }
+      });
+      expect(schema.properties.entries.items.properties).toEqual({
+        first: { type: 'string' }, second: { type: 'number' }
+      });
+      expect(schema.properties.profile.required).toEqual(['name', 'age']);
+      expect(schema.properties.entries.items.required).toEqual(['first', 'second']);
+      expect(schema.properties.tuple.items[0].properties).toEqual({
+        first: { type: 'string' }, second: { type: 'number' }
+      });
     });
 
     it('returns undefined for null and undefined layouts', () => {

@@ -110,6 +110,25 @@ describe('JsonSchemaFormComponent input updates', () => {
     properties: { name: { type: 'string' } },
   };
 
+  it('builds a schema from a complete layout without a schema input', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+    component.layout = [
+      { type: 'section', required: true, items: ['first_name'] },
+      { key: 'age', type: 'integer' }
+    ];
+    component.data = { first_name: 'Ada', age: 38 };
+
+    fixture.detectChanges();
+
+    expect(component.jsf.schema.properties).toEqual({
+      first_name: { type: 'string' },
+      age: { type: 'integer' }
+    });
+    expect(component.jsf.schema.required).toEqual(['first_name']);
+    expect(component.jsf.formGroup.value).toEqual({ first_name: 'Ada', age: 38 });
+  });
+
   it('builds controls from schemas supplied for external references', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;

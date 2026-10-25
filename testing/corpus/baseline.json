@@ -280,9 +280,9 @@
     "valid": true
   },
   "bootstrap-3/ng-jsf-layout-only": {
-    "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
-    "valid": null
+    "controls": 13,
+    "error": null,
+    "valid": false
   },
   "bootstrap-3/ng-jsf-nested-arrays": {
     "controls": 5,
@@ -650,9 +650,9 @@
     "valid": true
   },
   "bootstrap-4/ng-jsf-layout-only": {
-    "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
-    "valid": null
+    "controls": 13,
+    "error": null,
+    "valid": false
   },
   "bootstrap-4/ng-jsf-nested-arrays": {
     "controls": 5,
@@ -1020,9 +1020,9 @@
     "valid": true
   },
   "bootstrap-5/ng-jsf-layout-only": {
-    "controls": 0,
-    "error": "Cannot set properties of undefined (setting 'isInputWidget')",
-    "valid": null
+    "controls": 13,
+    "error": null,
+    "valid": false
   },
   "bootstrap-5/ng-jsf-nested-arrays": {
     "controls": 5,
@@ -1390,9 +1390,9 @@
     "valid": true
   },
   "material-design/ng-jsf-layout-only": {
-    "controls": 0,
+    "controls": 12,
     "error": null,
-    "valid": null
+    "valid": false
   },
   "material-design/ng-jsf-nested-arrays": {
     "controls": 4,
@@ -1760,9 +1760,9 @@
     "valid": true
   },
   "no-framework/ng-jsf-layout-only": {
-    "controls": 0,
+    "controls": 13,
     "error": null,
-    "valid": null
+    "valid": false
   },
   "no-framework/ng-jsf-nested-arrays": {
     "controls": 5,
@@ -2130,9 +2130,9 @@
     "valid": true
   },
   "primeng/ng-jsf-layout-only": {
-    "controls": 0,
+    "controls": 12,
     "error": null,
-    "valid": null
+    "valid": false
   },
   "primeng/ng-jsf-nested-arrays": {
     "controls": 4,

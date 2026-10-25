@@ -317,6 +317,24 @@ After displaying a form in this mode, use the `formSchema` and `formLayout` outp
 
 The `ngModel` input supports Angular's bidirectional data binding, so an `onSubmit` function is not always necessary.
 
+### Layout-only mode
+
+A complete `layout` can create a form without a `schema`. AJSF infers fields from their keys and types from their widgets and listed choices. A layout containing `*` needs a schema or data input because the wildcard expands fields from the schema.
+
+```javascript
+const layout = [
+  { key: 'name' },
+  { key: 'age', type: 'integer' }
+];
+```
+
+```html
+<json-schema-form
+  [layout]="layout"
+  [(data)]="person">
+</json-schema-form>
+```
+
 ### Advanced use
 
 #### Additional inputs and outputs
