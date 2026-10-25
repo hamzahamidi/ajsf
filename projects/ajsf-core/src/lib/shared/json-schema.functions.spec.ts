@@ -1088,9 +1088,13 @@ describe('JSON Schema functions', () => {
     });
 
     it('collects the object validators', () => {
-      expect(getControlValidators(
-        { type: 'object', minProperties: 1, maxProperties: 3, dependencies: { a: ['b'] } }
-      )).toEqual({ minProperties: [1], maxProperties: [3], dependencies: [{ a: ['b'] }] });
+      const schema = { type: 'object', minProperties: 1, maxProperties: 3, dependencies: { a: ['b'] } };
+
+      expect(getControlValidators(schema)).toEqual({
+        minProperties: [1],
+        maxProperties: [3],
+        dependencies: [schema.dependencies, schema, '', null],
+      });
     });
 
     it('collects the array validators', () => {

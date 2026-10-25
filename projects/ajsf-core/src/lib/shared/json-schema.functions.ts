@@ -718,9 +718,12 @@ export function getControlValidators(schema, rootSchema = schema, schemaPointer 
         });
       break;
       case 'object':
-        forEach(['minProperties', 'maxProperties', 'dependencies'], (prop) => {
+        forEach(['minProperties', 'maxProperties'], (prop) => {
           if (hasOwn(schema, prop)) { validators[prop] = [schema[prop]]; }
         });
+        if (hasOwn(schema, 'dependencies')) {
+          validators.dependencies = [schema.dependencies, rootSchema, schemaPointer, ajv];
+        }
       break;
       case 'array':
         forEach(['minItems', 'maxItems', 'uniqueItems'], (prop) => {
