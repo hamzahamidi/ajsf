@@ -119,6 +119,24 @@ describe('form-group.functions', () => {
       expect(result.controls).toBeUndefined();
     });
 
+    it('builds a control template from the matching type array branch', () => {
+      const schema = {
+        type: ['string', 'object'],
+        'x-ajsf-type-array': [
+          { type: 'string', minLength: 2 },
+          { type: 'object', properties: { name: { type: 'string' } } },
+        ],
+      };
+      const jsf = makeJsf(schema, { formValues: { name: 'Ada' } });
+      const result: any = buildFormGroupTemplate(jsf, { name: 'Ada' });
+
+      expect(result.controlType).toBe('FormGroup');
+      expect(result.controls.name.controlType).toBe('FormControl');
+      expect(jsf.dataMap.get('').get('schemaPointer')).toBe('');
+      expect(jsf.dataMap.get('').get('typeArrayActiveBranch')).toBe(1);
+      expect(jsf.dataMap.get('').get('schemaType')).toBe('object');
+    });
+
     it('collects string validators from the schema', () => {
       const result: any = buildFormGroupTemplate(makeJsf({
         type: 'string', minLength: 2, maxLength: 5, pattern: '^a',

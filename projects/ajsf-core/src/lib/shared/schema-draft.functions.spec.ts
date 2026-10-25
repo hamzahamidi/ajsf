@@ -1,4 +1,9 @@
-import { convertSchemaToDraft6, detectDraft } from './schema-draft.functions';
+import {
+  convertSchemaToDraft6,
+  detectDraft,
+  expandTypeArraySchema,
+  typeArrayBranchValue,
+} from './schema-draft.functions';
 
 describe('convertSchemaToDraft6', () => {
 
@@ -287,6 +292,44 @@ describe('convertSchemaToDraft6', () => {
       const result: any = convertSchemaToDraft6({ type: [[{ title: 'x' }]] });
       expect(result.type).toBeUndefined();
       expect(result['0']).toEqual({ title: 'x' });
+    });
+  });
+
+  describe('type array form branches', () => {
+    it('distributes type specific constraints without changing the declared union', () => {
+      expect(expandTypeArraySchema({
+        type: ['string', 'number'],
+        minLength: 2,
+        minimum: 1,
+        title: 'Value',
+      })).toEqual({
+        type: ['string', 'number'],
+        minLength: 2,
+        minimum: 1,
+        title: 'Value',
+        'x-ajsf-type-array': [
+          { type: 'string', minLength: 2, title: 'Value' },
+          { type: 'number', minimum: 1, title: 'Value' },
+        ],
+      });
+    });
+
+    it('keeps a matching enum value when changing branches', () => {
+      expect(typeArrayBranchValue(
+        { default: 'a' }, { type: 'string', enum: ['a', 'b'] }, 'b'
+      )).toBe('b');
+    });
+
+    it('uses an allowed enum value when the current value is excluded', () => {
+      expect(typeArrayBranchValue(
+        { default: 'outside' }, { type: 'string', enum: ['inside'] }, 'outside'
+      )).toBe('inside');
+    });
+
+    it('uses a branch const instead of a different value of the same type', () => {
+      expect(typeArrayBranchValue(
+        {}, { type: 'string', const: 'fixed' }, 'editable'
+      )).toBe('fixed');
     });
   });
 

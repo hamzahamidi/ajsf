@@ -106,6 +106,28 @@ correctly.
 
 A schema without `$schema` is read as draft 7.
 
+When a property declares more than one type, AJSF presents a type selector and
+builds the control for the selected type. The original JSON Schema `type` array
+remains in force, so validation keeps its any-match behavior. For example, this
+schema lets a user edit `destination` as either text or an object:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "destination": {
+      "type": ["string", "object"],
+      "properties": {
+        "url": { "type": "string" }
+      }
+    }
+  }
+}
+```
+
+See the [JSON Schema documentation for `type`](https://json-schema.org/understanding-json-schema/reference/type#type)
+for the validation semantics.
+
 For object schemas, set `additionalProperties` to a schema to render undeclared
 fields already present in form data. This also works when the object schema has
 no `properties` entry. Fields listed in `ui:order` stay in that order, and
@@ -654,6 +676,8 @@ uniqueItems      |  array    | duplicateItems
 ### Changing or adding widgets
 
 To add a new widget or override an existing widget, either add an object containing your new widgets to the `widgets` input of the `<json-schema-form>` tag, or load the `WidgetLibraryService` and call `registerWidget(widgetType, widgetComponent)`, with a string type name and an Angular component to be used whenever a form needs that widget type.
+
+Use this registration point to integrate third-party controls. The core package does not bundle optional editor or date-picker dependencies.
 
 Example:
 

@@ -124,18 +124,7 @@ export class WidgetLibraryService {
   // Widgets included for compatibility with other libraries
     'textline': 'text',
 
-  // Recommended 3rd-party add-on widgets (TODO: create wrappers for these...)
-    // 'ng2-select': Select control replacement - http://valor-software.com/ng2-select/
-    // 'flatpickr': Flatpickr date picker - https://github.com/chmln/flatpickr
-    // 'pikaday': Pikaday date picker - https://github.com/dbushell/Pikaday
-    // 'spectrum': Spectrum color picker - http://bgrins.github.io/spectrum
-    // 'bootstrap-slider': Bootstrap Slider range control - https://github.com/seiyria/bootstrap-slider
-    // 'ace': ACE code editor - https://ace.c9.io
-    // 'ckeditor': CKEditor HTML / rich text editor - http://ckeditor.com
-    // 'tinymce': TinyMCE HTML / rich text editor - https://www.tinymce.com
-    // 'imageselect': Bootstrap drop-down image selector - http://silviomoreto.github.io/bootstrap-select
-    // 'wysihtml5': HTML editor - http://jhollingworth.github.io/bootstrap-wysihtml5
-    // 'quill': Quill HTML / rich text editor (?) - https://quilljs.com
+  // Third-party controls are registered by applications through registerWidget.
   };
   registeredWidgets: any = { };
   frameworkWidgets: any = { };

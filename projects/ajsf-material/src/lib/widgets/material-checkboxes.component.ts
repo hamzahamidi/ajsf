@@ -2,9 +2,6 @@ import { AbstractControl } from '@angular/forms';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { buildTitleMap, JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
 
-// TODO: Change this to use a Selection List instead?
-// https://material.angular.io/components/list/overview
-
 @Component({
     selector: 'material-checkboxes-widget',
     template: `
@@ -15,33 +12,40 @@ import { buildTitleMap, JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
         [disabled]="controlDisabled || options?.readonly"
         [indeterminate]="someChecked"
         [name]="$safeNavigationMigration(options?.name)"
+        [attr.aria-controls]="'control' + $safeNavigationMigration(layoutNode?._id)"
         (blur)="options.showErrors = true"
         (change)="updateAllValues($event)">
         <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(options?.name)"></span>
       </mat-checkbox>
       @if (options?.title) {
         <label
+          [id]="'control' + $safeNavigationMigration(layoutNode?._id) + 'Title'"
           class="title"
           [class]="options?.labelHtmlClass || ''"
           [style.display]="options?.notitle ? 'none' : ''"
         [innerHTML]="$safeNavigationMigration(options?.title)"></label>
       }
-      <ul class="checkbox-list" [class.horizontal-list]="horizontalList">
+      <mat-selection-list
+        [attr.aria-label]="options?.notitle || !options?.title ? (options?.name || options?.title || 'Options') : null"
+        [attr.aria-labelledby]="options?.title && !options?.notitle ? 'control' + $safeNavigationMigration(layoutNode?._id) + 'Title' : null"
+        [class.horizontal-list]="horizontalList"
+        [disabled]="controlDisabled || options?.readonly"
+        [id]="'control' + $safeNavigationMigration(layoutNode?._id)"
+        [multiple]="true"
+        [color]="options?.color || 'primary'"
+        (blur)="options.showErrors = true"
+        (selectionChange)="updateValueFromSelection($event)">
         @for (checkboxItem of checkboxList; track checkboxItem) {
-          <li
-            [class]="options?.htmlClass || ''">
-            <mat-checkbox type="checkbox"
-              [(ngModel)]="checkboxItem.checked"
-              [color]="options?.color || 'primary'"
-              [disabled]="controlDisabled || options?.readonly"
-              [name]="$safeNavigationMigration(checkboxItem?.name)"
-              (blur)="options.showErrors = true"
-              (change)="updateValue()">
-              <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(checkboxItem?.name)"></span>
-            </mat-checkbox>
-          </li>
+          <mat-list-option
+            [class]="options?.htmlClass || ''"
+            [disabled]="controlDisabled || options?.readonly"
+            [selected]="checkboxItem.checked"
+            [value]="checkboxItem.value"
+            (blur)="options.showErrors = true">
+            <span class="checkbox-name" [innerHTML]="$safeNavigationMigration(checkboxItem?.name)"></span>
+          </mat-list-option>
         }
-      </ul>
+      </mat-selection-list>
       @if (options?.showErrors && options?.errorMessage) {
         <mat-error
         [innerHTML]="$safeNavigationMigration(options?.errorMessage)"></mat-error>
@@ -49,8 +53,8 @@ import { buildTitleMap, JsonSchemaFormService, TitleMapItem } from '@ajsf/core';
     </div>`,
     styles: [`
     .title { font-weight: bold; }
-    .checkbox-list { list-style-type: none; }
-    .horizontal-list > li { display: inline-block; margin-right: 10px; zoom: 1; }
+    .horizontal-list { display: flex; flex-wrap: wrap; }
+    .horizontal-list mat-list-option { width: auto; }
     .checkbox-name { white-space: nowrap; }
     mat-error { font-size: 75%; }
   `],
@@ -105,6 +109,12 @@ export class MaterialCheckboxesComponent implements OnInit {
     if (this.boundControl) {
       this.jsf.updateArrayCheckboxList(this, this.checkboxList);
     }
+  }
+
+  updateValueFromSelection(event: any) {
+    const selected = event.source.options.toArray().map((option: any) => option.selected);
+    this.checkboxList.forEach((item, index) => item.checked = !!selected[index]);
+    this.updateValue();
   }
 
   updateAllValues(event: any) {
