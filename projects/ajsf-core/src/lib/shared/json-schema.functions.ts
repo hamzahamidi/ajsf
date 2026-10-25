@@ -120,7 +120,7 @@ export function resolveExternalSchemaReferences(schema: any, externalSchemas: Re
   const appendFragment = (prefix: string, fragment: string): string =>
     fragment ? `${prefix}${fragment}` : prefix;
   const escapePointerToken = (token: string): string =>
-    token.replace(/~/g, '~0').replace(/\//g, '~1');
+    token.replaceAll('~', '~0').replaceAll('/', '~1');
 
   const resources = new Map<string, { schema: any; uri: string }>();
   const addResource = (uri: string, value: any): { schema: any; uri: string } => {
@@ -222,11 +222,11 @@ export function resolveExternalSchemaReferences(schema: any, externalSchemas: Re
     const currentUri = currentBaseUri
       ? resourceUri(getResourceUrl(currentBaseUri))
       : context.resourceUri;
-    const currentPrefix = id
-      ? context.localPointer.startsWith('#')
-        ? context.localPointer
-        : `#${context.localPointer}`
-      : context.resourcePrefix;
+    let currentPrefix = context.resourcePrefix;
+    if (id) {
+      currentPrefix = context.localPointer;
+      if (!currentPrefix.startsWith('#')) { currentPrefix = `#${currentPrefix}`; }
+    }
     const currentContext: ReferenceContext = {
       baseUri: currentBaseUri,
       resourceUri: currentUri,
