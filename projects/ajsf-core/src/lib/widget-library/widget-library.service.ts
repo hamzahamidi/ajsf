@@ -61,9 +61,9 @@ export class WidgetLibraryService {
     'checkbox': CheckboxComponent, // TODO: Set ternary = true for 3-state ??
     'file': FileComponent, // TODO: Finish 'file' widget
     'hidden': 'text',
-    'image': 'text', // TODO: Figure out how to handle these
+    'image': SubmitComponent,
     'radio': 'radios',
-    'reset': 'submit', // TODO: Figure out how to handle these
+    'reset': SubmitComponent,
     'submit': SubmitComponent,
 
   // Other (non-'input') HTML form control widgets
