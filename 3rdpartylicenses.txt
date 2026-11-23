@@ -575,6 +575,8 @@ License: "SEE LICENSE IN LICENSE.md"
 
 # PrimeUI License
 
+License: https://primeui.dev/licenses
+
 This package is part of **PrimeUI**, a family of commercial UI libraries by PrimeTek Informatics.
 
 ## How PrimeUI May Be Used
@@ -675,6 +677,8 @@ License: "SEE LICENSE IN LICENSE.md"
 
 # PrimeUI License
 
+License: https://primeui.dev/licenses
+
 This package is part of **PrimeUI**, a family of commercial UI libraries by PrimeTek Informatics.
 
 ## How PrimeUI May Be Used
@@ -774,6 +778,8 @@ Package: @primeuix/themes
 License: "SEE LICENSE IN LICENSE.md"
 
 # PrimeUI License
+
+License: https://primeui.dev/licenses
 
 This package is part of **PrimeUI**, a family of commercial UI libraries by PrimeTek Informatics.
 
